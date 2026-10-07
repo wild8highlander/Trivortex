@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TRX-07 — The Efimov Effect: Universal Quantum Three-Body Physics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400&family=PT+Sans:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof renderMathInElement === 'function') {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '\\(', right: '\\)', display: false}
+      ], throwOnError: false
+    });
+  }
+});
+</script>
+<style>
+@page { size: 210mm 297mm; margin: 0; }
+:root {
+  --navy: #0A1730; --navy2: #0E2145; --header-fill: #2A3A55;
+  --gold: #D4AF37; --gold-l: #F0D98C;
+  --text: #1F2937; --muted: #6B7280;
+  --stripe: #F2F5FA; --code-bg: #F5F7FB; --border: #DCE3EF;
+}
+html, body {
+  margin: 0; padding: 0; width: 210mm;
+  background: #FFFFFF;               /* flow pages are white; dark pages are fixed-height */
+  color: var(--text);
+  font-family: 'PT Serif', 'Noto Serif', 'Liberation Serif', 'DejaVu Serif', serif;
+  font-size: 15px; line-height: 1.62;
+  line-break: strict; word-break: normal; overflow-wrap: break-word;
+}
+@media screen {
+  html { height: auto; display: flex; justify-content: center; background: #10131a; }
+  body { transform-origin: top center; margin: 20px auto; box-shadow: 0 8px 40px rgba(0,0,0,.5); }
+}
+
+/* ── Cover ─────────────────────────────────────────────────────────────── */
+.front-page {
+  width: 210mm; height: 297mm; box-sizing: border-box;
+  break-after: page; overflow: hidden; position: relative;
+  background:
+    radial-gradient(circle 8px at 691px 125px, #D4AF37 0 7px, transparent 8px),
+    radial-gradient(circle 5px at 584px 56px, #59C2FF 0 4px, transparent 5px),
+    radial-gradient(circle 4px at 154px 950px, #FF7A9E 0 3px, transparent 4px),
+    radial-gradient(circle 210px at 87% 9%, transparent 206px, rgba(212,175,55,.30) 208px, rgba(212,175,55,.30) 210px, transparent 212px),
+    radial-gradient(circle 130px at 74% 3%, transparent 126px, rgba(89,194,255,.26) 128px, rgba(89,194,255,.26) 130px, transparent 132px),
+    radial-gradient(circle 280px at 8% 94%, transparent 276px, rgba(212,175,55,.18) 278px, rgba(212,175,55,.18) 280px, transparent 282px),
+    linear-gradient(160deg, #0E2145 0%, #0A1730 62%, #081226 100%);
+  color: #E9EEF8;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 58px;
+}
+.fp-kicker {
+  display: flex; align-items: center; gap: 14px;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.5px; letter-spacing: 3.5px; color: #F0D98C; font-weight: 700;
+}
+.fp-title {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 34px; line-height: 1.16; font-weight: 700; color: #F4F7FD;
+  margin: 26px 0 12px 0; max-width: 156mm;
+}
+.fp-subtitle-ru {
+  font-size: 18.5px; line-height: 1.4; color: #D4AF37; font-style: italic;
+  max-width: 156mm; margin-bottom: 34px;
+}
+.fp-meta {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 9px 26px;
+  max-width: 156mm;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.5px; line-height: 1.45;
+  border-top: 1px solid rgba(212,175,55,.35);
+  border-bottom: 1px solid rgba(212,175,55,.35);
+  padding: 16px 2px;
+}
+.fp-meta .k { color: #8FA3C4; letter-spacing: 1.6px; font-size: 10.5px; text-transform: uppercase; }
+.fp-meta .v { color: #E9EEF8; margin-top: 2px; }
+.fp-abstract {
+  max-width: 156mm; margin-top: 26px; font-size: 12.5px; line-height: 1.6;
+  color: #B9C6DE; font-style: italic;
+}
+.fp-foot {
+  position: absolute; left: 58px; right: 58px; bottom: 40px;
+  display: flex; justify-content: space-between; align-items: flex-end;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 11px; letter-spacing: 2px; color: #8FA3C4; text-transform: uppercase;
+}
+.fp-foot b { color: #F0D98C; font-weight: 700; }
+
+/* ── Flowing content ───────────────────────────────────────────────────── */
+.main-content { background: #FFFFFF; padding: 15mm 16mm 13mm 16mm; }
+
+h1, h2, h3, h4 {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  color: #0A1730; line-height: 1.25;
+  break-after: avoid; page-break-after: avoid;
+}
+.main-content h1 { font-size: 24px; margin: 6px 0 4px 0; }
+.main-content h2 {
+  font-size: 19.5px; margin: 26px 0 10px 0; padding-left: 12px;
+  border-left: 4px solid #D4AF37;
+}
+.main-content h3 { font-size: 16px; margin: 18px 0 8px 0; }
+.main-content h4 { font-size: 14.5px; margin: 14px 0 6px 0; color: #2A3A55; }
+p { margin: 0 0 9px 0; text-align: justify; hyphens: auto; }
+strong { color: #0A1730; }
+em { color: inherit; }
+a { color: #0E2145; text-decoration: none; border-bottom: 1px solid #D4AF37; }
+ul, ol { margin: 4px 0 10px 0; padding-left: 22px; }
+li { margin-bottom: 4px; break-inside: avoid; text-align: left; }
+
+table {
+  width: 100%; border-collapse: collapse; margin: 10px 0 14px 0;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.3px; line-height: 1.4;
+}
+thead { display: table-header-group; }
+tr { break-inside: avoid; page-break-inside: avoid; }
+th {
+  background: #2A3A55; color: #FFFFFF; text-align: left;
+  padding: 6px 9px; font-weight: 700; border: none;
+}
+td { padding: 5px 9px; border-bottom: 1px solid #DCE3EF; vertical-align: top; }
+tbody tr:nth-child(odd) td { background: #F2F5FA; }
+table, .table-wrap { break-inside: auto; }
+thead + tbody tr:first-child { break-before: avoid; }
+
+pre {
+  background: #F5F7FB; border: 1px solid #DCE3EF; border-left: 3px solid #D4AF37;
+  padding: 10px 13px; margin: 10px 0 14px 0; border-radius: 4px;
+  font-family: 'JetBrains Mono', 'DejaVu Sans Mono', 'Liberation Mono', monospace;
+  font-size: 11.6px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: break-word;
+  break-inside: avoid; page-break-inside: avoid;
+}
+code {
+  font-family: 'JetBrains Mono', 'DejaVu Sans Mono', 'Liberation Mono', monospace;
+  font-size: 12.6px; background: #F5F7FB; padding: 1px 4px; border-radius: 3px;
+}
+pre code { background: transparent; padding: 0; font-size: 11.6px; }
+
+blockquote {
+  margin: 10px 0 12px 0; padding: 8px 14px; border-left: 3px solid #D4AF37;
+  background: #F5F7FB; color: #0E2145; font-style: italic;
+  break-inside: avoid;
+}
+hr { border: none; border-top: 1px solid #DCE3EF; margin: 16px 0; }
+
+/* equations */
+.katex-display { margin: 12px 0 14px 0; max-width: 100%; overflow: hidden auto; }
+.eq-block { break-inside: avoid; page-break-inside: avoid; }
+
+/* language part banners */
+.part-banner {
+  break-inside: avoid; break-after: avoid;
+  margin: 26px 0 14px 0; padding: 13px 18px;
+  background: #0E2145; color: #F0D98C; border-radius: 6px;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+}
+.part-banner .pb-title { font-size: 16.5px; font-weight: 700; letter-spacing: 1.2px; }
+.part-banner .pb-sub { font-size: 11.5px; color: #8FA3C4; margin-top: 3px; letter-spacing: .4px; }
+
+/* colophon */
+.ending {
+  width: 210mm; height: 297mm; box-sizing: border-box;
+  break-before: page; overflow: hidden; position: relative;
+  background: linear-gradient(200deg, #0E2145 0%, #0A1730 60%, #081226 100%);
+  color: #E9EEF8;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 58px;
+}
+.ending .colophon-line { max-width: 150mm; font-size: 13.5px; line-height: 1.7; color: #B9C6DE; }
+.ending .colophon-line b { color: #F0D98C; }
+.ending .end-rule { width: 64px; height: 26px; margin: 10px 0 8px 0;
+  background: linear-gradient(90deg, #D4AF37 0 64px, transparent 64px) top/100% 6px no-repeat; }
+.ending .end-title {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 26px; font-weight: 700; color: #F4F7FD; letter-spacing: 1px;
+}
+.ending .end-small {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 11.5px; color: #8FA3C4; letter-spacing: 2px; text-transform: uppercase;
+  margin-top: 26px; line-height: 2;
+}
+</style>
+</head>
+<body>
+
+<div class="front-page">
+  <div class="fp-kicker"><span>TRIVORTEX RESEARCH PROGRAM · TRX-07</span></div>
+  <div class="fp-title">The Efimov Effect: Universal Quantum Three-Body Physics</div>
+  <div class="fp-subtitle-ru">Эффект Ефимова: универсальная квантовая физика трёх тел</div>
+  <div class="fp-meta"><div><div class="k">Author</div><div class="v">Isaev Iskhak Khamzatovich<br><span style="color:#8FA3C4">ORCID 0009-0003-7299-0701</span></div></div><div><div class="k">DOI</div><div class="v">10.5281/zenodo.21825394</div></div><div><div class="k">Study</div><div class="v">TRX-07</div></div><div><div class="k">Date</div><div class="v">2026-10-06</div></div><div><div class="k">Code</div><div class="v"><code style="background:rgba(212,175,55,.12);color:#F0D98C;padding:1px 5px;border-radius:3px">code/trx07_efimov.py</code></div></div><div><div class="k">Data</div><div class="v"><code style="background:rgba(212,175,55,.12);color:#F0D98C;padding:1px 5px;border-radius:3px">results/trx07_results.json</code></div></div></div>
+  <div class="fp-abstract">This monograph treats the Efimov effect: three identical bosons with resonant two-body interactions form an infinite Rydberg-like series of bound three-body states even though the pair potential binds no dimer. The spectrum is universal, governed by a single transcendental exponent s0 defined by s0·cosh(πs0/2) = (8/√3)·sinh(πs0/6). The study verifies the universal numbers in two independent layers.</div>
+  <div class="fp-foot"><span>Monograph Edition · bilingual RU + EN</span><span><b>TRIVORTEX</b> · TRIVORTEX · v1.0.0 · 2026</span></div>
+</div>
+<div class="main-content"><div class="part-banner"><div class="pb-title">PART I · English Monograph</div><div class="pb-sub">The Efimov Effect: Universal Quantum Three-Body Physics</div></div><p><em>TRIVORTEX Research Program · v1.0.0 · Monograph Edition</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Study</td>
+<td>TRX-07</td>
+</tr>
+<tr>
+<td>Program</td>
+<td>TRIVORTEX — The Three-Body Problem in the Vortex Model</td>
+</tr>
+<tr>
+<td>Author</td>
+<td>Isaev Iskhak Khamzatovich (ORCID 0009-0003-7299-0701)</td>
+</tr>
+<tr>
+<td>DOI</td>
+<td>10.5281/zenodo.21825394</td>
+</tr>
+<tr>
+<td>Date</td>
+<td>2026-10-06</td>
+</tr>
+<tr>
+<td>Code</td>
+<td>`code/trx07_efimov.py`</td>
+</tr>
+<tr>
+<td>Data</td>
+<td>`results/trx07_results.json`</td>
+</tr>
+</tbody>
+</table>
+<h2>Abstract</h2>
+<p>This monograph treats the Efimov effect: three identical bosons with resonant two-body interactions form an infinite Rydberg-like series of bound three-body states even though the pair potential binds no dimer. The spectrum is universal, governed by a single transcendental exponent s0 defined by s0·cosh(πs0/2) = (8/√3)·sinh(πs0/6). The study verifies the universal numbers in two independent layers. Layer one: the transcendental equation is solved with brentq, giving s0 = 1.0062378 (target 1.0062458, tolerance 1e-5), the length factor exp(π/s0) = 22.694383 and the energy factor exp(2π/s0) = 515.035001. Layer two: the hyperradial adiabatic potential −(s0<sup>2</sup> − ¼)/R<sup>2</sup> is discretized on an exponential grid (900 points over L = 20.7233), and the four computed trimers — energies −4476.18 down to −3.27·10<sup>-5</sup>, sizes 13.05 to 152604 R0 — form a geometric ladder with |E0/E1| = 515.509 (+0.09%), |E1/E2| = 514.964 (−0.01%) and |E2/E3| = 514.963 (−0.01%) against the universal 515.035. The ladder is box-independent wherever two rungs fit and monotone under grid refinement; a three-body-parameter sweep over three decades leaves the ratios invariant (spread 1.9·10<sup>-10</sup>) while absolute energies follow the exact R0<sup>-2</sup> power law (slope −2.000000). The Efimov ladder is thus established numerically as the quantum twin of the scale-invariant vortex triangle of TRIVORTEX.</p>
+<h2>Contents</h2>
+<ol>
+<li>Abstract</li>
+<li>
+<ol>
+<li>Introduction and historical context</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>Physical formulation</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>Mathematical model</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li>Connection to the TRIVORTEX framework</li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li>Numerical method</li>
+</ol>
+</li>
+<li>
+<ol start="6">
+<li>Results and analysis</li>
+</ol>
+</li>
+<li>
+<ol start="7">
+<li>Discussion</li>
+</ol>
+</li>
+<li>
+<ol start="8">
+<li>Conclusions</li>
+</ol>
+</li>
+<li>
+<ol start="9">
+<li>References
+Appendix A. Parameter table
+Appendix B. Reproduction</li>
+</ol>
+</li>
+</ol>
+<h2>1. Introduction and historical context</h2>
+<p>The prediction belongs to Vitaly Efimov (1970), then working at the Budker Institute of Nuclear Physics in Novosibirsk: three identical bosons with a resonant two-body interaction must possess an infinite number of bound three-body states, even when the pair potential is too weak to bind a dimer. The claim was so counterintuitive that it met years of skepticism — until Amado and Greenwood (1977) proved the companion statement that there is no Efimov effect for four or more particles, sharpening the result from an anomaly into a genuine three-body law: the effect exists exactly at N = 3 and nowhere else.</p>
+<p>The theory was put on firm ground through the Faddeev equations (1961), which split the three-body wave function into pair amplitudes, and through the zero-range (unitary) idealization, where the whole answer collapses to a single transcendental exponent s0. Macek (1968) had just introduced the adiabatic hyperradius for the helium atom, and the same collective coordinate governs the Efimov problem: the effective hyperradial attraction −(s0<sup>2</sup> − ¼)/R<sup>2</sup> has no length scale of its own, so the spectrum must be geometric, with the log-periodicity Δs = π/s0 in the hyperradius. Braaten and Hammer (2006) consolidated this universality into the standard reference for few-body physics.</p>
+<p>The experimental era opened with laser-cooled atoms. Kraemer et al. (2006) observed the Efimov resonances in an ultracold gas of caesium atoms, tuning the scattering length through a Feshbach resonance and reading out the trimers by laser spectroscopy — the laser connection of this study. Zaccanti et al. (2009) then resolved the full log-periodic spectrum in potassium, and Kunitski et al. (2015) found Efimov states in atomic helium trimers, the smallest three-body system of all. The geometric factor exp(2π/s0) ≈ 515 between successive trimer energies is now measured laboratory fact.</p>
+<p>For TRIVORTEX the relevance is structural. The hyperradial −1/R<sup>2</sup> attraction binds without any intrinsic length — precisely the scale-free binding of the vortex triangle in Theorem 3.1 — and the resulting geometric ladder, with its universal exponent s0, is the quantum twin of the radial modulation ω = (2π/T)·e^(C_Ch/π) of the vortex model. This study anchors the quantum chapter of the program: it shows that the same exponential hierarchy the vortex framework produces classically re-emerges, number for number, in the few-body spectrum of quantum mechanics.</p>
+<h2>2. Physical formulation</h2>
+<p>The system is three identical bosons in the unitary limit: the s-wave scattering length a is tuned to infinity (a → ∞), so the two-body subsystem binds no dimer yet scatters with the maximal cross-section. The natural collective coordinate is the hyperradius R — the size of the triangle formed by the three particles — and in the zero-range limit the adiabatic (Born–Oppenheimer-like) separation of the fast hyperangular motion leaves a single effective channel: a hyperradial attraction −(s0<sup>2</sup> − ¼)/R<sup>2</sup>, whose strength s0<sup>2</sup> − ¼ ≈ 0.7625 is fixed entirely by the transcendental condition (E1) on the exponent s0 = 1.0062378.</p>
+<p>The −1/R<sup>2</sup> attraction is marginal: it carries no intrinsic length scale, so any bound state must build its own scale out of the boundaries. Quantum mechanics supplies it multiplicatively — the outcome is the geometric Efimov ladder, with sizes R_n ∝ exp(πn/s0) and energies E_n ∝ exp(−2πn/s0). The one microscopic length that does enter is the three-body parameter R0, here modeled as a hard wall at R = R0 that anchors the comb of levels; shifting R0 slides every rung but leaves all ratios invariant — verified by the sweep of fig04 over three decades of R0.</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Universal exponent s0</td>
+<td>1.0062378 (target 1.0062458, tol 1e-5)</td>
+<td>transcendental root of (E1)</td>
+</tr>
+<tr>
+<td>Universal length factor</td>
+<td>exp(π/s0) = 22.694383</td>
+<td>trimer size growth per rung</td>
+</tr>
+<tr>
+<td>Universal energy factor</td>
+<td>exp(2π/s0) = 515.035001</td>
+<td>trimer energy drop per rung</td>
+</tr>
+<tr>
+<td>Three-body parameter R0</td>
+<td>1e-3</td>
+<td>hard wall in R (short-distance phase)</td>
+</tr>
+<tr>
+<td>Outer wall Rmax</td>
+<td>1e6</td>
+<td>box hosts L = ln(Rmax/R0) = 20.723266 ≈ 3.3 Efimov oscillations</td>
+</tr>
+<tr>
+<td>FD grid</td>
+<td>900 points, Δs = 0.023051</td>
+<td>uniform in s = ln(R/R0)</td>
+</tr>
+<tr>
+<td>Levels computed</td>
+<td>4 deepest trimers</td>
+<td>energies −4476.18 … −3.27·10<sup>-5</sup> (units of 1/R0<sup>2</sup>)</td>
+</tr>
+</tbody>
+</table>
+<h2>3. Mathematical model</h2>
+<p>At unitarity the zero-range Faddeev equations reduce, in hyperspherical coordinates, to an eigenvalue problem for the hyperangular part of the wave function. The spectral parameter of that hyperangular problem, s0, enters the consistency condition (E1): f(s) = s·cosh(πs/2) − (8/√3)·sinh(πs/6) = 0. Its positive root s0 = 1.0062458 (the literature value; the brentq root of this study is 1.0062378) fixes the strength of the effective hyperradial channel, s0<sup>2</sup> − ¼ ≈ 0.7625, and nothing else — the entire Efimov phenomenology flows from this single number.</p>
+<p>With the angular part frozen in the attractive channel, the hyperradial equation (E3) is scale-invariant: under R → λR the kinetic and potential terms rescale identically, so from any bound solution with energy E a new one exists at E·λ<sup>-2</sup>. Self-similarity under the discrete step λ = exp(π/s0) closes the hierarchy: the wave-function node structure repeats after each half-turn of the log-periodic oscillation, giving the geometric ladder E_n ∝ exp(−2πn/s0) and R_n ∝ exp(πn/s0). In s = ln(R/R0) space the problem becomes translation-invariant with period π/s0 = 3.1221 — the origin of the equal rung spacing of fig01(b).</p>
+<p>The only scale that breaks this invariance is the three-body parameter: short-range physics at distances where the zero-range idealization fails. The study models it as a hard wall at R = R0 (Dirichlet in (E3)); the outer boundary at Rmax completes the box. On the exponential grid s = ln(R/R0) with u = e^(s/2)·v the equation becomes (E4), and the symmetrization D·K·D of (E5) — D = diag(R0<sup>-1</sup>e^(−s)) — produces a real symmetric matrix whose four lowest eigenvalues are exactly the four deepest trimer energies; the ladder ratios are the reported observables.</p>
+<p><strong>Notation</strong></p>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>s0</td>
+<td>universal Efimov exponent, root of (E1); computed 1.0062378, target 1.0062458</td>
+</tr>
+<tr>
+<td>R</td>
+<td>hyperradius of the three-particle triangle</td>
+</tr>
+<tr>
+<td>R0</td>
+<td>three-body parameter: hard wall at short distance (value 1e-3)</td>
+</tr>
+<tr>
+<td>Rmax</td>
+<td>outer Dirichlet wall of the box (value 1e6)</td>
+</tr>
+<tr>
+<td>L</td>
+<td>box length in log space, L = ln(Rmax/R0) = 20.723266</td>
+</tr>
+<tr>
+<td>s</td>
+<td>logarithmic hyperradius, s = ln(R/R0) ∈ [0, L]</td>
+</tr>
+<tr>
+<td>u(R), v(s)</td>
+<td>hyperradial wave function and its log-grid image (u = e^(s/2)·v)</td>
+</tr>
+<tr>
+<td>E_n</td>
+<td>n-th trimer energy (units of 1/R0<sup>2</sup>); E0 = −4476.18 … E3 = −3.27·10<sup>-5</sup></td>
+</tr>
+<tr>
+<td>Δs = π/s0</td>
+<td>ladder spacing in log space = 3.1221</td>
+</tr>
+<tr>
+<td>a_*</td>
+<td>scattering length at which the n-th trimer appears; a_* ladder factor exp(π/s0)</td>
+</tr>
+<tr>
+<td>ħ<sup>2</sup>/m</td>
+<td>unit-setting quantum combination, set to 1</td>
+</tr>
+</tbody>
+</table>
+<p><strong>(E1)</strong> Universal quantization condition: the transcendental root solved by brentq on [0.5, 3.0].</p>
+<p>$$s_0\,\cosh\!\left(\tfrac{\pi s_0}{2}\right) = \tfrac{8}{\sqrt{3}}\,\sinh\!\left(\tfrac{\pi s_0}{6}\right), \qquad s_0 = 1.0062458$$</p>
+<p><strong>(E2)</strong> Geometric ladders of scattering lengths (where trimers cross) and trimer energies.</p>
+<p>$$\frac{a_*^{(n+1)}}{a_*^{(n)}} = e^{\pi/s_0} = 22.694383, \qquad \frac{E_n}{E_{n+1}} = e^{2\pi/s_0} = 515.035001$$</p>
+<p><strong>(E3)</strong> Hyperradial adiabatic equation (zero-range, unitary limit) with Dirichlet walls.</p>
+<p>$$-\frac{d^2 u}{dR^2} - \frac{s_0^2 - 1/4}{R^2}\,u = E\,u, \qquad u(R_0) = u(R_{max}) = 0$$</p>
+<p><strong>(E4)</strong> Exponential grid transform; L = ln(Rmax/R0) = 20.723266.</p>
+<p>$$R = R_0\,e^{s}, \quad u = e^{s/2}\,v \;\Rightarrow\; \left(-\frac{d^2}{ds^2} - s_0^2\right) v = E\,R_0^2 e^{2s} v, \quad s \in [0,\, L]$$</p>
+<p><strong>(E5)</strong> Symmetric FD eigenproblem actually diagonalized (numpy eigvalsh); its eigenvalues are the trimer energies.</p>
+<p>$$D\,K\,D\,u = E\,u, \quad D = \mathrm{diag}\!\left(R_0^{-1} e^{-s_j}\right), \quad K_{jj} = \tfrac{2}{\Delta s^2} - s_0^2, \;\; K_{j\,j\pm 1} = -\tfrac{1}{\Delta s^2}$$</p>
+<h2>4. Connection to the TRIVORTEX framework</h2>
+<p>The mapping to the TRIVORTEX vortex framework is structural, not decorative. The hyperradial −1/R<sup>2</sup> attraction binds a three-body system without any intrinsic length, exactly as the scale-invariant binding of Theorem 3.1 holds the vortex triangle together; the universal exponent s0 plays the role of the circulation ratios Γ — the dimensionless constant that survives every rescaling; and the geometric Efimov ladder e^(2π/s0) = 515.035 is the quantum sibling of the radial modulation ω = (2π/T)·e^(C_Ch/π) of the vortex model — both are exponential hierarchies born from scale invariance rather than from any microscopic parameter. Even the role of the non-universal residue matches: the three-body parameter R0 shifts the absolute scale of the comb (the verified R0<sup>-2</sup> law) while the ratios stay pinned, just as the free circulation scale of the vortex model sets absolute frequencies but not the geometry of the choreography.</p>
+<table>
+<thead>
+<tr>
+<th>Quantity in this study</th>
+<th>TRIVORTEX analog</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Three identical bosons at unitarity</td>
+<td>three bodies with resonant effective forces</td>
+<td>the quantum three-body problem</td>
+</tr>
+<tr>
+<td>Hyperradial −1/R<sup>2</sup> attraction</td>
+<td>scale-invariant binding of Theorem 3.1</td>
+<td>both bind without any intrinsic length</td>
+</tr>
+<tr>
+<td>Geometric 515× energy ladder</td>
+<td>radial modulation ω = (2π/T)·e^(C_Ch/π)</td>
+<td>exponential structure from scale invariance</td>
+</tr>
+<tr>
+<td>Universal exponent s0</td>
+<td>circulation ratios Γ of the vortex model</td>
+<td>dimensionless universal constants</td>
+</tr>
+<tr>
+<td>Three-body parameter R0</td>
+<td>the free length scale of the vortex model</td>
+<td>shifts absolute values, ratios stay invariant</td>
+</tr>
+</tbody>
+</table>
+<h2>5. Numerical method</h2>
+<p>The universal exponent is computed as the root of f(s) = s·cosh(πs/2) − (8/√3)·sinh(πs/6) by scipy.optimize.brentq on the bracket [0.5, 3.0] with xtol = 1e-13 and rtol = 8.9·10<sup>-16</sup> — machine-limited. The same root feeds both universal factors, exp(π/s0) = 22.694383 (lengths) and exp(2π/s0) = 515.035001 (energies), which serve as the acceptance targets of the numerical layer.</p>
+<p>The hyperradial spectrum is solved on the exponential grid s ∈ [0, L], L = ln(Rmax/R0) = 20.7233, with n = 900 uniform points (Δs = 0.023051). The tridiagonal kinetic operator K of (E5) carries the constant shift −s0<sup>2</sup>; the symmetrization A = D·K·D with D = diag(R0<sup>-1</sup>e^(−s)) yields a real symmetric 900 × 900 matrix, diagonalized by numpy.linalg.eigvalsh, whose four lowest eigenvalues are the four deepest trimer energies. Negative eigenvalues are retained; the ladder ratios |En/En+1| are the reported observables.</p>
+<p>Three sweeps interrogate the robustness of the ladder, reusing the same solver: the box-length sweep (L = 4 … 20.723 at fixed grid spacing) probes the capacity of the box; the grid sweep (n = 150 … 2200) probes discretization convergence; and the three-body-parameter sweep (R0 over three decades, seven points, fixed box shape) probes the role of the short-distance wall. Every check stores its value, target, tolerance, unit and pass flag in the JSON protocol, and the --figures mode appends the scheme, the four 300-DPI panels and all sweep data to the same machine-readable record.</p>
+<h2>6. Results and analysis</h2>
+<h3>fig01 efimov landscape</h3>
+<p><img alt="Model landscape: (a) the hyperradial adiabatic potential |V(R)| = (s0&lt;sup&gt;2&lt;/sup&gt; − ¼)/R&lt;sup&gt;2&lt;/sup&gt; on log–log axes with the hard wall R0 (the three-body parameter) and the scaling hyperradii of the four computed trimers; (b) the same ladder in s = ln(R/R0) space." src="../figures/fig01_efimov_landscape.png" /></p>
+<p><em>Model landscape: (a) the hyperradial adiabatic potential |V(R)| = (s0<sup>2</sup> − ¼)/R<sup>2</sup> on log–log axes with the hard wall R0 (the three-body parameter) and the scaling hyperradii of the four computed trimers; (b) the same ladder in s = ln(R/R0) space.</em>
+The four trimers sit at scaling hyperradii 13.0518, 296.339, 6724.76 and 152604 R0 — successive rungs spaced by the universal exp(π/s0) = 22.694 (a total size span of 1.2·10<sup>4</sup>); in panel (b) the rungs are equally spaced by Δs = π/s0 = 3.1221, the log-periodicity that generates the 515× energy ladder.</p>
+<h3>fig02 universal numbers</h3>
+<p><img alt="Headline result: (a) the transcendental quantization function f(s) = s·cosh(πs/2) − (8/√3)·sinh(πs/6) with its root s0; (b) the measured ladder ratios against the universal exp(2π/s0) = 515.035 (dashed line; acceptance band 35%)." src="../figures/fig02_universal_numbers.png" /></p>
+<p><em>Headline result: (a) the transcendental quantization function f(s) = s·cosh(πs/2) − (8/√3)·sinh(πs/6) with its root s0; (b) the measured ladder ratios against the universal exp(2π/s0) = 515.035 (dashed line; acceptance band 35%).</em>
+brentq returns s0 = 1.0062378 against the target 1.0062458 (tolerance 1e-5); the measured ratios |E0/E1| = 515.509 (+0.09%), |E1/E2| = 514.964 (−0.01%) and |E2/E3| = 514.963 (−0.01%) hug the dashed universal line — three orders of magnitude inside the ±35% acceptance band.</p>
+<h3>fig03 ladder stability</h3>
+<p><img alt="Stability of the computed ladder: (a) box-length sweep at fixed grid spacing; (b) grid refinement at the preset box." src="../figures/fig03_ladder_stability.png" /></p>
+<p><em>Stability of the computed ladder: (a) box-length sweep at fixed grid spacing; (b) grid refinement at the preset box.</em>
+Wherever two rungs fit (L ≥ 8) the ratio |E0/E1| is box-independent at 515.5089–515.5091, while the number of bound trimers grows 1 → 2 → 3 → 4 with the box capacity; under grid refinement the ratios converge monotonically from 512.96/512.41 at n = 150 to 515.57/515.02 at n = 2200, and the preset n = 900 sits within 0.1% of the universal 515.035.</p>
+<h3>fig04 scaling laws</h3>
+<p><img alt="Scaling laws: (a) the geometric energy ladder |En|·R0&lt;sup&gt;2&lt;/sup&gt; against the universal law exp(−2πn/s0); (b) the three-body parameter sweep R0 over three decades at fixed box shape." src="../figures/fig04_scaling_laws.png" /></p>
+<p><em>Scaling laws: (a) the geometric energy ladder |En|·R0<sup>2</sup> against the universal law exp(−2πn/s0); (b) the three-body parameter sweep R0 over three decades at fixed box shape.</em>
+Individual rung ratios stay within 0.1% of 515.035; across R0 ∈ [1e-5, 1e-2] the deepest energy follows the exact power law |E0| ∝ R0<sup>-2</sup> (fitted slope −2.000000) while the ladder ratio is invariant with spread 1.9·10<sup>-10</sup> — the wall shifts the absolute scale and nothing else.</p>
+<p><strong>Universal numbers.</strong> The transcendental root is s0 = 1.0062378251027817 against the literature target 1.0062458 — a deviation of 8·10<sup>-6</sup>, inside the 1e-5 acceptance tolerance. The derived factors follow: exp(π/s0) = 22.694382595366676 (target 22.7, tolerance 0.05) and exp(2π/s0) = 515.0350013848819 (target 515.03, tolerance 0.05). These three numbers are the entire nontrivial content of the Efimov effect, and they are produced here from a single bracketed root solve.</p>
+<p><strong>The ladder.</strong> The 900-point symmetrized eigenproblem yields four negative levels: −4476.182276766936, −8.683035225538072, −0.01686144228867179 and −3.27·10<sup>-5</sup> (units of 1/R0<sup>2</sup>) — an energy span of |E0|/|E3| ≈ 1.37·10<sup>8</sup>. The ladder ratios are |E0/E1| = 515.508939 (+0.092%), |E1/E2| = 514.963968 (−0.014%) and |E2/E3| = 514.962911 (−0.014%) against the universal 515.035001 — deviations of order one part in a thousand, three orders of magnitude inside the ±35% acceptance band. The corresponding scaling hyperradii run from 13.0518 to 152604 R0, a size span of 1.2·10<sup>4</sup> per three rungs.</p>
+<p><strong>Stability.</strong> The box-length sweep shows that wherever two rungs fit (L ≥ 8) the ratio |E0/E1| is pinned at 515.5089–515.5091 while the number of bound trimers grows 1 → 2 → 3 → 4 with the box capacity; at L = 4 and 6 a single trimer fits and the ratio is undefined. The grid sweep converges monotonically: 512.9606/512.4146 at n = 150 → 515.569/515.024 at n = 2200; the preset n = 900 sits at +0.09% of the universal value, and the refined continuum limit of this box at +0.10% — both honest readings of the residual wall effect.</p>
+<p><strong>Scale invariance of the wall.</strong> Across three decades of the three-body parameter (R0 = 1e-5 … 1e-2, seven points) the deepest energy follows the exact power law |E0| ∝ R0<sup>-2</sup> with fitted slope −2.000000, dropping from 4.48·10<sup>7</sup> to 44.76 in units of 1/R0<sup>2</sup>, while the ladder ratio |E0/E1| stays invariant with spread 1.9·10<sup>-10</sup>. This is the clean separation predicted by universality: the wall fixes where the comb sits, the exponent s0 fixes how far apart the teeth are.</p>
+<h3>Verification summary</h3>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Recorded value</th>
+<th>Target</th>
+<th>Tolerance</th>
+<th>Pass</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>`s0_transcendental_root`</td>
+<td>1.00624</td>
+<td>1.00625</td>
+<td>1e-05</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`efimov_length_ratio`</td>
+<td>22.6944</td>
+<td>22.7</td>
+<td>0.05</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`efimov_energy_ratio`</td>
+<td>515.035</td>
+<td>515.03</td>
+<td>0.05</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`spectrum_all_negative`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`ladder_ratio_E0_over_E1`</td>
+<td>515.509</td>
+<td>515.035</td>
+<td>1.8e+02</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`ladder_ratio_E1_over_E2`</td>
+<td>514.964</td>
+<td>515.035</td>
+<td>1.8e+02</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p><em>(status: </em><em>PASS</em><em>, mode: full)</em></p>
+<h2>7. Discussion</h2>
+<p>The model is deliberately minimal: a single adiabatic hyperradial channel, zero-range (unitary) two-body interactions, and the three-body parameter represented by the crudest possible device — a hard wall at R0. Within these assumptions the conclusions are exact statements about the governing equations rather than simulations of a specific atomic species. Real systems (caesium, potassium, helium trimers) carry finite-range corrections and a genuine short-distance three-body parameter E(3); these shift each rung along the logarithmic axis but — as the R0 sweep of fig04 demonstrates for the wall model — leave the universal ratios untouched.</p>
+<p>The numerical regime is stated honestly: only the four deepest levels are computed, and their number is box-limited (the sweep shows the trimer count growing 1 → 4 as L grows to 20.7233, which hosts about 3.3 Efimov oscillations). The measured ladder ratio at the preset grid (515.509, +0.09%) is a property of the discrete box; the grid-refined value (515.569 at n = 2200, +0.10%) is the continuum limit of this box. Both sit three orders of magnitude inside the ±35% acceptance band — a deliberate asymmetry between the strictness of the physics claim and the generosity of the gate, documented rather than hidden.</p>
+<p>Within the program, this study is the quantum sibling of TRX-06, whose classical CTMC helium lives in the same hyperradius language (Macek's adiabatic coordinate) and on the same Wannier-type three-body landscape; TRX-08 provides the opposite limit — a finite-range harmonic-plus-Coulomb trap whose spectrum is machine-precision but not universal; and TRX-02 shares the exponential signature, where tanh<sup>2</sup> amplitude laws and e^(2π/s0) ladders are both scale-invariant structures. Together with the classical vortex anchor TRX-09, the block demonstrates the thesis of the monograph: the three-body problem organizes itself around scale invariance, whether the bodies are classical vortices, atomic ions or quantum bosons.</p>
+<h2>8. Conclusions</h2>
+<ol>
+<li>The universal exponent is reproduced from a single bracketed root solve: s0 = 1.0062378 against the literature target 1.0062458 (deviation 8·10<sup>-6</sup>, tolerance 1e-5).</li>
+<li>The universal factors follow: exp(π/s0) = 22.694383 (target 22.7) for lengths and exp(2π/s0) = 515.035001 (target 515.03) for energies — both within tolerance.</li>
+<li>The numerically computed ladder of four trimers (energies −4476.18 … −3.27·10<sup>-5</sup> in 1/R0<sup>2</sup> units, sizes 13.05 … 152604 R0) gives ratios 515.509 / 514.964 / 514.963 — within ±0.1% of the universal 515.035.</li>
+<li>The ladder is box-independent wherever two rungs fit (L ≥ 8): |E0/E1| pinned at 515.5089–515.5091 while the trimer count grows 1 → 4; grid refinement converges monotonically (512.96 → 515.57 over n = 150 → 2200).</li>
+<li>The three-body parameter R0 sets the scale only: across three decades the deepest energy follows the exact R0<sup>-2</sup> power law (fitted slope −2.000000) and the ladder ratio stays invariant (spread 1.9·10<sup>-10</sup>).</li>
+<li>The mapping to TRIVORTEX holds structurally: s0 ↔ circulation ratios Γ, the Efimov ladder ↔ the radial modulation ω = (2π/T)·e^(C_Ch/π), and the −1/R<sup>2</sup> attraction ↔ the scale-invariant binding of Theorem 3.1 — the quantum chapter of the same scale-invariance story.</li>
+</ol>
+<h2>9. References</h2>
+<ol>
+<li>Efimov, V. (1970). <em>Energy levels arising from resonant two-body forces in a three-body system.</em> Phys. Lett. B 33, 563–564.</li>
+<li>Efimov, V. (1971). <em>Weakly bound states of three resonantly interacting particles.</em> Sov. J. Nucl. Phys. 12, 589–595.</li>
+<li>Faddeev, L. D. (1961). <em>Scattering theory for a three-particle system.</em> Sov. Phys. JETP 12, 1014–1019.</li>
+<li>Macek, J. H. (1968). <em>Properties of autoionizing states of He.</em> J. Phys. B 1, 831–843.</li>
+<li>Amado, R. D., Greenwood, F. C. (1977). <em>There is no Efimov effect for four or more particle systems.</em> Phys. Rev. D 15, 838–840.</li>
+<li>Braaten, E., Hammer, H.-W. (2006). <em>Universality in few-body systems with large scattering length.</em> Phys. Rep. 428, 259–390.</li>
+<li>Kraemer, T. et al. (2006). <em>Evidence for Efimov quantum states in an ultracold gas of caesium atoms.</em> Nature 440, 315–319.</li>
+<li>Zaccanti, M. et al. (2009). <em>Observation of an Efimov spectrum in an atomic system.</em> Nature Phys. 5, 586–591.</li>
+<li>Chin, C., Grimm, R., Julienne, P., Tiesinga, E. (2010). <em>Feshbach resonances in ultracold gases.</em> Rev. Mod. Phys. 82, 1225–1286.</li>
+<li>Kunitski, M. et al. (2015). <em>Three-body bound states in atomic helium trimers.</em> Science 348, 551–555.</li>
+</ol>
+<h3>BibTeX</h3>
+<p>```bibtex
+@article{efimov1970,
+  author  = {Efimov, Vitaly},
+  title   = {Energy levels arising from resonant two-body forces in a three-body system},
+  journal = {Physics Letters B},
+  year    = {1970}, volume = {33}, pages = {563--564}}
+
+@article{braaten2006,
+  author  = {Braaten, Eric and Hammer, Hans-Werner},
+  title   = {Universality in few-body systems with large scattering length},
+  journal = {Physics Reports},
+  year    = {2006}, volume = {428}, pages = {259--390}}
+
+@article{kraemer2006,
+  author  = {Kraemer, Tobias and others},
+  title   = {Evidence for Efimov quantum states in an ultracold gas of caesium atoms},
+  journal = {Nature},
+  year    = {2006}, volume = {440}, pages = {315--319}}
+
+@article{chin2010,
+  author  = {Chin, Cheng and Grimm, Rudolf and Julienne, Paul and Tiesinga, Eite},
+  title   = {Feshbach resonances in ultracold gases},
+  journal = {Reviews of Modern Physics},
+  year    = {2010}, volume = {82}, pages = {1225--1286}}
+```</p>
+<h2>Appendix A. Parameter table</h2>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Value</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>s0</td>
+<td>1.0062378 (target 1.0062458, tol 1e-5)</td>
+<td>universal exponent; strength of the hyperradial channel</td>
+</tr>
+<tr>
+<td>brentq bracket</td>
+<td>[0.5, 3.0], xtol = 1e-13</td>
+<td>root isolation of the transcendental equation</td>
+</tr>
+<tr>
+<td>R0</td>
+<td>1e-3</td>
+<td>three-body parameter (hard wall, short-distance phase)</td>
+</tr>
+<tr>
+<td>Rmax</td>
+<td>1e6</td>
+<td>outer Dirichlet wall</td>
+</tr>
+<tr>
+<td>L</td>
+<td>20.723266</td>
+<td>box length in s = ln(R/R0); ≈ 3.3 Efimov oscillations</td>
+</tr>
+<tr>
+<td>n_grid</td>
+<td>900</td>
+<td>uniform FD grid points in s</td>
+</tr>
+<tr>
+<td>Δs</td>
+<td>0.023051</td>
+<td>grid spacing in log space</td>
+</tr>
+<tr>
+<td>levels</td>
+<td>4</td>
+<td>deepest trimers computed (negative eigenvalues)</td>
+</tr>
+<tr>
+<td>exp(π/s0)</td>
+<td>22.694383</td>
+<td>universal size factor per rung</td>
+</tr>
+<tr>
+<td>exp(2π/s0)</td>
+<td>515.035001</td>
+<td>universal energy factor per rung; ladder acceptance band ±35%</td>
+</tr>
+</tbody>
+</table>
+<h2>Appendix B. Reproduction</h2>
+<p>```bash
+python3 research/TRX-07-efimov/code/trx07_efimov.py --smoke     # < 20 s
+python3 research/TRX-07-efimov/code/trx07_efimov.py              # full, 5.77 s (5.771 s recorded with --figures)
+python3 research/TRX-07-efimov/code/trx07_efimov.py --figures   # + 300-DPI figures
+```</p>
+<p>Full runtime on the reference machine: 5.77 s (5.771 s recorded with --figures); smoke mode completes in under 20 seconds and is exercised by the repository CI.</p>
+<h2>Appendix C. Environment</h2>
+<p>Python ≥ 3.11, numpy ≥ 2.0, scipy ≥ 1.14, matplotlib ≥ 3.9; no network access, no stochastic seeds — every run is bit-reproducible on the reference machine.</p><div class="part-banner"><div class="pb-title">ЧАСТЬ II · Русская монография</div><div class="pb-sub">Эффект Ефимова: универсальная квантовая физика трёх тел</div></div><div lang="ru"><p><em>Исследовательская программа TRIVORTEX · v1.0.0 · Издание монографий</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Исследование / Study</td>
+<td>TRX-07</td>
+</tr>
+<tr>
+<td>Программа</td>
+<td>TRIVORTEX — задача трёх тел в вихревой модели</td>
+</tr>
+<tr>
+<td>Автор</td>
+<td>Исаев Исхак Хамзатович (ORCID 0009-0003-7299-0701)</td>
+</tr>
+<tr>
+<td>DOI</td>
+<td>10.5281/zenodo.21825394</td>
+</tr>
+<tr>
+<td>Дата</td>
+<td>2026-10-06</td>
+</tr>
+<tr>
+<td>Код</td>
+<td>`code/trx07_efimov.py`</td>
+</tr>
+<tr>
+<td>Данные</td>
+<td>`results/trx07_results.json`</td>
+</tr>
+</tbody>
+</table>
+<h2>Аннотация</h2>
+<p>Монография посвящена эффекту Ефимова: три одинаковых бозона с резонансным парным взаимодействием образуют бесконечную ридберговскую серию связанных трёхчастичных состояний, хотя парный потенциал не связывает даже димер. Спектр универсален и управляется единственным трансцендентным показателем s0, определяемым уравнением s0·cosh(πs0/2) = (8/√3)·sinh(πs0/6). Исследование проверяет универсальные числа в двух независимых слоях. Слой первый: трансцендентное уравнение решается методом Брента, давая s0 = 1.0062378 (цель 1.0062458, допуск 1e-5), множитель длины exp(π/s0) = 22.694383 и множитель энергии exp(2π/s0) = 515.035001. Слой второй: гиперрадиальный адиабатический потенциал −(s0<sup>2</sup> − ¼)/R<sup>2</sup> дискретизируется на экспоненциальной сетке (900 точек на длине L = 20.7233), и четыре вычисленных тримера — энергии от −4476.18 до −3.27·10<sup>-5</sup>, размеры от 13.05 до 152604 R0 — образуют геометрическую лестницу с |E0/E1| = 515.509 (+0.09%), |E1/E2| = 514.964 (−0.01%) и |E2/E3| = 514.963 (−0.01%) против универсального 515.035. Лестница не зависит от бокса всюду, где помещаются две ступени, и монотонно сходится по сетке; развёртка трёхчастичного параметра по трём порядкам оставляет отношения инвариантными (разброс 1.9·10<sup>-10</sup>), а абсолютные энергии следуют точному закону R0<sup>-2</sup> (наклон −2.000000). Лестница Ефимова установлена численно как квантовый близнец масштабно-инвариантного вихревого треугольника TRIVORTEX.</p>
+<h2>Содержание</h2>
+<p><strong>Краткие сведения</strong></p>
+<table>
+<thead>
+<tr>
+<th>Аспект</th>
+<th>Значение</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Блок</td>
+<td>Квантовые три тела — исследование 07 из 12</td>
+</tr>
+<tr>
+<td>Модель</td>
+<td>три одинаковых бозона в пределе унитарности на гиперрадиальном притяжении −(s0<sup>2</sup> − ¼)/R<sup>2</sup></td>
+</tr>
+<tr>
+<td>Ключевой инвариант</td>
+<td>универсальный показатель s0 = 1.0062378 (лестничные отношения — точные инварианты)</td>
+</tr>
+<tr>
+<td>Главный результат</td>
+<td>измеренная лестница: отношение E0/E1 = 515.509 против универсального e^(2π/s0) = 515.035 (+0.09%)</td>
+</tr>
+<tr>
+<td>Верификация</td>
+<td>6/6 проверок PASS (полный режим)</td>
+</tr>
+<tr>
+<td>Время выполнения</td>
+<td>5.77 с полный (с --figures) · &lt; 20 с smoke</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>Аннотация</li>
+<li>
+<ol>
+<li>Введение и исторический контекст</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>Физическая формулировка</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>Математическая модель</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li>Связь с фреймворком TRIVORTEX</li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li>Численный метод</li>
+</ol>
+</li>
+<li>
+<ol start="6">
+<li>Результаты и анализ</li>
+</ol>
+</li>
+<li>
+<ol start="7">
+<li>Обсуждение</li>
+</ol>
+</li>
+<li>
+<ol start="8">
+<li>Выводы</li>
+</ol>
+</li>
+<li>
+<ol start="9">
+<li>Список литературы
+Приложение A. Таблица параметров
+Приложение B. Воспроизведение</li>
+</ol>
+</li>
+</ol>
+<h2>1. Введение и исторический контекст</h2>
+<p>Предсказание принадлежит Виталию Ефимову (1970), работавшему тогда в Институте ядерной физики им. Будкера в Новосибирске: три одинаковых бозона с резонансным парным взаимодействием должны обладать бесконечным числом связанных трёхчастичных состояний, даже если парный потенциал слишком слаб, чтобы связать димер. Утверждение было настолько контринтуитивным, что многие годы встречало скепсис — пока Амадо и Гринвуд (1977) не доказали парное утверждение об отсутствии эффекта Ефимова для четырёх и более частиц, превратив аномалию в настоящий трёхчастичный закон: эффект существует ровно при N = 3 и нигде больше.</p>
+<p>Теория встала на твёрдую почву благодаря уравнениям Фаддеева (1961), разбивающим волновую функцию трёх тел на парные амплитуды, и нуль-радиальной (унитарной) идеализации, в которой весь ответ сворачивается к единственному трансцендентному показателю s0. Мачек (1968) как раз ввёл адиабатический гиперрадиус для атома гелия, и та же коллективная координата управляет задачей Ефимова: эффективное гиперрадиальное притяжение −(s0<sup>2</sup> − ¼)/R<sup>2</sup> не имеет собственного масштаба длины, поэтому спектр обязан быть геометрическим, с лог-периодичностью Δs = π/s0 по гиперрадиусу. Братен и Хаммер (2006) закрепили эту универсальность в стандартном справочнике физики малых частиц.</p>
+<p>Экспериментальная эра открылась лазерно-охлаждёнными атомами. Крамер и др. (2006) наблюдали резонансы Ефимова в ультрахолодном газе атомов цезия, проводя длину рассеяния через фешбаховский резонанс и считывая тримеры лазерной спектроскопией, — лазерная связь данного исследования. Закканти и др. (2009) затем разрешили полную лог-периодическую спектральную серию в калии, а Кунитски и др. (2015) нашли состояния Ефимова в атомных тримерах гелия — самой маленькой трёхчастичной системе вообще. Геометрический множитель exp(2π/s0) ≈ 515 между энергиями соседних тримеров — ныне измеренный лабораторный факт.</p>
+<p>Для TRIVORTEX значимость структурна. Гиперрадиальное притяжение −1/R<sup>2</sup> связывает без какой-либо собственной длины — в точности масштабно-свободное связывание вихревого треугольника в теореме 3.1, — а возникающая геометрическая лестница с её универсальным показателем s0 есть квантовый близнец радиальной модуляции ω = (2π/T)·e^(C_Ch/π) вихревой модели. Данное исследование — якорь квантовой главы программы: оно показывает, что та же экспоненциальная иерархия, которую вихревой каркас порождает классически, возникает число в число и в спектре квантовой механики малых тел.</p>
+<h2>2. Физическая формулировка</h2>
+<p>Система — три одинаковых бозона в унитарном пределе: s-волновая длина рассеяния a доведена до бесконечности (a → ∞), поэтому двухчастичная подсистема не связывает димер, но рассеивает с максимальным сечением. Естественная коллективная координата — гиперрадиус R, размер треугольника, образуемого тремя частицами; в нуль-радиальном пределе адиабатическое (борн-оппенгеймеровское) разделение быстрого гиперуглового движения оставляет один эффективный канал: гиперрадиальное притяжение −(s0<sup>2</sup> − ¼)/R<sup>2</sup>, сила которого s0<sup>2</sup> − ¼ ≈ 0.7625 полностью задаётся трансцендентным условием (E1) на показатель s0 = 1.0062378.</p>
+<p>Притяжение −1/R<sup>2</sup> маргинально: оно не несёт собственного масштаба длины, поэтому любое связанное состояние строит масштаб из граничных условий. Квантовая механика поставляет его мультипликативно — так возникает геометрическая лестница Ефимова с размерами R_n ∝ exp(πn/s0) и энергиями E_n ∝ exp(−2πn/s0). Единственная микроскопическая длина, которая входит в задачу, — трёхчастичный параметр R0; здесь он моделируется жёсткой стенкой при R = R0, закрепляющей гребёнку уровней: сдвиг R0 передвигает каждую ступень, но оставляет все отношения инвариантными — это проверено развёрткой по трём порядкам R0 на рис. 04.</p>
+<table>
+<thead>
+<tr>
+<th>Параметр</th>
+<th>Значение</th>
+<th>Смысл</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Универсальный показатель s0</td>
+<td>1.0062378 (цель 1.0062458, допуск 1e-5)</td>
+<td>трансцендентный корень (E1)</td>
+</tr>
+<tr>
+<td>Универсальный множитель длины</td>
+<td>exp(π/s0) = 22.694383</td>
+<td>рост размера тримера за ступень</td>
+</tr>
+<tr>
+<td>Универсальный множитель энергии</td>
+<td>exp(2π/s0) = 515.035001</td>
+<td>падение энергии тримера за ступень</td>
+</tr>
+<tr>
+<td>Трёхчастичный параметр R0</td>
+<td>1e-3</td>
+<td>жёсткая стенка в R (фаза коротких расстояний)</td>
+</tr>
+<tr>
+<td>Внешняя стенка Rmax</td>
+<td>1e6</td>
+<td>бокс вмещает L = ln(Rmax/R0) = 20.723266 ≈ 3.3 осцилляции Ефимова</td>
+</tr>
+<tr>
+<td>Конечно-разностная сетка</td>
+<td>900 точек, Δs = 0.023051</td>
+<td>равномерная по s = ln(R/R0)</td>
+</tr>
+<tr>
+<td>Вычисляемые уровни</td>
+<td>4 глубочайших тримера</td>
+<td>энергии −4476.18 … −3.27·10<sup>-5</sup> (единицы 1/R0<sup>2</sup>)</td>
+</tr>
+</tbody>
+</table>
+<h2>3. Математическая модель</h2>
+<p>В унитарном пределе нуль-радиальные уравнения Фаддеева в гиперсферических координатах сводятся к задаче на собственные значения гиперугловой части волновой функции. Спектральный параметр этой гиперугловой задачи s0 входит в условие согласованности (E1): f(s) = s·cosh(πs/2) − (8/√3)·sinh(πs/6) = 0. Его положительный корень s0 = 1.0062458 (литературное значение; корень brentq данного исследования — 1.0062378) фиксирует силу эффективного гиперрадиального канала s0<sup>2</sup> − ¼ ≈ 0.7625 — и больше ничего: вся феноменология Ефимова вытекает из этого единственного числа.</p>
+<p>При замороженной угловой части в притягивающем канале гиперрадиальное уравнение (E3) масштабно-инвариантно: при R → λR кинетический и потенциальный члены перемасштабируются одинаково, поэтому из любого связанного решения с энергией E возникает новое с E·λ<sup>-2</sup>. Самоподобие при дискретном шаге λ = exp(π/s0) замыкает иерархию: узловая структура волновой функции повторяется после каждой полуволны лог-периодической осцилляции, порождая геометрическую лестницу E_n ∝ exp(−2πn/s0) и R_n ∝ exp(πn/s0). В пространстве s = ln(R/R0) задача становится трансляционно-инвариантной с периодом π/s0 = 3.1221 — отсюда равный шаг ступеней на рис. 01(b).</p>
+<p>Единственный масштаб, нарушающий эту инвариантность, — трёхчастичный параметр: короткодействующая физика на расстояниях, где нуль-радиальная идеализация отказывает. Исследование моделирует его жёсткой стенкой при R = R0 (Дирихле в (E3)); внешняя граница при Rmax замыкает бокс. На экспоненциальной сетке s = ln(R/R0) с подстановкой u = e^(s/2)·v уравнение переходит в (E4), а симметризация D·K·D из (E5) — D = diag(R0<sup>-1</sup>e^(−s)) — даёт вещественную симметричную матрицу, чьи четыре нижних собственных значения суть ровно четыре глубочайшие энергии тримеров; отчётные наблюдаемые — лестничные отношения.</p>
+<p><strong>Нотация</strong></p>
+<table>
+<thead>
+<tr>
+<th>Символ</th>
+<th>Смысл</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>s0</td>
+<td>универсальный показатель Ефимова, корень (E1); вычислен 1.0062378, цель 1.0062458</td>
+</tr>
+<tr>
+<td>R</td>
+<td>гиперрадиус треугольника трёх частиц</td>
+</tr>
+<tr>
+<td>R0</td>
+<td>трёхчастичный параметр: жёсткая стенка на малых расстояниях (значение 1e-3)</td>
+</tr>
+<tr>
+<td>Rmax</td>
+<td>внешняя стенка Дирихле бокса (значение 1e6)</td>
+</tr>
+<tr>
+<td>L</td>
+<td>длина бокса в лог-пространстве, L = ln(Rmax/R0) = 20.723266</td>
+</tr>
+<tr>
+<td>s</td>
+<td>логарифмический гиперрадиус, s = ln(R/R0) ∈ [0, L]</td>
+</tr>
+<tr>
+<td>u(R), v(s)</td>
+<td>гиперрадиальная волновая функция и её образ на лог-сетке (u = e^(s/2)·v)</td>
+</tr>
+<tr>
+<td>E_n</td>
+<td>n-я энергия тримера (единицы 1/R0<sup>2</sup>); E0 = −4476.18 … E3 = −3.27·10<sup>-5</sup></td>
+</tr>
+<tr>
+<td>Δs = π/s0</td>
+<td>шаг лестницы в лог-пространстве = 3.1221</td>
+</tr>
+<tr>
+<td>a_*</td>
+<td>длина рассеяния, при которой появляется n-й тример; множитель лестницы exp(π/s0)</td>
+</tr>
+<tr>
+<td>ħ<sup>2</sup>/m</td>
+<td>квантовая комбинация, задающая единицы, положена равной 1</td>
+</tr>
+</tbody>
+</table>
+<p><strong>(E1)</strong> Универсальное условие квантования: трансцендентный корень, найденный brentq на [0.5, 3.0].</p>
+<p>$$s_0\,\cosh\!\left(\tfrac{\pi s_0}{2}\right) = \tfrac{8}{\sqrt{3}}\,\sinh\!\left(\tfrac{\pi s_0}{6}\right), \qquad s_0 = 1.0062458$$</p>
+<p><strong>(E2)</strong> Геометрические лестницы длин рассеяния (точек появления тримеров) и энергий тримеров.</p>
+<p>$$\frac{a_*^{(n+1)}}{a_*^{(n)}} = e^{\pi/s_0} = 22.694383, \qquad \frac{E_n}{E_{n+1}} = e^{2\pi/s_0} = 515.035001$$</p>
+<p><strong>(E3)</strong> Гиперрадиальное адиабатическое уравнение (нуль-радиальный предел, унитарность) со стенками Дирихле.</p>
+<p>$$-\frac{d^2 u}{dR^2} - \frac{s_0^2 - 1/4}{R^2}\,u = E\,u, \qquad u(R_0) = u(R_{max}) = 0$$</p>
+<p><strong>(E4)</strong> Переход к экспоненциальной сетке; L = ln(Rmax/R0) = 20.723266.</p>
+<p>$$R = R_0\,e^{s}, \quad u = e^{s/2}\,v \;\Rightarrow\; \left(-\frac{d^2}{ds^2} - s_0^2\right) v = E\,R_0^2 e^{2s} v, \quad s \in [0,\, L]$$</p>
+<p><strong>(E5)</strong> Симметричная конечно-разностная задача, фактически диагонализуемая (numpy eigvalsh); её собственные значения — энергии тримеров.</p>
+<p>$$D\,K\,D\,u = E\,u, \quad D = \mathrm{diag}\!\left(R_0^{-1} e^{-s_j}\right), \quad K_{jj} = \tfrac{2}{\Delta s^2} - s_0^2, \;\; K_{j\,j\pm 1} = -\tfrac{1}{\Delta s^2}$$</p>
+<h2>4. Связь с фреймворком TRIVORTEX</h2>
+<p>Соответствие вихревому каркасу TRIVORTEX структурно, а не декоративно. Гиперрадиальное притяжение −1/R<sup>2</sup> связывает трёхчастичную систему без какой-либо собственной длины — в точности как масштабно-инвариантное связывание теоремы 3.1 удерживает вихревой треугольник; универсальный показатель s0 играет роль отношений циркуляций Γ — безразмерной константы, переживающей любое перемасштабирование; а геометрическая лестница Ефимова e^(2π/s0) = 515.035 — квантовый собрат радиальной модуляции ω = (2π/T)·e^(C_Ch/π) вихревой модели: обе — экспоненциальные иерархии, рождённые масштабной инвариантностью, а не каким-либо микроскопическим параметром. Даже роль неуниверсального остатка совпадает: трёхчастичный параметр R0 сдвигает абсолютную шкалу гребёнки (проверенный закон R0<sup>-2</sup>), оставляя отношения закреплёнными, — как и свободный масштаб циркуляции вихревой модели задаёт абсолютные частоты, но не геометрию хореографии.</p>
+<table>
+<thead>
+<tr>
+<th>Величина исследования</th>
+<th>Аналог в TRIVORTEX</th>
+<th>Комментарий</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Три одинаковых бозона в пределе унитарности</td>
+<td>три тела с резонансными эффективными силами</td>
+<td>квантовая задача трёх тел</td>
+</tr>
+<tr>
+<td>Гиперрадиальное притяжение −1/R<sup>2</sup></td>
+<td>масштабно-инвариантное связывание теоремы 3.1</td>
+<td>оба связывают без собственной длины</td>
+</tr>
+<tr>
+<td>Геометрическая энергетическая лестница 515×</td>
+<td>радиальная модуляция ω = (2π/T)·e^(C_Ch/π)</td>
+<td>экспоненциальная структура из масштабной инвариантности</td>
+</tr>
+<tr>
+<td>Универсальный показатель s0</td>
+<td>отношения циркуляций Γ вихревой модели</td>
+<td>безразмерные универсальные константы</td>
+</tr>
+<tr>
+<td>Трёхчастичный параметр R0</td>
+<td>свободный масштаб длины вихревой модели</td>
+<td>сдвигает абсолютные значения, отношения инвариантны</td>
+</tr>
+</tbody>
+</table>
+<h2>5. Численный метод</h2>
+<p>Универсальный показатель вычисляется как корень f(s) = s·cosh(πs/2) − (8/√3)·sinh(πs/6) методом scipy.optimize.brentq на скобке [0.5, 3.0] с xtol = 1e-13 и rtol = 8.9·10<sup>-16</sup> — предел машинной точности. Тот же корень питает оба универсальных множителя, exp(π/s0) = 22.694383 (длины) и exp(2π/s0) = 515.035001 (энергии), служащие целями допуска численного слоя.</p>
+<p>Гиперрадиальный спектр решается на экспоненциальной сетке s ∈ [0, L], L = ln(Rmax/R0) = 20.7233, с n = 900 равномерных точек (Δs = 0.023051). Трёхдиагональный кинетический оператор K из (E5) несёт постоянный сдвиг −s0<sup>2</sup>; симметризация A = D·K·D с D = diag(R0<sup>-1</sup>e^(−s)) даёт вещественную симметричную матрицу 900 × 900, диагонализуемую numpy.linalg.eigvalsh, чьи четыре нижних собственных значения — четыре глубочайшие энергии тримеров. Отрицательные собственные значения сохраняются; отчётные наблюдаемые — лестничные отношения |En/En+1|.</p>
+<p>Три развёртки допрашивают устойчивость лестницы на том же решателе: развёртка по длине бокса (L = 4 … 20.723 при фиксированном шаге сетки) зондирует ёмкость бокса; сеточная развёртка (n = 150 … 2200) — сходимость по дискретизации; развёртка трёхчастичного параметра (R0 по трём порядкам, семь точек, фиксированная форма бокса) — роль стенки коротких расстояний. Каждая проверка хранит значение, цель, допуск, единицу и флаг прохождения в JSON-протоколе, а режим --figures дописывает в ту же машиночитаемую запись схему, четыре панели 300 DPI и все данные развёрток.</p>
+<h2>6. Результаты и анализ</h2>
+<h3>fig01 efimov landscape</h3>
+<p><img alt="Ландшафт модели: (a) гиперрадиальный адиабатический потенциал |V(R)| = (s0&lt;sup&gt;2&lt;/sup&gt; − ¼)/R&lt;sup&gt;2&lt;/sup&gt; в лог-лог осях с жёсткой стенкой R0 (трёхчастичный параметр) и масштабными гиперрадиусами четырёх вычисленных тримеров; (b) та же лестница в пространстве s = ln(R/R0)." src="../figures/fig01_efimov_landscape.png" /></p>
+<p><em>Ландшафт модели: (a) гиперрадиальный адиабатический потенциал |V(R)| = (s0<sup>2</sup> − ¼)/R<sup>2</sup> в лог-лог осях с жёсткой стенкой R0 (трёхчастичный параметр) и масштабными гиперрадиусами четырёх вычисленных тримеров; (b) та же лестница в пространстве s = ln(R/R0).</em>
+Четыре тримера сидят на масштабных гиперрадиусах 13.0518, 296.339, 6724.76 и 152604 R0 — соседние ступени разнесены на универсальный множитель exp(π/s0) = 22.694 (полный размах размеров 1.2·10<sup>4</sup>); на панели (b) ступени равноотстоящи с шагом Δs = π/s0 = 3.1221 — это лог-периодичность, порождающая энергетическую лестницу 515×.</p>
+<h3>fig02 universal numbers</h3>
+<p><img alt="Главный результат: (a) трансцендентная функция квантования f(s) = s·cosh(πs/2) − (8/√3)·sinh(πs/6) с её корнем s0; (b) измеренные лестничные отношения против универсального exp(2π/s0) = 515.035 (пунктир; полоса допуска 35%)." src="../figures/fig02_universal_numbers.png" /></p>
+<p><em>Главный результат: (a) трансцендентная функция квантования f(s) = s·cosh(πs/2) − (8/√3)·sinh(πs/6) с её корнем s0; (b) измеренные лестничные отношения против универсального exp(2π/s0) = 515.035 (пунктир; полоса допуска 35%).</em>
+brentq возвращает s0 = 1.0062378 против цели 1.0062458 (допуск 1e-5); измеренные отношения |E0/E1| = 515.509 (+0.09%), |E1/E2| = 514.964 (−0.01%) и |E2/E3| = 514.963 (−0.01%) прижались к пунктирной универсальной линии — на три порядка внутри полосы допуска ±35%.</p>
+<h3>fig03 ladder stability</h3>
+<p><img alt="Устойчивость вычисленной лестницы: (a) развёртка по длине бокса при фиксированном шаге сетки; (b) сгущение сетки в пресетном боксе." src="../figures/fig03_ladder_stability.png" /></p>
+<p><em>Устойчивость вычисленной лестницы: (a) развёртка по длине бокса при фиксированном шаге сетки; (b) сгущение сетки в пресетном боксе.</em>
+Всюду, где помещаются две ступени (L ≥ 8), отношение |E0/E1| не зависит от бокса: 515.5089–515.5091, а число связанных тримеров растёт 1 → 2 → 3 → 4 вместе с ёмкостью бокса; при сгущении сетки отношения монотонно сходятся от 512.96/512.41 при n = 150 к 515.57/515.02 при n = 2200, а пресетные n = 900 сидят в пределах 0.1% от универсального 515.035.</p>
+<h3>fig04 scaling laws</h3>
+<p><img alt="Законы масштабирования: (a) геометрическая энергетическая лестница |En|·R0&lt;sup&gt;2&lt;/sup&gt; против универсального закона exp(−2πn/s0); (b) развёртка трёхчастичного параметра R0 по трём порядкам при фиксированной форме бокса." src="../figures/fig04_scaling_laws.png" /></p>
+<p><em>Законы масштабирования: (a) геометрическая энергетическая лестница |En|·R0<sup>2</sup> против универсального закона exp(−2πn/s0); (b) развёртка трёхчастичного параметра R0 по трём порядкам при фиксированной форме бокса.</em>
+Отношения отдельных ступеней удерживаются в пределах 0.1% от 515.035; по всему диапазону R0 ∈ [1e-5, 1e-2] глубочайшая энергия следует точному степенному закону |E0| ∝ R0<sup>-2</sup> (наклон −2.000000), а лестничное отношение инвариантно с разбросом 1.9·10<sup>-10</sup> — стенка сдвигает абсолютную шкалу и больше ничего.</p>
+<p><strong>Универсальные числа.</strong> Трансцендентный корень s0 = 1.0062378251027817 против литературной цели 1.0062458 — отклонение 8·10<sup>-6</sup>, внутри допуска 1e-5. Далее следуют производные множители: exp(π/s0) = 22.694382595366676 (цель 22.7, допуск 0.05) и exp(2π/s0) = 515.0350013848819 (цель 515.03, допуск 0.05). Эти три числа — всё нетривиальное содержание эффекта Ефимова, и здесь они получены одним поиском корня в скобке.</p>
+<p><strong>Лестница.</strong> Симметризованная задача 900 точек даёт четыре отрицательных уровня: −4476.182276766936, −8.683035225538072, −0.01686144228867179 и −3.27·10<sup>-5</sup> (единицы 1/R0<sup>2</sup>) — размах энергий |E0|/|E3| ≈ 1.37·10<sup>8</sup>. Лестничные отношения: |E0/E1| = 515.508939 (+0.092%), |E1/E2| = 514.963968 (−0.014%) и |E2/E3| = 514.962911 (−0.014%) против универсального 515.035001 — отклонения порядка одной тысячной, на три порядка внутри полосы допуска ±35%. Соответствующие масштабные гиперрадиусы тянутся от 13.0518 до 152604 R0 — размах размеров 1.2·10<sup>4</sup> на три ступени.</p>
+<p><strong>Устойчивость.</strong> Развёртка по длине бокса показывает: всюду, где помещаются две ступени (L ≥ 8), отношение |E0/E1| закреплено на 515.5089–515.5091, а число связанных тримеров растёт 1 → 2 → 3 → 4 вместе с ёмкостью бокса; при L = 4 и 6 помещается один тример, и отношение не определено. Сеточная развёртка сходится монотонно: 512.9606/512.4146 при n = 150 → 515.569/515.024 при n = 2200; пресетные n = 900 дают +0.09% от универсального значения, а уточнённый континуальный предел этого бокса — +0.10%; оба числа — честные показания остаточного влияния стенки.</p>
+<p><strong>Масштабная инвариантность стенки.</strong> По трём порядкам трёхчастичного параметра (R0 = 1e-5 … 1e-2, семь точек) глубочайшая энергия следует точному степенному закону |E0| ∝ R0<sup>-2</sup> с наклоном −2.000000, падая от 4.48·10<sup>7</sup> до 44.76 в единицах 1/R0<sup>2</sup>, тогда как лестничное отношение |E0/E1| остаётся инвариантным с разбросом 1.9·10<sup>-10</sup>. Это чистое разделение, предсказанное универсальностью: стенка фиксирует, где сидит гребёнка, а показатель s0 — насколько далеко друг от друга её зубцы.</p>
+<h3>Сводка верификации</h3>
+<table>
+<thead>
+<tr>
+<th>Проверка</th>
+<th>Значение</th>
+<th>Цель</th>
+<th>Допуск</th>
+<th>Прошла</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>`s0_transcendental_root`</td>
+<td>1.00624</td>
+<td>1.00625</td>
+<td>1e-05</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`efimov_length_ratio`</td>
+<td>22.6944</td>
+<td>22.7</td>
+<td>0.05</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`efimov_energy_ratio`</td>
+<td>515.035</td>
+<td>515.03</td>
+<td>0.05</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`spectrum_all_negative`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`ladder_ratio_E0_over_E1`</td>
+<td>515.509</td>
+<td>515.035</td>
+<td>1.8e+02</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`ladder_ratio_E1_over_E2`</td>
+<td>514.964</td>
+<td>515.035</td>
+<td>1.8e+02</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p><em>(status: </em><em>PASS</em><em>, mode: full)</em></p>
+<h2>7. Обсуждение</h2>
+<p>Модель сознательно минимальна: один адиабатический гиперрадиальный канал, нуль-радиальные (унитарные) парные взаимодействия и трёхчастичный параметр, представленный простейшим устройством — жёсткой стенкой при R0. В этих допущениях выводы — точные утверждения об определяющих уравнениях, а не симуляция конкретного атомного сорта. Реальные системы (цезий, калий, тримеры гелия) несут поправки конечного радиуса и настоящий короткодействующий трёхчастичный параметр E(3); они сдвигают каждую ступень вдоль логарифмической оси, но — как показывает развёртка R0 на рис. 04 для стеночной модели — универсальные отношения не трогают.</p>
+<p>Численный режим заявлен честно: вычисляются только четыре глубочайших уровня, и их число ограничено боксом (развёртка показывает рост числа тримеров 1 → 4 по мере роста L до 20.7233, вмещающего около 3.3 осцилляций Ефимова). Измеренное лестничное отношение на пресетной сетке (515.509, +0.09%) — свойство дискретного бокса; значение с уточнённой сеткой (515.569 при n = 2200, +0.10%) — континуальный предел этого бокса. Оба сидят на три порядка внутри полосы допуска ±35% — намеренная асимметрия между строгостью физического утверждения и щедростью гейта, задокументированная, а не спрятанная.</p>
+<p>В рамках программы данное исследование — квантовый собрат TRX-06, чей классический CTMC-гелий живёт в том же языке гиперрадиуса (адиабатическая координата Мачека) и на том же ванньеровском трёхчастичном ландшафте; TRX-08 даёт противоположный предел — гармонически-кулоновскую ловушку конечного радиуса, чей спектр машинно-точен, но не универсален; TRX-02 разделяет экспоненциальную подпись, где амплитудные законы tanh<sup>2</sup> и лестницы e^(2π/s0) — структуры одной масштабной инвариантности. Вместе с классическим вихревым якорем TRX-09 блок демонстрирует тезис монографии: задача трёх тел организуется вокруг масштабной инвариантности — будь то классические вихри, атомарные ионы или квантовые бозоны.</p>
+<h2>8. Выводы</h2>
+<ol>
+<li>Универсальный показатель воспроизведён одним поиском корня в скобке: s0 = 1.0062378 против литературной цели 1.0062458 (отклонение 8·10<sup>-6</sup>, допуск 1e-5).</li>
+<li>Универсальные множители следуют далее: exp(π/s0) = 22.694383 (цель 22.7) для длин и exp(2π/s0) = 515.035001 (цель 515.03) для энергий — оба внутри допуска.</li>
+<li>Численно вычисленная лестница из четырёх тримеров (энергии −4476.18 … −3.27·10<sup>-5</sup> в единицах 1/R0<sup>2</sup>, размеры 13.05 … 152604 R0) даёт отношения 515.509 / 514.964 / 514.963 — в пределах ±0.1% от универсального 515.035.</li>
+<li>Лестница не зависит от бокса всюду, где помещаются две ступени (L ≥ 8): |E0/E1| закреплён на 515.5089–515.5091 при росте числа тримеров 1 → 4; сгущение сетки сходится монотонно (512.96 → 515.57 по n = 150 → 2200).</li>
+<li>Трёхчастичный параметр R0 задаёт только масштаб: по трём порядкам глубочайшая энергия следует точному закону R0<sup>-2</sup> (наклон −2.000000), а лестничное отношение остаётся инвариантным (разброс 1.9·10<sup>-10</sup>).</li>
+<li>Соответствие TRIVORTEX структурно: s0 ↔ отношения циркуляций Γ, лестница Ефимова ↔ радиальная модуляция ω = (2π/T)·e^(C_Ch/π), притяжение −1/R<sup>2</sup> ↔ масштабно-инвариантное связывание теоремы 3.1 — квантовая глава той же истории масштабной инвариантности.</li>
+</ol>
+<h2>9. Список литературы</h2>
+<ol>
+<li>Efimov, V. (1970). <em>Energy levels arising from resonant two-body forces in a three-body system.</em> Phys. Lett. B 33, 563–564.</li>
+<li>Efimov, V. (1971). <em>Weakly bound states of three resonantly interacting particles.</em> Sov. J. Nucl. Phys. 12, 589–595.</li>
+<li>Faddeev, L. D. (1961). <em>Scattering theory for a three-particle system.</em> Sov. Phys. JETP 12, 1014–1019.</li>
+<li>Macek, J. H. (1968). <em>Properties of autoionizing states of He.</em> J. Phys. B 1, 831–843.</li>
+<li>Amado, R. D., Greenwood, F. C. (1977). <em>There is no Efimov effect for four or more particle systems.</em> Phys. Rev. D 15, 838–840.</li>
+<li>Braaten, E., Hammer, H.-W. (2006). <em>Universality in few-body systems with large scattering length.</em> Phys. Rep. 428, 259–390.</li>
+<li>Kraemer, T. et al. (2006). <em>Evidence for Efimov quantum states in an ultracold gas of caesium atoms.</em> Nature 440, 315–319.</li>
+<li>Zaccanti, M. et al. (2009). <em>Observation of an Efimov spectrum in an atomic system.</em> Nature Phys. 5, 586–591.</li>
+<li>Chin, C., Grimm, R., Julienne, P., Tiesinga, E. (2010). <em>Feshbach resonances in ultracold gases.</em> Rev. Mod. Phys. 82, 1225–1286.</li>
+<li>Kunitski, M. et al. (2015). <em>Three-body bound states in atomic helium trimers.</em> Science 348, 551–555.</li>
+</ol>
+<h3>BibTeX</h3>
+<p>```bibtex
+@article{efimov1970,
+  author  = {Efimov, Vitaly},
+  title   = {Energy levels arising from resonant two-body forces in a three-body system},
+  journal = {Physics Letters B},
+  year    = {1970}, volume = {33}, pages = {563--564}}
+
+@article{braaten2006,
+  author  = {Braaten, Eric and Hammer, Hans-Werner},
+  title   = {Universality in few-body systems with large scattering length},
+  journal = {Physics Reports},
+  year    = {2006}, volume = {428}, pages = {259--390}}
+
+@article{kraemer2006,
+  author  = {Kraemer, Tobias and others},
+  title   = {Evidence for Efimov quantum states in an ultracold gas of caesium atoms},
+  journal = {Nature},
+  year    = {2006}, volume = {440}, pages = {315--319}}
+
+@article{chin2010,
+  author  = {Chin, Cheng and Grimm, Rudolf and Julienne, Paul and Tiesinga, Eite},
+  title   = {Feshbach resonances in ultracold gases},
+  journal = {Reviews of Modern Physics},
+  year    = {2010}, volume = {82}, pages = {1225--1286}}
+```</p>
+<h2>Приложение A. Таблица параметров</h2>
+<table>
+<thead>
+<tr>
+<th>Символ</th>
+<th>Значение</th>
+<th>Роль</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>s0</td>
+<td>1.0062378 (цель 1.0062458, допуск 1e-5)</td>
+<td>универсальный показатель; сила гиперрадиального канала</td>
+</tr>
+<tr>
+<td>скобка brentq</td>
+<td>[0.5, 3.0], xtol = 1e-13</td>
+<td>локализация корня трансцендентного уравнения</td>
+</tr>
+<tr>
+<td>R0</td>
+<td>1e-3</td>
+<td>трёхчастичный параметр (жёсткая стенка, фаза коротких расстояний)</td>
+</tr>
+<tr>
+<td>Rmax</td>
+<td>1e6</td>
+<td>внешняя стенка Дирихле</td>
+</tr>
+<tr>
+<td>L</td>
+<td>20.723266</td>
+<td>длина бокса в s = ln(R/R0); ≈ 3.3 осцилляции Ефимова</td>
+</tr>
+<tr>
+<td>n_grid</td>
+<td>900</td>
+<td>число равномерных точек конечно-разностной сетки в s</td>
+</tr>
+<tr>
+<td>Δs</td>
+<td>0.023051</td>
+<td>шаг сетки в лог-пространстве</td>
+</tr>
+<tr>
+<td>уровни</td>
+<td>4</td>
+<td>глубочайшие вычисляемые тримеры (отрицательные собственные значения)</td>
+</tr>
+<tr>
+<td>exp(π/s0)</td>
+<td>22.694383</td>
+<td>универсальный множитель размера за ступень</td>
+</tr>
+<tr>
+<td>exp(2π/s0)</td>
+<td>515.035001</td>
+<td>универсальный множитель энергии за ступень; полоса допуска лестницы ±35%</td>
+</tr>
+</tbody>
+</table>
+<h2>Приложение B. Воспроизведение</h2>
+<p>```bash
+python3 research/TRX-07-efimov/code/trx07_efimov.py --smoke     # < 20 с
+python3 research/TRX-07-efimov/code/trx07_efimov.py              # полный прогон, 5.77 s (5.771 s recorded with --figures)
+python3 research/TRX-07-efimov/code/trx07_efimov.py --figures   # + графики 300 DPI
+```</p>
+<p>Полное время выполнения на референсной машине — 5.77 s (5.771 s recorded with --figures); smoke-режим укладывается в 20 секунд и используется CI репозитория.</p>
+<h2>Приложение C. Окружение</h2>
+<p>Python ≥ 3.11, numpy ≥ 2.0, scipy ≥ 1.14, matplotlib ≥ 3.9; без доступа к сети и без стохастических зёрен — каждый прогон бит-в-бит воспроизводим на референсной машине.</p></div></div>
+<div class="ending">
+  <div class="end-title">TRIVORTEX</div>
+  <div class="end-small">The Three-Body Problem in the Vortex Model</div>
+  <div class="end-rule"></div>
+  <div class="colophon-line"><b>The Efimov Effect: Universal Quantum Three-Body Physics</b> — research monograph of the TRIVORTEX program, studying the three-body problem in the vortex model and its laser, celestial-mechanical and quantum crossings.</div><div class="colophon-line">Full verification protocol: <b>results JSON + figures + code</b> in research/TRX-07-efimov/; reproduction commands in Appendix B.</div>
+  <div class="end-small">
+    Isaev Iskhak Khamzatovich · ORCID 0009-0003-7299-0701<br>
+    DOI (concept) 10.5281/zenodo.21825393 · DOI (version) 10.5281/zenodo.21825394<br>
+    License IPL-RP-1.0 · v1.0.0 · 2026-10-07
+  </div>
+</div>
+
+</body>
+</html>

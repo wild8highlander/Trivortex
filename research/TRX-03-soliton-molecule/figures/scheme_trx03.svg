@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
+  <defs>
+    <marker id="arrN" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#0A1730"/>
+    </marker>
+    <marker id="arrG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#D4AF37"/>
+    </marker>
+  </defs>
+  <rect width="960" height="540" fill="#FFFFFF"/>
+  <text x="30" y="40" font-family="Helvetica, Arial, sans-serif" font-size="21" font-weight="bold" fill="#0A1730">TRX-03 &#8212; Scheme: three-soliton molecule in a mode-locked fiber laser</text>
+  <text x="30" y="63" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#3A4A66">Phase-locked ultrashort pulses behave as three bodies with a phase-dependent exponential pair interaction V(r, &#916;&#966;)</text>
+  <circle cx="235" cy="300" r="150" fill="none" stroke="#0A1730" stroke-width="2"/>
+  <circle cx="235" cy="300" r="128" fill="none" stroke="#0A1730" stroke-width="0.9" opacity="0.35"/>
+  <path d="M 235 138 A 162 162 0 0 1 300 150" fill="none" stroke="#0A1730" stroke-width="1.8" marker-end="url(#arrN)"/>
+  <text x="252" y="124" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0A1730">circulating mode-locked pulse train</text>
+  <text x="235" y="492" font-family="Helvetica, Arial, sans-serif" font-size="12.5" fill="#3A4A66" text-anchor="middle">mode-locked fiber laser ring &#183; passively saturated absorber</text>
+  <path d="M 175 172 C 183 156 191 156 199 172 C 191 168 183 168 175 172 Z" fill="#D4AF37" stroke="#0A1730" stroke-width="1.2"/>
+  <path d="M 353 232 C 361 216 369 216 377 232 C 369 228 361 228 353 232 Z" fill="#D4AF37" stroke="#0A1730" stroke-width="1.2"/>
+  <path d="M 292 428 C 300 412 308 412 316 428 C 308 424 300 424 292 428 Z" fill="#D4AF37" stroke="#0A1730" stroke-width="1.2"/>
+  <text x="118" y="138" font-family="Helvetica, Arial, sans-serif" font-size="12.5" font-weight="bold" fill="#0A1730">pulse 1</text>
+  <text x="118" y="154" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#3A4A66">&#916;&#966; = 0</text>
+  <text x="384" y="222" font-family="Helvetica, Arial, sans-serif" font-size="12.5" font-weight="bold" fill="#0A1730">pulse 2</text>
+  <text x="384" y="238" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#3A4A66">&#916;&#966; = 0</text>
+  <text x="322" y="452" font-family="Helvetica, Arial, sans-serif" font-size="12.5" font-weight="bold" fill="#0A1730">pulse 3</text>
+  <text x="322" y="468" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#3A4A66">&#916;&#966; = 0</text>
+  <text x="52" y="300" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0A1730">phase-locked triplet:</text>
+  <text x="52" y="317" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0A1730">an optical three-body</text>
+  <text x="52" y="334" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0A1730">choreography</text>
+  <line x1="560" y1="330" x2="930" y2="330" stroke="#0A1730" stroke-width="1.5" marker-end="url(#arrN)"/>
+  <line x1="575" y1="360" x2="575" y2="110" stroke="#0A1730" stroke-width="1.5" marker-end="url(#arrN)"/>
+  <text x="930" y="348" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0A1730" text-anchor="end">separation r [tail lengths L]</text>
+  <text x="565" y="104" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0A1730" text-anchor="end">pair energy V(r)</text>
+  <line x1="575" y1="252" x2="920" y2="252" stroke="#0A1730" stroke-width="0.9" stroke-dasharray="4 4" opacity="0.5"/>
+  <text x="920" y="246" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#3A4A66" text-anchor="end">V = 0 (free pulses)</text>
+  <path d="M 577 118 C 596 176 615 218 641 232 C 668 245 690 240 730 251 C 790 251 860 252 920 252" fill="none" stroke="#0A1730" stroke-width="2"/>
+  <path d="M 577 352 C 620 310 680 276 760 261 C 830 254 880 252.5 920 252.3" fill="none" stroke="#C44E52" stroke-width="1.8" stroke-dasharray="7 5"/>
+  <text x="930" y="292" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#C44E52" text-anchor="end">anti-phase &#916;&#966; = &#960;/2: purely repulsive</text>
+  <circle cx="641" cy="232" r="5" fill="#D4AF37" stroke="#0A1730" stroke-width="1.5"/>
+  <text x="700" y="222" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0A1730" text-anchor="middle">pair minimum r&#8320; = ln(4/3) &#8776; 0.2877</text>
+  <text x="672" y="180" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0A1730">bound well, phase-locked &#916;&#966; = 0:</text>
+  <text x="672" y="196" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#3A4A66">V = C&#8321;e&#8315;&#178;&#7511;/&#7707; &#8722; C&#8322;e&#8315;&#7511;/&#7707;cos(2&#916;&#966;)</text>
+  <path d="M 600 452 C 612 404 624 404 636 452 C 624 442 612 442 600 452 Z" fill="#D4AF37" stroke="#0A1730" stroke-width="1.6"/>
+  <path d="M 664 452 C 676 404 688 404 700 452 C 688 442 676 442 664 452 Z" fill="#D4AF37" stroke="#0A1730" stroke-width="1.6"/>
+  <path d="M 728 452 C 740 404 752 404 764 452 C 752 442 740 442 728 452 Z" fill="#D4AF37" stroke="#0A1730" stroke-width="1.6"/>
+  <line x1="637" y1="418" x2="663" y2="418" stroke="#0A1730" stroke-width="1.8" marker-end="url(#arrN)"/>
+  <line x1="663" y1="418" x2="637" y2="418" stroke="#0A1730" stroke-width="1.8" marker-end="url(#arrN)"/>
+  <text x="650" y="404" font-family="Helvetica, Arial, sans-serif" font-size="12" font-weight="bold" fill="#0A1730" text-anchor="middle">s* = 0.2019</text>
+  <line x1="701" y1="418" x2="727" y2="418" stroke="#0A1730" stroke-width="1.8" marker-end="url(#arrN)"/>
+  <line x1="727" y1="418" x2="701" y2="418" stroke="#0A1730" stroke-width="1.8" marker-end="url(#arrN)"/>
+  <text x="714" y="404" font-family="Helvetica, Arial, sans-serif" font-size="12" font-weight="bold" fill="#0A1730" text-anchor="middle">s*</text>
+  <text x="782" y="418" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0A1730">equally spaced molecule,</text>
+  <text x="782" y="434" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0A1730">balance F(s*) + F(2s*) = 0</text>
+  <text x="782" y="450" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#3A4A66">far-pair attraction compresses</text>
+  <text x="782" y="465" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#3A4A66">the spacing 30% below r&#8320;</text>
+  <rect x="600" y="84" width="326" height="64" rx="6" fill="#FFFFFF" stroke="#0A1730" stroke-width="1.4"/>
+  <text x="614" y="108" font-family="Helvetica, Arial, sans-serif" font-size="12.5" font-weight="bold" fill="#0A1730">breathing mode (Hessian)</text>
+  <text x="614" y="128" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0A1730">&#969;&#7522;/2&#960; = 0.390507, 0.468766  (preset)</text>
+  <text x="30" y="524" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6B7A94">TRIVORTEX Research Program &#183; study TRX-03 &#183; soliton molecule = optical three-body choreography</text>
+</svg>

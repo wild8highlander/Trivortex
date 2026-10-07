@@ -1,0 +1,47 @@
+# Git Attributes — Linguist overrides and binary handling
+# https://git-scm.com/docs/gitattributes
+
+# ─── Large binary files: treated as binary (-text) ───
+# NOTE: the previous LFS filter declarations (filter=lfs diff=lfs merge=lfs)
+# were removed: every binary in this repository (docx, png, gif, mp4 and now
+# pdf) is committed as a regular blob and Git LFS was never initialized.
+# A filter=... declaration without git-lfs installed actively BLOCKS
+# `git add` of the required PDF library.
+*.pdf   -text
+*.docx  -text
+*.pptx  -text
+*.xlsx  -text
+*.zip   -text
+*.tar   -text
+*.gz    -text
+
+# ─── Documentation site ───
+docs/** linguist-documentation
+
+# ─── Papers → Not primary code ───
+papers/** linguist-documentation
+
+# ─── LaTeX sources → TeX language ───
+*.tex linguist-language=TeX
+*.sty linguist-language=TeX
+*.cls linguist-language=TeX
+*.bib linguist-language=TeX
+
+# ─── Generated content → Exclude from stats ───
+src/_build/** linguist-generated
+verification/**/build/** linguist-generated
+**/__pycache__/** linguist-generated
+**/*.pyc linguist-generated
+**/*.pyo linguist-generated
+**/.docusaurus/** linguist-generated
+**/node_modules/** linguist-generated
+
+# ─── Proof assistant files ───
+*.lean linguist-language=Lean
+*.v linguist-language=Coq
+*.thy linguist-language=Isabelle
+*.agda linguist-language=Agda
+
+# ─── Line ending normalization ───
+* text=auto eol=lf
+*.bat text eol=crlf

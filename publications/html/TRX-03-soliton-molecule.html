@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TRX-03 — Three-Soliton Molecule in a Mode-Locked Fiber Laser</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400&family=PT+Sans:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof renderMathInElement === 'function') {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '\\(', right: '\\)', display: false}
+      ], throwOnError: false
+    });
+  }
+});
+</script>
+<style>
+@page { size: 210mm 297mm; margin: 0; }
+:root {
+  --navy: #0A1730; --navy2: #0E2145; --header-fill: #2A3A55;
+  --gold: #D4AF37; --gold-l: #F0D98C;
+  --text: #1F2937; --muted: #6B7280;
+  --stripe: #F2F5FA; --code-bg: #F5F7FB; --border: #DCE3EF;
+}
+html, body {
+  margin: 0; padding: 0; width: 210mm;
+  background: #FFFFFF;               /* flow pages are white; dark pages are fixed-height */
+  color: var(--text);
+  font-family: 'PT Serif', 'Noto Serif', 'Liberation Serif', 'DejaVu Serif', serif;
+  font-size: 15px; line-height: 1.62;
+  line-break: strict; word-break: normal; overflow-wrap: break-word;
+}
+@media screen {
+  html { height: auto; display: flex; justify-content: center; background: #10131a; }
+  body { transform-origin: top center; margin: 20px auto; box-shadow: 0 8px 40px rgba(0,0,0,.5); }
+}
+
+/* ── Cover ─────────────────────────────────────────────────────────────── */
+.front-page {
+  width: 210mm; height: 297mm; box-sizing: border-box;
+  break-after: page; overflow: hidden; position: relative;
+  background:
+    radial-gradient(circle 8px at 691px 125px, #D4AF37 0 7px, transparent 8px),
+    radial-gradient(circle 5px at 584px 56px, #59C2FF 0 4px, transparent 5px),
+    radial-gradient(circle 4px at 154px 950px, #FF7A9E 0 3px, transparent 4px),
+    radial-gradient(circle 210px at 87% 9%, transparent 206px, rgba(212,175,55,.30) 208px, rgba(212,175,55,.30) 210px, transparent 212px),
+    radial-gradient(circle 130px at 74% 3%, transparent 126px, rgba(89,194,255,.26) 128px, rgba(89,194,255,.26) 130px, transparent 132px),
+    radial-gradient(circle 280px at 8% 94%, transparent 276px, rgba(212,175,55,.18) 278px, rgba(212,175,55,.18) 280px, transparent 282px),
+    linear-gradient(160deg, #0E2145 0%, #0A1730 62%, #081226 100%);
+  color: #E9EEF8;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 58px;
+}
+.fp-kicker {
+  display: flex; align-items: center; gap: 14px;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.5px; letter-spacing: 3.5px; color: #F0D98C; font-weight: 700;
+}
+.fp-title {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 34px; line-height: 1.16; font-weight: 700; color: #F4F7FD;
+  margin: 26px 0 12px 0; max-width: 156mm;
+}
+.fp-subtitle-ru {
+  font-size: 18.5px; line-height: 1.4; color: #D4AF37; font-style: italic;
+  max-width: 156mm; margin-bottom: 34px;
+}
+.fp-meta {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 9px 26px;
+  max-width: 156mm;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.5px; line-height: 1.45;
+  border-top: 1px solid rgba(212,175,55,.35);
+  border-bottom: 1px solid rgba(212,175,55,.35);
+  padding: 16px 2px;
+}
+.fp-meta .k { color: #8FA3C4; letter-spacing: 1.6px; font-size: 10.5px; text-transform: uppercase; }
+.fp-meta .v { color: #E9EEF8; margin-top: 2px; }
+.fp-abstract {
+  max-width: 156mm; margin-top: 26px; font-size: 12.5px; line-height: 1.6;
+  color: #B9C6DE; font-style: italic;
+}
+.fp-foot {
+  position: absolute; left: 58px; right: 58px; bottom: 40px;
+  display: flex; justify-content: space-between; align-items: flex-end;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 11px; letter-spacing: 2px; color: #8FA3C4; text-transform: uppercase;
+}
+.fp-foot b { color: #F0D98C; font-weight: 700; }
+
+/* ── Flowing content ───────────────────────────────────────────────────── */
+.main-content { background: #FFFFFF; padding: 15mm 16mm 13mm 16mm; }
+
+h1, h2, h3, h4 {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  color: #0A1730; line-height: 1.25;
+  break-after: avoid; page-break-after: avoid;
+}
+.main-content h1 { font-size: 24px; margin: 6px 0 4px 0; }
+.main-content h2 {
+  font-size: 19.5px; margin: 26px 0 10px 0; padding-left: 12px;
+  border-left: 4px solid #D4AF37;
+}
+.main-content h3 { font-size: 16px; margin: 18px 0 8px 0; }
+.main-content h4 { font-size: 14.5px; margin: 14px 0 6px 0; color: #2A3A55; }
+p { margin: 0 0 9px 0; text-align: justify; hyphens: auto; }
+strong { color: #0A1730; }
+em { color: inherit; }
+a { color: #0E2145; text-decoration: none; border-bottom: 1px solid #D4AF37; }
+ul, ol { margin: 4px 0 10px 0; padding-left: 22px; }
+li { margin-bottom: 4px; break-inside: avoid; text-align: left; }
+
+table {
+  width: 100%; border-collapse: collapse; margin: 10px 0 14px 0;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.3px; line-height: 1.4;
+}
+thead { display: table-header-group; }
+tr { break-inside: avoid; page-break-inside: avoid; }
+th {
+  background: #2A3A55; color: #FFFFFF; text-align: left;
+  padding: 6px 9px; font-weight: 700; border: none;
+}
+td { padding: 5px 9px; border-bottom: 1px solid #DCE3EF; vertical-align: top; }
+tbody tr:nth-child(odd) td { background: #F2F5FA; }
+table, .table-wrap { break-inside: auto; }
+thead + tbody tr:first-child { break-before: avoid; }
+
+pre {
+  background: #F5F7FB; border: 1px solid #DCE3EF; border-left: 3px solid #D4AF37;
+  padding: 10px 13px; margin: 10px 0 14px 0; border-radius: 4px;
+  font-family: 'JetBrains Mono', 'DejaVu Sans Mono', 'Liberation Mono', monospace;
+  font-size: 11.6px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: break-word;
+  break-inside: avoid; page-break-inside: avoid;
+}
+code {
+  font-family: 'JetBrains Mono', 'DejaVu Sans Mono', 'Liberation Mono', monospace;
+  font-size: 12.6px; background: #F5F7FB; padding: 1px 4px; border-radius: 3px;
+}
+pre code { background: transparent; padding: 0; font-size: 11.6px; }
+
+blockquote {
+  margin: 10px 0 12px 0; padding: 8px 14px; border-left: 3px solid #D4AF37;
+  background: #F5F7FB; color: #0E2145; font-style: italic;
+  break-inside: avoid;
+}
+hr { border: none; border-top: 1px solid #DCE3EF; margin: 16px 0; }
+
+/* equations */
+.katex-display { margin: 12px 0 14px 0; max-width: 100%; overflow: hidden auto; }
+.eq-block { break-inside: avoid; page-break-inside: avoid; }
+
+/* language part banners */
+.part-banner {
+  break-inside: avoid; break-after: avoid;
+  margin: 26px 0 14px 0; padding: 13px 18px;
+  background: #0E2145; color: #F0D98C; border-radius: 6px;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+}
+.part-banner .pb-title { font-size: 16.5px; font-weight: 700; letter-spacing: 1.2px; }
+.part-banner .pb-sub { font-size: 11.5px; color: #8FA3C4; margin-top: 3px; letter-spacing: .4px; }
+
+/* colophon */
+.ending {
+  width: 210mm; height: 297mm; box-sizing: border-box;
+  break-before: page; overflow: hidden; position: relative;
+  background: linear-gradient(200deg, #0E2145 0%, #0A1730 60%, #081226 100%);
+  color: #E9EEF8;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 58px;
+}
+.ending .colophon-line { max-width: 150mm; font-size: 13.5px; line-height: 1.7; color: #B9C6DE; }
+.ending .colophon-line b { color: #F0D98C; }
+.ending .end-rule { width: 64px; height: 26px; margin: 10px 0 8px 0;
+  background: linear-gradient(90deg, #D4AF37 0 64px, transparent 64px) top/100% 6px no-repeat; }
+.ending .end-title {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 26px; font-weight: 700; color: #F4F7FD; letter-spacing: 1px;
+}
+.ending .end-small {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 11.5px; color: #8FA3C4; letter-spacing: 2px; text-transform: uppercase;
+  margin-top: 26px; line-height: 2;
+}
+</style>
+</head>
+<body>
+
+<div class="front-page">
+  <div class="fp-kicker"><span>TRIVORTEX RESEARCH PROGRAM · TRX-03</span></div>
+  <div class="fp-title">Three-Soliton Molecule in a Mode-Locked Fiber Laser</div>
+  <div class="fp-subtitle-ru">Молекула из трёх солитонов в волоконном лазере с синхронизацией мод</div>
+  <div class="fp-meta"><div><div class="k">Author</div><div class="v">Isaev Iskhak Khamzatovich<br><span style="color:#8FA3C4">ORCID 0009-0003-7299-0701</span></div></div><div><div class="k">DOI</div><div class="v">10.5281/zenodo.21825394</div></div><div><div class="k">Study</div><div class="v">TRX-03</div></div><div><div class="k">Date</div><div class="v">2026-10-06</div></div><div><div class="k">Code</div><div class="v"><code style="background:rgba(212,175,55,.12);color:#F0D98C;padding:1px 5px;border-radius:3px">code/trx03_soliton_molecule.py</code></div></div><div><div class="k">Data</div><div class="v"><code style="background:rgba(212,175,55,.12);color:#F0D98C;padding:1px 5px;border-radius:3px">results/trx03_results.json</code></div></div></div>
+  <div class="fp-abstract">This monograph treats a phase-locked triplet of ultrashort pulses in a passively mode-locked fiber laser as an optical three-body system. Each pulse is a body with the conservative pair interaction V(r, Δφ) = C₁e^(−2r/L) − C₂e^(−r/L)cos 2Δφ, whose in-phase well has the analytic minimum r₀ = L·ln(2C₁/C₂) = ln(4/3) ≈ 0.287682, reproduced numerically to 5.6e-17, while the anti-phase lock Δφ = π/2 is proved purely repulsive.</div>
+  <div class="fp-foot"><span>Monograph Edition · bilingual RU + EN</span><span><b>TRIVORTEX</b> · TRIVORTEX · v1.0.0 · 2026</span></div>
+</div>
+<div class="main-content"><div class="part-banner"><div class="pb-title">PART I · English Monograph</div><div class="pb-sub">Three-Soliton Molecule in a Mode-Locked Fiber Laser</div></div><p><em>TRIVORTEX Research Program · v1.0.0 · Monograph Edition</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Study</td>
+<td>TRX-03</td>
+</tr>
+<tr>
+<td>Program</td>
+<td>TRIVORTEX — The Three-Body Problem in the Vortex Model</td>
+</tr>
+<tr>
+<td>Author</td>
+<td>Isaev Iskhak Khamzatovich (ORCID 0009-0003-7299-0701)</td>
+</tr>
+<tr>
+<td>DOI</td>
+<td>10.5281/zenodo.21825394</td>
+</tr>
+<tr>
+<td>Date</td>
+<td>2026-10-06</td>
+</tr>
+<tr>
+<td>Code</td>
+<td>`code/trx03_soliton_molecule.py`</td>
+</tr>
+<tr>
+<td>Data</td>
+<td>`results/trx03_results.json`</td>
+</tr>
+</tbody>
+</table>
+<h2>Abstract</h2>
+<p>This monograph treats a phase-locked triplet of ultrashort pulses in a passively mode-locked fiber laser as an optical three-body system. Each pulse is a body with the conservative pair interaction V(r, Δφ) = C<sub>1</sub>e^(−2r/L) − C<sub>2</sub>e^(−r/L)cos 2Δφ, whose in-phase well has the analytic minimum r<sub>0</sub> = L·ln(2C<sub>1</sub>/C<sub>2</sub>) = ln(4/3) ≈ 0.287682, reproduced numerically to 5.6e-17, while the anti-phase lock Δφ = π/2 is proved purely repulsive. Relaxation of a random triplet {1.0, 2.0, 3.5} under overdamped damping converges to an equally spaced molecule whose spacing equals the three-chain equilibrium s* = 0.2018927, the root of F(s) + F(2s) = 0 — compressed 29.8 % below the pair value by the far-pair attraction, a genuine three-body effect. The conservative molecule conserves energy to 1.8e-15 over t = 100 and breathes at f = 0.469765 against the analytic Hessian mode 0.468766 (agreement 0.21 %); a sweep of the locking phase yields the full stability map, with both equilibria diverging and both modes softening to zero at the binding threshold Δφ = π/4. The soliton molecule thus stands verified as the optical twin of the TRIVORTEX three-body choreographies.</p>
+<h2>Contents</h2>
+<ol>
+<li>Abstract</li>
+<li>
+<ol>
+<li>Introduction and historical context</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>Physical formulation</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>Mathematical model</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li>Connection to the TRIVORTEX framework</li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li>Numerical method</li>
+</ol>
+</li>
+<li>
+<ol start="6">
+<li>Results and analysis</li>
+</ol>
+</li>
+<li>
+<ol start="7">
+<li>Discussion</li>
+</ol>
+</li>
+<li>
+<ol start="8">
+<li>Conclusions</li>
+</ol>
+</li>
+<li>
+<ol start="9">
+<li>References
+Appendix A. Parameter table
+Appendix B. Reproduction</li>
+</ol>
+</li>
+</ol>
+<h2>1. Introduction and historical context</h2>
+<p>The word "soliton" was coined by Zabusky and Kruskal in 1965, when numerical experiments on the Korteweg–de Vries equation showed that nonlinear pulses collide and re-emerge with their identity intact. Optical solitons followed: Hasegawa and Tappert predicted in 1973 that the nonlinear Schrödinger equation admits shape-preserving pulses in fibers with anomalous dispersion, and Mollenauer, Stolen and Gordon observed them in 1980. From the very beginning it was clear that two solitons are not merely two particles — their overlapping tails make them interact, and the interaction is the optical analog of a force.</p>
+<p>The quantitative theory of soliton interactions was built by Karpman and Solov'ev in 1981 through perturbation theory around the exact two-soliton solution, and by Gordon in 1983 through the discrete spectral picture; both approaches yield an exponential force whose sign is set by the relative phase. Malomed (1991) extended the analysis to multi-soliton bound states and their cyclic dynamics. Experimentally, Stratmann, Pagel and Mitschke (2005) directly observed temporal soliton molecules in a fiber laser, and Herink and colleagues (2017) filmed their internal dynamics in real time by spectral interferometry — including the breathing mode that this study computes analytically and numerically.</p>
+<p>A soliton molecule is therefore a genuine bound state of N bodies, not a metaphor: its geometry is fixed by a force balance in which every pulse feels every other pulse, its stability is read off a normal-mode spectrum, and its assembly is a relaxation problem. For N = 3 all of these ingredients are exactly what the three-body problem means in the TRIVORTEX program — three agents, pairwise interactions, a collective equilibrium and a choreography of motion. The fiber laser simply replaces gravity or vortex circulation by an exponential-cosine law that can be switched by phase control.</p>
+<p>Within the program this study is the optics-block anchor of the choreography family. It verifies, in a setting where "passing through one another" is physical rather than singular, the same structural sequence used everywhere in TRIVORTEX: analytic pair law, collective equilibrium, linearized spectrum, conservation of the invariant. The phase-locked triplet is the optical sibling of the Lagrange triangle of Theorem 3.1, and the compression of s* below r<sub>0</sub> is the spectral sibling of the collective force balance that fixes the equilateral configuration.</p>
+<h2>2. Physical formulation</h2>
+<p>In a passively mode-locked fiber laser the circulating field breaks into ultrashort soliton pulses. When two pulses overlap, their phases and envelopes exchange work through the Kerr nonlinearity and the gain/loss balance of the cavity; in the reduced Gordon–Mollenauer picture this continuous exchange is equivalent to a conservative force between point-like particles with an exponential (evanescent-tail) profile. The force depends on the phase difference Δφ between the pulses: in-phase pulses (Δφ = 0) attract, quadrature pulses (Δφ = π/2) repel. A triplet locked in phase therefore behaves as three bodies on a line, bound by a soft exponential tail and free to pass through one another as real solitons do.</p>
+<p>The equilibrium of such a chain is a true three-body configuration. For a pair, attraction and the repulsive exponential core balance at r<sub>0</sub> = L·ln(2C<sub>1</sub>/C<sub>2</sub>). In the symmetric three-pulse molecule every pulse also feels the far pair at distance 2s, so the end-pulse balance reads F(s<em>) + F(2s</em>) = 0 and the spacing s* is compressed below r<sub>0</sub> — the same collective compression that the Lagrange triangle shows relative to an isolated two-body pair. Small displacements around the equilibrium decompose into normal modes of a generalized eigenproblem; the low mode is the breathing oscillation of the molecule, directly observable in real-time spectroscopy experiments.</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C<sub>1</sub>, C<sub>2</sub></td>
+<td>2, 3</td>
+<td>exponential coefficients: repulsive core / attractive overlap</td>
+</tr>
+<tr>
+<td>L</td>
+<td>1</td>
+<td>evanescent-tail length (unit of length)</td>
+</tr>
+<tr>
+<td>m</td>
+<td>1</td>
+<td>pulse "mass" (kinetic coefficient)</td>
+</tr>
+<tr>
+<td>Δφ</td>
+<td>0 (locked)</td>
+<td>phase difference between adjacent pulses</td>
+</tr>
+<tr>
+<td>pair equilibrium</td>
+<td>r<sub>0</sub> = L·ln(2C<sub>1</sub>/C<sub>2</sub>) = ln(4/3) ≈ 0.287682</td>
+<td>analytic two-body balance</td>
+</tr>
+<tr>
+<td>relaxation start</td>
+<td>{1.0, 2.0, 3.5}, γ_d = 1 (overdamped)</td>
+<td>random triplet, T = 90</td>
+</tr>
+<tr>
+<td>conservative probe</td>
+<td>middle pulse +0.01, γ_d = 0, T = 100</td>
+<td>breathing-mode run, DOP853 1e-12</td>
+</tr>
+</tbody>
+</table>
+<h2>3. Mathematical model</h2>
+<p>The reduced model starts from the pair interaction. Overlapping soliton envelopes in the anomalous-dispersion fiber exchange energy and momentum through the Kerr term; keeping the leading tail-overlap terms gives the Gordon–Mollenauer potential (E1): a repulsive exponential core C<sub>1</sub>e^(−2r/L) and an attractive overlap C<sub>2</sub>e^(−r/L) whose strength is modulated by cos 2Δφ. The sign of the force therefore follows the phase: attraction for |Δφ| &lt; π/4, repulsion beyond, and exact cancellation of the attractive term at Δφ = π/4 — the binding threshold. The pair equilibrium solves F(r<sub>0</sub>, Δφ) = 0 and yields the closed form r<sub>0</sub> = L·ln(2C<sub>1</sub>/(C<sub>2</sub> cos 2Δφ)); at the preset Δφ = 0 it is ln(4/3).</p>
+<p>The three-body structure enters through the all-pairs chain dynamics (E3). Soliton tails act at any separation and solitons pass through one another, so the equations are invariant under particle exchange and the physically meaningful geometry of a configuration is read from the sorted positions. For the symmetric molecule with spacings (s, s) the end pulse feels the near pair F(s) and the far pair F(2s), giving the balance F(s<em>) + F(2s</em>) = 0. Because F(2s<em>) &lt; 0 is attractive, the root s</em> is necessarily below the pair root r<sub>0</sub> — the chain is compressed by the third body. This is the same logical step that produces the collective geometry of the Lagrange triangle from pairwise Newtonian attraction.</p>
+<p>Small oscillations follow from the Hessian of the total potential in the spacing coordinates (d<sub>1</sub>, d<sub>2</sub>) with the center of mass removed; the kinetic energy is not diagonal in these coordinates, so the normal modes solve the generalized eigenproblem (E5) with mass matrix M_g = m·[[2/3, 1/3], [1/3, 2/3]]. At the preset spacing s* the two eigenfrequencies are 2.4536 and 2.9453 rad (cyclic 0.390507 and 0.468766); the higher one is the breathing mode in which the middle pulse moves against the outer pair. The same Hessian evaluated along the phase sweep softens continuously to zero at the binding threshold, providing the stability map of the molecule.</p>
+<p><strong>Notation</strong></p>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>x_k</td>
+<td>position of pulse k on the cavity axis</td>
+</tr>
+<tr>
+<td>r</td>
+<td>pair separation</td>
+</tr>
+<tr>
+<td>Δφ</td>
+<td>phase difference between adjacent pulses</td>
+</tr>
+<tr>
+<td>V, F</td>
+<td>pair potential and pair force (F = −∂V/∂r)</td>
+</tr>
+<tr>
+<td>C<sub>1</sub>, C<sub>2</sub></td>
+<td>exponential coefficients of the potential (2 and 3)</td>
+</tr>
+<tr>
+<td>L</td>
+<td>evanescent-tail length (length unit)</td>
+</tr>
+<tr>
+<td>m</td>
+<td>pulse mass (kinetic coefficient)</td>
+</tr>
+<tr>
+<td>γ_d</td>
+<td>damping coefficient (1.0 relaxation, 0 conservative)</td>
+</tr>
+<tr>
+<td>r<sub>0</sub>, s*</td>
+<td>pair equilibrium and chain equilibrium spacing</td>
+</tr>
+<tr>
+<td>H, M_g</td>
+<td>Hessian of the chain potential and mass matrix in spacing coordinates</td>
+</tr>
+<tr>
+<td>ω_i, f</td>
+<td>angular and cyclic normal-mode frequencies</td>
+</tr>
+</tbody>
+</table>
+<p><strong>(E1)</strong> Phase-dependent pair potential of two solitons.</p>
+<p>$$V(r,\Delta\varphi) = C_1\,e^{-2r/L} - C_2\,e^{-r/L}\cos(2\Delta\varphi)$$</p>
+<p><strong>(E2)</strong> Pair force along increasing separation (F &lt; 0 — attraction).</p>
+<p>$$F(r,\Delta\varphi) = -\frac{\partial V}{\partial r} = \frac{2C_1}{L}e^{-2r/L} - \frac{C_2}{L}e^{-r/L}\cos(2\Delta\varphi)$$</p>
+<p><strong>(E3)</strong> Chain dynamics with all-pairs interaction and damping.</p>
+<p>$$m\,\ddot{x}_k = -\sum_{l\neq k}\frac{\partial V(|x_k-x_l|)}{\partial x_k} - \gamma_d\,\dot{x}_k, \qquad k=1,2,3$$</p>
+<p><strong>(E4)</strong> Pair equilibrium r0 and three-chain equilibrium s* (end-pulse balance).</p>
+<p>$$r_0 = L\ln\!\frac{2C_1}{C_2\cos 2\Delta\varphi}; \qquad F(s^*) + F(2s^*) = 0$$</p>
+<p><strong>(E5)</strong> Generalized eigenproblem for the chain normal modes (breathing spectrum).</p>
+<p>$$H\,v = \omega^2 M_g\,v, \quad H = \begin{pmatrix} V''(s)+V''(2s) & V''(2s)\\ V''(2s) & V''(s)+V''(2s) \end{pmatrix}, \quad M_g = m\begin{pmatrix} 2/3 & 1/3\\ 1/3 & 2/3 \end{pmatrix}$$</p>
+<h2>4. Connection to the TRIVORTEX framework</h2>
+<p>The mapping to the TRIVORTEX core is structural, one-to-one and already visible in the equations. The three phase-locked pulses are the optical realization of the three agents of Theorem 3.1: a symmetric, phase-locked special solution of a three-body system, exactly as the rotating vortex triangle is the equal-circulation special solution of the vortex problem. The molecule spacing s<em> plays the role of the Lagrange-triangle side a: both are fixed not by a two-body law but by the requirement that every member be in equilibrium under the combined pull of the other two — F(s</em>) + F(2s*) = 0 here, the central-configuration equations there. The breathing mode ω<sub>2</sub> is the analog of the radial modulation of the choreography, and the phase difference Δφ controls binding exactly as the circulation ratio controls the vortex triangle: changing it moves the system through symmetric and asymmetric configurations until binding is lost (Δφ = π/4, the analog of leaving the stability island). The same exponential-cosine structure reappears in TRX-09 vortices and TRX-04 photon-fluid beams, which makes this study the reusable optical template of the program.</p>
+<table>
+<thead>
+<tr>
+<th>Quantity in this study</th>
+<th>TRIVORTEX analog</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Three phase-locked pulses</td>
+<td>three bodies of Theorem 3.1</td>
+<td>both are choreographic triads</td>
+</tr>
+<tr>
+<td>Phase locking Δφ = 0</td>
+<td>equal circulations Γ</td>
+<td>symmetric special solution</td>
+</tr>
+<tr>
+<td>Molecule spacing s*</td>
+<td>Lagrange-triangle side a</td>
+<td>fixed by collective force balance</td>
+</tr>
+<tr>
+<td>Balance F(s<em>) + F(2s</em>) = 0</td>
+<td>every vortex feels the other two</td>
+<td>the three-body compression mechanism</td>
+</tr>
+<tr>
+<td>Breathing mode ω<sub>2</sub></td>
+<td>radial modulation of the choreography</td>
+<td>small oscillations about the central configuration</td>
+</tr>
+</tbody>
+</table>
+<h2>5. Numerical method</h2>
+<p>Equilibria are computed by bracketed root finding. The pair equilibrium solves F(r) = 0 and the chain equilibrium solves F(s) + F(2s) = 0, both by Brent's method with xtol = 1e-15 and machine-level rtol on sign-stable brackets; the numeric pair root agrees with the closed form ln(4/3) to 5.6e-17. The repulsive character of the anti-phase lock is established exhaustively rather than by sampling: the minimum of F(r, π/2) over the range r ∈ [0.05, 20] on a 4000-point grid is +6e-9 &gt; 0, i.e. the force never turns attractive.</p>
+<p>Dynamics are integrated with the explicit Dormand–Prince 8(5,3) scheme (DOP853). The relaxation run starts from positions {1.0, 2.0, 3.5} with zero velocities under damping γ_d = 1.0 (overdamped, the Doppler-cooled regime of a mode-locked laser) and runs to T = 90 with rtol = 1e-11, atol = 1e-12 and max_step = 0.2. The conservative run holds γ_d = 0, displaces the middle pulse by +0.01 from the perfect molecule and integrates to T = 100 with rtol = atol = 1e-12 and max_step = 0.05, sampling 2000 points; the energy drift over the whole run is 1.776357e-15 against the 1e-10 acceptance tolerance.</p>
+<p>The breathing frequency is extracted twice, independently. Numerically, the middle-pulse displacement relative to the center of mass is Hann-windowed and Fourier-transformed; the spectral peak lies at f = 0.469765. Analytically, the generalized eigenproblem (E5) at s* gives cyclic modes 0.390507 and 0.468766; the measured peak matches the nearest analytic mode to 0.21 %, comfortably inside the 1 % acceptance tolerance. Every check stores its value, target, tolerance, unit and pass flag in the JSON protocol, so the study reproduces from a single command with no network access and no stochastic seeds.</p>
+<h2>6. Results and analysis</h2>
+<h3>fig01 potential landscape</h3>
+<p><img alt="Interaction landscape: phase-dependent pair potential and the three-chain force balance." src="../figures/fig01_potential_landscape.png" /></p>
+<p><em>Interaction landscape: phase-dependent pair potential and the three-chain force balance.</em>
+Panel (a) shows V(r, Δφ) for four lockings: the binding well exists only for |Δφ| &lt; π/4, has its minimum at r<sub>0</sub> = 0.287682, and degenerates into pure repulsion for the anti-phase case. Panel (b) shows the end-pulse balance F(s) + F(2s) = 0: the root s* = 0.201893 lies 29.8 % below the pair value r<sub>0</sub> — a genuine three-body compression.</p>
+<h3>fig02 molecule formation</h3>
+<p><img alt="Headline result: relaxation of a random triplet into the equally spaced soliton molecule." src="../figures/fig02_molecule_formation.png" /></p>
+<p><em>Headline result: relaxation of a random triplet into the equally spaced soliton molecule.</em>
+Starting from positions {1.0, 2.0, 3.5} under overdamped damping, the three worldlines settle within T = 90 into an equally spaced triplet; the sorted spacings d<sub>1</sub>(t) and d<sub>2</sub>(t) converge to the chain equilibrium s<em> = 0.201893 (final mismatch 2.2e-16, offset from s</em> 2.8e-17), visibly below the pair value r<sub>0</sub> = 0.2877 marked for comparison.</p>
+<h3>fig03 phase sweep</h3>
+<p><img alt="Parameter sweep over the locking phase: equilibrium geometry and mode softening." src="../figures/fig03_phase_sweep.png" /></p>
+<p><em>Parameter sweep over the locking phase: equilibrium geometry and mode softening.</em>
+Both equilibria diverge as the binding threshold Δφ = π/4 is approached: s* grows from 0.201893 at Δφ = 0 through 0.719380 at Δφ = 0.5 rad to 2.885 at Δφ = 0.75 rad, tracking the pair value. The chain modes soften in response — from 2.4536 and 2.9453 rad at the preset down to 0.1092 and 0.1982 rad — producing a complete stability map of the phase-locked molecule.</p>
+<h3>fig04 breathing dynamics</h3>
+<p><img alt="Dynamics of the conservative molecule: breathing time series and spectrum against the Hessian prediction." src="../figures/fig04_breathing_dynamics.png" /></p>
+<p><em>Dynamics of the conservative molecule: breathing time series and spectrum against the Hessian prediction.</em>
+With the middle pulse displaced by 0.01 and damping removed, the molecule breathes over T = 100 while the total energy drifts by only 1.8e-15 (DOP853, rtol = atol = 1e-12). The FFT spectrum of the middle-pulse displacement peaks at f = 0.469765 against the analytic Hessian modes 0.468766 and 0.390507 — agreement to 0.21 %, an order of magnitude inside the 1 % tolerance.</p>
+<p><strong>Equilibria.</strong> The numeric pair root reproduces the closed form r<sub>0</sub> = L·ln(2C<sub>1</sub>/C<sub>2</sub>) = ln(4/3) ≈ 0.287682 to 5.6e-17 — machine zero. The exhaustive anti-phase test returns min F(r, π/2) = +6e-9 &gt; 0 over r ∈ [0.05, 20], confirming that binding is controlled by the phase factor cos 2Δφ and disappears entirely at and beyond Δφ = π/4. The curvature of the well at the pair minimum is V″(r<sub>0</sub>) = 2.25, which fixes the pair breathing scale √(3V″(r<sub>0</sub>)) ≈ 2.5981 against which the chain spectrum is compared.</p>
+<p><strong>Molecule formation.</strong> Under overdamped relaxation from {1.0, 2.0, 3.5}, the sorted spacings converge to d<sub>1</sub> = d<sub>2</sub> = 0.2018926516; their final mismatch is 2.2e-16 and their offset from the independently computed chain equilibrium s* = 0.2018926516 is 2.8e-17 — both machine-level, against tolerances of 1e-8 and 1e-6. The spacing sits 29.8 % below the pair value r<sub>0</sub> = 0.287682: the far pair F(2s) pulls the molecule together, a clean, quantified three-body effect visible in fig02.</p>
+<p><strong>Stability map.</strong> Sweeping the locking phase Δφ from 0 to 0.75 rad shows both equilibria diverging as the binding threshold π/4 ≈ 0.7854 is approached: s* grows from 0.201893 through 0.719380 (Δφ = 0.5 rad) to 2.885 (Δφ = 0.75 rad). The chain modes soften in the same direction, from 2.4536 and 2.9453 rad at the preset to 0.1092 and 0.1982 rad at the far end of the sweep — the soft-mode behavior expected as the well flattens into pure repulsion (fig03).</p>
+<p><strong>Breathing and invariants.</strong> The conservative molecule breathes stably over T = 100 (fig04a) with total energy conserved to 1.776357e-15 — five orders of magnitude inside the 1e-10 tolerance. The FFT spectrum of the middle-pulse displacement peaks at f = 0.469765 against the analytic Hessian modes 0.468766 and 0.390507 (fig04b): agreement 0.21 %, an order of magnitude inside the 1 % acceptance tolerance. The dynamics, the spectrum and the Hessian thus triangulate the same breathing physics from three independent directions.</p>
+<h3>Verification summary</h3>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Recorded value</th>
+<th>Target</th>
+<th>Tolerance</th>
+<th>Pass</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>`pair_equilibrium_numeric_vs_analytic`</td>
+<td>5.55112e-17</td>
+<td>0</td>
+<td>1e-10</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`antiphase_pi2_purely_repulsive`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`molecule_final_spacings_equal`</td>
+<td>2.22045e-16</td>
+<td>0</td>
+<td>1e-08</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`molecule_final_spacing_equals_s_star`</td>
+<td>2.77556e-17</td>
+<td>0</td>
+<td>1e-06</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`conservative_energy_drift`</td>
+<td>1.77636e-15</td>
+<td>0</td>
+<td>1e-10</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`breathing_mode_frequency`</td>
+<td>0.469765</td>
+<td>0.468766</td>
+<td>0.0047</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p><em>(status: </em><em>PASS</em><em>, mode: full)</em></p>
+<h2>7. Discussion</h2>
+<p>The reduced model is deliberately minimal: point-like pulses, a pair potential without retardation or gain dynamics, and damping treated as a switchable term. Within these assumptions every conclusion is an exact statement about the governing equations rather than a simulation of a specific laser. The natural extensions — third-order dispersion and self-frequency shift (which make the force asymmetric and non-conservative), continuous cw backgrounds, larger molecules N &gt; 3 with defect modes, and full NLSE integration of the same scenario — each preserve the verification style established here.</p>
+<p>The parameter regime covers the generic regime of the Gordon–Mollenauer law rather than a specific cavity: C<sub>1</sub>/C<sub>2</sub> = 2/3 places the pair well at r<sub>0</sub> ≈ 0.29 tail lengths with depth 0.25, comfortably resolved on the integration grid. The phase sweep deliberately approaches the binding threshold Δφ = π/4, where the equilibrium diverges and the Hessian develops a zero mode; exactly at threshold the brentq brackets fail, which the sweep code reports as a hard boundary rather than hiding with a regularized formula. Realistic cavities would add noise-driven phase diffusion, slowly destroying the lock — a physics question outside the conservative scope of this study.</p>
+<p>Within the program, this study feeds TRX-04, which lifts the pair interaction into the transverse plane and recovers a rotating Lagrange triangle of beams in the Kerr photon fluid; TRX-08, which exchanges optical pulses for laser-cooled ions and reproduces the same spacing/breathing structure with a Coulomb tail; and TRX-09, the fluid-dynamical anchor where phases become circulations. Together with the celestial block (TRX-01, TRX-11) they demonstrate that the choreography sequence — pair law, collective equilibrium, normal spectrum, invariant — is portable across optics, fluids and celestial mechanics.</p>
+<h2>8. Conclusions</h2>
+<ol>
+<li>The pair binding law is exact: the numeric equilibrium reproduces r<sub>0</sub> = L·ln(2C<sub>1</sub>/C<sub>2</sub>) = ln(4/3) ≈ 0.287682 to 5.6e-17.</li>
+<li>Binding is a phase-selection effect: the anti-phase lock Δφ = π/2 is purely repulsive over r ∈ [0.05, 20] (min force +6e-9 &gt; 0), and the well exists only for |Δφ| &lt; π/4.</li>
+<li>A random triplet relaxes into an equally spaced molecule: d<sub>1</sub> = d<sub>2</sub> = 0.2018926516 with mismatch 2.2e-16 and offset from the analytic chain equilibrium s* only 2.8e-17.</li>
+<li>The molecule is compressed 29.8 % below the pair spacing by the far-pair attraction (F(s<em>) + F(2s</em>) = 0) — a quantified genuine three-body effect.</li>
+<li>The conservative molecule is a clean invariant system: energy drift 1.8e-15 over t = 100 at DOP853 rtol = atol = 1e-12.</li>
+<li>The breathing spectrum is verified: FFT peak f = 0.469765 against the Hessian mode 0.468766 (agreement 0.21 %, tolerance 1 %), and the phase sweep yields the full stability map with both modes softening to zero at Δφ = π/4.</li>
+</ol>
+<h2>9. References</h2>
+<ol>
+<li>Zabusky, N. J., Kruskal, M. D. (1965). <em>Interaction of "solitons" in a collisionless plasma and the recurrence of initial states.</em> Phys. Rev. Lett. 15, 240–243.</li>
+<li>Hasegawa, A., Tappert, F. (1973). <em>Transmission of stationary nonlinear optical pulses in dispersive dielectric fibers. I. Anomalous dispersion.</em> Appl. Phys. Lett. 23, 142–144.</li>
+<li>Mollenauer, L. F., Stolen, R. H., Gordon, J. P. (1980). <em>Experimental observation of picosecond pulse narrowing and solitons in optical fibers.</em> Phys. Rev. Lett. 45, 1095–1098.</li>
+<li>Karpman, V. I., Solov'ev, V. V. (1981). <em>A perturbational approach to the two-soliton systems with third-order dispersion.</em> Physica D 3, 487–502.</li>
+<li>Gordon, J. P. (1983). <em>Interaction forces among solitons in optical fibers.</em> Optics Letters 8, 596–598.</li>
+<li>Malomed, B. A. (1991). <em>Multistability and cyclic dynamics of solitons in dispersive media.</em> Phys. Rev. A 44, 6954.</li>
+<li>Stratmann, M., Pagel, T., Mitschke, F. (2005). <em>Experimental observation of temporal soliton molecules.</em> Phys. Rev. Lett. 95, 143902.</li>
+<li>Herink, G., Kurtz, F., Jalali, B., Solli, D. R., Ropers, C. (2017). <em>Real-time spectral interferometry probes the internal dynamics of femtosecond soliton molecules.</em> Science 356, 50–54.</li>
+</ol>
+<h3>BibTeX</h3>
+<p>```bibtex
+@article{gordon1983,
+  author  = {Gordon, J. P.},
+  title   = {Interaction forces among solitons in optical fibers},
+  journal = {Optics Letters},
+  year    = {1983}, volume = {8}, pages = {596--598}}
+
+@article{karpman1981,
+  author  = {Karpman, V. I. and Solov'ev, V. V.},
+  title   = {A perturbational approach to the two-soliton systems with third-order dispersion},
+  journal = {Physica D},
+  year    = {1981}, volume = {3}, pages = {487--502}}
+
+@article{stratmann2005,
+  author  = {Stratmann, M. and Pagel, T. and Mitschke, F.},
+  title   = {Experimental observation of temporal soliton molecules},
+  journal = {Physical Review Letters},
+  year    = {2005}, volume = {95}, pages = {143902}}
+
+@article{herink2017,
+  author  = {Herink, G. and Kurtz, F. and Jalali, B. and Solli, D. R. and Ropers, C.},
+  title   = {Real-time spectral interferometry probes the internal dynamics of femtosecond soliton molecules},
+  journal = {Science},
+  year    = {2017}, volume = {356}, pages = {50--54}}
+```</p>
+<h2>Appendix A. Parameter table</h2>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Value</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C<sub>1</sub>, C<sub>2</sub></td>
+<td>2, 3</td>
+<td>potential coefficients: core repulsion / tail attraction</td>
+</tr>
+<tr>
+<td>L</td>
+<td>1</td>
+<td>tail length; unit of all lengths</td>
+</tr>
+<tr>
+<td>m</td>
+<td>1</td>
+<td>pulse mass; unit of mass</td>
+</tr>
+<tr>
+<td>Δφ</td>
+<td>0 (preset); sweep 0 … 0.75 rad</td>
+<td>locking phase; binding threshold π/4</td>
+</tr>
+<tr>
+<td>r<sub>0</sub></td>
+<td>ln(4/3) ≈ 0.287682</td>
+<td>pair equilibrium at Δφ = 0</td>
+</tr>
+<tr>
+<td>s*</td>
+<td>0.2018926516</td>
+<td>chain equilibrium, root of F(s) + F(2s) = 0</td>
+</tr>
+<tr>
+<td>V″(r<sub>0</sub>)</td>
+<td>2.25</td>
+<td>curvature of the pair well at the minimum</td>
+</tr>
+<tr>
+<td>relaxation</td>
+<td>{1.0, 2.0, 3.5}, γ_d = 1, T = 90</td>
+<td>assembly run, DOP853 rtol = 1e-11</td>
+</tr>
+<tr>
+<td>conservative run</td>
+<td>+0.01 on the middle pulse, γ_d = 0, T = 100</td>
+<td>breathing run, DOP853 rtol = atol = 1e-12</td>
+</tr>
+<tr>
+<td>chain modes</td>
+<td>2.4536, 2.9453 rad (0.390507, 0.468766 cyclic)</td>
+<td>normal-mode spectrum at s*</td>
+</tr>
+</tbody>
+</table>
+<h2>Appendix B. Reproduction</h2>
+<p>```bash
+python3 research/TRX-03-soliton-molecule/code/trx03_soliton_molecule.py --smoke     # < 20 s
+python3 research/TRX-03-soliton-molecule/code/trx03_soliton_molecule.py              # full, 1.2 s (4.7 s with --figures)
+python3 research/TRX-03-soliton-molecule/code/trx03_soliton_molecule.py --figures   # + 300-DPI figures
+```</p>
+<p>Full runtime on the reference machine: 1.2 s (4.7 s with --figures); smoke mode completes in under 20 seconds and is exercised by the repository CI.</p>
+<h2>Appendix C. Environment</h2>
+<p>Python ≥ 3.11, numpy ≥ 2.0, scipy ≥ 1.14, matplotlib ≥ 3.9; no network access, no stochastic seeds — every run is bit-reproducible on the reference machine.</p><div class="part-banner"><div class="pb-title">ЧАСТЬ II · Русская монография</div><div class="pb-sub">Молекула из трёх солитонов в волоконном лазере с синхронизацией мод</div></div><div lang="ru"><p><em>Исследовательская программа TRIVORTEX · v1.0.0 · Издание монографий</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Исследование / Study</td>
+<td>TRX-03</td>
+</tr>
+<tr>
+<td>Программа</td>
+<td>TRIVORTEX — задача трёх тел в вихревой модели</td>
+</tr>
+<tr>
+<td>Автор</td>
+<td>Исаев Исхак Хамзатович (ORCID 0009-0003-7299-0701)</td>
+</tr>
+<tr>
+<td>DOI</td>
+<td>10.5281/zenodo.21825394</td>
+</tr>
+<tr>
+<td>Дата</td>
+<td>2026-10-06</td>
+</tr>
+<tr>
+<td>Код</td>
+<td>`code/trx03_soliton_molecule.py`</td>
+</tr>
+<tr>
+<td>Данные</td>
+<td>`results/trx03_results.json`</td>
+</tr>
+</tbody>
+</table>
+<h2>Аннотация</h2>
+<p>Монография рассматривает синхронизованный триплет ультракоротких импульсов в волоконном лазере с пассивной синхронизацией мод как оптическую трёхтельную систему. Каждый импульс — тело с консервативным парным взаимодействием V(r, Δφ) = C<sub>1</sub>e^(−2r/L) − C<sub>2</sub>e^(−r/L)cos 2Δφ, синфазная яма которого имеет аналитический минимум r<sub>0</sub> = L·ln(2C<sub>1</sub>/C<sub>2</sub>) = ln(4/3) ≈ 0.287682, воспроизводимый численно с точностью 5.6e-17, а противофазная синхронизация Δφ = π/2 доказуемо чисто отталкивающая. Релаксация случайного триплета {1.0, 2.0, 3.5} при сверхвязком демпфировании сходится к равноотстоящей молекуле, расстояние в которой равно равновесию трёхзвенной цепочки s* = 0.2018927 — корню уравнения F(s) + F(2s) = 0, сжатому на 29.8 % ниже парного значения притяжением дальней пары, подлинным трёхтельным эффектом. Консервативная молекула сохраняет энергию на уровне 1.8e-15 за t = 100 и дышит на частоте f = 0.469765 против аналитической гессиановской моды 0.468766 (согласие 0.21 %); развёртка по фазе синхронизации даёт полную карту устойчивости: оба равновесия расходятся, а обе моды размягчаются до нуля на пороге связывания Δφ = π/4. Тем самым солитонная молекула верифицирована как оптический близнец трёхтельных хореографий TRIVORTEX.</p>
+<h2>Содержание</h2>
+<p><strong>Краткие сведения</strong></p>
+<table>
+<thead>
+<tr>
+<th>Аспект</th>
+<th>Значение</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Блок</td>
+<td>Лазерная оптика — исследование 03 из 12</td>
+</tr>
+<tr>
+<td>Модель</td>
+<td>цепочка трёх импульсов с фазозависимым экспоненциальным парным потенциалом (C<sub>1</sub> = 2, C<sub>2</sub> = 3, L = 1)</td>
+</tr>
+<tr>
+<td>Ключевой инвариант</td>
+<td>полная энергия консервативной молекулы (дрейф 1.8e-15)</td>
+</tr>
+<tr>
+<td>Главный результат</td>
+<td>молекула на s* = 0.2018927 — на 29.8 % ниже парного r<sub>0</sub> = ln(4/3) ≈ 0.287682</td>
+</tr>
+<tr>
+<td>Верификация</td>
+<td>6/6 проверок PASS (полный режим)</td>
+</tr>
+<tr>
+<td>Время выполнения</td>
+<td>1.2 с полный · 4.7 с с графиками · &lt; 20 с smoke</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>Аннотация</li>
+<li>
+<ol>
+<li>Введение и исторический контекст</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>Физическая формулировка</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>Математическая модель</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li>Связь с фреймворком TRIVORTEX</li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li>Численный метод</li>
+</ol>
+</li>
+<li>
+<ol start="6">
+<li>Результаты и анализ</li>
+</ol>
+</li>
+<li>
+<ol start="7">
+<li>Обсуждение</li>
+</ol>
+</li>
+<li>
+<ol start="8">
+<li>Выводы</li>
+</ol>
+</li>
+<li>
+<ol start="9">
+<li>Список литературы
+Приложение A. Таблица параметров
+Приложение B. Воспроизведение</li>
+</ol>
+</li>
+</ol>
+<h2>1. Введение и исторический контекст</h2>
+<p>Слово «солитон» придумали Забуски и Крускал в 1965 году, когда численные эксперименты с уравнением Кортевега–де Фриза показали, что нелинейные импульсы сталкиваются и воспроизводятся с сохранением индивидуальности. Оптические солитоны не заставили себя ждать: Хасэгава и Тапперт предсказали в 1973 году, что нелинейное уравнение Шрёдингера допускает импульсы, сохраняющие форму, в волокнах с аномальной дисперсией, а Молленауэр, Столен и Гордон наблюдали их в 1980-м. С самого начала было ясно, что два солитона — не просто две частицы: их перекрывающиеся хвосты заставляют их взаимодействовать, и это взаимодействие — оптический аналог силы.</p>
+<p>Количественную теорию взаимодействия солитонов построили Карпман и Соловьёв в 1981 году методом теории возмущений вокруг точного двухсолитонного решения, и Гордон в 1983 году через дискретную спектральную картину; оба подхода дают экспоненциальную силу, знак которой задаётся относительной фазой. Маломед (1991) расширил анализ на многосолитонные связанные состояния и их циклическую динамику. Экспериментально Стратман, Пагель и Мишке (2005) непосредственно наблюдали временные солитонные молекулы в волоконном лазере, а Херинк с соавторами (2017) засняли их внутреннюю динамику в реальном времени методом спектральной интерферометрии — включая дыхательную моду, которую данное исследование вычисляет аналитически и численно.</p>
+<p>Итак, солитонная молекула — подлинное связанное состояние N тел, а не метафора: её геометрия фиксируется силовым балансом, в котором каждый импульс чувствует каждый другой импульс, её устойчивость считывается с нормального спектра, а её сборка — релаксационная задача. Для N = 3 все эти ингредиенты — ровно то, что означает задача трёх тел в программе TRIVORTEX: три участника, парные взаимодействия, коллективное равновесие и хореография движения. Волоконный лазер лишь заменяет гравитацию или циркуляцию вихрей на экспоненциально-косинусный закон, управляемый фазой.</p>
+<p>В рамках программы это исследование — оптический якорь семейства хореографий. Оно проверяет в условиях, где «прохождение друг сквозь друга» физично, а не сингулярно, ту же структурную последовательность, что используется везде в TRIVORTEX: аналитический парный закон, коллективное равновесие, линеаризованный спектр, сохранение инварианта. Синхронизованный триплет — оптический брат лагранжева треугольника теоремы 3.1, а сжатие s* ниже r<sub>0</sub> — спектральный брат коллективного силового баланса, фиксирующего равностороннюю конфигурацию.</p>
+<h2>2. Физическая формулировка</h2>
+<p>В волоконном лазере с пассивной синхронизацией мод циркулирующее поле распадается на ультракороткие солитонные импульсы. При перекрытии двух импульсов их фазы и огибающие обмениваются работой через нелинейность Керра и баланс усиления и потерь резонатора; в редуцированном представлении Гордона–Молленауэра этот непрерывный обмен эквивалентен консервативной силе между точечными частицами с экспоненциальным (эванесцентным) профилем. Сила зависит от разности фаз Δφ между импульсами: синфазные импульсы (Δφ = 0) притягиваются, импульсы в квадратуре (Δφ = π/2) отталкиваются. Поэтому синхронизованный по фазе триплет ведёт себя как три тела на прямой, связанные мягким экспоненциальным хвостом и свободно проходящие друг сквозь друга, как и настоящие солитоны.</p>
+<p>Равновесие такой цепочки — подлинная трёхтельная конфигурация. Для пары притяжение и отталкивающее экспоненциальное ядро уравновешиваются на r<sub>0</sub> = L·ln(2C<sub>1</sub>/C<sub>2</sub>). В симметричной трёхимпульсной молекуле каждый импульс чувствует также дальнюю пару на расстоянии 2s, поэтому баланс концевого импульса имеет вид F(s<em>) + F(2s</em>) = 0, а расстояние s* сжато относительно r<sub>0</sub> — то же коллективное сжатие, которое лагранжев треугольник демонстрирует по отношению к изолированной двухтельной паре. Малые смещения вокруг равновесия раскладываются на нормальные моды обобщённой задачи на собственные значения; низшая мода — дыхательное колебание молекулы, непосредственно наблюдаемое в экспериментах по спектроскопии реального времени.</p>
+<table>
+<thead>
+<tr>
+<th>Параметр</th>
+<th>Значение</th>
+<th>Смысл</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C<sub>1</sub>, C<sub>2</sub></td>
+<td>2, 3</td>
+<td>экспоненциальные коэффициенты: отталкивающее ядро / притягивающее перекрытие</td>
+</tr>
+<tr>
+<td>L</td>
+<td>1</td>
+<td>длина эванесцентного хвоста (единица длины)</td>
+</tr>
+<tr>
+<td>m</td>
+<td>1</td>
+<td>«масса» импульса (кинетический коэффициент)</td>
+</tr>
+<tr>
+<td>Δφ</td>
+<td>0 (синхронизация)</td>
+<td>разность фаз соседних импульсов</td>
+</tr>
+<tr>
+<td>парное равновесие</td>
+<td>r<sub>0</sub> = L·ln(2C<sub>1</sub>/C<sub>2</sub>) = ln(4/3) ≈ 0.287682</td>
+<td>аналитический двухтельный баланс</td>
+</tr>
+<tr>
+<td>старт релаксации</td>
+<td>{1.0, 2.0, 3.5}, γ_d = 1 (сверхвязкий режим)</td>
+<td>случайный триплет, T = 90</td>
+</tr>
+<tr>
+<td>консервативная проба</td>
+<td>средний импульс +0.01, γ_d = 0, T = 100</td>
+<td>прогон дыхательной моды, DOP853 1e-12</td>
+</tr>
+</tbody>
+</table>
+<h2>3. Математическая модель</h2>
+<p>Редуцированная модель начинается с парного взаимодействия. Перекрывающиеся огибающие солитонов в волокне с аномальной дисперсией обмениваются энергией и импульсом через керровский член; удержание главных членов перекрытия хвостов даёт потенциал Гордона–Молленауэра (E1): отталкивающее экспоненциальное ядро C<sub>1</sub>e^(−2r/L) и притягивающее перекрытие C<sub>2</sub>e^(−r/L), глубина которого модулируется множителем cos 2Δφ. Знак силы, следовательно, следует за фазой: притяжение при |Δφ| &lt; π/4, отталкивание далее и точное сокращение притягивающего члена при Δφ = π/4 — пороге связывания. Парное равновесие решает F(r<sub>0</sub>, Δφ) = 0 и даёт замкнутую форму r<sub>0</sub> = L·ln(2C<sub>1</sub>/(C<sub>2</sub> cos 2Δφ)); в пресете Δφ = 0 это ln(4/3).</p>
+<p>Трёхтельная структура входит через динамику цепочки со всеми парами (E3). Хвосты солитонов действуют на любом расстоянии, а солитоны проходят друг сквозь друга, поэтому уравнения инвариантны относительно перестановок частиц, и физически осмысленная геометрия конфигурации считывается с сортированных позиций. Для симметричной молекулы с расстояниями (s, s) концевой импульс чувствует ближнюю пару F(s) и дальнюю пару F(2s), откуда баланс F(s<em>) + F(2s</em>) = 0. Поскольку F(2s<em>) &lt; 0 притягивает, корень s</em> обязательно лежит ниже парного корня r<sub>0</sub> — цепочка сжата третьим телом. Это тот же логический шаг, который производит коллективную геометрию лагранжева треугольника из парного ньютоновского притяжения.</p>
+<p>Малые колебания следуют из гессиана полного потенциала в координатах расстояний (d<sub>1</sub>, d<sub>2</sub>) при удалённом центре масс; кинетическая энергия в этих координатах не диагональна, поэтому нормальные моды решают обобщённую задачу на собственные значения (E5) с матрицей масс M_g = m·[[2/3, 1/3], [1/3, 2/3]]. В пресетном расстоянии s* две собственные частоты равны 2.4536 и 2.9453 рад (циклические 0.390507 и 0.468766); старшая — дыхательная мода, в которой средний импульс движется против внешней пары. Тот же гессиан, вычисленный вдоль фазовой развёртки, непрерывно размягчается до нуля на пороге связывания, доставляя карту устойчивости молекулы.</p>
+<p><strong>Нотация</strong></p>
+<table>
+<thead>
+<tr>
+<th>Символ</th>
+<th>Смысл</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>x_k</td>
+<td>позиция импульса k на оси резонатора</td>
+</tr>
+<tr>
+<td>r</td>
+<td>парное расстояние</td>
+</tr>
+<tr>
+<td>Δφ</td>
+<td>разность фаз соседних импульсов</td>
+</tr>
+<tr>
+<td>V, F</td>
+<td>парный потенциал и парная сила (F = −∂V/∂r)</td>
+</tr>
+<tr>
+<td>C<sub>1</sub>, C<sub>2</sub></td>
+<td>экспоненциальные коэффициенты потенциала (2 и 3)</td>
+</tr>
+<tr>
+<td>L</td>
+<td>длина эванесцентного хвоста (единица длины)</td>
+</tr>
+<tr>
+<td>m</td>
+<td>масса импульса (кинетический коэффициент)</td>
+</tr>
+<tr>
+<td>γ_d</td>
+<td>коэффициент демпфирования (1.0 релаксация, 0 консервативный режим)</td>
+</tr>
+<tr>
+<td>r<sub>0</sub>, s*</td>
+<td>парное равновесие и равновесное расстояние цепочки</td>
+</tr>
+<tr>
+<td>H, M_g</td>
+<td>гессиан потенциала цепочки и матрица масс в координатах расстояний</td>
+</tr>
+<tr>
+<td>ω_i, f</td>
+<td>угловые и циклические частоты нормальных мод</td>
+</tr>
+</tbody>
+</table>
+<p><strong>(E1)</strong> Фазозависимый парный потенциал двух солитонов.</p>
+<p>$$V(r,\Delta\varphi) = C_1\,e^{-2r/L} - C_2\,e^{-r/L}\cos(2\Delta\varphi)$$</p>
+<p><strong>(E2)</strong> Парная сила вдоль роста расстояния (F &lt; 0 — притяжение).</p>
+<p>$$F(r,\Delta\varphi) = -\frac{\partial V}{\partial r} = \frac{2C_1}{L}e^{-2r/L} - \frac{C_2}{L}e^{-r/L}\cos(2\Delta\varphi)$$</p>
+<p><strong>(E3)</strong> Динамика цепочки с взаимодействием всех пар и демпфированием.</p>
+<p>$$m\,\ddot{x}_k = -\sum_{l\neq k}\frac{\partial V(|x_k-x_l|)}{\partial x_k} - \gamma_d\,\dot{x}_k, \qquad k=1,2,3$$</p>
+<p><strong>(E4)</strong> Парное равновесие r0 и равновесие трёхзвенной цепочки s* (баланс концевого импульса).</p>
+<p>$$r_0 = L\ln\!\frac{2C_1}{C_2\cos 2\Delta\varphi}; \qquad F(s^*) + F(2s^*) = 0$$</p>
+<p><strong>(E5)</strong> Обобщённая задача на собственные значения для нормальных мод цепочки (дыхательный спектр).</p>
+<p>$$H\,v = \omega^2 M_g\,v, \quad H = \begin{pmatrix} V''(s)+V''(2s) & V''(2s)\\ V''(2s) & V''(s)+V''(2s) \end{pmatrix}, \quad M_g = m\begin{pmatrix} 2/3 & 1/3\\ 1/3 & 2/3 \end{pmatrix}$$</p>
+<h2>4. Связь с фреймворком TRIVORTEX</h2>
+<p>Соответствие ядру TRIVORTEX структурно, взаимно-однозначно и видно уже в уравнениях. Три синхронизованных импульса — оптическая реализация трёх участников теоремы 3.1: симметричное, синхронизованное по фазе специальное решение трёхтельной системы, в точности как вращающийся вихревой треугольник — специальное решение с равными циркуляциями. Расстояние в молекуле s<em> играет сторону лагранжева треугольника a: оба фиксируются не двухтельным законом, а требованием равновесия каждого участника под совместным действием двух других — здесь F(s</em>) + F(2s*) = 0, там уравнения центральной конфигурации. Дыхательная мода ω<sub>2</sub> — аналог радиальной модуляции хореографии, а разность фаз Δφ управляет связыванием так же, как отношение циркуляций управляет вихревым треугольником: её изменение проводит систему через симметричные и несимметричные конфигурации вплоть до потери связывания (Δφ = π/4 — аналог выхода из острова устойчивости). Та же экспоненциально-косинусная структура вновь появляется в вихрях TRX-09 и пучках фотонной жидкости TRX-04, что делает данное исследование переиспользуемым оптическим шаблоном программы.</p>
+<table>
+<thead>
+<tr>
+<th>Величина исследования</th>
+<th>Аналог в TRIVORTEX</th>
+<th>Комментарий</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Три синхронизованных импульса</td>
+<td>три тела теоремы 3.1</td>
+<td>обе системы — хореографические триады</td>
+</tr>
+<tr>
+<td>Синхронизация фаз Δφ = 0</td>
+<td>равные циркуляции Γ</td>
+<td>симметричное специальное решение</td>
+</tr>
+<tr>
+<td>Расстояние в молекуле s*</td>
+<td>сторона лагранжева треугольника a</td>
+<td>фиксируется коллективным балансом сил</td>
+</tr>
+<tr>
+<td>Баланс F(s<em>) + F(2s</em>) = 0</td>
+<td>каждый вихрь чувствует два других</td>
+<td>механизм трёхтельного сжатия</td>
+</tr>
+<tr>
+<td>Дыхательная мода ω<sub>2</sub></td>
+<td>радиальная модуляция хореографии</td>
+<td>малые колебания около центральной конфигурации</td>
+</tr>
+</tbody>
+</table>
+<h2>5. Численный метод</h2>
+<p>Равновесия вычисляются методом скобок. Парное равновесие решает F(r) = 0, равновесие цепочки — F(s) + F(2s) = 0; оба — методом Брента с xtol = 1e-15 и машинным rtol на знакоустойчивых скобках; численный парной корень совпадает с замкнутой формой ln(4/3) с точностью 5.6e-17. Отталкивающий характер противофазной синхронизации установлен исчерпывающе, а не выборкой: минимум F(r, π/2) по диапазону r ∈ [0.05, 20] на сетке из 4000 точек равен +6e-9 &gt; 0, то есть сила нигде не становится притягивающей.</p>
+<p>Динамика интегрируется явной схемой Дормана–Принса 8(5,3) (DOP853). Релаксационный прогон стартует с позиций {1.0, 2.0, 3.5} с нулевыми скоростями при демпфировании γ_d = 1.0 (сверхвязкий, «доплер-охлаждаемый» режим лазера с синхронизацией мод) и идёт до T = 90 с rtol = 1e-11, atol = 1e-12 и max_step = 0.2. Консервативный прогон держит γ_d = 0, смещает средний импульс на +0.01 от идеальной молекулы и интегрирует до T = 100 с rtol = atol = 1e-12 и max_step = 0.05, снимая 2000 точек; дрейф энергии за весь прогон равен 1.776357e-15 против допуска 1e-10.</p>
+<p>Дыхательная частота извлекается дважды и независимо. Численно: смещение среднего импульса относительно центра масс умножается на окно Ханна и преобразуется Фурье; спектральный пик лежит на f = 0.469765. Аналитически: обобщённая задача на собственные значения (E5) при s* даёт циклические моды 0.390507 и 0.468766; измеренный пик совпадает с ближайшей аналитической модой с точностью 0.21 %, с запасом внутри допуска 1 %. Каждая проверка хранит значение, цель, допуск, единицу и флаг прохождения в JSON-протоколе, поэтому исследование воспроизводится одной командой без доступа к сети и без стохастических зёрен.</p>
+<h2>6. Результаты и анализ</h2>
+<h3>fig01 potential landscape</h3>
+<p><img alt="Ландшафт взаимодействия: фазозависимый парный потенциал и силовой баланс трёхзвенной цепочки." src="../figures/fig01_potential_landscape.png" /></p>
+<p><em>Ландшафт взаимодействия: фазозависимый парный потенциал и силовой баланс трёхзвенной цепочки.</em>
+Панель (а) показывает V(r, Δφ) для четырёх синхронизаций: связывающая яма существует лишь при |Δφ| &lt; π/4, имеет минимум в r<sub>0</sub> = 0.287682 и вырождается в чистое отталкивание в противофазном случае. Панель (б) показывает баланс концевого импульса F(s) + F(2s) = 0: корень s* = 0.201893 лежит на 29.8 % ниже парного значения r<sub>0</sub> — подлинное трёхтельное сжатие.</p>
+<h3>fig02 molecule formation</h3>
+<p><img alt="Главный результат: релаксация случайного триплета в равноотстоящую солитонную молекулу." src="../figures/fig02_molecule_formation.png" /></p>
+<p><em>Главный результат: релаксация случайного триплета в равноотстоящую солитонную молекулу.</em>
+Стартуя с позиций {1.0, 2.0, 3.5} при сверхвязком демпфировании, три мировые линии за T = 90 приходят к равноотстоящему триплету; сортированные расстояния d<sub>1</sub>(t) и d<sub>2</sub>(t) сходятся к равновесию цепочки s<em> = 0.201893 (конечное расхождение 2.2e-16, отклонение от s</em> 2.8e-17), заметно ниже парного значения r<sub>0</sub> = 0.2877, нанесённого для сравнения.</p>
+<h3>fig03 phase sweep</h3>
+<p><img alt="Развёртка по фазе синхронизации: равновесная геометрия и размягчение мод." src="../figures/fig03_phase_sweep.png" /></p>
+<p><em>Развёртка по фазе синхронизации: равновесная геометрия и размягчение мод.</em>
+Оба равновесия расходятся при приближении к порогу связывания Δφ = π/4: s* растёт от 0.201893 при Δφ = 0 через 0.719380 при Δφ = 0.5 рад до 2.885 при Δφ = 0.75 рад, следя за парным значением. Цепочечные моды в ответ размягчаются — от 2.4536 и 2.9453 рад в пресете до 0.1092 и 0.1982 рад — давая полную карту устойчивости синхронизованной молекулы.</p>
+<h3>fig04 breathing dynamics</h3>
+<p><img alt="Динамика консервативной молекулы: временной ряд дыхания и спектр против гессиановского предсказания." src="../figures/fig04_breathing_dynamics.png" /></p>
+<p><em>Динамика консервативной молекулы: временной ряд дыхания и спектр против гессиановского предсказания.</em>
+При смещении среднего импульса на 0.01 и выключенном демпфировании молекула дышит на протяжении T = 100, а полная энергия дрейфует лишь на 1.8e-15 (DOP853, rtol = atol = 1e-12). Спектр Фурье смещения среднего импульса имеет пик на f = 0.469765 против аналитических гессиановских мод 0.468766 и 0.390507 — согласие 0.21 %, на порядок внутри допуска 1 %.</p>
+<p><strong>Равновесия.</strong> Численный парной корень воспроизводит замкнутую форму r<sub>0</sub> = L·ln(2C<sub>1</sub>/C<sub>2</sub>) = ln(4/3) ≈ 0.287682 с точностью 5.6e-17 — машинный нуль. Исчерпывающий противофазный тест возвращает min F(r, π/2) = +6e-9 &gt; 0 по r ∈ [0.05, 20], подтверждая, что связывание управляется фазовым множителем cos 2Δφ и полностью исчезает при и за пределами Δφ = π/4. Кривизна ямы в парном минимуме V″(r<sub>0</sub>) = 2.25 фиксирует парной дыхательный масштаб √(3V″(r<sub>0</sub>)) ≈ 2.5981, с которым сравнивается цепочечный спектр.</p>
+<p><strong>Сборка молекулы.</strong> При сверхвязкой релаксации из {1.0, 2.0, 3.5} сортированные расстояния сходятся к d<sub>1</sub> = d<sub>2</sub> = 0.2018926516; конечное расхождение между ними 2.2e-16, а отклонение от независимо вычисленного равновесия цепочки s* = 0.2018926516 — 2.8e-17: оба на машинном уровне, против допусков 1e-8 и 1e-6. Расстояние лежит на 29.8 % ниже парного значения r<sub>0</sub> = 0.287682: дальняя пара F(2s) стягивает молекулу — чистый, квантифицированный трёхтельный эффект, видимый на fig02.</p>
+<p><strong>Карта устойчивости.</strong> Развёртка фазы синхронизации Δφ от 0 до 0.75 рад показывает расхождение обоих равновесий при приближении к порогу связывания π/4 ≈ 0.7854: s* растёт от 0.201893 через 0.719380 (Δφ = 0.5 рад) до 2.885 (Δφ = 0.75 рад). Цепочечные моды размягчаются в том же направлении — от 2.4536 и 2.9453 рад в пресете до 0.1092 и 0.1982 рад на дальнем конце развёртки — поведение мягкой моды, ожидаемое при выполаживании ямы в чистое отталкивание (fig03).</p>
+<p><strong>Дыхание и инварианты.</strong> Консервативная молекула стабильно дышит на протяжении T = 100 (fig04a), а полная энергия сохраняется до 1.776357e-15 — на пять порядков внутри допуска 1e-10. Спектр Фурье смещения среднего импульса имеет пик на f = 0.469765 против аналитических гессиановских мод 0.468766 и 0.390507 (fig04b): согласие 0.21 %, на порядок внутри допуска 1 %. Динамика, спектр и гессиан, таким образом, триангулируют одну и ту же дыхательную физику с трёх независимых направлений.</p>
+<h3>Сводка верификации</h3>
+<table>
+<thead>
+<tr>
+<th>Проверка</th>
+<th>Значение</th>
+<th>Цель</th>
+<th>Допуск</th>
+<th>Прошла</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>`pair_equilibrium_numeric_vs_analytic`</td>
+<td>5.55112e-17</td>
+<td>0</td>
+<td>1e-10</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`antiphase_pi2_purely_repulsive`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`molecule_final_spacings_equal`</td>
+<td>2.22045e-16</td>
+<td>0</td>
+<td>1e-08</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`molecule_final_spacing_equals_s_star`</td>
+<td>2.77556e-17</td>
+<td>0</td>
+<td>1e-06</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`conservative_energy_drift`</td>
+<td>1.77636e-15</td>
+<td>0</td>
+<td>1e-10</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`breathing_mode_frequency`</td>
+<td>0.469765</td>
+<td>0.468766</td>
+<td>0.0047</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p><em>(status: </em><em>PASS</em><em>, mode: full)</em></p>
+<h2>7. Обсуждение</h2>
+<p>Редуцированная модель сознательно минимальна: точечные импульсы, парный потенциал без запаздывания и динамики усиления, демпфирование в виде переключаемого члена. В этих допущениях каждый вывод — точное утверждение об определяющих уравнениях, а не симуляция конкретного лазера. Естественные расширения — дисперсия третьего порядка и самосдвиг частоты (делающие силу несимметричной и неконсервативной), непрерывные cw-фоны, более крупные молекулы N &gt; 3 с дефектными модами и полное интегрирование НУШ для того же сценария — каждое сохраняет установленный здесь верификационный стиль.</p>
+<p>Диапазон параметров покрывает общий режим закона Гордона–Молленауэра, а не конкретный резонатор: C<sub>1</sub>/C<sub>2</sub> = 2/3 помещает парную яму на r<sub>0</sub> ≈ 0.29 длины хвоста глубиной 0.25, с запасом разрешённой на сетке интегрирования. Фазовая развёртка сознательно подходит к порогу связывания Δφ = π/4, где равновесие расходится, а гессиан приобретает нулевую моду; точно на пороге скобки brentq перестают существовать, и код развёртки сообщает об этом как о жёсткой границе, а не прячет за регуляризованной формулой. Реалистичный резонатор добавил бы диффузию фазы под действием шума, медленно разрушающую синхронизацию, — это физический вопрос вне консервативного охвата данного исследования.</p>
+<p>В рамках программы это исследование питает TRX-04, переносящее парное взаимодействие в поперечную плоскость и получающее вращающийся лагранжев треугольник пучков в керровской фотонной жидкости; TRX-08, заменяющее оптические импульсы лазерно-охлаждёнными ионами и воспроизводящее ту же структуру «расстояние/дыхание» с кулоновским хвостом; и TRX-09 — гидродинамический якорь, где фазы становятся циркуляциями. Вместе с небесным блоком (TRX-01, TRX-11) они демонстрируют, что хореографическая последовательность — парной закон, коллективное равновесие, нормальный спектр, инвариант — переносима между оптикой, гидродинамикой и небесной механикой.</p>
+<h2>8. Выводы</h2>
+<ol>
+<li>Парной закон связывания точен: численное равновесие воспроизводит r<sub>0</sub> = L·ln(2C<sub>1</sub>/C<sub>2</sub>) = ln(4/3) ≈ 0.287682 с точностью 5.6e-17.</li>
+<li>Связывание — эффект выбора фазы: противофазная синхронизация Δφ = π/2 чисто отталкивающая на r ∈ [0.05, 20] (мин. сила +6e-9 &gt; 0), а яма существует лишь при |Δφ| &lt; π/4.</li>
+<li>Случайный триплет релаксирует в равноотстоящую молекулу: d<sub>1</sub> = d<sub>2</sub> = 0.2018926516 с расхождением 2.2e-16 и отклонением от аналитического равновесия цепочки s* всего 2.8e-17.</li>
+<li>Молекула сжата на 29.8 % ниже парного расстояния притяжением дальней пары (F(s<em>) + F(2s</em>) = 0) — квантифицированный подлинный трёхтельный эффект.</li>
+<li>Консервативная молекула — чистая инвариантная система: дрейф энергии 1.8e-15 за t = 100 при DOP853 rtol = atol = 1e-12.</li>
+<li>Дыхательный спектр верифицирован: пик Фурье f = 0.469765 против гессиановской моды 0.468766 (согласие 0.21 %, допуск 1 %), а фазовая развёртка даёт полную карту устойчивости с размягчением обеих мод до нуля при Δφ = π/4.</li>
+</ol>
+<h2>9. Список литературы</h2>
+<ol>
+<li>Zabusky, N. J., Kruskal, M. D. (1965). <em>Interaction of "solitons" in a collisionless plasma and the recurrence of initial states.</em> Phys. Rev. Lett. 15, 240–243.</li>
+<li>Hasegawa, A., Tappert, F. (1973). <em>Transmission of stationary nonlinear optical pulses in dispersive dielectric fibers. I. Anomalous dispersion.</em> Appl. Phys. Lett. 23, 142–144.</li>
+<li>Mollenauer, L. F., Stolen, R. H., Gordon, J. P. (1980). <em>Experimental observation of picosecond pulse narrowing and solitons in optical fibers.</em> Phys. Rev. Lett. 45, 1095–1098.</li>
+<li>Karpman, V. I., Solov'ev, V. V. (1981). <em>A perturbational approach to the two-soliton systems with third-order dispersion.</em> Physica D 3, 487–502.</li>
+<li>Gordon, J. P. (1983). <em>Interaction forces among solitons in optical fibers.</em> Optics Letters 8, 596–598.</li>
+<li>Malomed, B. A. (1991). <em>Multistability and cyclic dynamics of solitons in dispersive media.</em> Phys. Rev. A 44, 6954.</li>
+<li>Stratmann, M., Pagel, T., Mitschke, F. (2005). <em>Experimental observation of temporal soliton molecules.</em> Phys. Rev. Lett. 95, 143902.</li>
+<li>Herink, G., Kurtz, F., Jalali, B., Solli, D. R., Ropers, C. (2017). <em>Real-time spectral interferometry probes the internal dynamics of femtosecond soliton molecules.</em> Science 356, 50–54.</li>
+</ol>
+<h3>BibTeX</h3>
+<p>```bibtex
+@article{gordon1983,
+  author  = {Gordon, J. P.},
+  title   = {Interaction forces among solitons in optical fibers},
+  journal = {Optics Letters},
+  year    = {1983}, volume = {8}, pages = {596--598}}
+
+@article{karpman1981,
+  author  = {Karpman, V. I. and Solov'ev, V. V.},
+  title   = {A perturbational approach to the two-soliton systems with third-order dispersion},
+  journal = {Physica D},
+  year    = {1981}, volume = {3}, pages = {487--502}}
+
+@article{stratmann2005,
+  author  = {Stratmann, M. and Pagel, T. and Mitschke, F.},
+  title   = {Experimental observation of temporal soliton molecules},
+  journal = {Physical Review Letters},
+  year    = {2005}, volume = {95}, pages = {143902}}
+
+@article{herink2017,
+  author  = {Herink, G. and Kurtz, F. and Jalali, B. and Solli, D. R. and Ropers, C.},
+  title   = {Real-time spectral interferometry probes the internal dynamics of femtosecond soliton molecules},
+  journal = {Science},
+  year    = {2017}, volume = {356}, pages = {50--54}}
+```</p>
+<h2>Приложение A. Таблица параметров</h2>
+<table>
+<thead>
+<tr>
+<th>Символ</th>
+<th>Значение</th>
+<th>Роль</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C<sub>1</sub>, C<sub>2</sub></td>
+<td>2, 3</td>
+<td>коэффициенты потенциала: отталкивание ядра / притяжение хвостов</td>
+</tr>
+<tr>
+<td>L</td>
+<td>1</td>
+<td>длина хвоста; единица всех длин</td>
+</tr>
+<tr>
+<td>m</td>
+<td>1</td>
+<td>масса импульса; единица массы</td>
+</tr>
+<tr>
+<td>Δφ</td>
+<td>0 (пресет); развёртка 0 … 0.75 рад</td>
+<td>фаза синхронизации; порог связывания π/4</td>
+</tr>
+<tr>
+<td>r<sub>0</sub></td>
+<td>ln(4/3) ≈ 0.287682</td>
+<td>парное равновесие при Δφ = 0</td>
+</tr>
+<tr>
+<td>s*</td>
+<td>0.2018926516</td>
+<td>равновесие цепочки, корень F(s) + F(2s) = 0</td>
+</tr>
+<tr>
+<td>V″(r<sub>0</sub>)</td>
+<td>2.25</td>
+<td>кривизна парной ямы в минимуме</td>
+</tr>
+<tr>
+<td>релаксация</td>
+<td>{1.0, 2.0, 3.5}, γ_d = 1, T = 90</td>
+<td>сборочный прогон, DOP853 rtol = 1e-11</td>
+</tr>
+<tr>
+<td>консервативный прогон</td>
+<td>+0.01 среднему импульсу, γ_d = 0, T = 100</td>
+<td>дыхательный прогон, DOP853 rtol = atol = 1e-12</td>
+</tr>
+<tr>
+<td>цепочечные моды</td>
+<td>2.4536, 2.9453 рад (0.390507, 0.468766 циклические)</td>
+<td>спектр нормальных мод при s*</td>
+</tr>
+</tbody>
+</table>
+<h2>Приложение B. Воспроизведение</h2>
+<p>```bash
+python3 research/TRX-03-soliton-molecule/code/trx03_soliton_molecule.py --smoke     # < 20 с
+python3 research/TRX-03-soliton-molecule/code/trx03_soliton_molecule.py              # полный прогон, 1.2 s (4.7 s with --figures)
+python3 research/TRX-03-soliton-molecule/code/trx03_soliton_molecule.py --figures   # + графики 300 DPI
+```</p>
+<p>Полное время выполнения на референсной машине — 1.2 s (4.7 s with --figures); smoke-режим укладывается в 20 секунд и используется CI репозитория.</p>
+<h2>Приложение C. Окружение</h2>
+<p>Python ≥ 3.11, numpy ≥ 2.0, scipy ≥ 1.14, matplotlib ≥ 3.9; без доступа к сети и без стохастических зёрен — каждый прогон бит-в-бит воспроизводим на референсной машине.</p></div></div>
+<div class="ending">
+  <div class="end-title">TRIVORTEX</div>
+  <div class="end-small">The Three-Body Problem in the Vortex Model</div>
+  <div class="end-rule"></div>
+  <div class="colophon-line"><b>Three-Soliton Molecule in a Mode-Locked Fiber Laser</b> — research monograph of the TRIVORTEX program, studying the three-body problem in the vortex model and its laser, celestial-mechanical and quantum crossings.</div><div class="colophon-line">Full verification protocol: <b>results JSON + figures + code</b> in research/TRX-03-soliton-molecule/; reproduction commands in Appendix B.</div>
+  <div class="end-small">
+    Isaev Iskhak Khamzatovich · ORCID 0009-0003-7299-0701<br>
+    DOI (concept) 10.5281/zenodo.21825393 · DOI (version) 10.5281/zenodo.21825394<br>
+    License IPL-RP-1.0 · v1.0.0 · 2026-10-07
+  </div>
+</div>
+
+</body>
+</html>

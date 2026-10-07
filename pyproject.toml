@@ -1,0 +1,79 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "trivortex"
+version = "1.0.0"
+description = "TRIVORTEX: the three-body (and N-body) problem in the vortex model with the Chaplygin topological integral - executable document and independent verification ladder"
+readme = "README.md"
+license = {file = "LICENSE.md"}
+authors = [
+    {name = "Isaev Iskhak Khamzatovich", email = "aslan08_05@mail.ru"}
+]
+keywords = ["three-body-problem", "vortex-dynamics", "Chaplygin-integral", "Lagrange-solution", "choreographic-solutions", "Hofstadter-Hamiltonian", "verification-ladder"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "matplotlib>=3.7",
+    "mpmath>=1.3",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "ruff>=0.1", "black>=23.0", "pre-commit>=3.0"]
+docs = ["mkdocs>=1.5", "mkdocs-material>=9.0"]
+gpu = ["cupy-cuda12x>=13.0", "jax>=0.4"]
+
+[project.urls]
+Homepage = "https://wild8highlander.github.io/research-papers"
+Documentation = "https://wild8highlander.github.io/research-papers"
+Repository = "https://github.com/wild8highlander/research-papers"
+Issues = "https://github.com/wild8highlander/research-papers/issues"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP"]
+# Physics notation: uppercase math symbols (H, T, W, Gamma, C_Ch, ...) are
+# the domain language of the document — the pep8-naming and pyupgrade rules
+# that fight it are disabled deliberately.
+ignore = [
+    "E501",   # line length is governed by the formatter
+    "E402",   # module-level imports after the docstring banner (the document layout)
+    "F401",   # re-exported mirrors
+    "F841",   # loop bookkeeping variables
+    "N802", "N803", "N806",           # physics symbols in names/arguments/variables
+    "N807",                            # dunder-style method names in model classes
+    "UP009",                           # UTF-8 coding declarations kept deliberately
+    "F541",                            # banner f-strings without placeholders
+    "E741",                            # l/I single-letter math symbols
+    "E743", "E742",                    # ambiguous function/class names (physics)
+    "UP035", "UP006",                  # typing compatibility mirrors
+    "E401", "F402",                    # compact import banners of the mirrors
+    "E731",                            # scipy-style lambda assignments
+    "E702",                            # matrix rows written one-per-line
+    "UP031",                           # printf-style SVG/RTF templates
+    "I001",                            # import order mirrors the section map
+    "SIM", "B",                        # not enabled anyway; future-proofing
+]
+
+[tool.black]
+line-length = 100
+target-version = ["py310", "py311", "py312"]
+
+[tool.pytest.ini_options]
+testpaths = ["verification/tests"]
+python_files = ["test_*.py"]
+addopts = "-v --tb=short"

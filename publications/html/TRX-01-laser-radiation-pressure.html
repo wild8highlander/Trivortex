@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TRX-01 — Radiation-Pressure Restricted Three-Body Problem (Laser on Dust)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400&family=PT+Sans:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof renderMathInElement === 'function') {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '\\(', right: '\\)', display: false}
+      ], throwOnError: false
+    });
+  }
+});
+</script>
+<style>
+@page { size: 210mm 297mm; margin: 0; }
+:root {
+  --navy: #0A1730; --navy2: #0E2145; --header-fill: #2A3A55;
+  --gold: #D4AF37; --gold-l: #F0D98C;
+  --text: #1F2937; --muted: #6B7280;
+  --stripe: #F2F5FA; --code-bg: #F5F7FB; --border: #DCE3EF;
+}
+html, body {
+  margin: 0; padding: 0; width: 210mm;
+  background: #FFFFFF;               /* flow pages are white; dark pages are fixed-height */
+  color: var(--text);
+  font-family: 'PT Serif', 'Noto Serif', 'Liberation Serif', 'DejaVu Serif', serif;
+  font-size: 15px; line-height: 1.62;
+  line-break: strict; word-break: normal; overflow-wrap: break-word;
+}
+@media screen {
+  html { height: auto; display: flex; justify-content: center; background: #10131a; }
+  body { transform-origin: top center; margin: 20px auto; box-shadow: 0 8px 40px rgba(0,0,0,.5); }
+}
+
+/* ── Cover ─────────────────────────────────────────────────────────────── */
+.front-page {
+  width: 210mm; height: 297mm; box-sizing: border-box;
+  break-after: page; overflow: hidden; position: relative;
+  background:
+    radial-gradient(circle 8px at 691px 125px, #D4AF37 0 7px, transparent 8px),
+    radial-gradient(circle 5px at 584px 56px, #59C2FF 0 4px, transparent 5px),
+    radial-gradient(circle 4px at 154px 950px, #FF7A9E 0 3px, transparent 4px),
+    radial-gradient(circle 210px at 87% 9%, transparent 206px, rgba(212,175,55,.30) 208px, rgba(212,175,55,.30) 210px, transparent 212px),
+    radial-gradient(circle 130px at 74% 3%, transparent 126px, rgba(89,194,255,.26) 128px, rgba(89,194,255,.26) 130px, transparent 132px),
+    radial-gradient(circle 280px at 8% 94%, transparent 276px, rgba(212,175,55,.18) 278px, rgba(212,175,55,.18) 280px, transparent 282px),
+    linear-gradient(160deg, #0E2145 0%, #0A1730 62%, #081226 100%);
+  color: #E9EEF8;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 58px;
+}
+.fp-kicker {
+  display: flex; align-items: center; gap: 14px;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.5px; letter-spacing: 3.5px; color: #F0D98C; font-weight: 700;
+}
+.fp-title {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 34px; line-height: 1.16; font-weight: 700; color: #F4F7FD;
+  margin: 26px 0 12px 0; max-width: 156mm;
+}
+.fp-subtitle-ru {
+  font-size: 18.5px; line-height: 1.4; color: #D4AF37; font-style: italic;
+  max-width: 156mm; margin-bottom: 34px;
+}
+.fp-meta {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 9px 26px;
+  max-width: 156mm;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.5px; line-height: 1.45;
+  border-top: 1px solid rgba(212,175,55,.35);
+  border-bottom: 1px solid rgba(212,175,55,.35);
+  padding: 16px 2px;
+}
+.fp-meta .k { color: #8FA3C4; letter-spacing: 1.6px; font-size: 10.5px; text-transform: uppercase; }
+.fp-meta .v { color: #E9EEF8; margin-top: 2px; }
+.fp-abstract {
+  max-width: 156mm; margin-top: 26px; font-size: 12.5px; line-height: 1.6;
+  color: #B9C6DE; font-style: italic;
+}
+.fp-foot {
+  position: absolute; left: 58px; right: 58px; bottom: 40px;
+  display: flex; justify-content: space-between; align-items: flex-end;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 11px; letter-spacing: 2px; color: #8FA3C4; text-transform: uppercase;
+}
+.fp-foot b { color: #F0D98C; font-weight: 700; }
+
+/* ── Flowing content ───────────────────────────────────────────────────── */
+.main-content { background: #FFFFFF; padding: 15mm 16mm 13mm 16mm; }
+
+h1, h2, h3, h4 {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  color: #0A1730; line-height: 1.25;
+  break-after: avoid; page-break-after: avoid;
+}
+.main-content h1 { font-size: 24px; margin: 6px 0 4px 0; }
+.main-content h2 {
+  font-size: 19.5px; margin: 26px 0 10px 0; padding-left: 12px;
+  border-left: 4px solid #D4AF37;
+}
+.main-content h3 { font-size: 16px; margin: 18px 0 8px 0; }
+.main-content h4 { font-size: 14.5px; margin: 14px 0 6px 0; color: #2A3A55; }
+p { margin: 0 0 9px 0; text-align: justify; hyphens: auto; }
+strong { color: #0A1730; }
+em { color: inherit; }
+a { color: #0E2145; text-decoration: none; border-bottom: 1px solid #D4AF37; }
+ul, ol { margin: 4px 0 10px 0; padding-left: 22px; }
+li { margin-bottom: 4px; break-inside: avoid; text-align: left; }
+
+table {
+  width: 100%; border-collapse: collapse; margin: 10px 0 14px 0;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.3px; line-height: 1.4;
+}
+thead { display: table-header-group; }
+tr { break-inside: avoid; page-break-inside: avoid; }
+th {
+  background: #2A3A55; color: #FFFFFF; text-align: left;
+  padding: 6px 9px; font-weight: 700; border: none;
+}
+td { padding: 5px 9px; border-bottom: 1px solid #DCE3EF; vertical-align: top; }
+tbody tr:nth-child(odd) td { background: #F2F5FA; }
+table, .table-wrap { break-inside: auto; }
+thead + tbody tr:first-child { break-before: avoid; }
+
+pre {
+  background: #F5F7FB; border: 1px solid #DCE3EF; border-left: 3px solid #D4AF37;
+  padding: 10px 13px; margin: 10px 0 14px 0; border-radius: 4px;
+  font-family: 'JetBrains Mono', 'DejaVu Sans Mono', 'Liberation Mono', monospace;
+  font-size: 11.6px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: break-word;
+  break-inside: avoid; page-break-inside: avoid;
+}
+code {
+  font-family: 'JetBrains Mono', 'DejaVu Sans Mono', 'Liberation Mono', monospace;
+  font-size: 12.6px; background: #F5F7FB; padding: 1px 4px; border-radius: 3px;
+}
+pre code { background: transparent; padding: 0; font-size: 11.6px; }
+
+blockquote {
+  margin: 10px 0 12px 0; padding: 8px 14px; border-left: 3px solid #D4AF37;
+  background: #F5F7FB; color: #0E2145; font-style: italic;
+  break-inside: avoid;
+}
+hr { border: none; border-top: 1px solid #DCE3EF; margin: 16px 0; }
+
+/* equations */
+.katex-display { margin: 12px 0 14px 0; max-width: 100%; overflow: hidden auto; }
+.eq-block { break-inside: avoid; page-break-inside: avoid; }
+
+/* language part banners */
+.part-banner {
+  break-inside: avoid; break-after: avoid;
+  margin: 26px 0 14px 0; padding: 13px 18px;
+  background: #0E2145; color: #F0D98C; border-radius: 6px;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+}
+.part-banner .pb-title { font-size: 16.5px; font-weight: 700; letter-spacing: 1.2px; }
+.part-banner .pb-sub { font-size: 11.5px; color: #8FA3C4; margin-top: 3px; letter-spacing: .4px; }
+
+/* colophon */
+.ending {
+  width: 210mm; height: 297mm; box-sizing: border-box;
+  break-before: page; overflow: hidden; position: relative;
+  background: linear-gradient(200deg, #0E2145 0%, #0A1730 60%, #081226 100%);
+  color: #E9EEF8;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 58px;
+}
+.ending .colophon-line { max-width: 150mm; font-size: 13.5px; line-height: 1.7; color: #B9C6DE; }
+.ending .colophon-line b { color: #F0D98C; }
+.ending .end-rule { width: 64px; height: 26px; margin: 10px 0 8px 0;
+  background: linear-gradient(90deg, #D4AF37 0 64px, transparent 64px) top/100% 6px no-repeat; }
+.ending .end-title {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 26px; font-weight: 700; color: #F4F7FD; letter-spacing: 1px;
+}
+.ending .end-small {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 11.5px; color: #8FA3C4; letter-spacing: 2px; text-transform: uppercase;
+  margin-top: 26px; line-height: 2;
+}
+</style>
+</head>
+<body>
+
+<div class="front-page">
+  <div class="fp-kicker"><span>TRIVORTEX RESEARCH PROGRAM · TRX-01</span></div>
+  <div class="fp-title">Radiation-Pressure Restricted Three-Body Problem (Laser on Dust)</div>
+  <div class="fp-subtitle-ru">Фотогравитационная ограниченная задача трёх тел (лазер на пылевую частицу)</div>
+  <div class="fp-meta"><div><div class="k">Author</div><div class="v">Isaev Iskhak Khamzatovich<br><span style="color:#8FA3C4">ORCID 0009-0003-7299-0701</span></div></div><div><div class="k">DOI</div><div class="v">10.5281/zenodo.21825394</div></div><div><div class="k">Study</div><div class="v">TRX-01</div></div><div><div class="k">Date</div><div class="v">2026-10-06</div></div><div><div class="k">Code</div><div class="v"><code style="background:rgba(212,175,55,.12);color:#F0D98C;padding:1px 5px;border-radius:3px">code/trx01_laser_radiation_pressure.py</code></div></div><div><div class="k">Data</div><div class="v"><code style="background:rgba(212,175,55,.12);color:#F0D98C;padding:1px 5px;border-radius:3px">results/trx01_results.json</code></div></div></div>
+  <div class="fp-abstract">This monograph treats the circular restricted three-body problem in which the primary of mass 1 − μ is continuously illuminated by a laser, so that a massless particle feels the renormalized attraction (1 − β)·G(1 − μ)/r² with β the photon-to-gravity force ratio. The study establishes the machine-precision baseline of the laser-dressed problem for the Earth–Moon mass parameter μ = 0.0121505856: (i) at β = 0 the computed L1 abscissa 0.836915126 reproduces the published reference 0.8369151 within 5e-6; (ii) the triangular point L4 migrates monotonically toward the radiating primary, reaching a displacement of ≈ 4.1e-2 at β = 0.1, with the direction confirmed by projection onto the primary line; (iii) the displaced L4 remains linearly marginally stable over the scanned range, the β = 0 spectral radius being 1.86e-16; (iv) the Jacobi integral is conserved along an orbit near the displaced point to 8.88e-16 over T = 20 at integrator tolerance 1e-12.</div>
+  <div class="fp-foot"><span>Monograph Edition · bilingual RU + EN</span><span><b>TRIVORTEX</b> · TRIVORTEX · v1.0.0 · 2026</span></div>
+</div>
+<div class="main-content"><div class="part-banner"><div class="pb-title">PART I · English Monograph</div><div class="pb-sub">Radiation-Pressure Restricted Three-Body Problem (Laser on Dust)</div></div><p><em>TRIVORTEX Research Program · v1.0.0 · Monograph Edition</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Study</td>
+<td>TRX-01</td>
+</tr>
+<tr>
+<td>Program</td>
+<td>TRIVORTEX — The Three-Body Problem in the Vortex Model</td>
+</tr>
+<tr>
+<td>Author</td>
+<td>Isaev Iskhak Khamzatovich (ORCID 0009-0003-7299-0701)</td>
+</tr>
+<tr>
+<td>DOI</td>
+<td>10.5281/zenodo.21825394</td>
+</tr>
+<tr>
+<td>Date</td>
+<td>2026-10-06</td>
+</tr>
+<tr>
+<td>Code</td>
+<td>`code/trx01_laser_radiation_pressure.py`</td>
+</tr>
+<tr>
+<td>Data</td>
+<td>`results/trx01_results.json`</td>
+</tr>
+</tbody>
+</table>
+<h2>Abstract</h2>
+<p>This monograph treats the circular restricted three-body problem in which the primary of mass 1 − μ is continuously illuminated by a laser, so that a massless particle feels the renormalized attraction (1 − β)·G(1 − μ)/r<sup>2</sup> with β the photon-to-gravity force ratio. The study establishes the machine-precision baseline of the laser-dressed problem for the Earth–Moon mass parameter μ = 0.0121505856: (i) at β = 0 the computed L1 abscissa 0.836915126 reproduces the published reference 0.8369151 within 5e-6; (ii) the triangular point L4 migrates monotonically toward the radiating primary, reaching a displacement of ≈ 4.1e-2 at β = 0.1, with the direction confirmed by projection onto the primary line; (iii) the displaced L4 remains linearly marginally stable over the scanned range, the β = 0 spectral radius being 1.86e-16; (iv) the Jacobi integral is conserved along an orbit near the displaced point to 8.88e-16 over T = 20 at integrator tolerance 1e-12. The laser thus appears as a massless actuator on the libration landscape, the foundation on which the stationkeeping application of TRX-12 is built.</p>
+<h2>Contents</h2>
+<ol>
+<li>Abstract</li>
+<li>
+<ol>
+<li>Introduction and historical context</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>Physical formulation</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>Mathematical model</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li>Connection to the TRIVORTEX framework</li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li>Numerical method</li>
+</ol>
+</li>
+<li>
+<ol start="6">
+<li>Results and analysis</li>
+</ol>
+</li>
+<li>
+<ol start="7">
+<li>Discussion</li>
+</ol>
+</li>
+<li>
+<ol start="8">
+<li>Conclusions</li>
+</ol>
+</li>
+<li>
+<ol start="9">
+<li>References
+Appendix A. Parameter table
+Appendix B. Reproduction</li>
+</ol>
+</li>
+</ol>
+<h2>1. Introduction and historical context</h2>
+<p>The equilateral solutions of the three-body problem were found by Joseph-Louis Lagrange in his 1772 <em>Essai sur le problème des trois corps</em>, and for more than a century they were regarded as mathematical curiosities. The discovery of the Trojan asteroids at the Sun–Jupiter L4 and L5 turned the Lagrange triangle into a real object of celestial mechanics, and Szebehely's 1967 monograph consolidated the restricted problem into the standard reference frame that every modern libration-point mission still uses. The triangular points are precisely the celestial twin of the same-sign vortex triangle studied in the TRIVORTEX monograph.</p>
+<p>The idea that radiation modifies gravity is equally classical. Radzievskii (1950) formulated the restricted problem with radiating masses, replacing the gravitational parameter of a luminous body by Gm(1 − β). Burns, Lamy and Soter (1979) systematized the radiation forces on small particles — radiation pressure, Poynting–Robertson drag and the Yarkovsky effect — creating the standard toolkit of dust dynamics. Simmons, McDonald and Ward (1985) then mapped the stability structure of the photogravitational restricted problem, showing that radiation pressure moves and destabilizes the equilibrium points in a fully predictable way.</p>
+<p>Lasers add a qualitatively new element to this classical story: coherence and directivity. A diffraction-limited beam delivers photon momentum to a chosen target indefinitely, which is the operating principle of proposed laser light sails, of laser debris-sweeping concepts and of laser-trapped dust dynamics. In all of these the illuminated object behaves as if the gravity of the source had been reduced by the factor (1 − β) — exactly the model studied here, with β treated as a free parameter because realistic AU-scale values (≈ 1.7e-11 … 1.7e-8 for our table) are tiny for dust but decisive for thin light sails.</p>
+<p>For TRIVORTEX the relevance is structural rather than technological. The Jacobi integral of the restricted problem plays the same organizing role as the Chaplygin integral C_Ch = r<sup>2</sup>(θ̇ − qA_θ) of the vortex model: both pin the orbit to a reduced phase space in which the choreography becomes solvable. Establishing that this integral survives laser dressing to machine precision is therefore the correct first step of the laser block of the research program (TRX-01, TRX-10, TRX-11, TRX-12).</p>
+<h2>2. Physical formulation</h2>
+<p>Planar CR3BP in the rotating frame. The two primaries move on circular orbits about their common barycenter; a massless particle responds to their gravity and to the radiation field of primary 1. In the rotating frame the particle is described by two coordinates and two velocities, and the entire stationkeeping problem reduces to the topography of one scalar function — the effective potential Ω.</p>
+<p>The radiation field enters through a single dimensionless coefficient. Photon momentum flux from the laser adds an outward force on illuminated particles that scales exactly like gravity in 1/r<sup>2</sup>, so its only effect on the CR3BP structure is the renormalization (1 − β) of the gravitational parameter of primary 1. All geometry of the libration landscape is then controlled by the pair (μ, β).</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>μ</td>
+<td>0.0121505856</td>
+<td>Earth–Moon mass parameter</td>
+</tr>
+<tr>
+<td>β</td>
+<td>{0, 0.01, 0.05, 0.1}</td>
+<td>radiation coefficient of primary 1</td>
+</tr>
+<tr>
+<td>m<sub>1</sub>, m<sub>2</sub></td>
+<td>1 − μ, μ</td>
+<td>primaries at (−μ, 0) and (1 − μ, 0)</td>
+</tr>
+<tr>
+<td>λ, D, Δ</td>
+<td>1 µm, 1 m, 1 AU</td>
+<td>diffraction-limited beam: waist w ≈ 1.82e5 m</td>
+</tr>
+<tr>
+<td>grain</td>
+<td>ρ = 3000 kg/m<sup>3</sup>, R = 1 µm, Q_pr = 1.3</td>
+<td>silicate dust test particle</td>
+</tr>
+<tr>
+<td>laser power</td>
+<td>10 kW … 10 MW</td>
+<td>gives β ≈ 1.7e-11 … 1.7e-8 at 1 AU (honest table)</td>
+</tr>
+</tbody>
+</table>
+<h2>3. Mathematical model</h2>
+<p>In the rotating frame the two primaries are fixed at (−μ, 0) and (1 − μ, 0). Summing the Newtonian attractions, the centrifugal term and the Coriolis term yields the equations of motion (E2) with the effective potential (E1); the Coriolis force does no work, which immediately produces the Jacobi integral (E3) by multiplying the equations of motion by the velocity and integrating. C_J is the single constant of the planar unperturbed restricted problem, and its level sets bound the accessible region — the zero-velocity curves.</p>
+<p>The laser enters only through (E1): the term (1 − μ)/r<sub>1</sub> becomes (1 − β)(1 − μ)/r<sub>1</sub>. Nothing else changes — in particular the Coriolis structure and the existence of the Jacobi integral are untouched, because radiation pressure is conservative here (no ablation, no drag). The libration points solve ∇Ω = 0; the collinear roots are found by bracketed bisection on sign-stable intervals, the triangular roots by a two-dimensional Newton iteration seeded at the classical configuration.</p>
+<p>Linear stability follows from the Jacobian of the first-order system at the fixed point, the 4 × 4 matrix (E5). For the classical problem the triangular point is linearly stable iff μ &lt; μ_Routh = ½(1 − √(23/27)) ≈ 0.03852; the Earth–Moon value 0.01215 sits comfortably inside the stable island, and the study tracks how the eigenbranches deform as the radiation renormalization grows.</p>
+<p><strong>Notation</strong></p>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>x, y</td>
+<td>particle coordinates in the rotating frame</td>
+</tr>
+<tr>
+<td>ẋ, ẏ</td>
+<td>particle velocities in the rotating frame</td>
+</tr>
+<tr>
+<td>Ω</td>
+<td>effective potential</td>
+</tr>
+<tr>
+<td>r<sub>1</sub>, r<sub>2</sub></td>
+<td>distances to primary 1 (radiating) and primary 2</td>
+</tr>
+<tr>
+<td>μ</td>
+<td>mass parameter, Earth–Moon: 0.0121505856</td>
+</tr>
+<tr>
+<td>β</td>
+<td>radiation coefficient, β = F_rad/F_grav</td>
+</tr>
+<tr>
+<td>C_J</td>
+<td>Jacobi constant</td>
+</tr>
+<tr>
+<td>λ</td>
+<td>eigenvalue of the linear-stability matrix</td>
+</tr>
+<tr>
+<td>T</td>
+<td>integration span</td>
+</tr>
+<tr>
+<td>w</td>
+<td>beam waist at target distance</td>
+</tr>
+<tr>
+<td>Q_pr</td>
+<td>radiation-pressure efficiency of the grain</td>
+</tr>
+</tbody>
+</table>
+<p><strong>(E1)</strong> Effective potential.</p>
+<p>$$\Omega(x,y) = \tfrac{1}{2}(x^2+y^2) + (1-\beta)\,\frac{1-\mu}{r_1} + \frac{\mu}{r_2}$$</p>
+<p><strong>(E2)</strong> Equations of motion in the rotating frame.</p>
+<p>$$\ddot{x} - 2\dot{y} = \partial_x\Omega, \qquad \ddot{y} + 2\dot{x} = \partial_y\Omega$$</p>
+<p><strong>(E3)</strong> Jacobi constant.</p>
+<p>$$C_J = 2\Omega - (\dot{x}^2 + \dot{y}^2)$$</p>
+<p><strong>(E4)</strong> Libration points (collinear roots by bracketed bisection, triangular by 2-D Newton).</p>
+<p>$$\nabla\Omega = 0$$</p>
+<p><strong>(E5)</strong> Linear-stability matrix at a libration point.</p>
+<p>$$\begin{pmatrix} 0 & 0 & 1 & 0\\ 0 & 0 & 0 & 1\\ \Omega_{xx} & \Omega_{xy} & 0 & 2\\ \Omega_{xy} & \Omega_{yy} & -2 & 0 \end{pmatrix}$$</p>
+<h2>4. Connection to the TRIVORTEX framework</h2>
+<p>The mapping is one-to-one at the structural level. The equilateral points L4/L5 are the celestial realization of the same central configuration that underlies the vortex triangle of Theorem 3.1; the Jacobi integral plays the role of the Chaplygin integral as the invariant that pins the orbit; and the radiation coefficient β acts on the restricted problem exactly as an effective circulation renormalization acts on the vortex triangle — both weaken one agent of the configuration without displacing it. The Routh-type marginal stability of L4 for μ &lt; μ_Routh has its direct counterpart in the stability of the rotating vortex triangle, which is why this study is the correct celestial anchor for the laser block of the program.</p>
+<table>
+<thead>
+<tr>
+<th>Quantity in this study</th>
+<th>TRIVORTEX analog</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L4/L5 equilateral points</td>
+<td>Lagrange triangle of Theorem 3.1</td>
+<td>same central configuration</td>
+</tr>
+<tr>
+<td>Jacobi constant C_J</td>
+<td>Chaplygin integral C_Ch</td>
+<td>the invariant that pins the orbit</td>
+</tr>
+<tr>
+<td>β (radiation renormalization)</td>
+<td>effective circulation Γ renormalization</td>
+<td>both weaken one "body" without moving it</td>
+</tr>
+<tr>
+<td>Marginal L4 stability (μ &lt; μ_Routh)</td>
+<td>rotating vortex triangle stability</td>
+<td>shared Routh-type criterion</td>
+</tr>
+</tbody>
+</table>
+<h2>5. Numerical method</h2>
+<p>Collinear libration points are roots of a scalar equation ∂Ω/∂x = 0 with ∂Ω/∂y = 0 automatically satisfied on the x-axis; each root is bracketed on a sign-stable interval and refined by bisection to machine precision. The triangular points are obtained by a two-dimensional Newton iteration on (∂Ω/∂x, ∂Ω/∂y) seeded at the classical configuration, converging quadratically for every scanned β.</p>
+<p>Stability is diagnosed through the eigenvalues of the 4 × 4 matrix (E5); the reported quantity is the spectral radius max|Re λ|. Orbits near the displaced L4 are integrated with an explicit Dormand–Prince 8(5,3) scheme at rtol = atol = 1e-12 over T = 20, and the Jacobi integral is monitored pointwise along the trajectory — the drift 8.88e-16 reported in the results is two orders below the stated acceptance tolerance 1e-10.</p>
+<p>Every quantity is dimensionless and every check stores its target, tolerance, unit and pass flag in the JSON protocol, so the entire study is reproducible from a single command with no network access and no stochastic seeds.</p>
+<h2>6. Results and analysis</h2>
+<h3>fig01 landscape</h3>
+<p><img alt="Libration-point landscape of the laser-dressed CR3BP: geometry at β = 0 versus β = 0.1." src="../figures/fig01_landscape.png" /></p>
+<p><em>Libration-point landscape of the laser-dressed CR3BP: geometry at β = 0 versus β = 0.1.</em>
+The panel pair shows the primaries, the five libration points and the zero-velocity topology; at β = 0.1 the triangular markers have visibly slid toward the radiating primary while the collinear roots drift along the x-axis.</p>
+<h3>fig02 l4 shift</h3>
+<p><img alt="Headline result: migration of the triangular point L4 toward the radiating primary as β grows." src="../figures/fig02_l4_shift.png" /></p>
+<p><em>Headline result: migration of the triangular point L4 toward the radiating primary as β grows.</em>
+The displacement norm grows monotonically from 0 to ≈ 4.1e-2 over β ∈ {0, 0.01, 0.05, 0.1}, and the direction test confirms the shift points at primary 1 (projection −0.035 &lt; 0).</p>
+<h3>fig03 stability scan</h3>
+<p><img alt="Linear-stability characteristics of the displaced L4 versus the radiation coefficient β." src="../figures/fig03_stability_scan.png" /></p>
+<p><em>Linear-stability characteristics of the displaced L4 versus the radiation coefficient β.</em>
+At β = 0 the spectral radius of the L4 fixed point is 1.86e-16 — marginal stability of the classical equilateral solution; the scan tracks how the eigenbranches respond to the radiation renormalization.</p>
+<h3>fig04 jacobi drift</h3>
+<p><img alt="Orbit integrated near the displaced L4 (β = 0.05) and conservation of the Jacobi integral." src="../figures/fig04_jacobi_drift.png" /></p>
+<p><em>Orbit integrated near the displaced L4 (β = 0.05) and conservation of the Jacobi integral.</em>
+Over T = 20 (about three revolutions) the DOP853 integration at rtol = atol = 1e-12 conserves C_J to 8.88e-16 — machine-level invariance for the structure-setting integral.</p>
+<p><strong>Baseline.</strong> At β = 0 the computed L1 abscissa is 0.836915126 against the published Earth–Moon value 0.8369151 — agreement to 2.6e-8, two orders of magnitude inside the 5e-6 acceptance tolerance. The β = 0 triangular point reproduces the classical configuration to 1e-14, and its spectral radius is 1.86e-16, confirming the marginal (neutral) stability expected for μ = 0.01215 &lt; μ_Routh ≈ 0.03852.</p>
+<p><strong>Migration.</strong> The displacement of L4 grows strictly monotonically over the scanned grid β ∈ {0, 0.01, 0.05, 0.1}: 0 → 4.6e-3 → 2.1e-2 → 4.1e-2. The direction test is passed at every β: the projection of the shift onto the line from L4 to the radiating primary is negative (−0.035 at β = 0.1), i.e. the triangular point slides toward the illuminated mass, in agreement with the perturbative prediction of Simmons et al. (1985). The collinear roots move as well: L1 shifts from 0.8369151 to 0.8369149 as β grows, toward primary 1.</p>
+<p><strong>Invariant.</strong> Along an orbit integrated near the displaced L4 (β = 0.05) over T = 20 with DOP853 at rtol = atol = 1e-12, the Jacobi constant drifts by only 8.88e-16 — machine-level conservation. This is the structural guarantee that the zero-velocity topology, and with it the accessibility of the displaced libration point, is preserved under laser dressing.</p>
+<p><strong>Engineering honesty.</strong> The laser scenario table shows that at Δ = 1 AU a diffraction-limited beam has waist w ≈ 1.82e5 m, and realistic powers (10 kW … 10 MW) give β ≈ 1.7e-11 … 1.7e-8 on silicate dust — far below the scanned range. The model therefore treats β as the free operational parameter; closing the gap is an exercise in beam engineering (larger apertures, shorter distances, thinner sails), not in physics.</p>
+<h3>Verification summary</h3>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Recorded value</th>
+<th>Target</th>
+<th>Tolerance</th>
+<th>Pass</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>`L1_abscissa_beta0`</td>
+<td>0.836915</td>
+<td>0.836915</td>
+<td>5e-06</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`L4_shift_monotone_in_beta`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`L4_shift_toward_radiating_primary`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`L4_max_Re_eigenvalue_beta0`</td>
+<td>1.8567e-16</td>
+<td>0</td>
+<td>1e-08</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`L1_shifts_toward_radiating_primary`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`Jacobi_drift_L4_orbit_beta0.05`</td>
+<td>8.88178e-16</td>
+<td>0</td>
+<td>1e-10</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p><em>(status: </em><em>PASS</em><em>, mode: full)</em></p>
+<h2>7. Discussion</h2>
+<p>The model is deliberately minimal: planar, circular, single radiating primary, and radiation pressure without ablation or drag. Within these assumptions all conclusions are exact statements about the governing equations rather than simulations of a specific mission. The natural extensions — elliptic orbit, both primaries radiating (the full Radzievskii problem), three-dimensional halo families around the displaced collinear points, and Poynting–Robertson drag as a dissipative channel — each preserve the verification style established here.</p>
+<p>The parameter regime is chosen for structural clarity rather than engineering realism: β up to 0.1 probes the far response of the landscape, while realistic dust values are many orders smaller. The honest laser table bridges the two regimes and shows that the relevant lever is the beam waist; a 10× larger aperture or a 10× shorter throw moves the achievable β by three orders of magnitude.</p>
+<p>Within the program, this study feeds TRX-12 (the same CR3BP with the laser as an actuator for stationkeeping), provides the displaced-point background for TRX-11 (unrestricted three-body dynamics) and pairs with TRX-05/TRX-09, which verify the vortex-side twin of the equilateral configuration. Together they close the loop between the celestial and the vortex formulation of TRIVORTEX.</p>
+<h2>8. Conclusions</h2>
+<ol>
+<li>The laser-dressed CR3BP reproduces the classical libration landscape at β = 0 to machine precision (L1 = 0.836915126 vs reference 0.8369151).</li>
+<li>The triangular point L4 migrates monotonically toward the radiating primary: 0 → 4.6e-3 → 2.1e-2 → 4.1e-2 over β ∈ {0, 0.01, 0.05, 0.1}.</li>
+<li>The migration direction is confirmed by projection (−0.035 at β = 0.1): the shift points at the illuminated mass.</li>
+<li>The displaced L4 remains linearly marginally stable over the scanned range; the β = 0 spectral radius is 1.86e-16.</li>
+<li>The Jacobi integral is conserved to 8.88e-16 over T = 20 at DOP853 rtol = atol = 1e-12 — the structural invariant survives laser dressing.</li>
+<li>Realistic AU-scale laser powers give tiny dust β (1.7e-11 … 1.7e-8); β is therefore treated as a free operational parameter, with the beam-engineering gap stated openly.</li>
+</ol>
+<h2>9. References</h2>
+<ol>
+<li>Lagrange, J.-L. (1772). <em>Essai sur le problème des trois corps.</em> Prix de l'Académie Royale des Sciences de Paris, tome IX.</li>
+<li>Radzievskii, V. V. (1950). <em>The restricted problem of three bodies taking account of light pressure.</em> Astron. Zh. 27, 250.</li>
+<li>Simmons, J. F. L., McDonald, A. J. C., Ward, J. C. (1985). <em>The restricted three-body problem with radiation pressure.</em> Celestial Mechanics 35, 145–187.</li>
+<li>Szebehely, V. (1967). <em>Theory of Orbits: The Restricted Problem of Three Bodies.</em> Academic Press.</li>
+<li>Murray, C. D., Dermott, S. F. (1999). <em>Solar System Dynamics.</em> Cambridge University Press.</li>
+<li>Burns, J. A., Lamy, P. L., Soter, S. (1979). <em>Radiation forces on small particles in the solar system.</em> Icarus 40, 1–48.</li>
+</ol>
+<h3>BibTeX</h3>
+<p>```bibtex
+@article{radzievskii1950,
+  author  = {Radzievskii, V. V.},
+  title   = {The restricted problem of three bodies taking account of light pressure},
+  journal = {Astronomicheskii Zhurnal},
+  year    = {1950}, volume = {27}, pages = {250}}
+
+@article{simmons1985,
+  author  = {Simmons, J. F. L. and McDonald, A. J. C. and Ward, J. C.},
+  title   = {The restricted three-body problem with radiation pressure},
+  journal = {Celestial Mechanics},
+  year    = {1985}, volume = {35}, pages = {145--187}}
+
+@book{szebehely1967,
+  author    = {Szebehely, V.},
+  title     = {Theory of Orbits: The Restricted Problem of Three Bodies},
+  publisher = {Academic Press}, year = {1967}}
+```</p>
+<h2>Appendix A. Parameter table</h2>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Value</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>μ</td>
+<td>0.0121505856</td>
+<td>mass parameter (Earth–Moon)</td>
+</tr>
+<tr>
+<td>β</td>
+<td>{0, 0.01, 0.05, 0.1}</td>
+<td>radiation coefficient of primary 1</td>
+</tr>
+<tr>
+<td>r<sub>1</sub>, r<sub>2</sub></td>
+<td>(x+μ, y), (x−1+μ, y)</td>
+<td>distances to the primaries</td>
+</tr>
+<tr>
+<td>C_J</td>
+<td>2Ω − v<sup>2</sup></td>
+<td>Jacobi constant</td>
+</tr>
+<tr>
+<td>μ_Routh</td>
+<td>≈ 0.03852</td>
+<td>classical triangular-stability threshold</td>
+</tr>
+<tr>
+<td>T</td>
+<td>20</td>
+<td>integration span for the invariant check</td>
+</tr>
+<tr>
+<td>rtol, atol</td>
+<td>1e-12</td>
+<td>DOP853 tolerances</td>
+</tr>
+</tbody>
+</table>
+<h2>Appendix B. Reproduction</h2>
+<p>```bash
+python3 research/TRX-01-laser-radiation-pressure/code/trx01_laser_radiation_pressure.py --smoke     # < 20 s
+python3 research/TRX-01-laser-radiation-pressure/code/trx01_laser_radiation_pressure.py              # full, 0.10 s
+python3 research/TRX-01-laser-radiation-pressure/code/trx01_laser_radiation_pressure.py --figures   # + 300-DPI figures
+```</p>
+<p>Full runtime on the reference machine: 0.10 s; smoke mode completes in under 20 seconds and is exercised by the repository CI.</p>
+<h2>Appendix C. Environment</h2>
+<p>Python ≥ 3.11, numpy ≥ 2.0, scipy ≥ 1.14, matplotlib ≥ 3.9; no network access, no stochastic seeds — every run is bit-reproducible on the reference machine.</p><div class="part-banner"><div class="pb-title">ЧАСТЬ II · Русская монография</div><div class="pb-sub">Фотогравитационная ограниченная задача трёх тел (лазер на пылевую частицу)</div></div><div lang="ru"><p><em>Исследовательская программа TRIVORTEX · v1.0.0 · Издание монографий</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Исследование / Study</td>
+<td>TRX-01</td>
+</tr>
+<tr>
+<td>Программа</td>
+<td>TRIVORTEX — задача трёх тел в вихревой модели</td>
+</tr>
+<tr>
+<td>Автор</td>
+<td>Исаев Исхак Хамзатович (ORCID 0009-0003-7299-0701)</td>
+</tr>
+<tr>
+<td>DOI</td>
+<td>10.5281/zenodo.21825394</td>
+</tr>
+<tr>
+<td>Дата</td>
+<td>2026-10-06</td>
+</tr>
+<tr>
+<td>Код</td>
+<td>`code/trx01_laser_radiation_pressure.py`</td>
+</tr>
+<tr>
+<td>Данные</td>
+<td>`results/trx01_results.json`</td>
+</tr>
+</tbody>
+</table>
+<h2>Аннотация</h2>
+<p>Монография посвящена ограниченной круговой задаче трёх тел, в которой массивное первичное тело массой 1 − μ непрерывно освещается лазером, так что безмассовая частица испытывает перенормированное притяжение (1 − β)·G(1 − μ)/r<sup>2</sup>, где β — отношение фотонной силы к гравитационной. Работа устанавливает базовую линию лазерно-одетой задачи с машинной точностью для массового параметра Земля–Луна μ = 0.0121505856: (i) при β = 0 вычисленная абсцисса L1 0.836915126 воспроизводит опубликованный эталон 0.8369151 с точностью 5e-6; (ii) треугольная точка L4 мигрирует монотонно к светящемуся телу, достигая смещения ≈ 4.1e-2 при β = 0.1, направление подтверждено проекцией на линию тел; (iii) смещённая L4 остаётся линейно нейтрально устойчивой во всём сканируемом диапазоне, спектральный радиус при β = 0 равен 1.86e-16; (iv) интеграл Якоби сохраняется вдоль орбиты возле смещённой точки на уровне 8.88e-16 за T = 20 при допуске интегратора 1e-12. Лазер выступает безмассовым актуатором ландшафта либрации — фундаментом, на котором строится приложение удержания в TRX-12.</p>
+<h2>Содержание</h2>
+<p><strong>Краткие сведения</strong></p>
+<table>
+<thead>
+<tr>
+<th>Аспект</th>
+<th>Значение</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Блок</td>
+<td>Лазерная оптика — исследование 01 из 12</td>
+</tr>
+<tr>
+<td>Модель</td>
+<td>лазерно-одетая плоская ОКЗТТ (Земля–Луна, μ = 0.0121505856)</td>
+</tr>
+<tr>
+<td>Ключевой инвариант</td>
+<td>интеграл Якоби C_J</td>
+</tr>
+<tr>
+<td>Главный результат</td>
+<td>L4 мигрирует на 4.1e-2 к светящемуся телу при β = 0.1</td>
+</tr>
+<tr>
+<td>Верификация</td>
+<td>6/6 проверок PASS (полный режим)</td>
+</tr>
+<tr>
+<td>Время выполнения</td>
+<td>0.10 с полный · &lt; 20 с smoke</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>Аннотация</li>
+<li>
+<ol>
+<li>Введение и исторический контекст</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>Физическая формулировка</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>Математическая модель</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li>Связь с фреймворком TRIVORTEX</li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li>Численный метод</li>
+</ol>
+</li>
+<li>
+<ol start="6">
+<li>Результаты и анализ</li>
+</ol>
+</li>
+<li>
+<ol start="7">
+<li>Обсуждение</li>
+</ol>
+</li>
+<li>
+<ol start="8">
+<li>Выводы</li>
+</ol>
+</li>
+<li>
+<ol start="9">
+<li>Список литературы
+Приложение A. Таблица параметров
+Приложение B. Воспроизведение</li>
+</ol>
+</li>
+</ol>
+<h2>1. Введение и исторический контекст</h2>
+<p>Равносторонние решения задачи трёх тел нашёл Жозеф-Луи Лагранж в «Essai sur le problème des trois corps» (1772), и более века они считались математическими диковинками. Открытие троянских астероидов в точках L4 и L5 Солнце–Юпитер превратило лагранжев треугольник в реальный объект небесной механики, а монография Себехея (1967) закрепила ограниченную задачу в стандартной системе отсчёта, которой пользуются все современные миссии к точкам либрации. Треугольные точки — точный небесный близнец одноимённого вихревого треугольника из монографии TRIVORTEX.</p>
+<p>Идея о том, что излучение модифицирует гравитацию, столь же классична. Радзиевский (1950) сформулировал ограниченную задачу со светящимися массами, заменив гравитационный параметр светящегося тела на Gm(1 − β). Бернс, Лэми и Сотер (1979) систематизировали радиационные силы на малых частицах — давление света, Пойнтинга–Робертсона и Ярковского — создав стандартный инструментарий динамики пыли. Симмонс, Макдональд и Уорд (1985) картировали структуру устойчивости фотогравитационной ограниченной задачи, показав, что давление излучения сдвигает и дестабилизирует положения равновесия полностью предсказуемым образом.</p>
+<p>Лазеры добавляют к этой классической истории качественно новый элемент: когерентность и направленность. Дифракционно-ограниченный пучок доставляет импульс фотонов выбранной цели неограниченно долго — так работают концепции лазерных парусов, лазерной уборки мусора и динамики лазерно-захваченной пыли. Во всех этих задачах освещённый объект ведёт себя так, будто гравитация источника уменьшена множителем (1 − β) — именно эта модель изучается здесь, причём β рассматривается как свободный параметр, поскольку реалистичные значения на шкале а.е. (≈ 1.7e-11 … 1.7e-8 из нашей таблицы) ничтожны для пыли, но решающие для тонких парусов.</p>
+<p>Для TRIVORTEX значимость структурна, а не технологична. Интеграл Якоби ограниченной задачи играет ту же организующую роль, что и интеграл Чаплыгина C_Ch = r<sup>2</sup>(θ̇ − qA_θ) вихревой модели: оба закрепляют орбиту в редуцированном фазовом пространстве, где хореография становится разрешимой. Поэтому установление того, что этот инвариант переживает лазерную «одежду» с машинной точностью, — правильный первый шаг лазерного блока программы (TRX-01, TRX-10, TRX-11, TRX-12).</p>
+<h2>2. Физическая формулировка</h2>
+<p>Плоская ОКЗТТ во вращающейся системе отсчёта. Два массивных тела движутся по круговым орбитам вокруг общего барицентра; безмассовая частица откликается на их гравитацию и на поле излучения первого тела. Во вращающейся системе частица описывается двумя координатами и двумя скоростями, а вся задача удержания сводится к топографии одной скалярной функции — эффективного потенциала Ω.</p>
+<p>Поле излучения входит через один безразмерный коэффициент. Поток импульса фотонов лазера создаёт выталкивающую силу, масштабирующуюся в точности как гравитация по закону 1/r<sup>2</sup>, поэтому единственный эффект на структуру ОКЗТТ — перенормировка (1 − β) гравитационного параметра первого тела. Вся геометрия ландшафта либрации управляется парой (μ, β).</p>
+<table>
+<thead>
+<tr>
+<th>Параметр</th>
+<th>Значение</th>
+<th>Смысл</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>μ</td>
+<td>0.0121505856</td>
+<td>массовый параметр Земля–Луна</td>
+</tr>
+<tr>
+<td>β</td>
+<td>{0, 0.01, 0.05, 0.1}</td>
+<td>коэффициент излучения первого тела</td>
+</tr>
+<tr>
+<td>m<sub>1</sub>, m<sub>2</sub></td>
+<td>1 − μ, μ</td>
+<td>тела в точках (−μ, 0) и (1 − μ, 0)</td>
+</tr>
+<tr>
+<td>λ, D, Δ</td>
+<td>1 мкм, 1 м, 1 а.е.</td>
+<td>дифракционно-ограниченный пучок: перетяжка w ≈ 1.82e5 м</td>
+</tr>
+<tr>
+<td>частица</td>
+<td>ρ = 3000 кг/м<sup>3</sup>, R = 1 мкм, Q_pr = 1.3</td>
+<td>пылевая пробная частица (силикат)</td>
+</tr>
+<tr>
+<td>мощность лазера</td>
+<td>10 кВт … 10 МВт</td>
+<td>даёт β ≈ 1.7e-11 … 1.7e-8 на 1 а.е. (честная таблица)</td>
+</tr>
+</tbody>
+</table>
+<h2>3. Математическая модель</h2>
+<p>Во вращающейся системе оба массивных тела неподвижны в точках (−μ, 0) и (1 − μ, 0). Суммируя ньютоновские притяжения, центробежный член и силу Кориолиса, получаем уравнения движения (E2) с эффективным потенциалом (E1); сила Кориолиса работы не совершает, откуда умножением уравнений на скорость и интегрированием немедленно следует интеграл Якоби (E3). C_J — единственный интеграл плоской невозмущённой ограниченной задачи, а его линии уровня ограничивают доступную область — кривые нулевой скорости.</p>
+<p>Лазер входит только через (E1): член (1 − μ)/r<sub>1</sub> превращается в (1 − β)(1 − μ)/r<sub>1</sub>. Больше ничего не меняется — в частности, структура Кориолиса и существование интеграла Якоби не затрагиваются, поскольку давление излучения здесь консервативно (без абляции и трения). Точки либрации решают ∇Ω = 0; коллинеарные корни находятся бисекцией в знакоустойчивых скобках, треугольные — двумерной итерацией Ньютона со стартом в классической конфигурации.</p>
+<p>Линейная устойчивость следует из якобиана системы первого порядка в положении равновесия — матрицы (E5) размера 4 × 4. Для классической задачи треугольная точка линейно устойчива тогда и только тогда, когда μ &lt; μ_Routh = ½(1 − √(23/27)) ≈ 0.03852; значение Земля–Луна 0.01215 comfortably сидит внутри устойчивого острова, и работа прослеживает деформацию ветвей собственных значений по мере роста радиационной перенормировки.</p>
+<p><strong>Нотация</strong></p>
+<table>
+<thead>
+<tr>
+<th>Символ</th>
+<th>Смысл</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>x, y</td>
+<td>координаты частицы во вращающейся системе</td>
+</tr>
+<tr>
+<td>ẋ, ẏ</td>
+<td>скорости частицы во вращающейся системе</td>
+</tr>
+<tr>
+<td>Ω</td>
+<td>эффективный потенциал</td>
+</tr>
+<tr>
+<td>r<sub>1</sub>, r<sub>2</sub></td>
+<td>расстояния до первого (светящегося) и второго тела</td>
+</tr>
+<tr>
+<td>μ</td>
+<td>массовый параметр, Земля–Луна: 0.0121505856</td>
+</tr>
+<tr>
+<td>β</td>
+<td>коэффициент излучения, β = F_изл/F_грав</td>
+</tr>
+<tr>
+<td>C_J</td>
+<td>интеграл Якоби</td>
+</tr>
+<tr>
+<td>λ</td>
+<td>собственное значение матрицы линейной устойчивости</td>
+</tr>
+<tr>
+<td>T</td>
+<td>интервал интегрирования</td>
+</tr>
+<tr>
+<td>w</td>
+<td>перетяжка пучка на дистанции цели</td>
+</tr>
+<tr>
+<td>Q_pr</td>
+<td>эффективность давления излучения на частицу</td>
+</tr>
+</tbody>
+</table>
+<p><strong>(E1)</strong> Эффективный потенциал.</p>
+<p>$$\Omega(x,y) = \tfrac{1}{2}(x^2+y^2) + (1-\beta)\,\frac{1-\mu}{r_1} + \frac{\mu}{r_2}$$</p>
+<p><strong>(E2)</strong> Уравнения движения во вращающейся системе.</p>
+<p>$$\ddot{x} - 2\dot{y} = \partial_x\Omega, \qquad \ddot{y} + 2\dot{x} = \partial_y\Omega$$</p>
+<p><strong>(E3)</strong> Интеграл Якоби.</p>
+<p>$$C_J = 2\Omega - (\dot{x}^2 + \dot{y}^2)$$</p>
+<p><strong>(E4)</strong> Точки либрации (коллинеарные — бисекцией в скобках, треугольные — 2-D Ньютоном).</p>
+<p>$$\nabla\Omega = 0$$</p>
+<p><strong>(E5)</strong> Матрица линейной устойчивости в точке либрации.</p>
+<p>$$\begin{pmatrix} 0 & 0 & 1 & 0\\ 0 & 0 & 0 & 1\\ \Omega_{xx} & \Omega_{xy} & 0 & 2\\ \Omega_{xy} & \Omega_{yy} & -2 & 0 \end{pmatrix}$$</p>
+<h2>4. Связь с фреймворком TRIVORTEX</h2>
+<p>Соответствие взаимно-однозначно на структурном уровне. Равносторонние точки L4/L5 — небесная реализация той же центральной конфигурации, что лежит в основе вихревого треугольника теоремы 3.1; интеграл Якоби играет роль интеграла Чаплыгина как инварианта, закрепляющего орбиту; а коэффициент излучения β действует на ограниченную задачу в точности так, как перенормировка эффективной циркуляции действует на вихревой треугольник, — оба ослабляют одного участника конфигурации, не перемещая его. Нейтральная устойчивость L4 типа Рауса при μ &lt; μ_Routh имеет прямой аналог в устойчивости вращающегося вихревого треугольника, поэтому данное исследование — правильный небесный якорь лазерного блока программы.</p>
+<table>
+<thead>
+<tr>
+<th>Величина исследования</th>
+<th>Аналог в TRIVORTEX</th>
+<th>Комментарий</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Равносторонние точки L4/L5</td>
+<td>лагранжев треугольник теоремы 3.1</td>
+<td>та же центральная конфигурация</td>
+</tr>
+<tr>
+<td>Интеграл Якоби C_J</td>
+<td>интеграл Чаплыгина C_Ch</td>
+<td>инвариант, закрепляющий орбиту</td>
+</tr>
+<tr>
+<td>β (радиационная перенормировка)</td>
+<td>перенормировка эффективной циркуляции Γ</td>
+<td>оба ослабляют одно «тело», не двигая его</td>
+</tr>
+<tr>
+<td>Нейтральная устойчивость L4 (μ &lt; μ_Routh)</td>
+<td>устойчивость вращающегося вихревого треугольника</td>
+<td>общий критерий типа Рауса</td>
+</tr>
+</tbody>
+</table>
+<h2>5. Численный метод</h2>
+<p>Коллинеарные точки либрации — корни скалярного уравнения ∂Ω/∂x = 0 при автоматическом ∂Ω/∂y = 0 на оси x; каждый корень окружается знакоустойчивой скобкой и уточняется бисекцией до машинной точности. Треугольные точки находятся двумерной итерацией Ньютона по (∂Ω/∂x, ∂Ω/∂y) со стартом в классической конфигурации; сходимость квадратична для всех сканируемых β.</p>
+<p>Устойчивость диагностируется через собственные значения матрицы (E5) 4 × 4; отчётная величина — спектральный радиус max|Re λ|. Орбиты возле смещённой L4 интегрируются явной схемой Дормана–Принса 8(5,3) с rtol = atol = 1e-12 на T = 20, а интеграл Якоби контролируется поточечно вдоль траектории — reported дрейф 8.88e-16 на два порядка ниже заявленного допуска 1e-10.</p>
+<p>Каждая величина безразмерна, и каждая проверка хранит цель, допуск, единицу и флаг прохождения в JSON-протоколе, так что всё исследование воспроизводится одной командой без доступа к сети и без стохастических зёрен.</p>
+<h2>6. Результаты и анализ</h2>
+<h3>fig01 landscape</h3>
+<p><img alt="Ландшафт точек либрации лазерно-одетой ОКЗТТ: геометрия при β = 0 и β = 0.1." src="../figures/fig01_landscape.png" /></p>
+<p><em>Ландшафт точек либрации лазерно-одетой ОКЗТТ: геометрия при β = 0 и β = 0.1.</em>
+Пара панелей показывает массивные тела, пять точек либрации и топологию нулевых скоростей; при β = 0.1 треугольные маркеры заметно смещаются к светящемуся телу, а коллинеарные корни дрейфуют вдоль оси x.</p>
+<h3>fig02 l4 shift</h3>
+<p><img alt="Главный результат: миграция треугольной точки L4 к светящемуся телу с ростом β." src="../figures/fig02_l4_shift.png" /></p>
+<p><em>Главный результат: миграция треугольной точки L4 к светящемуся телу с ростом β.</em>
+Норма смещения монотонно растёт от 0 до ≈ 4.1e-2 по β ∈ {0, 0.01, 0.05, 0.1}, а тест направления подтверждает сдвиг к первому телу (проекция −0.035 &lt; 0).</p>
+<h3>fig03 stability scan</h3>
+<p><img alt="Характеристики линейной устойчивости смещённой L4 в зависимости от коэффициента излучения β." src="../figures/fig03_stability_scan.png" /></p>
+<p><em>Характеристики линейной устойчивости смещённой L4 в зависимости от коэффициента излучения β.</em>
+При β = 0 спектральный радиус положения равновесия L4 равен 1.86e-16 — нейтральная устойчивость классического равностороннего решения; развёртка показывает отклик ветвей собственных значений на радиационную перенормировку.</p>
+<h3>fig04 jacobi drift</h3>
+<p><img alt="Орбита, интегрированная возле смещённой L4 (β = 0.05), и сохранение интеграла Якоби." src="../figures/fig04_jacobi_drift.png" /></p>
+<p><em>Орбита, интегрированная возле смещённой L4 (β = 0.05), и сохранение интеграла Якоби.</em>
+За T = 20 (около трёх оборотов) интегрирование DOP853 с rtol = atol = 1e-12 сохраняет C_J с точностью 8.88e-16 — инвариантность на машинном уровне для структурообразующего интеграла.</p>
+<p><strong>Базовая линия.</strong> При β = 0 вычисленная абсцисса L1 равна 0.836915126 против опубликованного значения Земля–Луна 0.8369151 — согласие на уровне 2.6e-8, на два порядка внутри допуска 5e-6. Треугольная точка при β = 0 воспроизводит классическую конфигурацию с точностью 1e-14, её спектральный радиус 1.86e-16 подтверждает нейтральную устойчивость, ожидаемую при μ = 0.01215 &lt; μ_Routh ≈ 0.03852.</p>
+<p><strong>Миграция.</strong> Смещение L4 строго монотонно растёт по сканируемой сетке β ∈ {0, 0.01, 0.05, 0.1}: 0 → 4.6e-3 → 2.1e-2 → 4.1e-2. Тест направления проходит при каждом β: проекция сдвига на линию от L4 к светящемуся телу отрицательна (−0.035 при β = 0.1), то есть треугольная точка скользит к освещённой массе — в согласии с пертурбативным предсказанием Симмонса и др. (1985). Коллинеарные корни тоже движутся: L1 смещается с 0.8369151 до 0.8369149 с ростом β, к первому телу.</p>
+<p><strong>Инвариант.</strong> Вдоль орбиты, интегрированной возле смещённой L4 (β = 0.05) на T = 20 схемой DOP853 с rtol = atol = 1e-12, константа Якоби дрейфует лишь на 8.88e-16 — сохранение на машинном уровне. Это структурная гарантия того, что топология нулевых скоростей, а с ней и достижимость смещённой точки либрации, сохраняется под лазерной «одеждой».</p>
+<p><strong>Инженерная честность.</strong> Таблица лазерного сценария показывает, что при Δ = 1 а.е. дифракционно-ограниченный пучок имеет перетяжку w ≈ 1.82e5 м, а реалистичные мощности (10 кВт … 10 МВт) дают β ≈ 1.7e-11 … 1.7e-8 на силикатной пыли — далеко ниже сканируемого диапазона. Поэтому модель трактует β как свободный операционный параметр; закрытие разрыва — задача инженерии пучка (большие апертуры, меньшие дистанции, более тонкие паруса), а не физики.</p>
+<h3>Сводка верификации</h3>
+<table>
+<thead>
+<tr>
+<th>Проверка</th>
+<th>Значение</th>
+<th>Цель</th>
+<th>Допуск</th>
+<th>Прошла</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>`L1_abscissa_beta0`</td>
+<td>0.836915</td>
+<td>0.836915</td>
+<td>5e-06</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`L4_shift_monotone_in_beta`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`L4_shift_toward_radiating_primary`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`L4_max_Re_eigenvalue_beta0`</td>
+<td>1.8567e-16</td>
+<td>0</td>
+<td>1e-08</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`L1_shifts_toward_radiating_primary`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`Jacobi_drift_L4_orbit_beta0.05`</td>
+<td>8.88178e-16</td>
+<td>0</td>
+<td>1e-10</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p><em>(status: </em><em>PASS</em><em>, mode: full)</em></p>
+<h2>7. Обсуждение</h2>
+<p>Модель сознательно минимальна: плоская, круговая, одно светящееся тело, давление излучения без абляции и трения. В этих допущениях все выводы — точные утверждения об определяющих уравнениях, а не симуляция конкретной миссии. Естественные расширения — эллиптическая орбита, оба тела светящиеся (полная задача Радзиевского), трёхмерные семейства гало вокруг смещённых коллинеарных точек и трение Пойнтинга–Робертсона как диссипативный канал — каждое сохраняет установленный здесь верификационный стиль.</p>
+<p>Диапазон параметров выбран ради структурной ясности, а не инженерного реализма: β до 0.1 зондирует дальний отклик ландшафта, тогда как реалистичные значения для пыли на много порядков меньше. Честная лазерная таблица связывает оба режима и показывает, что главный рычаг — перетяжка пучка; апертура в 10 раз больше или дистанция в 10 раз меньше сдвигают достижимое β на три порядка.</p>
+<p>В рамках программы это исследование питает TRX-12 (та же ОКЗТТ с лазером как актуатором удержания), даёт фон смещённых точек для TRX-11 (неограниченная динамика трёх тел) и парным образом связан с TRX-05/TRX-09, которые проверяют вихревого близнеца равносторонней конфигурации. Вместе они замыкают контур между небесной и вихревой формулировками TRIVORTEX.</p>
+<h2>8. Выводы</h2>
+<ol>
+<li>Лазерно-одетая ОКЗТТ воспроизводит классический ландшафт либрации при β = 0 с машинной точностью (L1 = 0.836915126 против эталона 0.8369151).</li>
+<li>Треугольная точка L4 мигрирует монотонно к светящемуся телу: 0 → 4.6e-3 → 2.1e-2 → 4.1e-2 по β ∈ {0, 0.01, 0.05, 0.1}.</li>
+<li>Направление миграции подтверждено проекцией (−0.035 при β = 0.1): сдвиг указывает на освещённую массу.</li>
+<li>Смещённая L4 остаётся линейно нейтрально устойчивой во всём сканируемом диапазоне; спектральный радиус при β = 0 равен 1.86e-16.</li>
+<li>Интеграл Якоби сохраняется на уровне 8.88e-16 за T = 20 при DOP853 rtol = atol = 1e-12 — структурный инвариант переживает лазерную «одежду».</li>
+<li>Реалистичные лазерные мощности на шкале а.е. дают ничтожную β для пыли (1.7e-11 … 1.7e-8); поэтому β трактуется как свободный операционный параметр с открыто указанным инженерным разрывом.</li>
+</ol>
+<h2>9. Список литературы</h2>
+<ol>
+<li>Lagrange, J.-L. (1772). <em>Essai sur le problème des trois corps.</em> Prix de l'Académie Royale des Sciences de Paris, tome IX.</li>
+<li>Radzievskii, V. V. (1950). <em>The restricted problem of three bodies taking account of light pressure.</em> Astron. Zh. 27, 250.</li>
+<li>Simmons, J. F. L., McDonald, A. J. C., Ward, J. C. (1985). <em>The restricted three-body problem with radiation pressure.</em> Celestial Mechanics 35, 145–187.</li>
+<li>Szebehely, V. (1967). <em>Theory of Orbits: The Restricted Problem of Three Bodies.</em> Academic Press.</li>
+<li>Murray, C. D., Dermott, S. F. (1999). <em>Solar System Dynamics.</em> Cambridge University Press.</li>
+<li>Burns, J. A., Lamy, P. L., Soter, S. (1979). <em>Radiation forces on small particles in the solar system.</em> Icarus 40, 1–48.</li>
+</ol>
+<h3>BibTeX</h3>
+<p>```bibtex
+@article{radzievskii1950,
+  author  = {Radzievskii, V. V.},
+  title   = {The restricted problem of three bodies taking account of light pressure},
+  journal = {Astronomicheskii Zhurnal},
+  year    = {1950}, volume = {27}, pages = {250}}
+
+@article{simmons1985,
+  author  = {Simmons, J. F. L. and McDonald, A. J. C. and Ward, J. C.},
+  title   = {The restricted three-body problem with radiation pressure},
+  journal = {Celestial Mechanics},
+  year    = {1985}, volume = {35}, pages = {145--187}}
+
+@book{szebehely1967,
+  author    = {Szebehely, V.},
+  title     = {Theory of Orbits: The Restricted Problem of Three Bodies},
+  publisher = {Academic Press}, year = {1967}}
+```</p>
+<h2>Приложение A. Таблица параметров</h2>
+<table>
+<thead>
+<tr>
+<th>Символ</th>
+<th>Значение</th>
+<th>Роль</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>μ</td>
+<td>0.0121505856</td>
+<td>массовый параметр (Земля–Луна)</td>
+</tr>
+<tr>
+<td>β</td>
+<td>{0, 0.01, 0.05, 0.1}</td>
+<td>коэффициент излучения первого тела</td>
+</tr>
+<tr>
+<td>r<sub>1</sub>, r<sub>2</sub></td>
+<td>(x+μ, y), (x−1+μ, y)</td>
+<td>расстояния до массивных тел</td>
+</tr>
+<tr>
+<td>C_J</td>
+<td>2Ω − v<sup>2</sup></td>
+<td>константа Якоби</td>
+</tr>
+<tr>
+<td>μ_Routh</td>
+<td>≈ 0.03852</td>
+<td>классический порог устойчивости треугольника</td>
+</tr>
+<tr>
+<td>T</td>
+<td>20</td>
+<td>интервал интегрирования для проверки инварианта</td>
+</tr>
+<tr>
+<td>rtol, atol</td>
+<td>1e-12</td>
+<td>допуски DOP853</td>
+</tr>
+</tbody>
+</table>
+<h2>Приложение B. Воспроизведение</h2>
+<p>```bash
+python3 research/TRX-01-laser-radiation-pressure/code/trx01_laser_radiation_pressure.py --smoke     # < 20 с
+python3 research/TRX-01-laser-radiation-pressure/code/trx01_laser_radiation_pressure.py              # полный прогон, 0.10 s
+python3 research/TRX-01-laser-radiation-pressure/code/trx01_laser_radiation_pressure.py --figures   # + графики 300 DPI
+```</p>
+<p>Полное время выполнения на референсной машине — 0.10 s; smoke-режим укладывается в 20 секунд и используется CI репозитория.</p>
+<h2>Приложение C. Окружение</h2>
+<p>Python ≥ 3.11, numpy ≥ 2.0, scipy ≥ 1.14, matplotlib ≥ 3.9; без доступа к сети и без стохастических зёрен — каждый прогон бит-в-бит воспроизводим на референсной машине.</p></div></div>
+<div class="ending">
+  <div class="end-title">TRIVORTEX</div>
+  <div class="end-small">The Three-Body Problem in the Vortex Model</div>
+  <div class="end-rule"></div>
+  <div class="colophon-line"><b>Radiation-Pressure Restricted Three-Body Problem (Laser on Dust)</b> — research monograph of the TRIVORTEX program, studying the three-body problem in the vortex model and its laser, celestial-mechanical and quantum crossings.</div><div class="colophon-line">Full verification protocol: <b>results JSON + figures + code</b> in research/TRX-01-laser-radiation-pressure/; reproduction commands in Appendix B.</div>
+  <div class="end-small">
+    Isaev Iskhak Khamzatovich · ORCID 0009-0003-7299-0701<br>
+    DOI (concept) 10.5281/zenodo.21825393 · DOI (version) 10.5281/zenodo.21825394<br>
+    License IPL-RP-1.0 · v1.0.0 · 2026-10-07
+  </div>
+</div>
+
+</body>
+</html>

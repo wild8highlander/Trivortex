@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
+  <defs>
+    <marker id="arrN" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#0A1730"/>
+    </marker>
+    <marker id="arrG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#D4AF37"/>
+    </marker>
+  </defs>
+  <rect width="960" height="540" fill="#FFFFFF"/>
+  <text x="30" y="38" font-family="Helvetica, Arial, sans-serif" font-size="21" font-weight="bold" fill="#0A1730">TRX-07 &#8212; Scheme: the Efimov effect, a geometric ladder of three-body states</text>
+  <text x="30" y="61" font-family="Helvetica, Arial, sans-serif" font-size="12.5" fill="#3A4A66">Three identical bosons at unitarity: no two-body dimer, yet an infinite geometric sequence of bound trimers</text>
+  <rect x="55" y="88" width="350" height="250" rx="10" fill="#FBF6E8" stroke="#0A1730" stroke-width="2"/>
+  <text x="230" y="112" font-family="Helvetica, Arial, sans-serif" font-size="12.5" font-weight="bold" fill="#0A1730" text-anchor="middle">three bosons at unitarity (a &#8594; &#8734;)</text>
+  <line x1="180" y1="183" x2="126.3" y2="276" stroke="#0A1730" stroke-width="1.6" stroke-dasharray="5 4"/>
+  <line x1="126.3" y1="276" x2="233.7" y2="276" stroke="#0A1730" stroke-width="1.6" stroke-dasharray="5 4"/>
+  <line x1="233.7" y1="276" x2="180" y2="183" stroke="#0A1730" stroke-width="1.6" stroke-dasharray="5 4"/>
+  <circle cx="180" cy="183" r="11" fill="#D4AF37" stroke="#0A1730" stroke-width="1.8"/>
+  <circle cx="126.3" cy="276" r="11" fill="#D4AF37" stroke="#0A1730" stroke-width="1.8"/>
+  <circle cx="233.7" cy="276" r="11" fill="#D4AF37" stroke="#0A1730" stroke-width="1.8"/>
+  <text x="180" y="164" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0A1730" text-anchor="middle">1</text>
+  <text x="104" y="281" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0A1730" text-anchor="middle">2</text>
+  <text x="256" y="281" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0A1730" text-anchor="middle">3</text>
+  <line x1="180" y1="245" x2="180" y2="196" stroke="#0A1730" stroke-width="1.6" marker-end="url(#arrN)"/>
+  <line x1="174" y1="245" x2="186" y2="245" stroke="#0A1730" stroke-width="1.4"/>
+  <text x="188" y="222" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0A1730">R (hyperradius)</text>
+  <text x="230" y="305" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#3A4A66" text-anchor="middle">each pair is unbound (no two-body dimer) &#8212;</text>
+  <text x="230" y="322" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#3A4A66" text-anchor="middle">only the trio binds: the hyperradial adiabatic potential &#8722;(s&#8320;&#178;&#8722;&#188;)/R&#178;</text>
+  <rect x="445" y="88" width="460" height="250" rx="10" fill="#FFFFFF" stroke="#0A1730" stroke-width="2"/>
+  <text x="675" y="112" font-family="Helvetica, Arial, sans-serif" font-size="12.5" font-weight="bold" fill="#0A1730" text-anchor="middle">the Efimov ladder in s = ln(R/R&#8320;) space</text>
+  <text x="888" y="133" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#3A4A66" text-anchor="end">per rung: size &#215; 22.694 &#183; energy &#215; 515.035</text>
+  <line x1="505" y1="310" x2="505" y2="126" stroke="#0A1730" stroke-width="1.5" marker-end="url(#arrN)"/>
+  <text x="517" y="133" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#0A1730">s = ln(R/R&#8320;)</text>
+  <line x1="498" y1="310" x2="512" y2="310" stroke="#D4AF37" stroke-width="2"/>
+  <text x="492" y="314" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#0A1730" text-anchor="end">R&#8320;</text>
+  <text x="492" y="300" font-family="Helvetica, Arial, sans-serif" font-size="9.5" fill="#3A4A66" text-anchor="end">wall</text>
+  <line x1="515" y1="296" x2="640" y2="296" stroke="#D4AF37" stroke-width="4"/>
+  <line x1="515" y1="250" x2="640" y2="250" stroke="#4C72B0" stroke-width="4"/>
+  <line x1="515" y1="204" x2="640" y2="204" stroke="#55A868" stroke-width="4"/>
+  <line x1="515" y1="158" x2="640" y2="158" stroke="#C44E52" stroke-width="4"/>
+  <text x="648" y="300" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0A1730">E&#8320; &#8212; size &#8776; 13 R&#8320;</text>
+  <text x="648" y="254" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0A1730">E&#8321; &#8212; size &#8776; 296 R&#8320;</text>
+  <text x="648" y="208" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0A1730">E&#8322; &#8212; size &#8776; 6725 R&#8320;</text>
+  <text x="648" y="162" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0A1730">E&#8323; &#8212; size &#8776; 152604 R&#8320;</text>
+  <line x1="560" y1="244" x2="560" y2="210" stroke="#0A1730" stroke-width="1.5" marker-end="url(#arrN)" marker-start="url(#arrN)"/>
+  <text x="570" y="231" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#0A1730">&#916;s = &#960;/s&#8320; = 3.122</text>
+  <rect x="55" y="402" width="850" height="88" rx="10" fill="#FBF6E8" stroke="#0A1730" stroke-width="2"/>
+  <text x="80" y="424" font-family="Helvetica, Arial, sans-serif" font-size="12" font-weight="bold" fill="#0A1730">mapping to the TRIVORTEX vortex model</text>
+  <text x="80" y="446" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0A1730">universal exponent s&#8320; = 1.00624</text>
+  <line x1="330" y1="442" x2="356" y2="442" stroke="#D4AF37" stroke-width="1.7" marker-end="url(#arrG)"/>
+  <text x="366" y="446" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0A1730">circulation ratios &#915; of the vortex triangle</text>
+  <text x="80" y="464" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0A1730">geometric ladder e^(2&#960;/s&#8320;) = 515</text>
+  <line x1="330" y1="460" x2="356" y2="460" stroke="#D4AF37" stroke-width="1.7" marker-end="url(#arrG)"/>
+  <text x="366" y="464" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0A1730">radial modulation &#969; = (2&#960;/T)&#183;e^(C_Ch/&#960;)</text>
+  <text x="80" y="482" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0A1730">hyperradial &#8722;1/R&#178; attraction</text>
+  <line x1="330" y1="478" x2="356" y2="478" stroke="#D4AF37" stroke-width="1.7" marker-end="url(#arrG)"/>
+  <text x="366" y="482" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0A1730">scale-invariant binding (Theorem 3.1)</text>
+  <text x="55" y="508" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0A1730">s&#8320;&#183;cosh(&#960;s&#8320;/2) = (8/&#8730;3)&#183;sinh(&#960;s&#8320;/6) &#8594; s&#8320; = 1.0062378 (target 1.0062458, tolerance 1e-5)</text>
+  <text x="55" y="526" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#3A4A66">measured ladder: |E&#8320;/E&#8321;| = 515.509, |E&#8321;/E&#8322;| = 514.964, |E&#8322;/E&#8323;| = 514.963 &#8212; universal e^(2&#960;/s&#8320;) = 515.035, deviations within &#177;0.1%</text>
+</svg>

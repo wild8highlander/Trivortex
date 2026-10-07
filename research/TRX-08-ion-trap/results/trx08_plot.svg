@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520">
+<rect width="900" height="520" fill="#0A1230"/>
+<text x="24" y="34" fill="#FFFFFF" font-family="Arial" font-size="19" font-weight="bold">TRX-08 &#8212; Three laser-cooled ions: crystallized Lagrange triangle</text>
+<polyline fill="none" stroke="#6FB7FF" stroke-width="1.4" points="168.84,317.90 218.43,341.62"/>
+<polyline fill="none" stroke="#6FB7FF" stroke-width="1.4" points="326.28,241.92 351.47,255.19"/>
+<polyline fill="none" stroke="#6FB7FF" stroke-width="1.4" points="170.71,274.71 210.10,183.19"/>
+<circle cx="260.00" cy="168.40" r="5" fill="#F2C14E"/>
+<circle cx="180.68" cy="305.80" r="5" fill="#F2C14E"/>
+<circle cx="339.32" cy="305.80" r="5" fill="#F2C14E"/>
+<text x="600" y="140" fill="#F2C14E" font-family="Arial" font-size="13">crystal: equilateral triangle</text>
+<text x="600" y="160" fill="#F2C14E" font-family="Arial" font-size="13">a = (3*kappa/omega0^2)^(1/3)</text>
+<text x="600" y="190" fill="#6FB7FF" font-family="Arial" font-size="13">blue: Doppler-cooled relaxation</text>
+<text x="24" y="500" fill="#9FB3D9" font-family="Arial" font-size="12">modes: 2x COM (omega0), rigid rotation (0), breathing (sqrt(3)*omega0), 2x quadrupole</text>
+</svg>

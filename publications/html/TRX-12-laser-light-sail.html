@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TRX-12 — Laser Highway: Light-Sail Stationkeeping at L4/L5</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400&family=PT+Sans:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof renderMathInElement === 'function') {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '\\(', right: '\\)', display: false}
+      ], throwOnError: false
+    });
+  }
+});
+</script>
+<style>
+@page { size: 210mm 297mm; margin: 0; }
+:root {
+  --navy: #0A1730; --navy2: #0E2145; --header-fill: #2A3A55;
+  --gold: #D4AF37; --gold-l: #F0D98C;
+  --text: #1F2937; --muted: #6B7280;
+  --stripe: #F2F5FA; --code-bg: #F5F7FB; --border: #DCE3EF;
+}
+html, body {
+  margin: 0; padding: 0; width: 210mm;
+  background: #FFFFFF;               /* flow pages are white; dark pages are fixed-height */
+  color: var(--text);
+  font-family: 'PT Serif', 'Noto Serif', 'Liberation Serif', 'DejaVu Serif', serif;
+  font-size: 15px; line-height: 1.62;
+  line-break: strict; word-break: normal; overflow-wrap: break-word;
+}
+@media screen {
+  html { height: auto; display: flex; justify-content: center; background: #10131a; }
+  body { transform-origin: top center; margin: 20px auto; box-shadow: 0 8px 40px rgba(0,0,0,.5); }
+}
+
+/* ── Cover ─────────────────────────────────────────────────────────────── */
+.front-page {
+  width: 210mm; height: 297mm; box-sizing: border-box;
+  break-after: page; overflow: hidden; position: relative;
+  background:
+    radial-gradient(circle 8px at 691px 125px, #D4AF37 0 7px, transparent 8px),
+    radial-gradient(circle 5px at 584px 56px, #59C2FF 0 4px, transparent 5px),
+    radial-gradient(circle 4px at 154px 950px, #FF7A9E 0 3px, transparent 4px),
+    radial-gradient(circle 210px at 87% 9%, transparent 206px, rgba(212,175,55,.30) 208px, rgba(212,175,55,.30) 210px, transparent 212px),
+    radial-gradient(circle 130px at 74% 3%, transparent 126px, rgba(89,194,255,.26) 128px, rgba(89,194,255,.26) 130px, transparent 132px),
+    radial-gradient(circle 280px at 8% 94%, transparent 276px, rgba(212,175,55,.18) 278px, rgba(212,175,55,.18) 280px, transparent 282px),
+    linear-gradient(160deg, #0E2145 0%, #0A1730 62%, #081226 100%);
+  color: #E9EEF8;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 58px;
+}
+.fp-kicker {
+  display: flex; align-items: center; gap: 14px;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.5px; letter-spacing: 3.5px; color: #F0D98C; font-weight: 700;
+}
+.fp-title {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 34px; line-height: 1.16; font-weight: 700; color: #F4F7FD;
+  margin: 26px 0 12px 0; max-width: 156mm;
+}
+.fp-subtitle-ru {
+  font-size: 18.5px; line-height: 1.4; color: #D4AF37; font-style: italic;
+  max-width: 156mm; margin-bottom: 34px;
+}
+.fp-meta {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 9px 26px;
+  max-width: 156mm;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.5px; line-height: 1.45;
+  border-top: 1px solid rgba(212,175,55,.35);
+  border-bottom: 1px solid rgba(212,175,55,.35);
+  padding: 16px 2px;
+}
+.fp-meta .k { color: #8FA3C4; letter-spacing: 1.6px; font-size: 10.5px; text-transform: uppercase; }
+.fp-meta .v { color: #E9EEF8; margin-top: 2px; }
+.fp-abstract {
+  max-width: 156mm; margin-top: 26px; font-size: 12.5px; line-height: 1.6;
+  color: #B9C6DE; font-style: italic;
+}
+.fp-foot {
+  position: absolute; left: 58px; right: 58px; bottom: 40px;
+  display: flex; justify-content: space-between; align-items: flex-end;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 11px; letter-spacing: 2px; color: #8FA3C4; text-transform: uppercase;
+}
+.fp-foot b { color: #F0D98C; font-weight: 700; }
+
+/* ── Flowing content ───────────────────────────────────────────────────── */
+.main-content { background: #FFFFFF; padding: 15mm 16mm 13mm 16mm; }
+
+h1, h2, h3, h4 {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  color: #0A1730; line-height: 1.25;
+  break-after: avoid; page-break-after: avoid;
+}
+.main-content h1 { font-size: 24px; margin: 6px 0 4px 0; }
+.main-content h2 {
+  font-size: 19.5px; margin: 26px 0 10px 0; padding-left: 12px;
+  border-left: 4px solid #D4AF37;
+}
+.main-content h3 { font-size: 16px; margin: 18px 0 8px 0; }
+.main-content h4 { font-size: 14.5px; margin: 14px 0 6px 0; color: #2A3A55; }
+p { margin: 0 0 9px 0; text-align: justify; hyphens: auto; }
+strong { color: #0A1730; }
+em { color: inherit; }
+a { color: #0E2145; text-decoration: none; border-bottom: 1px solid #D4AF37; }
+ul, ol { margin: 4px 0 10px 0; padding-left: 22px; }
+li { margin-bottom: 4px; break-inside: avoid; text-align: left; }
+
+table {
+  width: 100%; border-collapse: collapse; margin: 10px 0 14px 0;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.3px; line-height: 1.4;
+}
+thead { display: table-header-group; }
+tr { break-inside: avoid; page-break-inside: avoid; }
+th {
+  background: #2A3A55; color: #FFFFFF; text-align: left;
+  padding: 6px 9px; font-weight: 700; border: none;
+}
+td { padding: 5px 9px; border-bottom: 1px solid #DCE3EF; vertical-align: top; }
+tbody tr:nth-child(odd) td { background: #F2F5FA; }
+table, .table-wrap { break-inside: auto; }
+thead + tbody tr:first-child { break-before: avoid; }
+
+pre {
+  background: #F5F7FB; border: 1px solid #DCE3EF; border-left: 3px solid #D4AF37;
+  padding: 10px 13px; margin: 10px 0 14px 0; border-radius: 4px;
+  font-family: 'JetBrains Mono', 'DejaVu Sans Mono', 'Liberation Mono', monospace;
+  font-size: 11.6px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: break-word;
+  break-inside: avoid; page-break-inside: avoid;
+}
+code {
+  font-family: 'JetBrains Mono', 'DejaVu Sans Mono', 'Liberation Mono', monospace;
+  font-size: 12.6px; background: #F5F7FB; padding: 1px 4px; border-radius: 3px;
+}
+pre code { background: transparent; padding: 0; font-size: 11.6px; }
+
+blockquote {
+  margin: 10px 0 12px 0; padding: 8px 14px; border-left: 3px solid #D4AF37;
+  background: #F5F7FB; color: #0E2145; font-style: italic;
+  break-inside: avoid;
+}
+hr { border: none; border-top: 1px solid #DCE3EF; margin: 16px 0; }
+
+/* equations */
+.katex-display { margin: 12px 0 14px 0; max-width: 100%; overflow: hidden auto; }
+.eq-block { break-inside: avoid; page-break-inside: avoid; }
+
+/* language part banners */
+.part-banner {
+  break-inside: avoid; break-after: avoid;
+  margin: 26px 0 14px 0; padding: 13px 18px;
+  background: #0E2145; color: #F0D98C; border-radius: 6px;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+}
+.part-banner .pb-title { font-size: 16.5px; font-weight: 700; letter-spacing: 1.2px; }
+.part-banner .pb-sub { font-size: 11.5px; color: #8FA3C4; margin-top: 3px; letter-spacing: .4px; }
+
+/* colophon */
+.ending {
+  width: 210mm; height: 297mm; box-sizing: border-box;
+  break-before: page; overflow: hidden; position: relative;
+  background: linear-gradient(200deg, #0E2145 0%, #0A1730 60%, #081226 100%);
+  color: #E9EEF8;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 58px;
+}
+.ending .colophon-line { max-width: 150mm; font-size: 13.5px; line-height: 1.7; color: #B9C6DE; }
+.ending .colophon-line b { color: #F0D98C; }
+.ending .end-rule { width: 64px; height: 26px; margin: 10px 0 8px 0;
+  background: linear-gradient(90deg, #D4AF37 0 64px, transparent 64px) top/100% 6px no-repeat; }
+.ending .end-title {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 26px; font-weight: 700; color: #F4F7FD; letter-spacing: 1px;
+}
+.ending .end-small {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 11.5px; color: #8FA3C4; letter-spacing: 2px; text-transform: uppercase;
+  margin-top: 26px; line-height: 2;
+}
+</style>
+</head>
+<body>
+
+<div class="front-page">
+  <div class="fp-kicker"><span>TRIVORTEX RESEARCH PROGRAM · TRX-12</span></div>
+  <div class="fp-title">Laser Highway: Light-Sail Stationkeeping at L4/L5</div>
+  <div class="fp-subtitle-ru">Лазерная трасса: удержание светового паруса у точек L4/L5</div>
+  <div class="fp-meta"><div><div class="k">Author</div><div class="v">Isaev Iskhak Khamzatovich<br><span style="color:#8FA3C4">ORCID 0009-0003-7299-0701</span></div></div><div><div class="k">DOI</div><div class="v">10.5281/zenodo.21825394</div></div><div><div class="k">Study</div><div class="v">TRX-12</div></div><div><div class="k">Date</div><div class="v">2026-10-06</div></div><div><div class="k">Code</div><div class="v"><code style="background:rgba(212,175,55,.12);color:#F0D98C;padding:1px 5px;border-radius:3px">code/trx12_laser_light_sail.py</code></div></div><div><div class="k">Data</div><div class="v"><code style="background:rgba(212,175,55,.12);color:#F0D98C;padding:1px 5px;border-radius:3px">results/trx12_results.json</code></div></div></div>
+  <div class="fp-abstract">This monograph treats a photon light sail in the Earth–Moon circular restricted three-body problem as an actuated libration-point system: a 1 MW laser pushes a 10 kg sail with photon thrust a_L = 2P/(cm), capped at the dimensionless ceiling a_max = 0.2443, and a proportional-derivative beam-steering law points the thrust. Two operations of the laser highway are verified. Stationkeeping: starting 1.1·10⁻³ away from the linearly stable L4 point, the controlled sail converges to |r − L4| ≤ 7.5e-07 for all t &gt; T/4 (T = 100, ≈ 434 days) while using the photon ceiling 0% of the time (peak demand 0.0051, headroom 48×); the same initial state without control never comes closer than 0.0041 — a contrast of ≈ 5500×.</div>
+  <div class="fp-foot"><span>Monograph Edition · bilingual RU + EN</span><span><b>TRIVORTEX</b> · TRIVORTEX · v1.0.0 · 2026</span></div>
+</div>
+<div class="main-content"><div class="part-banner"><div class="pb-title">PART I · English Monograph</div><div class="pb-sub">Laser Highway: Light-Sail Stationkeeping at L4/L5</div></div><p><em>TRIVORTEX Research Program · v1.0.0 · Monograph Edition</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Study</td>
+<td>TRX-12</td>
+</tr>
+<tr>
+<td>Program</td>
+<td>TRIVORTEX — The Three-Body Problem in the Vortex Model</td>
+</tr>
+<tr>
+<td>Author</td>
+<td>Isaev Iskhak Khamzatovich (ORCID 0009-0003-7299-0701)</td>
+</tr>
+<tr>
+<td>DOI</td>
+<td>10.5281/zenodo.21825394</td>
+</tr>
+<tr>
+<td>Date</td>
+<td>2026-10-06</td>
+</tr>
+<tr>
+<td>Code</td>
+<td>`code/trx12_laser_light_sail.py`</td>
+</tr>
+<tr>
+<td>Data</td>
+<td>`results/trx12_results.json`</td>
+</tr>
+</tbody>
+</table>
+<h2>Abstract</h2>
+<p>This monograph treats a photon light sail in the Earth–Moon circular restricted three-body problem as an actuated libration-point system: a 1 MW laser pushes a 10 kg sail with photon thrust a_L = 2P/(cm), capped at the dimensionless ceiling a_max = 0.2443, and a proportional-derivative beam-steering law points the thrust. Two operations of the laser highway are verified. Stationkeeping: starting 1.1·10<sup>-3</sup> away from the linearly stable L4 point, the controlled sail converges to |r − L4| ≤ 7.5e-07 for all t &gt; T/4 (T = 100, ≈ 434 days) while using the photon ceiling 0% of the time (peak demand 0.0051, headroom 48×); the same initial state without control never comes closer than 0.0041 — a contrast of ≈ 5500×. Orbit raising: open-loop thrust along velocity pumps the Jacobi constant strictly monotonically, net ΔC_J = 1063.51 over T = 30 with the largest single-step increase at −0.06. A 17 × 17 PD gain-plane sweep brackets the operating point (4, 4), and an SI power table (57.8 kW … 2.89 MW per 100 kg and 30 days) closes the model to engineering numbers.</p>
+<h2>Contents</h2>
+<ol>
+<li>Abstract</li>
+<li>
+<ol>
+<li>Introduction and historical context</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>Physical formulation</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>Mathematical model</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li>Connection to the TRIVORTEX framework</li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li>Numerical method</li>
+</ol>
+</li>
+<li>
+<ol start="6">
+<li>Results and analysis</li>
+</ol>
+</li>
+<li>
+<ol start="7">
+<li>Discussion</li>
+</ol>
+</li>
+<li>
+<ol start="8">
+<li>Conclusions</li>
+</ol>
+</li>
+<li>
+<ol start="9">
+<li>References
+Appendix A. Parameter table
+Appendix B. Reproduction</li>
+</ol>
+</li>
+</ol>
+<h2>1. Introduction and historical context</h2>
+<p>The equilateral solutions of the three-body problem were found by Joseph-Louis Lagrange in his 1772 <em>Essai sur le problème des trois corps</em>, and for more than a century they were regarded as mathematical curiosities. The discovery of the Trojan asteroids at the Sun–Jupiter L4 and L5 turned the Lagrange triangle into a real object of celestial mechanics, and Szebehely's 1967 monograph consolidated the restricted problem into the standard reference frame every modern libration-point mission still uses. For the Earth–Moon system the triangular points are especially tempting stations: linearly stable for μ &lt; μ_Routh ≈ 0.03852, they ask only for a stationkeeping technique that removes the offsets their neutral stability lets persist forever.</p>
+<p>The physics of the required actuator is surprisingly old. Lebedev (1901) measured the pressure of light on solids, and Nichols and Hull (1903) confirmed it independently; the idea of propelling a vehicle by photons was put on a quantitative footing by Marx (1966), who computed the parameters of an interstellar vehicle pushed by a terrestrial laser beam, and by Redding (1967), who analysed staged photon rockets. These two Nature papers founded laser propulsion: a beam of power P delivers thrust 2P/(cm) to a mirrored sail — per kilogram of payload, the cheapest reaction mass imaginable, since the propellant is light itself.</p>
+<p>Forward (1984) turned the arithmetic into a roundtrip interstellar mission design and fixed the canonical figure of merit — the photon ceiling 2P/(cm) — that every later beamed-energy concept inherited, from kilometer-scale lightsails to laser arrays for sailcraft. Close to home, McInnes (1999) systematized the dynamics of sailing craft in gravity fields, Baoyin and McInnes (2006) computed displaced equilibrium families for sails, and Simo and McInnes (2009) placed solar sails on displaced Earth–Moon Lagrange-point trajectories. The present study keeps the same physical ceiling but replaces the passive sail orientation with an actively steered beam — a laser highway in miniature.</p>
+<p>For TRIVORTEX the relevance is structural rather than technological. The L4 point is the celestial twin of the same-sign vortex triangle of Theorem 3.1, the Jacobi integral plays the role of the Chaplygin integral C_Ch, and the beam-steering law is the analog of circulation control: an actuator applied to a special solution of the same central-configuration family. The laser block of the program now closes symmetrically — TRX-01 points the laser at the primaries and dresses gravity, TRX-12 points it at the spacecraft and dresses the equations of motion with a bounded thrust term; together they demonstrate that the invariant structuring the phase space is also the quantity an actuator can move.</p>
+<h2>2. Physical formulation</h2>
+<p>Planar CR3BP in the rotating frame. The Earth and the Moon move on circular orbits about their barycenter and are fixed at (−μ, 0) and (1 − μ, 0) in the co-rotating axes; the sail is a massless particle responding to their gravity, to the centrifugal and Coriolis terms, and to the photon thrust. The whole stationkeeping problem lives in the topography of one scalar function — the effective potential Ω — whose sole maximum of interest sits at the equilateral point L4 = (½ − μ, √3/2).</p>
+<p>The actuator is photon momentum. A beam of power P carries momentum flux P/c, and a mirrored sail returns it, doubling the transfer: the thrust is a_L = 2P/(cm) along the beam direction, exactly 6.67·10<sup>-4</sup> m/s<sup>2</sup> for 1 MW on 10 kg, or 0.2443 in canonical units — a real force ceiling computed from SI constants, not a fitted parameter. The control law points this bounded force: u = −K_p(r − r_L4) − K_d·v with gains K_p = K_d = 4, saturated at the ceiling. The same physics read backwards gives the orbit-raising rule: thrust along velocity does negative work on C_J at the rate −2a_L·v, so a laser highway moves between manifolds by spending photons, not fuel.</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>μ</td>
+<td>0.0121505856</td>
+<td>Earth–Moon mass parameter</td>
+</tr>
+<tr>
+<td>LU, TU</td>
+<td>3.844·10<sup>8</sup> m, 3.752·10<sup>5</sup> s</td>
+<td>canonical length and time (GM = 1; month = 2π)</td>
+</tr>
+<tr>
+<td>laser</td>
+<td>P = 1 MW, m = 10 kg</td>
+<td>transmitter and sail → a_max = 0.2443 (= 6.67·10<sup>-4</sup> m/s<sup>2</sup>)</td>
+</tr>
+<tr>
+<td>start state</td>
+<td>L4 + (1e-3, 5e-4), v = (2e-4, −1e-4)</td>
+<td>initial offset 1.118·10<sup>-3</sup> from L4</td>
+</tr>
+<tr>
+<td>PD gains</td>
+<td>K_p = K_d = 4</td>
+<td>beam-steering law, saturated at a_max</td>
+</tr>
+<tr>
+<td>spans</td>
+<td>T = 100 keep · 30 pump · 60 per gain cell</td>
+<td>≈ 434 · 130 · 261 days in TU units</td>
+</tr>
+<tr>
+<td>integrator</td>
+<td>DOP853, rtol = atol = 1e-11</td>
+<td>dense output; max_step 0.1 (0.02 pumping)</td>
+</tr>
+</tbody>
+</table>
+<h2>3. Mathematical model</h2>
+<p>In the rotating frame the primaries are fixed at (−μ, 0) and (1 − μ, 0), and the sail obeys (E1): Newtonian attraction, centrifugal and Coriolis terms, plus the laser acceleration a_L. The Coriolis force does no work, so for any thrust history the Jacobi identity (E4) holds pointwise: Ċ_J = −2a_L·v. With the thrust off, C_J is the single integral of the planar restricted problem and its level sets bound the accessible region; with the thrust on, its rate of change is a pure control quantity — the laser can only remove C_J when pushing along the velocity, never add it.</p>
+<p>The actuator model (E2)–(E3) is deliberately honest. Photon momentum flux P/c doubled by a mirrored sail gives the ceiling a_max = 2P/(cm); for P = 1 MW and m = 10 kg this is 6.67·10<sup>-4</sup> m/s<sup>2</sup> in SI, or a_max = 0.2443 in canonical units after multiplying by TU<sup>2</sup>/LU. The PD law u = −K_p(r − r_L4) − K_d·v with K_p = K_d = 4 points the thrust vector; whenever the demanded vector exceeds the ceiling it is rescaled to the ceiling and the saturation counter increments — the control authority is bounded by physics, not by the controller's optimism. With μ = 0.0121505856 well inside the Routh limit μ_Routh ≈ 0.03852, the uncontrolled equilibrium at L4 is an elliptic center: offsets neither grow nor decay, which is exactly why stationkeeping is meaningful and exactly why free drift never converges.</p>
+<p>The orbit-raising operation follows from the same identity. Thrust locked along the velocity, a_L = a_max·v/|v|, turns Ċ_J = −2a_L·v into a strictly negative quantity of size 2a_max|v|: the sail climbs the invariant-manifold ladder of the restricted problem, lowering C_J until the zero-velocity topology opens a new corridor between the primaries. For slow, long burns the SI mapping (E5) closes the model: a desired Δv delivered over T_burn needs a = Δv/T_burn and beam power P = m·a·c/2 — the table quoted in the results (100 kg, 30 days) spans 57.8 kW … 2.89 MW for Δv ∈ {10, 50, 100, 500} m/s.</p>
+<p><strong>Notation</strong></p>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>x, y</td>
+<td>sail coordinates in the rotating frame</td>
+</tr>
+<tr>
+<td>ẋ, ẏ</td>
+<td>sail velocities in the rotating frame</td>
+</tr>
+<tr>
+<td>Ω</td>
+<td>effective potential, Ω = ½(x<sup>2</sup>+y<sup>2</sup>) + (1−μ)/r<sub>1</sub> + μ/r<sub>2</sub></td>
+</tr>
+<tr>
+<td>r<sub>1</sub>, r<sub>2</sub></td>
+<td>distances to Earth and Moon</td>
+</tr>
+<tr>
+<td>μ</td>
+<td>mass parameter, Earth–Moon: 0.0121505856</td>
+</tr>
+<tr>
+<td>P, m</td>
+<td>beam power and sail mass (1 MW, 10 kg)</td>
+</tr>
+<tr>
+<td>a_L</td>
+<td>photon thrust acceleration, a_L = 2P/(cm)·û</td>
+</tr>
+<tr>
+<td>a_max</td>
+<td>photon-thrust ceiling, 0.2443 dimensionless</td>
+</tr>
+<tr>
+<td>K_p, K_d</td>
+<td>proportional and derivative gains (4, 4)</td>
+</tr>
+<tr>
+<td>C_J</td>
+<td>Jacobi constant</td>
+</tr>
+<tr>
+<td>T</td>
+<td>integration span (100 keep · 30 pump · 60 per gain cell)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>(E1)</strong> CR3BP equations of motion in the rotating frame with laser thrust appended.</p>
+<p>$$\ddot{x} - 2\dot{y} = \frac{\partial\Omega}{\partial x} + a_{Lx}, \qquad \ddot{y} + 2\dot{x} = \frac{\partial\Omega}{\partial y} + a_{Ly}, \qquad \Omega = \tfrac{1}{2}(x^2+y^2) + \frac{1-\mu}{r_1} + \frac{\mu}{r_2}$$</p>
+<p><strong>(E2)</strong> Photon thrust along the beam direction û (P = 1 MW, m = 10 kg).</p>
+<p>$$a_L = \frac{2P}{c\,m}\,\hat{u}$$</p>
+<p><strong>(E3)</strong> PD beam-steering law bounded by the photon ceiling (K_p = K_d = 4).</p>
+<p>$$\mathbf{u} = -K_p\,(\mathbf{r} - \mathbf{r}_{L4}) - K_d\,\mathbf{v}, \qquad |\mathbf{a}_L| \le a_{\max} = \frac{2P}{cm} = 0.2443$$</p>
+<p><strong>(E4)</strong> Jacobi constant; monotone pumping under along-velocity thrust.</p>
+<p>$$C_J = 2\Omega - (\dot{x}^2 + \dot{y}^2), \qquad \dot{C}_J = -2\,\mathbf{a}_L\cdot\mathbf{v} \le 0$$</p>
+<p><strong>(E5)</strong> SI power table (100 kg sail, 30 days, Δv ∈ {10, 50, 100, 500} m/s).</p>
+<p>$$P = \frac{m\,a\,c}{2}, \qquad a = \frac{\Delta v}{T_{burn}}$$</p>
+<h2>4. Connection to the TRIVORTEX framework</h2>
+<p>The mapping is one-to-one at the structural level. The libration point L4 is the celestial realization of the Lagrange triangle vertex — the same central configuration that underlies the same-sign vortex triangle of Theorem 3.1; the Jacobi constant plays the role of the Chaplygin integral C_Ch as the invariant that pins the orbit to a reduced phase space; and the PD beam-steering law acts on the libration solution exactly as circulation control acts on a vortex configuration — an actuator applied to a special solution of the same equations. The photon ceiling a_max = 2P/(cm) is the celestial twin of the finite-force regularization used in the vortex model: both keep the actuator honest, capping how fast the invariant can be moved. The laser highway thus closes the TRIVORTEX loop — the quantity that structures the phase space (C_J ↔ C_Ch) is precisely the quantity the actuator moves.</p>
+<table>
+<thead>
+<tr>
+<th>Quantity in this study</th>
+<th>TRIVORTEX analog</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L4 libration point</td>
+<td>Lagrange triangle vertex (Theorem 3.1)</td>
+<td>the same central configuration</td>
+</tr>
+<tr>
+<td>Jacobi constant C_J</td>
+<td>Chaplygin integral C_Ch</td>
+<td>the invariant the laser moves</td>
+</tr>
+<tr>
+<td>PD beam-steering law u</td>
+<td>circulation control in the vortex model</td>
+<td>actuating a special solution</td>
+</tr>
+<tr>
+<td>Photon ceiling 2P/(cm)</td>
+<td>finite-force regularization</td>
+<td>honest actuator limits</td>
+</tr>
+</tbody>
+</table>
+<h2>5. Numerical method</h2>
+<p>All trajectories are integrated in the rotating frame with an explicit Dormand–Prince 8(5,3) scheme (scipy solve_ivp, DOP853) at rtol = atol = 1e-11 with dense output; the stationkeeping runs use T = 100 with max_step = 0.1 and 800 recorded samples, the pumping run T = 30 with max_step = 0.02 and 800 samples. The control law is evaluated inside the right-hand side: u = −K_p(r − r_L4) − K_d·v with K_p = K_d = 4, rescaled to the ceiling a_max = 0.2443 whenever its norm exceeds it, and the fraction of saturated control evaluations is accumulated as the run proceeds.</p>
+<p>The contrast run repeats the integration from the identical initial state L4 + (1e-3, 5e-4), v = (2e-4, −1e-4) with the control switched off, so the only difference between the two trajectories is the laser. Acceptance checks are computed on strict windows — max |r − L4| for t &gt; T/4 (controlled) and min |r − L4| for t &gt; T/2 (free) — so that neither the transient nor the start point can flatter the result. A PD gain-plane sweep repeats the controlled run for a 17 × 17 grid of gains (K_p from 0.5 to 512, K_d from 0.5 to 32, logarithmic, the operating point (4, 4) pinned to both grids) over T = 60 per cell, recording the late-time bound and the saturation fraction of every cell.</p>
+<p>The open-loop pumping run starts on an eccentric orbit about the Earth primary (r<sub>0</sub> = 0.10, speed 1.05× the local circular value) with the full ceiling thrust locked along the velocity; C_J is sampled at 800 points over T = 30 and the largest single-step increase is checked against zero. The SI power table (E5) is recomputed analytically for Δv ∈ {10, 50, 100, 500} m/s delivered over 30 days by a 100 kg sail, and its internal consistency (P = m·a·c/2) is itself a check in the protocol.</p>
+<h2>6. Results and analysis</h2>
+<h3>fig01 landscape</h3>
+<p><img alt="Landscape of the Earth–Moon laser highway, μ = 0.0121505856: (a) rotating-frame potential with the lunar orbit, the equilateral points L4/L5 and the photon beam cone from Earth toward L4; (b) zoom at L4 over T = 100 — the free sail wanders on a tadpole of extent 0.026 while the controlled sail converges (inset: the controlled spiral)." src="../figures/fig01_landscape.png" /></p>
+<p><em>Landscape of the Earth–Moon laser highway, μ = 0.0121505856: (a) rotating-frame potential with the lunar orbit, the equilateral points L4/L5 and the photon beam cone from Earth toward L4; (b) zoom at L4 over T = 100 — the free sail wanders on a tadpole of extent 0.026 while the controlled sail converges (inset: the controlled spiral).</em>
+Panel (a) shows the 2Ω topography with Earth (gold), the Moon (navy) and the dashed lunar orbit, with the beam corridor drawn from Earth to L4; panel (b) contrasts the free tadpole (extent up to 0.026 from L4) with the controlled spiral collapsing onto the nominal point, the inset window spanning 2.5·10<sup>-3</sup>.</p>
+<h3>fig02 stationkeep</h3>
+<p><img alt="Headline result — laser stationkeeping versus free drift: (a) distance to L4 on a logarithmic scale over T = 100 (≈ 434 days); the controlled sail settles at 7.5e-07 while the free sail never comes closer than 0.0041 after T/2 — a contrast of ≈ 5500×; (b) the stationkeeping budget: controlled bound, acceptance tolerance 2e-4, initial offset 1.1·10&lt;sup&gt;-3&lt;/sup&gt; and the free-drift floor." src="../figures/fig02_stationkeep.png" /></p>
+<p><em>Headline result — laser stationkeeping versus free drift: (a) distance to L4 on a logarithmic scale over T = 100 (≈ 434 days); the controlled sail settles at 7.5e-07 while the free sail never comes closer than 0.0041 after T/2 — a contrast of ≈ 5500×; (b) the stationkeeping budget: controlled bound, acceptance tolerance 2e-4, initial offset 1.1·10<sup>-3</sup> and the free-drift floor.</em>
+The gold curve drops by more than three decades during the transient and then hugs the 7.5e-07 level, far below the dashed acceptance bound 2e-4; the bar panel lines up the four budget distances on a logarithmic axis from the controlled bound to the free-drift floor 0.0041.</p>
+<h3>fig03 control map</h3>
+<p><img alt="PD gain-plane control map on the same integrator (T = 60 per cell, 17 × 17 gains, K_p from 0.5 to 512 and K_d from 0.5 to 32): (a) logarithm of the late-time stationkeeping error with the acceptance contour 2e-4 and the operating point (4, 4) marked — the map spans 0 (tightest cells) to 123.3 (weak gains lose the station); (b) saturation fraction of the photon-thrust ceiling, near zero across the working region." src="../figures/fig03_control_map.png" /></p>
+<p><em>PD gain-plane control map on the same integrator (T = 60 per cell, 17 × 17 gains, K_p from 0.5 to 512 and K_d from 0.5 to 32): (a) logarithm of the late-time stationkeeping error with the acceptance contour 2e-4 and the operating point (4, 4) marked — the map spans 0 (tightest cells) to 123.3 (weak gains lose the station); (b) saturation fraction of the photon-thrust ceiling, near zero across the working region.</em>
+The gold star marks the operating point (4, 4), whose late bound is 1.75·10<sup>-5</sup> with zero saturation; the darkest corners of panel (b) show where aggressive gains press against the photon ceiling (up to 0.87 of steps saturated), 77 of the 289 cells exceeding the 5% level.</p>
+<h3>fig04 dynamics</h3>
+<p><img alt="Dynamics of the two laser operations: (a) open-loop Jacobi pumping — C_J decreases monotonically under along-velocity thrust, net ΔC_J = 1063.51 over T = 30 (largest single-step increase −0.06); (b) control effort of the stationkeeping run — peak demand 0.0051 (= 1.4·10&lt;sup&gt;-5&lt;/sup&gt; m/s&lt;sup&gt;2&lt;/sup&gt;, equivalent to 20.7 kW on 10 kg) against the photon ceiling 0.2443, headroom 48×." src="../figures/fig04_dynamics.png" /></p>
+<p><em>Dynamics of the two laser operations: (a) open-loop Jacobi pumping — C_J decreases monotonically under along-velocity thrust, net ΔC_J = 1063.51 over T = 30 (largest single-step increase −0.06); (b) control effort of the stationkeeping run — peak demand 0.0051 (= 1.4·10<sup>-5</sup> m/s<sup>2</sup>, equivalent to 20.7 kW on 10 kg) against the photon ceiling 0.2443, headroom 48×.</em>
+Panel (a) records the invariant sliding from −7.66 down to −1068 with strictly negative increments; panel (b) shows the demand |a_L| peaking at the transient start (the initial state alone demands ≈ 5.1·10<sup>-3</sup>) and collapsing toward the plot floor 1e-7, never approaching the dashed ceiling 0.2443.</p>
+<p><strong>Stationkeeping.</strong> From the initial offset 1.118·10<sup>-3</sup> the controlled sail collapses onto L4 during the transient and then stays bounded by 7.5e-07 for all t &gt; T/4 — a final error ≈ 270× tighter than the 2e-4 acceptance tolerance. The uncontrolled twin never comes closer than 0.0041 over its second half and wanders on a tadpole of extent up to 0.026: the contrast factor between the free floor and the controlled bound is ≈ 5500×. This is the entire mission case for a laser highway in one number.</p>
+<p><strong>Actuator budget.</strong> The peak control demand is 0.0051 (the initial state alone demands ≈ 5.1·10<sup>-3</sup> of ceiling), or 1.4·10<sup>-5</sup> m/s<sup>2</sup> in SI — equivalent to 20.7 kW of beam power on the 10 kg sail — against the ceiling 0.2443: a headroom of 48×. The saturation fraction of the headline run is exactly 0.0: the photon ceiling is never touched. The 17 × 17 gain sweep brackets the operating point from both sides — the late-time bound spans 0 (tightest cells) to 123.3 (weak gains lose the station), while the operating point (4, 4) holds 1.75·10<sup>-5</sup> with zero saturation; aggressive high-gain corners do press against the ceiling (up to 0.87 of steps saturated), and 77 of the 289 cells exceed the 5% saturation level.</p>
+<p><strong>Jacobi pumping.</strong> With the full ceiling thrust locked along the velocity, C_J slides monotonically from −7.66 down to −1068 over T = 30: net ΔC_J = 1063.51, and the largest single-step increase across the whole record is −0.0604 — every increment strictly negative, exactly as Ċ_J = −2a_L·v ≤ 0 demands. The laser demonstrably moves the invariant that structures the restricted problem's phase space.</p>
+<p><strong>Engineering closure.</strong> The SI table prices the operations: delivering Δv ∈ {10, 50, 100, 500} m/s to a 100 kg sail over 30 days costs 57.8 kW, 289 kW, 578 kW and 2.89 MW of beam power respectively — while the stationkeeping task itself runs at a peak equivalent of 20.7 kW on 10 kg. A 1 MW transmitter therefore holds a station with a 48× margin and simultaneously has photon budget for meaningful orbit raising: the laser highway is a single power plant serving both operations.</p>
+<h3>Verification summary</h3>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Recorded value</th>
+<th>Target</th>
+<th>Tolerance</th>
+<th>Pass</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>`controlled_l4_bound`</td>
+<td>7.47949e-07</td>
+<td>0</td>
+<td>0.0002</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`control_saturation_fraction`</td>
+<td>0</td>
+<td>0</td>
+<td>0.05</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`free_drift_never_converges`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`jacobi_pumped_monotonically`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`power_table_consistent`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p><em>(status: </em><em>PASS</em><em>, mode: full)</em></p>
+<h2>7. Discussion</h2>
+<p>The model is deliberately minimal: planar motion, circular primary orbits, instantaneous beam pointing and an ideal mirrored sail. Within these assumptions every conclusion is an exact statement about the governing equations rather than a simulation of a specific mission. The natural extensions — eccentric binaries, out-of-plane halo families around the collinear points, beam-transit delay and diffraction losses in the pointing loop, adaptive or frequency-shaped gains — each preserve the verification style established here, and none of them can remove the central fact that a bounded, correctly pointed force turns neutral libration into a controlled equilibrium.</p>
+<p>The parameter regime is chosen for honesty rather than spectacle. The photon ceiling 0.2443 follows from SI constants (1 MW, 10 kg, c) and is never assumed away; the gain sweep shows where the controller would need more authority than the beam can deliver (77 of 289 cells above 5% saturation, up to 0.87) and where weak gains simply lose the station (bounds up to 123.3). The operating point (4, 4) sits in a broad low-error, zero-saturation region, which is the practically relevant statement: the laser highway does not live on the edge of its actuator.</p>
+<p>Within the program this study is the actuator half of the laser block. TRX-01 dresses the primaries with radiation and maps how the libration landscape deforms; TRX-12 dresses the spacecraft itself and holds it at the undressed landscape's best address. TRX-10 supplies the secular transport machinery (Kozai–Lidov cycles) that a laser highway would exploit for large, naturally slow rearrangements between manifolds, and TRX-11 covers the extreme-mass regime of the same three-body stage. Together they bound the same message from both sides: invariants structure the phase space, and actuators — massless but bounded — move those invariants.</p>
+<h2>8. Conclusions</h2>
+<ol>
+<li>PD-controlled laser stationkeeping holds |r − L4| ≤ 7.5e-07 for all t &gt; T/4 from an initial offset of 1.1·10<sup>-3</sup> — the 2e-4 acceptance tolerance is beaten by ≈ 270×.</li>
+<li>Free drift never converges: the identical initial state keeps a floor of 0.0041 and a tadpole extent up to 0.026 — a contrast of ≈ 5500× with the controlled bound.</li>
+<li>The photon ceiling is never touched: control saturation fraction 0.0; peak demand 0.0051 (= 1.4·10<sup>-5</sup> m/s<sup>2</sup>, 20.7 kW equivalent) is 48× below the ceiling 0.2443 set by 1 MW on 10 kg.</li>
+<li>The PD gain plane (17 × 17, K_p 0.5–512, K_d 0.5–32) brackets the operating point (4, 4): late bounds span 0 to 123.3, and the operating point holds 1.75·10<sup>-5</sup> with zero saturation.</li>
+<li>Jacobi pumping is strictly monotone: net ΔC_J = 1063.51 over T = 30 with the largest single-step increase −0.0604 — the laser demonstrably moves the invariant C_J = 2Ω − v<sup>2</sup>.</li>
+<li>The SI power table prices the highway: Δv ∈ {10, 50, 100, 500} m/s over 30 days on 100 kg costs 57.8 kW … 2.89 MW of beam power — one 1 MW transmitter covers stationkeeping with headroom for orbit raising.</li>
+</ol>
+<h2>9. References</h2>
+<ol>
+<li>Marx, G. (1966). <em>Interstellar vehicle propelled by terrestrial laser beam.</em> Nature 211, 22–23.</li>
+<li>Redding, J. L. (1967). <em>Interstellar travel via multi-stage photon rockets.</em> Nature 213, 588–590.</li>
+<li>Forward, R. L. (1984). <em>Roundtrip interstellar travel using laser-pushed lightsails.</em> Journal of Spacecraft and Rockets 21, 187–195.</li>
+<li>Simmons, J. F. L., McDonald, A. J. C., Ward, J. C. (1985). <em>The restricted three-body problem with radiation pressure.</em> Celestial Mechanics 35, 145–187.</li>
+<li>McInnes, C. R. (1999). <em>Solar Sailing: Technology, Dynamics and Mission Applications.</em> Springer-Praxis, Chichester.</li>
+<li>Vulpetti, G., Johnson, L., Matloff, G. L. (2008). <em>Solar Sails: A Novel Approach to Interplanetary Flight.</em> Springer, New York.</li>
+<li>Baoyin, H., McInnes, C. R. (2006). <em>Solar sail halo orbits at the Sun–Earth artificial L1 point.</em> Celestial Mechanics and Dynamical Astronomy 94, 301–316.</li>
+<li>Simo, J., McInnes, C. R. (2009). <em>Solar sail trajectories at the Earth-Moon Lagrange points.</em> 59th International Astronautical Congress, IAC-09.C1.6.13.</li>
+<li>Szebehely, V. (1967). <em>Theory of Orbits: The Restricted Problem of Three Bodies.</em> Academic Press, New York.</li>
+</ol>
+<h3>BibTeX</h3>
+<p>```bibtex
+@article{marx1966,
+  author  = {Marx, Ga},
+  title   = {Interstellar vehicle propelled by terrestrial laser beam},
+  journal = {Nature},
+  year    = {1966}, volume = {211}, pages = {22--23}}
+
+@article{redding1967,
+  author  = {Redding, J. L.},
+  title   = {Interstellar travel via multi-stage photon rockets},
+  journal = {Nature},
+  year    = {1967}, volume = {213}, pages = {588--590}}
+
+@article{forward1984,
+  author  = {Forward, Robert L.},
+  title   = {Roundtrip interstellar travel using laser-pushed lightsails},
+  journal = {Journal of Spacecraft and Rockets},
+  year    = {1984}, volume = {21}, pages = {187--195}}
+
+@book{mcinnes1999,
+  author    = {McInnes, Colin R.},
+  title     = {Solar Sailing: Technology, Dynamics and Mission Applications},
+  publisher = {Springer-Praxis}, year = {1999}}
+```</p>
+<h2>Appendix A. Parameter table</h2>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Value</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>μ</td>
+<td>0.0121505856</td>
+<td>mass parameter (Earth–Moon)</td>
+</tr>
+<tr>
+<td>LU, TU</td>
+<td>3.844·10<sup>8</sup> m, 3.752·10<sup>5</sup> s</td>
+<td>canonical units (GM = 1; month = 2π ≈ 27.3 days)</td>
+</tr>
+<tr>
+<td>P, m</td>
+<td>1 MW, 10 kg</td>
+<td>transmitter power and sail mass</td>
+</tr>
+<tr>
+<td>a_max</td>
+<td>0.2443 (= 6.67·10<sup>-4</sup> m/s<sup>2</sup>)</td>
+<td>photon ceiling 2P/(cm) in LU/TU<sup>2</sup></td>
+</tr>
+<tr>
+<td>K_p, K_d</td>
+<td>4, 4</td>
+<td>PD beam-steering gains</td>
+</tr>
+<tr>
+<td>start state</td>
+<td>L4 + (1e-3, 5e-4), v = (2e-4, −1e-4)</td>
+<td>initial offset 1.118·10<sup>-3</sup></td>
+</tr>
+<tr>
+<td>T</td>
+<td>100 · 30 · 60</td>
+<td>spans: stationkeeping · pumping · per gain cell</td>
+</tr>
+<tr>
+<td>rtol, atol</td>
+<td>1e-11</td>
+<td>DOP853 tolerances (max_step 0.1, 0.02 pumping)</td>
+</tr>
+<tr>
+<td>pumping start</td>
+<td>r<sub>0</sub> = 0.10, v = 1.05 v_circ</td>
+<td>eccentric orbit about Earth, full thrust along v</td>
+</tr>
+<tr>
+<td>power table</td>
+<td>Δv ∈ {10, 50, 100, 500} m/s, 100 kg, 30 days</td>
+<td>P = m·a·c/2 → 57.8 kW … 2.89 MW</td>
+</tr>
+</tbody>
+</table>
+<h2>Appendix B. Reproduction</h2>
+<p>```bash
+python3 research/TRX-12-laser-light-sail/code/trx12_laser_light_sail.py --smoke     # < 20 s
+python3 research/TRX-12-laser-light-sail/code/trx12_laser_light_sail.py              # full, 41.4 s
+python3 research/TRX-12-laser-light-sail/code/trx12_laser_light_sail.py --figures   # + 300-DPI figures
+```</p>
+<p>Full runtime on the reference machine: 41.4 s; smoke mode completes in under 20 seconds and is exercised by the repository CI.</p>
+<h2>Appendix C. Environment</h2>
+<p>Python ≥ 3.11, numpy ≥ 2.0, scipy ≥ 1.14, matplotlib ≥ 3.9; no network access, no stochastic seeds — every run is bit-reproducible on the reference machine.</p><div class="part-banner"><div class="pb-title">ЧАСТЬ II · Русская монография</div><div class="pb-sub">Лазерная трасса: удержание светового паруса у точек L4/L5</div></div><div lang="ru"><p><em>Исследовательская программа TRIVORTEX · v1.0.0 · Издание монографий</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Исследование / Study</td>
+<td>TRX-12</td>
+</tr>
+<tr>
+<td>Программа</td>
+<td>TRIVORTEX — задача трёх тел в вихревой модели</td>
+</tr>
+<tr>
+<td>Автор</td>
+<td>Исаев Исхак Хамзатович (ORCID 0009-0003-7299-0701)</td>
+</tr>
+<tr>
+<td>DOI</td>
+<td>10.5281/zenodo.21825394</td>
+</tr>
+<tr>
+<td>Дата</td>
+<td>2026-10-06</td>
+</tr>
+<tr>
+<td>Код</td>
+<td>`code/trx12_laser_light_sail.py`</td>
+</tr>
+<tr>
+<td>Данные</td>
+<td>`results/trx12_results.json`</td>
+</tr>
+</tbody>
+</table>
+<h2>Аннотация</h2>
+<p>Монография рассматривает фотонный световой парус в ограниченной круговой задаче трёх тел Земля–Луна как актуируемую систему у точки либрации: лазер мощностью 1 МВт толкает парус 10 кг с фотонной тягой a_L = 2P/(cm), ограниченной безразмерным потолком a_max = 0.2443, а пропорционально-дифференциальный закон управления пучком направляет тягу. Проверены две операции лазерной трассы. Удержание: стартуя в 1.1·10<sup>-3</sup> от линейно устойчивой точки L4, управляемый парус сходится к |r − L4| ≤ 7.5e-07 при всех t &gt; T/4 (T = 100, ≈ 434 суток), ни разу не касаясь фотонного потолка (пиковая потребность 0.0051, запас 48×); то же начальное состояние без управления ни разу не подходит ближе 0.0041 — контраст ≈ 5500×. Подъём орбиты: открытая тяга вдоль скорости строго монотонно прокачивает интеграл Якоби, суммарное ΔC_J = 1063.51 за T = 30 при наибольшем одношаговом приросте −0.06. Развёртка 17 × 17 на плоскости ПД-коэффициентов окаймляет рабочую точку (4, 4), а таблица мощностей СИ (57.8 кВт … 2.89 МВт на 100 кг и 30 суток) замыкает модель на инженерные числа.</p>
+<h2>Содержание</h2>
+<p><strong>Краткие сведения</strong></p>
+<table>
+<thead>
+<tr>
+<th>Аспект</th>
+<th>Значение</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Блок</td>
+<td>Лазерная трасса — исследование 12 из 12</td>
+</tr>
+<tr>
+<td>Модель</td>
+<td>ОКЗТТ Земля–Луна + актуатор фотонной тяги (μ = 0.0121505856)</td>
+</tr>
+<tr>
+<td>Ключевой инвариант</td>
+<td>интеграл Якоби C_J — прокачивается вниз тягой вдоль скорости</td>
+</tr>
+<tr>
+<td>Главный результат</td>
+<td>управляемая граница 7.5e-07 у L4 — ≈ в 5500 раз теснее свободного дрейфа</td>
+</tr>
+<tr>
+<td>Верификация</td>
+<td>5/5 проверок PASS (полный режим)</td>
+</tr>
+<tr>
+<td>Время выполнения</td>
+<td>41.4 с полный прогон с графиками · &lt; 20 с smoke</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>Аннотация</li>
+<li>
+<ol>
+<li>Введение и исторический контекст</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>Физическая формулировка</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>Математическая модель</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li>Связь с фреймворком TRIVORTEX</li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li>Численный метод</li>
+</ol>
+</li>
+<li>
+<ol start="6">
+<li>Результаты и анализ</li>
+</ol>
+</li>
+<li>
+<ol start="7">
+<li>Обсуждение</li>
+</ol>
+</li>
+<li>
+<ol start="8">
+<li>Выводы</li>
+</ol>
+</li>
+<li>
+<ol start="9">
+<li>Список литературы
+Приложение A. Таблица параметров
+Приложение B. Воспроизведение</li>
+</ol>
+</li>
+</ol>
+<h2>1. Введение и исторический контекст</h2>
+<p>Равносторонние решения задачи трёх тел нашёл Жозеф-Луи Лагранж в «Essai sur le problème des trois corps» (1772), и более века они считались математическими диковинками. Открытие троянских астероидов в точках L4 и L5 Солнце–Юпитер превратило лагранжев треугольник в реальный объект небесной механики, а монография Себехея (1967) закрепила ограниченную задачу в стандартной системе отсчёта, которой пользуются все современные миссии к точкам либрации. Для системы Земля–Луна треугольные точки — особенно заманчивые станции: линейно устойчивые при μ &lt; μ_Routh ≈ 0.03852, они требуют лишь техники удержания, устраняющей те смещения, которые их нейтральная устойчивость позволяет сохраняться вечно.</p>
+<p>Физика необходимого актуатора на удивление стара. Лебедев (1901) измерил давление света на твёрдые тела, а Николс и Халл (1903) независимо подтвердили результат; идея разгонять аппарат фотонами получила количественную основу у Маркса (1966), вычислившего параметры межзвёздного аппарата, толкаемого наземным лазерным пучком, и у Реддинга (1967), разобравшего ступенчатые фотонные ракеты. Эти две статьи в Nature основали лазерное двигателестроение: пучок мощности P передаёт зеркальному парусу тягу 2P/(cm) — на килограмм полезной нагрузки это самый дешёвый реактивный материал из возможных, поскольку рабочее тело — сам свет.</p>
+<p>Форвард (1984) превратил эту арифметику в проект межзвёздной миссии «туда и обратно» и зафиксировал каноническую меру качества — фотонный потолок 2P/(cm), — которую унаследовали все последующие концепции подводимой энергии, от километровых парусов до лазерных решёток для парусных аппаратов. Поближе к дому Макиннес (1999) систематизировал динамику парусных аппаратов в гравитационных полях, Баоин и Макиннес (2006) вычислили семейства смещённых положений равновесия для парусов, а Симо и Макиннес (2009) посадили солнечные паруса на смещённые траектории у точек Лагранжа Земля–Луна. Настоящее исследование сохраняет тот же физический потолок, но заменяет пассивную ориентацию паруса активно наводимым пучком — лазерная трасса в миниатюре.</p>
+<p>Для TRIVORTEX значимость структурна, а не технологична. Точка L4 — небесный близнец одноимённого вихревого треугольника теоремы 3.1, интеграл Якоби играет роль интеграла Чаплыгина C_Ch, а закон наведения пучка — аналог управления циркуляцией: актуатор, применённый к специальному решению того же семейства центральных конфигураций. Лазерный блок программы теперь замыкается симметрично — TRX-01 направляет лазер на массивные тела и «одевает» гравитацию, TRX-12 направляет его на космический аппарат и «одевает» уравнения движения ограниченным членом тяги; вместе они показывают, что инвариант, структурирующий фазовое пространство, — это именно та величина, которую актуатор способен двигать.</p>
+<h2>2. Физическая формулировка</h2>
+<p>Плоская ОКЗТТ во вращающейся системе отсчёта. Земля и Луна движутся по круговым орбитам вокруг барицентра и неподвижны в осях, вращающихся вместе с ними: (−μ, 0) и (1 − μ, 0); парус — безмассовая частица, откликающаяся на их гравитацию, центробежный и кориолисов члены и на фотонную тягу. Вся задача удержания живёт в топографии одной скалярной функции — эффективного потенциала Ω, — чей единственный интересующий максимум находится в равносторонней точке L4 = (½ − μ, √3/2).</p>
+<p>Актуатор — импульс фотонов. Пучок мощности P несёт поток импульса P/c, а зеркальный парус возвращает его, удваивая передачу: тяга равна a_L = 2P/(cm) вдоль направления пучка — ровно 6.67·10<sup>-4</sup> м/с<sup>2</sup> при 1 МВт на 10 кг, или 0.2443 в канонических единицах. Это реальный силовой потолок, вычисленный из констант СИ, а не подогнанный параметр. Закон управления направляет эту ограниченную силу: u = −K_p(r − r_L4) − K_d·v с коэффициентами K_p = K_d = 4 и насыщением на потолке. Та же физика, прочитанная в обратную сторону, даёт правило подъёма орбиты: тяга вдоль скорости совершает над C_J отрицательную работу со скоростью −2a_L·v, поэтому лазерная трасса переходит между многообразиями, расходуя фотоны, а не топливо.</p>
+<table>
+<thead>
+<tr>
+<th>Параметр</th>
+<th>Значение</th>
+<th>Смысл</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>μ</td>
+<td>0.0121505856</td>
+<td>массовый параметр Земля–Луна</td>
+</tr>
+<tr>
+<td>LU, TU</td>
+<td>3.844·10<sup>8</sup> м, 3.752·10<sup>5</sup> с</td>
+<td>канонические длина и время (GM = 1; месяц = 2π)</td>
+</tr>
+<tr>
+<td>лазер</td>
+<td>P = 1 МВт, m = 10 кг</td>
+<td>передатчик и парус → a_max = 0.2443 (= 6.67·10<sup>-4</sup> м/с<sup>2</sup>)</td>
+</tr>
+<tr>
+<td>стартовое состояние</td>
+<td>L4 + (1e-3, 5e-4), v = (2e-4, −1e-4)</td>
+<td>начальное смещение 1.118·10<sup>-3</sup> от L4</td>
+</tr>
+<tr>
+<td>ПД-коэффициенты</td>
+<td>K_p = K_d = 4</td>
+<td>закон управления пучком с насыщением на a_max</td>
+</tr>
+<tr>
+<td>интервалы</td>
+<td>T = 100 удержание · 30 прокачка · 60 на ячейку</td>
+<td>≈ 434 · 130 · 261 суток в единицах TU</td>
+</tr>
+<tr>
+<td>интегратор</td>
+<td>DOP853, rtol = atol = 1e-11</td>
+<td>плотный вывод; max_step 0.1 (0.02 для прокачки)</td>
+</tr>
+</tbody>
+</table>
+<h2>3. Математическая модель</h2>
+<p>Во вращающейся системе массивные тела неподвижны в точках (−μ, 0) и (1 − μ, 0), а парус подчиняется системе (E1): ньютоновское притяжение, центробежный и кориолисов члены плюс лазерное ускорение a_L. Сила Кориолиса работы не совершает, поэтому для любой истории тяги тождество Якоби (E4) выполняется поточечно: Ċ_J = −2a_L·v. При выключенной тяге C_J — единственный интеграл плоской ограниченной задачи, и его линии уровня ограничивают доступную область; при включённой тяге скорость его изменения — чисто управляющая величина: лазер, толкая вдоль скорости, может лишь убавлять C_J и никогда не прибавлять.</p>
+<p>Модель актуатора (E2)–(E3) сознательно честна. Поток импульса фотонов P/c, удвоенный зеркальным парусом, даёт потолок a_max = 2P/(cm); при P = 1 МВт и m = 10 кг это 6.67·10<sup>-4</sup> м/с<sup>2</sup> в СИ, или a_max = 0.2443 в канонических единицах после умножения на TU<sup>2</sup>/LU. ПД-закон u = −K_p(r − r_L4) − K_d·v с K_p = K_d = 4 направляет вектор тяги; всякий раз, когда потребный вектор превышает потолок, он пересчитывается на потолок, а счётчик насыщения увеличивается — управляющее воздействие ограничено физикой, а не оптимизмом регулятора. При μ = 0.0121505856, глубоко внутри раусовского предела μ_Routh ≈ 0.03852, неуправляемое равновесие у L4 — эллиптический центр: смещения ни растут, ни затухают, что в точности объясняет и смысл удержания, и то, почему свободный дрейф никогда не сходится.</p>
+<p>Операция подъёма орбиты следует из того же тождества. Тяга, зафиксированная вдоль скорости, a_L = a_max·v/|v|, превращает Ċ_J = −2a_L·v в строго отрицательную величину размера 2a_max|v|: парус поднимается по лестнице инвариантных многообразий ограниченной задачи, снижая C_J до тех пор, пока топология нулевых скоростей не откроет новый коридор между телами. Для медленных длительных прожигов модель замыкает отображение (E5) в СИ: потребный Δv, доставленный за T_burn, требует a = Δv/T_burn и мощности пучка P = m·a·c/2 — таблица из результатов (100 кг, 30 суток) занимает диапазон 57.8 кВт … 2.89 МВт при Δv ∈ {10, 50, 100, 500} м/с.</p>
+<p><strong>Нотация</strong></p>
+<table>
+<thead>
+<tr>
+<th>Символ</th>
+<th>Смысл</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>x, y</td>
+<td>координаты паруса во вращающейся системе</td>
+</tr>
+<tr>
+<td>ẋ, ẏ</td>
+<td>скорости паруса во вращающейся системе</td>
+</tr>
+<tr>
+<td>Ω</td>
+<td>эффективный потенциал, Ω = ½(x<sup>2</sup>+y<sup>2</sup>) + (1−μ)/r<sub>1</sub> + μ/r<sub>2</sub></td>
+</tr>
+<tr>
+<td>r<sub>1</sub>, r<sub>2</sub></td>
+<td>расстояния до Земли и Луны</td>
+</tr>
+<tr>
+<td>μ</td>
+<td>массовый параметр, Земля–Луна: 0.0121505856</td>
+</tr>
+<tr>
+<td>P, m</td>
+<td>мощность пучка и масса паруса (1 МВт, 10 кг)</td>
+</tr>
+<tr>
+<td>a_L</td>
+<td>ускорение фотонной тяги, a_L = 2P/(cm)·û</td>
+</tr>
+<tr>
+<td>a_max</td>
+<td>потолок фотонной тяги, 0.2443 безразмерных</td>
+</tr>
+<tr>
+<td>K_p, K_d</td>
+<td>пропорциональный и дифференциальный коэффициенты (4, 4)</td>
+</tr>
+<tr>
+<td>C_J</td>
+<td>интеграл Якоби</td>
+</tr>
+<tr>
+<td>T</td>
+<td>интервал интегрирования (100 удержание · 30 прокачка · 60 на ячейку)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>(E1)</strong> Уравнения движения ОКЗТТ во вращающейся системе с добавленной лазерной тягой.</p>
+<p>$$\ddot{x} - 2\dot{y} = \frac{\partial\Omega}{\partial x} + a_{Lx}, \qquad \ddot{y} + 2\dot{x} = \frac{\partial\Omega}{\partial y} + a_{Ly}, \qquad \Omega = \tfrac{1}{2}(x^2+y^2) + \frac{1-\mu}{r_1} + \frac{\mu}{r_2}$$</p>
+<p><strong>(E2)</strong> Фотонная тяга вдоль направления пучка û (P = 1 МВт, m = 10 кг).</p>
+<p>$$a_L = \frac{2P}{c\,m}\,\hat{u}$$</p>
+<p><strong>(E3)</strong> ПД-закон управления пучком, ограниченный фотонным потолком (K_p = K_d = 4).</p>
+<p>$$\mathbf{u} = -K_p\,(\mathbf{r} - \mathbf{r}_{L4}) - K_d\,\mathbf{v}, \qquad |\mathbf{a}_L| \le a_{\max} = \frac{2P}{cm} = 0.2443$$</p>
+<p><strong>(E4)</strong> Интеграл Якоби; монотонная прокачка при тяге вдоль скорости.</p>
+<p>$$C_J = 2\Omega - (\dot{x}^2 + \dot{y}^2), \qquad \dot{C}_J = -2\,\mathbf{a}_L\cdot\mathbf{v} \le 0$$</p>
+<p><strong>(E5)</strong> Таблица мощностей СИ (парус 100 кг, 30 суток, Δv ∈ {10, 50, 100, 500} м/с).</p>
+<p>$$P = \frac{m\,a\,c}{2}, \qquad a = \frac{\Delta v}{T_{burn}}$$</p>
+<h2>4. Связь с фреймворком TRIVORTEX</h2>
+<p>Соответствие взаимно-однозначно на структурном уровне. Точка либрации L4 — небесная реализация вершины лагранжева треугольника, той же центральной конфигурации, что лежит в основе одноимённого вихревого треугольника теоремы 3.1; интеграл Якоби играет роль интеграла Чаплыгина C_Ch — инварианта, закрепляющего орбиту в редуцированном фазовом пространстве; а ПД-закон наведения пучка действует на решение либрации в точности так, как управление циркуляцией действует на вихревую конфигурацию, — актуатор, применённый к специальному решению тех же уравнений. Фотонный потолок a_max = 2P/(cm) — небесный близнец регуляризации конечной силой, используемой в вихревой модели: оба механизма держат актуатор честным, ограничивая скорость перемещения инварианта. Лазерная трасса замыкает контур TRIVORTEX: величина, структурирующая фазовое пространство (C_J ↔ C_Ch), — это именно та величина, которую двигает актуатор.</p>
+<table>
+<thead>
+<tr>
+<th>Величина исследования</th>
+<th>Аналог в TRIVORTEX</th>
+<th>Комментарий</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Точка либрации L4</td>
+<td>вершина лагранжева треугольника (теорема 3.1)</td>
+<td>та же центральная конфигурация</td>
+</tr>
+<tr>
+<td>Интеграл Якоби C_J</td>
+<td>интеграл Чаплыгина C_Ch</td>
+<td>инвариант, который двигает лазер</td>
+</tr>
+<tr>
+<td>ПД-закон управления пучком u</td>
+<td>управление циркуляцией в вихревой модели</td>
+<td>актуация специального решения</td>
+</tr>
+<tr>
+<td>Фотонный потолок 2P/(cm)</td>
+<td>регуляризация конечной силой</td>
+<td>честные пределы актуатора</td>
+</tr>
+</tbody>
+</table>
+<h2>5. Численный метод</h2>
+<p>Все траектории интегрируются во вращающейся системе явной схемой Дормана–Принса 8(5,3) (scipy solve_ivp, DOP853) при rtol = atol = 1e-11 с плотным выводом; прогоны удержания используют T = 100 с max_step = 0.1 и 800 записанных отсчётов, прогон прокачки — T = 30 с max_step = 0.02 и 800 отсчётов. Закон управления вычисляется внутри правой части: u = −K_p(r − r_L4) − K_d·v с K_p = K_d = 4, пересчитывается на потолок a_max = 0.2443 всякий раз, когда его норма превышает потолок, а доля насыщенных вызовов управления накапливается по ходу прогона.</p>
+<p>Контрастный прогон повторяет интегрирование из того же начального состояния L4 + (1e-3, 5e-4), v = (2e-4, −1e-4) с выключенным управлением, так что единственное различие между траекториями — лазер. Приёмочные проверки считаются на строгих окнах — max |r − L4| при t &gt; T/4 (управляемый) и min |r − L4| при t &gt; T/2 (свободный), — чтобы ни переходный процесс, ни стартовая точка не приукрашивали результат. Развёртка по плоскости ПД-коэффициентов повторяет управляемый прогон на сетке 17 × 17 пар (K_p от 0.5 до 512, K_d от 0.5 до 32, логарифмическая; рабочая точка (4, 4) закреплена на обеих осях) при T = 60 на ячейку, записывая позднюю границу и долю насыщения каждой ячейки.</p>
+<p>Открытый прогон прокачки стартует на эксцентричной орбите вокруг земного тела (r<sub>0</sub> = 0.10, скорость 1.05× местной круговой) с полной потолочной тягой, зафиксированной вдоль скорости; C_J снимается в 800 точках на T = 30, а наибольший одношаговый прирост проверяется на нуль. Таблица мощностей СИ (E5) пересчитывается аналитически для Δv ∈ {10, 50, 100, 500} м/с, доставляемых за 30 суток парусом 100 кг, и её внутренняя согласованность (P = m·a·c/2) сама является проверкой протокола.</p>
+<h2>6. Результаты и анализ</h2>
+<h3>fig01 landscape</h3>
+<p><img alt="Ландшафт лазерной трассы Земля–Луна при μ = 0.0121505856: (а) потенциал во вращающейся системе с лунной орбитой, равносторонними точками L4/L5 и конусом фотонного пучка от Земли к L4; (б) увеличение у L4 на T = 100 — свободный парус бродит по «головастику» размером 0.026, управляемый сходится (врезка: управляемая спираль)." src="../figures/fig01_landscape.png" /></p>
+<p><em>Ландшафт лазерной трассы Земля–Луна при μ = 0.0121505856: (а) потенциал во вращающейся системе с лунной орбитой, равносторонними точками L4/L5 и конусом фотонного пучка от Земли к L4; (б) увеличение у L4 на T = 100 — свободный парус бродит по «головастику» размером 0.026, управляемый сходится (врезка: управляемая спираль).</em>
+Панель (а) показывает топографию 2Ω с Землёй (золотая), Луной (тёмная) и пунктирной лунной орбитой, вдоль которой к L4 прорисован коридор пучка; панель (б) противопоставляет свободного «головастика» (размер до 0.026 от L4) управляемой спирали, схлопывающейся в номинальную точку, — окно врезки охватывает 2.5·10<sup>-3</sup>.</p>
+<h3>fig02 stationkeep</h3>
+<p><img alt="Главный результат — лазерное удержание против свободного дрейфа: (а) расстояние до L4 в логарифмическом масштабе на T = 100 (≈ 434 суток); управляемый парус оседает на 7.5e-07, тогда как свободный ни разу не подходит ближе 0.0041 после T/2 — контраст ≈ 5500×; (б) бюджет удержания: управляемая граница, приёмочный допуск 2e-4, начальное смещение 1.1·10&lt;sup&gt;-3&lt;/sup&gt; и пол свободного дрейфа." src="../figures/fig02_stationkeep.png" /></p>
+<p><em>Главный результат — лазерное удержание против свободного дрейфа: (а) расстояние до L4 в логарифмическом масштабе на T = 100 (≈ 434 суток); управляемый парус оседает на 7.5e-07, тогда как свободный ни разу не подходит ближе 0.0041 после T/2 — контраст ≈ 5500×; (б) бюджет удержания: управляемая граница, приёмочный допуск 2e-4, начальное смещение 1.1·10<sup>-3</sup> и пол свободного дрейфа.</em>
+Золотая кривая падает более чем на три порядка во время переходного процесса и затем прижимается к уровню 7.5e-07, далеко ниже пунктирной приёмочной границы 2e-4; столбиковая панель выстраивает четыре бюджетных расстояния на логарифмической оси — от управляемой границы до пола свободного дрейфа 0.0041.</p>
+<h3>fig03 control map</h3>
+<p><img alt="Карта управления на плоскости ПД-коэффициентов на том же интеграторе (T = 60 на ячейку, 17 × 17 пар, K_p от 0.5 до 512 и K_d от 0.5 до 32): (а) логарифм позднего времени ошибки удержания с контуром допуска 2e-4 и рабочей точкой (4, 4) — карта простирается от 0 (самые тесные ячейки) до 123.3 (слабые коэффициенты теряют станцию); (б) доля насыщения фотонного потолка, близкая к нулю во всей рабочей области." src="../figures/fig03_control_map.png" /></p>
+<p><em>Карта управления на плоскости ПД-коэффициентов на том же интеграторе (T = 60 на ячейку, 17 × 17 пар, K_p от 0.5 до 512 и K_d от 0.5 до 32): (а) логарифм позднего времени ошибки удержания с контуром допуска 2e-4 и рабочей точкой (4, 4) — карта простирается от 0 (самые тесные ячейки) до 123.3 (слабые коэффициенты теряют станцию); (б) доля насыщения фотонного потолка, близкая к нулю во всей рабочей области.</em>
+Золотая звезда отмечает рабочую точку (4, 4) с поздней границей 1.75·10<sup>-5</sup> и нулевым насыщением; самые тёмные углы панели (б) показывают, где агрессивные коэффициенты прижимаются к фотонному потолку (до 0.87 насыщенных шагов) — 77 из 289 ячеек превышают уровень 5%.</p>
+<h3>fig04 dynamics</h3>
+<p><img alt="Динамика двух лазерных операций: (а) открытая прокачка Якоби — C_J монотонно убывает при тяге вдоль скорости, суммарное ΔC_J = 1063.51 за T = 30 (наибольший одношаговый прирост −0.06); (б) управление в режиме удержания — пиковая потребность 0.0051 (= 1.4·10&lt;sup&gt;-5&lt;/sup&gt; м/с&lt;sup&gt;2&lt;/sup&gt;, эквивалент 20.7 кВт на 10 кг) против фотонного потолка 0.2443, запас 48×." src="../figures/fig04_dynamics.png" /></p>
+<p><em>Динамика двух лазерных операций: (а) открытая прокачка Якоби — C_J монотонно убывает при тяге вдоль скорости, суммарное ΔC_J = 1063.51 за T = 30 (наибольший одношаговый прирост −0.06); (б) управление в режиме удержания — пиковая потребность 0.0051 (= 1.4·10<sup>-5</sup> м/с<sup>2</sup>, эквивалент 20.7 кВт на 10 кг) против фотонного потолка 0.2443, запас 48×.</em>
+Панель (а) фиксирует скольжение инварианта от −7.66 вниз до −1068 со строго отрицательными приращениями; панель (б) показывает пик потребности |a_L| в начале переходного процесса (одно начальное состояние требует ≈ 5.1·10<sup>-3</sup>) и спад к нижней границе графика 1e-7 — пунктирный потолок 0.2443 не достигается никогда.</p>
+<p><strong>Удержание.</strong> От начального смещения 1.118·10<sup>-3</sup> управляемый парус схлопывается к L4 за переходный процесс и затем остаётся в границе 7.5e-07 при всех t &gt; T/4 — итоговая ошибка ≈ в 270 раз теснее приёмочного допуска 2e-4. Неуправляемый близнец ни разу не подходит ближе 0.0041 во второй половине интервала и бродит по «головастику» размером до 0.026: контрастный множитель между свободным полом и управляемой границей ≈ 5500×. Это и есть весь миссионный аргумент лазерной трассы, упакованный в одно число.</p>
+<p><strong>Бюджет актуатора.</strong> Пиковая потребность в управлении равна 0.0051 (одно начальное состояние требует ≈ 5.1·10<sup>-3</sup> потолка), или 1.4·10<sup>-5</sup> м/с<sup>2</sup> в СИ — эквивалент 20.7 кВт мощности пучка на парусе 10 кг — против потолка 0.2443: запас 48×. Доля насыщения в главном прогоне равна ровно 0.0: фотонный потолок не достигается ни разу. Развёртка 17 × 17 окаймляет рабочую точку с обеих сторон — поздняя граница простирается от 0 (самые тесные ячейки) до 123.3 (слабые коэффициенты теряют станцию), тогда как рабочая точка (4, 4) держит 1.75·10<sup>-5</sup> при нулевом насыщении; агрессивные высококоэффициентные углы прижимаются к потолку (до 0.87 насыщенных шагов), и 77 из 289 ячеек превышают уровень насыщения 5%.</p>
+<p><strong>Прокачка Якоби.</strong> При полной потолочной тяге, зафиксированной вдоль скорости, C_J монотонно скользит от −7.66 вниз до −1068 за T = 30: суммарное ΔC_J = 1063.51, а наибольший одношаговый прирост по всей записи равен −0.0604 — каждое приращение строго отрицательно, как и требует Ċ_J = −2a_L·v ≤ 0. Лазер демонстративно двигает инвариант, структурирующий фазовое пространство ограниченной задачи.</p>
+<p><strong>Инженерное замыкание.</strong> Таблица СИ назначает ценам операции: доставка Δv ∈ {10, 50, 100, 500} м/с парусу 100 кг за 30 суток стоит 57.8 кВт, 289 кВт, 578 кВт и 2.89 МВт мощности пучка соответственно — тогда как сама задача удержания идёт при пиковом эквиваленте 20.7 кВт на 10 кг. Передатчик на 1 МВт поэтому держит станцию с запасом 48× и одновременно располагает фотонным бюджетом для осмысленного подъёма орбиты: лазерная трасса — одна электростанция на обе операции.</p>
+<h3>Сводка верификации</h3>
+<table>
+<thead>
+<tr>
+<th>Проверка</th>
+<th>Значение</th>
+<th>Цель</th>
+<th>Допуск</th>
+<th>Прошла</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>`controlled_l4_bound`</td>
+<td>7.47949e-07</td>
+<td>0</td>
+<td>0.0002</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`control_saturation_fraction`</td>
+<td>0</td>
+<td>0</td>
+<td>0.05</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`free_drift_never_converges`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`jacobi_pumped_monotonically`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`power_table_consistent`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p><em>(status: </em><em>PASS</em><em>, mode: full)</em></p>
+<h2>7. Обсуждение</h2>
+<p>Модель сознательно минимальна: плоское движение, круговые орбиты массивных тел, мгновенное наведение пучка и идеальный зеркальный парус. В этих допущениях каждый вывод — точное утверждение об определяющих уравнениях, а не симуляция конкретной миссии. Естественные расширения — эксцентриситет двойной системы, вне-плоскостные семейства гало вокруг коллинеарных точек, задержка на прохождение пучка и дифракционные потери в контуре наведения, адаптивные или частотно-настроенные коэффициенты — каждое сохраняет установленный здесь верификационный стиль, и ни одно не может отменить центральный факт: ограниченная, правильно направленная сила превращает нейтральную либрацию в управляемое равновесие.</p>
+<p>Диапазон параметров выбран ради честности, а не зрелищности. Фотонный потолок 0.2443 следует из констант СИ (1 МВт, 10 кг, c) и нигде не постулируется как данность; развёртка по коэффициентам показывает, где регулятору понадобилось бы больше полномочий, чем может дать пучок (77 из 289 ячеек выше 5% насыщения, до 0.87), и где слабые коэффициенты просто теряют станцию (границы до 123.3). Рабочая точка (4, 4) сидит в широкой области малой ошибки и нулевого насыщения — практически релевантное утверждение: лазерная трасса не живёт на грани возможностей своего актуатора.</p>
+<p>В рамках программы это исследование — актуаторная половина лазерного блока. TRX-01 «одевает» массивные тела излучением и картирует деформацию ландшафта либрации; TRX-12 «одевает» сам аппарат и держит его у лучшего адреса неодетого ландшафта. TRX-10 поставляет механизм векового переноса (циклы Козая–Лидова), которым лазерная трасса воспользуется для крупных, естественно медленных перегруппировок между многообразиями, а TRX-11 покрывает режим экстремальных масс той же трёхтельной сцены. Вместе они ограничивают одно и то же сообщение с двух сторон: инварианты структурируют фазовое пространство, а актуаторы — безмассовые, но ограниченные — двигают эти инварианты.</p>
+<h2>8. Выводы</h2>
+<ol>
+<li>ПД-управляемое лазерное удержание держит |r − L4| ≤ 7.5e-07 при всех t &gt; T/4 от начального смещения 1.1·10<sup>-3</sup> — приёмочный допуск 2e-4 перекрыт ≈ в 270 раз.</li>
+<li>Свободный дрейф никогда не сходится: то же начальное состояние держит пол 0.0041 и «головастика» размером до 0.026 — контраст с управляемой границей ≈ 5500×.</li>
+<li>Фотонный потолок не достигается ни разу: доля насыщения управления 0.0; пиковая потребность 0.0051 (= 1.4·10<sup>-5</sup> м/с<sup>2</sup>, эквивалент 20.7 кВт) в 48 раз ниже потолка 0.2443, задаваемого 1 МВт на 10 кг.</li>
+<li>Плоскость ПД-коэффициентов (17 × 17, K_p 0.5–512, K_d 0.5–32) окаймляет рабочую точку (4, 4): поздние границы от 0 до 123.3, а рабочая точка держит 1.75·10<sup>-5</sup> при нулевом насыщении.</li>
+<li>Прокачка Якоби строго монотонна: суммарное ΔC_J = 1063.51 за T = 30 при наибольшем одношаговом приросте −0.0604 — лазер демонстративно двигает инвариант C_J = 2Ω − v<sup>2</sup>.</li>
+<li>Таблица СИ назначает цену трассе: Δv ∈ {10, 50, 100, 500} м/с за 30 суток на 100 кг стоит 57.8 кВт … 2.89 МВт мощности пучка — один передатчик 1 МВт покрывает удержание с запасом на подъём орбиты.</li>
+</ol>
+<h2>9. Список литературы</h2>
+<ol>
+<li>Marx, G. (1966). <em>Interstellar vehicle propelled by terrestrial laser beam.</em> Nature 211, 22–23.</li>
+<li>Redding, J. L. (1967). <em>Interstellar travel via multi-stage photon rockets.</em> Nature 213, 588–590.</li>
+<li>Forward, R. L. (1984). <em>Roundtrip interstellar travel using laser-pushed lightsails.</em> Journal of Spacecraft and Rockets 21, 187–195.</li>
+<li>Simmons, J. F. L., McDonald, A. J. C., Ward, J. C. (1985). <em>The restricted three-body problem with radiation pressure.</em> Celestial Mechanics 35, 145–187.</li>
+<li>McInnes, C. R. (1999). <em>Solar Sailing: Technology, Dynamics and Mission Applications.</em> Springer-Praxis, Chichester.</li>
+<li>Vulpetti, G., Johnson, L., Matloff, G. L. (2008). <em>Solar Sails: A Novel Approach to Interplanetary Flight.</em> Springer, New York.</li>
+<li>Baoyin, H., McInnes, C. R. (2006). <em>Solar sail halo orbits at the Sun–Earth artificial L1 point.</em> Celestial Mechanics and Dynamical Astronomy 94, 301–316.</li>
+<li>Simo, J., McInnes, C. R. (2009). <em>Solar sail trajectories at the Earth-Moon Lagrange points.</em> 59th International Astronautical Congress, IAC-09.C1.6.13.</li>
+<li>Szebehely, V. (1967). <em>Theory of Orbits: The Restricted Problem of Three Bodies.</em> Academic Press, New York.</li>
+</ol>
+<h3>BibTeX</h3>
+<p>```bibtex
+@article{marx1966,
+  author  = {Marx, Ga},
+  title   = {Interstellar vehicle propelled by terrestrial laser beam},
+  journal = {Nature},
+  year    = {1966}, volume = {211}, pages = {22--23}}
+
+@article{redding1967,
+  author  = {Redding, J. L.},
+  title   = {Interstellar travel via multi-stage photon rockets},
+  journal = {Nature},
+  year    = {1967}, volume = {213}, pages = {588--590}}
+
+@article{forward1984,
+  author  = {Forward, Robert L.},
+  title   = {Roundtrip interstellar travel using laser-pushed lightsails},
+  journal = {Journal of Spacecraft and Rockets},
+  year    = {1984}, volume = {21}, pages = {187--195}}
+
+@book{mcinnes1999,
+  author    = {McInnes, Colin R.},
+  title     = {Solar Sailing: Technology, Dynamics and Mission Applications},
+  publisher = {Springer-Praxis}, year = {1999}}
+```</p>
+<h2>Приложение A. Таблица параметров</h2>
+<table>
+<thead>
+<tr>
+<th>Символ</th>
+<th>Значение</th>
+<th>Роль</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>μ</td>
+<td>0.0121505856</td>
+<td>массовый параметр (Земля–Луна)</td>
+</tr>
+<tr>
+<td>LU, TU</td>
+<td>3.844·10<sup>8</sup> м, 3.752·10<sup>5</sup> с</td>
+<td>канонические единицы (GM = 1; месяц = 2π ≈ 27.3 суток)</td>
+</tr>
+<tr>
+<td>P, m</td>
+<td>1 МВт, 10 кг</td>
+<td>мощность передатчика и масса паруса</td>
+</tr>
+<tr>
+<td>a_max</td>
+<td>0.2443 (= 6.67·10<sup>-4</sup> м/с<sup>2</sup>)</td>
+<td>фотонный потолок 2P/(cm) в LU/TU<sup>2</sup></td>
+</tr>
+<tr>
+<td>K_p, K_d</td>
+<td>4, 4</td>
+<td>ПД-коэффициенты наведения пучка</td>
+</tr>
+<tr>
+<td>стартовое состояние</td>
+<td>L4 + (1e-3, 5e-4), v = (2e-4, −1e-4)</td>
+<td>начальное смещение 1.118·10<sup>-3</sup></td>
+</tr>
+<tr>
+<td>T</td>
+<td>100 · 30 · 60</td>
+<td>интервалы: удержание · прокачка · на ячейку коэффициентов</td>
+</tr>
+<tr>
+<td>rtol, atol</td>
+<td>1e-11</td>
+<td>допуски DOP853 (max_step 0.1, 0.02 для прокачки)</td>
+</tr>
+<tr>
+<td>старт прокачки</td>
+<td>r<sub>0</sub> = 0.10, v = 1.05 v_circ</td>
+<td>эксцентричная орбита вокруг Земли, полная тяга вдоль v</td>
+</tr>
+<tr>
+<td>таблица мощностей</td>
+<td>Δv ∈ {10, 50, 100, 500} м/с, 100 кг, 30 суток</td>
+<td>P = m·a·c/2 → 57.8 кВт … 2.89 МВт</td>
+</tr>
+</tbody>
+</table>
+<h2>Приложение B. Воспроизведение</h2>
+<p>```bash
+python3 research/TRX-12-laser-light-sail/code/trx12_laser_light_sail.py --smoke     # < 20 с
+python3 research/TRX-12-laser-light-sail/code/trx12_laser_light_sail.py              # полный прогон, 41.4 s
+python3 research/TRX-12-laser-light-sail/code/trx12_laser_light_sail.py --figures   # + графики 300 DPI
+```</p>
+<p>Полное время выполнения на референсной машине — 41.4 s; smoke-режим укладывается в 20 секунд и используется CI репозитория.</p>
+<h2>Приложение C. Окружение</h2>
+<p>Python ≥ 3.11, numpy ≥ 2.0, scipy ≥ 1.14, matplotlib ≥ 3.9; без доступа к сети и без стохастических зёрен — каждый прогон бит-в-бит воспроизводим на референсной машине.</p></div></div>
+<div class="ending">
+  <div class="end-title">TRIVORTEX</div>
+  <div class="end-small">The Three-Body Problem in the Vortex Model</div>
+  <div class="end-rule"></div>
+  <div class="colophon-line"><b>Laser Highway: Light-Sail Stationkeeping at L4/L5</b> — research monograph of the TRIVORTEX program, studying the three-body problem in the vortex model and its laser, celestial-mechanical and quantum crossings.</div><div class="colophon-line">Full verification protocol: <b>results JSON + figures + code</b> in research/TRX-12-laser-light-sail/; reproduction commands in Appendix B.</div>
+  <div class="end-small">
+    Isaev Iskhak Khamzatovich · ORCID 0009-0003-7299-0701<br>
+    DOI (concept) 10.5281/zenodo.21825393 · DOI (version) 10.5281/zenodo.21825394<br>
+    License IPL-RP-1.0 · v1.0.0 · 2026-10-07
+  </div>
+</div>
+
+</body>
+</html>

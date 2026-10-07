@@ -1,0 +1,94 @@
+---
+cff-version: 1.2.0
+message: "If you use this software or reference these results, please cite it as below."
+title: "TRIVORTEX: The Three-Body (and N-Body) Problem in the Vortex Model with the Chaplygin Topological Integral"
+type: software
+authors:
+  - family-names: Isaev
+    given-names: Iskhak Khamzatovich
+    email: aslan08_05@mail.ru
+    affiliation: Independent Researcher
+    country: RU
+    orcid: "https://orcid.org/0009-0003-7299-0701"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.21825394"
+    description: "Zenodo DOI for this specific version"
+  - type: doi
+    value: "10.5281/zenodo.21825393"
+    description: "Zenodo Concept DOI (all versions)"
+  - type: url
+    value: "https://github.com/wild8highlander/research-papers"
+    description: "GitHub repository URL"
+  - type: url
+    value: "https://wild8highlander.github.io/research-papers"
+    description: "Documentation site URL"
+  - type: url
+    value: "https://zenodo.org/records/21825394"
+    description: "Zenodo record page"
+repository-code: "https://github.com/wild8highlander/research-papers"
+url: "https://wild8highlander.github.io/research-papers"
+abstract: >
+  TRIVORTEX is the working title of a research document that studies the
+  three-body (and N-body) problem through a vortex formulation with a
+  Chaplygin topological integral C_Ch = r^2*(theta_dot - q*A_theta). The
+  executable document (code/trivortex_core*.py, ~2400 lines in each of three
+  language mirrors) builds an LxL Hofstadter Hamiltonian with N embedded
+  vortices, constructs a Lagrange-type closed-form rotating solution
+  (Theorem 3.1: r_k(t) = sqrt(C_Ch)*(1 + eps*cos(omega*t + 2*pi*k/3)),
+  theta_k(t) = omega*t + 2*pi*k/3, omega = (2*pi/T)*exp(C_Ch/pi)), and couples
+  it to spectral statistics (GUE/GOE/Poisson), quantum-topological observables
+  (Berry phase, Chern numbers, TKNN conductance, Dirac cones), chaos
+  diagnostics (Lyapunov exponents, permutation tests) and real astronomical
+  presets (Sun-Earth-Moon, Alpha Centauri, Pluto-Charon-Nix), with an
+  interactive 15-mode menu and a seven-format report engine. An independent
+  verification ladder (verification/trivortex/python/verify.py) re-derives the
+  core claims from scratch and certifies: the exact 2*pi/3 equilateral
+  choreography and periodicity of the closed form (V1, residuals <= 1e-12),
+  the rigid Lagrange rotation at omega = 3*Gamma/(2*pi*a^2) (V2), and the
+  conservation of the vortex integrals H, P, Q, I for equal and unequal
+  circulations (V3-V4, drift <= 1e-10); the endpoint drift of the Chaplygin
+  combination is recorded as a window-dependent diagnostic. A pytest guard
+  pins the analytic reference values; seven Docker toolchains carry a staged
+  multi-language verification roadmap (Coq, Lean 4, Rust, Isabelle-HOL, Agda,
+  C++, Haskell). Formerly released as "AB-Cloud Vortex System for N-Body
+  Problem"; the physics and the 22-section structure are unchanged.
+keywords:
+  - three-body-problem
+  - N-body-problem
+  - vortex-dynamics
+  - point-vortex
+  - Chaplygin-integral
+  - topological-integral
+  - Lagrange-solution
+  - choreographic-solutions
+  - relative-equilibria
+  - Kirchhoff-equations
+  - Hofstadter-Hamiltonian
+  - Aharonov-Bohm
+  - Theorem-3.1
+  - TRIVORTEX
+  - spectral-statistics
+  - GUE
+  - Berry-phase
+  - Chern-number
+  - Lyapunov-exponent
+  - verification-ladder
+  - reproducible-research
+  - mathematical-physics
+  - celestial-mechanics
+  - open-science
+license-url: "https://github.com/wild8highlander/research-papers/blob/main/LICENSE.md"
+version: "1.0.0"
+date-released: "2026-10-07"
+preferred-citation:
+  type: article
+  authors:
+    - family-names: Isaev
+      given-names: Iskhak Khamzatovich
+      orcid: "https://orcid.org/0009-0003-7299-0701"
+  title: "TRIVORTEX: The Three-Body (and N-Body) Problem in the Vortex Model with the Chaplygin Topological Integral"
+  year: 2026
+  journal: "Independent Research (Preprint)"
+  doi: "10.5281/zenodo.21825394"
+  url: "https://zenodo.org/records/21825394"

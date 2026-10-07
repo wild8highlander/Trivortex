@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TRX-08 — Three Laser-Cooled Ions in a Linear Paul Trap: the Table-Top Lagrange Triangle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400&family=PT+Sans:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof renderMathInElement === 'function') {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '\\(', right: '\\)', display: false}
+      ], throwOnError: false
+    });
+  }
+});
+</script>
+<style>
+@page { size: 210mm 297mm; margin: 0; }
+:root {
+  --navy: #0A1730; --navy2: #0E2145; --header-fill: #2A3A55;
+  --gold: #D4AF37; --gold-l: #F0D98C;
+  --text: #1F2937; --muted: #6B7280;
+  --stripe: #F2F5FA; --code-bg: #F5F7FB; --border: #DCE3EF;
+}
+html, body {
+  margin: 0; padding: 0; width: 210mm;
+  background: #FFFFFF;               /* flow pages are white; dark pages are fixed-height */
+  color: var(--text);
+  font-family: 'PT Serif', 'Noto Serif', 'Liberation Serif', 'DejaVu Serif', serif;
+  font-size: 15px; line-height: 1.62;
+  line-break: strict; word-break: normal; overflow-wrap: break-word;
+}
+@media screen {
+  html { height: auto; display: flex; justify-content: center; background: #10131a; }
+  body { transform-origin: top center; margin: 20px auto; box-shadow: 0 8px 40px rgba(0,0,0,.5); }
+}
+
+/* ── Cover ─────────────────────────────────────────────────────────────── */
+.front-page {
+  width: 210mm; height: 297mm; box-sizing: border-box;
+  break-after: page; overflow: hidden; position: relative;
+  background:
+    radial-gradient(circle 8px at 691px 125px, #D4AF37 0 7px, transparent 8px),
+    radial-gradient(circle 5px at 584px 56px, #59C2FF 0 4px, transparent 5px),
+    radial-gradient(circle 4px at 154px 950px, #FF7A9E 0 3px, transparent 4px),
+    radial-gradient(circle 210px at 87% 9%, transparent 206px, rgba(212,175,55,.30) 208px, rgba(212,175,55,.30) 210px, transparent 212px),
+    radial-gradient(circle 130px at 74% 3%, transparent 126px, rgba(89,194,255,.26) 128px, rgba(89,194,255,.26) 130px, transparent 132px),
+    radial-gradient(circle 280px at 8% 94%, transparent 276px, rgba(212,175,55,.18) 278px, rgba(212,175,55,.18) 280px, transparent 282px),
+    linear-gradient(160deg, #0E2145 0%, #0A1730 62%, #081226 100%);
+  color: #E9EEF8;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 58px;
+}
+.fp-kicker {
+  display: flex; align-items: center; gap: 14px;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.5px; letter-spacing: 3.5px; color: #F0D98C; font-weight: 700;
+}
+.fp-title {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 34px; line-height: 1.16; font-weight: 700; color: #F4F7FD;
+  margin: 26px 0 12px 0; max-width: 156mm;
+}
+.fp-subtitle-ru {
+  font-size: 18.5px; line-height: 1.4; color: #D4AF37; font-style: italic;
+  max-width: 156mm; margin-bottom: 34px;
+}
+.fp-meta {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 9px 26px;
+  max-width: 156mm;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.5px; line-height: 1.45;
+  border-top: 1px solid rgba(212,175,55,.35);
+  border-bottom: 1px solid rgba(212,175,55,.35);
+  padding: 16px 2px;
+}
+.fp-meta .k { color: #8FA3C4; letter-spacing: 1.6px; font-size: 10.5px; text-transform: uppercase; }
+.fp-meta .v { color: #E9EEF8; margin-top: 2px; }
+.fp-abstract {
+  max-width: 156mm; margin-top: 26px; font-size: 12.5px; line-height: 1.6;
+  color: #B9C6DE; font-style: italic;
+}
+.fp-foot {
+  position: absolute; left: 58px; right: 58px; bottom: 40px;
+  display: flex; justify-content: space-between; align-items: flex-end;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 11px; letter-spacing: 2px; color: #8FA3C4; text-transform: uppercase;
+}
+.fp-foot b { color: #F0D98C; font-weight: 700; }
+
+/* ── Flowing content ───────────────────────────────────────────────────── */
+.main-content { background: #FFFFFF; padding: 15mm 16mm 13mm 16mm; }
+
+h1, h2, h3, h4 {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  color: #0A1730; line-height: 1.25;
+  break-after: avoid; page-break-after: avoid;
+}
+.main-content h1 { font-size: 24px; margin: 6px 0 4px 0; }
+.main-content h2 {
+  font-size: 19.5px; margin: 26px 0 10px 0; padding-left: 12px;
+  border-left: 4px solid #D4AF37;
+}
+.main-content h3 { font-size: 16px; margin: 18px 0 8px 0; }
+.main-content h4 { font-size: 14.5px; margin: 14px 0 6px 0; color: #2A3A55; }
+p { margin: 0 0 9px 0; text-align: justify; hyphens: auto; }
+strong { color: #0A1730; }
+em { color: inherit; }
+a { color: #0E2145; text-decoration: none; border-bottom: 1px solid #D4AF37; }
+ul, ol { margin: 4px 0 10px 0; padding-left: 22px; }
+li { margin-bottom: 4px; break-inside: avoid; text-align: left; }
+
+table {
+  width: 100%; border-collapse: collapse; margin: 10px 0 14px 0;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.3px; line-height: 1.4;
+}
+thead { display: table-header-group; }
+tr { break-inside: avoid; page-break-inside: avoid; }
+th {
+  background: #2A3A55; color: #FFFFFF; text-align: left;
+  padding: 6px 9px; font-weight: 700; border: none;
+}
+td { padding: 5px 9px; border-bottom: 1px solid #DCE3EF; vertical-align: top; }
+tbody tr:nth-child(odd) td { background: #F2F5FA; }
+table, .table-wrap { break-inside: auto; }
+thead + tbody tr:first-child { break-before: avoid; }
+
+pre {
+  background: #F5F7FB; border: 1px solid #DCE3EF; border-left: 3px solid #D4AF37;
+  padding: 10px 13px; margin: 10px 0 14px 0; border-radius: 4px;
+  font-family: 'JetBrains Mono', 'DejaVu Sans Mono', 'Liberation Mono', monospace;
+  font-size: 11.6px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: break-word;
+  break-inside: avoid; page-break-inside: avoid;
+}
+code {
+  font-family: 'JetBrains Mono', 'DejaVu Sans Mono', 'Liberation Mono', monospace;
+  font-size: 12.6px; background: #F5F7FB; padding: 1px 4px; border-radius: 3px;
+}
+pre code { background: transparent; padding: 0; font-size: 11.6px; }
+
+blockquote {
+  margin: 10px 0 12px 0; padding: 8px 14px; border-left: 3px solid #D4AF37;
+  background: #F5F7FB; color: #0E2145; font-style: italic;
+  break-inside: avoid;
+}
+hr { border: none; border-top: 1px solid #DCE3EF; margin: 16px 0; }
+
+/* equations */
+.katex-display { margin: 12px 0 14px 0; max-width: 100%; overflow: hidden auto; }
+.eq-block { break-inside: avoid; page-break-inside: avoid; }
+
+/* language part banners */
+.part-banner {
+  break-inside: avoid; break-after: avoid;
+  margin: 26px 0 14px 0; padding: 13px 18px;
+  background: #0E2145; color: #F0D98C; border-radius: 6px;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+}
+.part-banner .pb-title { font-size: 16.5px; font-weight: 700; letter-spacing: 1.2px; }
+.part-banner .pb-sub { font-size: 11.5px; color: #8FA3C4; margin-top: 3px; letter-spacing: .4px; }
+
+/* colophon */
+.ending {
+  width: 210mm; height: 297mm; box-sizing: border-box;
+  break-before: page; overflow: hidden; position: relative;
+  background: linear-gradient(200deg, #0E2145 0%, #0A1730 60%, #081226 100%);
+  color: #E9EEF8;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 58px;
+}
+.ending .colophon-line { max-width: 150mm; font-size: 13.5px; line-height: 1.7; color: #B9C6DE; }
+.ending .colophon-line b { color: #F0D98C; }
+.ending .end-rule { width: 64px; height: 26px; margin: 10px 0 8px 0;
+  background: linear-gradient(90deg, #D4AF37 0 64px, transparent 64px) top/100% 6px no-repeat; }
+.ending .end-title {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 26px; font-weight: 700; color: #F4F7FD; letter-spacing: 1px;
+}
+.ending .end-small {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 11.5px; color: #8FA3C4; letter-spacing: 2px; text-transform: uppercase;
+  margin-top: 26px; line-height: 2;
+}
+</style>
+</head>
+<body>
+
+<div class="front-page">
+  <div class="fp-kicker"><span>TRIVORTEX RESEARCH PROGRAM · TRX-08</span></div>
+  <div class="fp-title">Three Laser-Cooled Ions in a Linear Paul Trap: the Table-Top Lagrange Triangle</div>
+  <div class="fp-subtitle-ru">Три лазерно-охлаждённых иона в линейной ловушке Пауля: настольный треугольник Лагранжа</div>
+  <div class="fp-meta"><div><div class="k">Author</div><div class="v">Isaev Iskhak Khamzatovich<br><span style="color:#8FA3C4">ORCID 0009-0003-7299-0701</span></div></div><div><div class="k">DOI</div><div class="v">10.5281/zenodo.21825394</div></div><div><div class="k">Study</div><div class="v">TRX-08</div></div><div><div class="k">Date</div><div class="v">2026-10-06</div></div><div><div class="k">Code</div><div class="v"><code style="background:rgba(212,175,55,.12);color:#F0D98C;padding:1px 5px;border-radius:3px">code/trx08_ion_trap.py</code></div></div><div><div class="k">Data</div><div class="v"><code style="background:rgba(212,175,55,.12);color:#F0D98C;padding:1px 5px;border-radius:3px">results/trx08_results.json</code></div></div></div>
+  <div class="fp-abstract">This monograph treats three laser-cooled ions in the transverse plane of a linear Paul trap as a table-top three-body problem: a two-dimensional harmonic rf pseudopotential confines the ions, their mutual Coulomb repulsion pushes them apart, and Doppler cooling — modelled as a linear drag −γ_d·v — dissipates energy until the ions crystallize. The study establishes, end to end and to machine precision, that the attractor of the cooled dynamics is the equilateral Lagrange triangle of side a = (3κ/ω₀²)^(1/3) = 3^(1/3) = 1.4422495703: a seeded relaxation with a documented wavepacket softening ε = 0.05, Newton-polished on the strict force balance, reproduces the analytic crystal energy U* = 3.120125734578 exactly, with all three sides equal to 4.4e-16 and central angles 2π/3 to 4.4e-16.</div>
+  <div class="fp-foot"><span>Monograph Edition · bilingual RU + EN</span><span><b>TRIVORTEX</b> · TRIVORTEX · v1.0.0 · 2026</span></div>
+</div>
+<div class="main-content"><div class="part-banner"><div class="pb-title">PART I · English Monograph</div><div class="pb-sub">Three Laser-Cooled Ions in a Linear Paul Trap: the Table-Top Lagrange Triangle</div></div><p><em>TRIVORTEX Research Program · v1.0.0 · Monograph Edition</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Study</td>
+<td>TRX-08</td>
+</tr>
+<tr>
+<td>Program</td>
+<td>TRIVORTEX — The Three-Body Problem in the Vortex Model</td>
+</tr>
+<tr>
+<td>Author</td>
+<td>Isaev Iskhak Khamzatovich (ORCID 0009-0003-7299-0701)</td>
+</tr>
+<tr>
+<td>DOI</td>
+<td>10.5281/zenodo.21825394</td>
+</tr>
+<tr>
+<td>Date</td>
+<td>2026-10-06</td>
+</tr>
+<tr>
+<td>Code</td>
+<td>`code/trx08_ion_trap.py`</td>
+</tr>
+<tr>
+<td>Data</td>
+<td>`results/trx08_results.json`</td>
+</tr>
+</tbody>
+</table>
+<h2>Abstract</h2>
+<p>This monograph treats three laser-cooled ions in the transverse plane of a linear Paul trap as a table-top three-body problem: a two-dimensional harmonic rf pseudopotential confines the ions, their mutual Coulomb repulsion pushes them apart, and Doppler cooling — modelled as a linear drag −γ_d·v — dissipates energy until the ions crystallize. The study establishes, end to end and to machine precision, that the attractor of the cooled dynamics is the equilateral Lagrange triangle of side a = (3κ/ω<sub>0</sub><sup>2</sup>)^(1/3) = 3^(1/3) = 1.4422495703: a seeded relaxation with a documented wavepacket softening ε = 0.05, Newton-polished on the strict force balance, reproduces the analytic crystal energy U* = 3.120125734578 exactly, with all three sides equal to 4.4e-16 and central angles 2π/3 to 4.4e-16. The finite-difference Hessian confirms the full normal-mode ladder {0, ω<sub>0</sub> (×2), √(3/2)ω<sub>0</sub> (×2), √3ω<sub>0</sub>} — one rigid-rotation zero mode, two centre-of-mass modes, one breathing mode — to 1.4·10<sup>-8</sup> against the 5e-6 tolerance. Started exactly at equilibrium, the conservative dynamics holds the crystal statically to 3.9e-15 over fifty time units with energy drift 8.9e-16: the ion crystal is a frozen choreography, the trapped-ion twin of the Lagrange relative equilibrium.</p>
+<h2>Contents</h2>
+<ol>
+<li>Abstract</li>
+<li>
+<ol>
+<li>Introduction and historical context</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>Physical formulation</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>Mathematical model</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li>Connection to the TRIVORTEX framework</li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li>Numerical method</li>
+</ol>
+</li>
+<li>
+<ol start="6">
+<li>Results and analysis</li>
+</ol>
+</li>
+<li>
+<ol start="7">
+<li>Discussion</li>
+</ol>
+</li>
+<li>
+<ol start="8">
+<li>Conclusions</li>
+</ol>
+</li>
+<li>
+<ol start="9">
+<li>References
+Appendix A. Parameter table
+Appendix B. Reproduction</li>
+</ol>
+</li>
+</ol>
+<h2>1. Introduction and historical context</h2>
+<p>The quadrupole ion trap was invented by Wolfgang Paul and Helmut Steinwedel in 1953 as a mass spectrometer without a magnetic field; the radiofrequency pseudopotential they introduced lets charged particles float in a nearly harmonic well far from any material surface. Half a century of refinement — recognized by the 1989 Nobel Prize shared by Paul and Hans Dehmelt — turned the trap into the workhorse of atomic spectroscopy, frequency standards and, later, quantum information. Paul's 1990 Nobel lecture in the Reviews of Modern Physics remains the canonical introduction to the pseudopotential picture used throughout this study.</p>
+<p>Laser cooling supplied the second ingredient. The 1975 proposals of Hänsch and Schawlow (free atoms) and of Wineland and Dehmelt (trapped ions) showed that red-detuned light slows an absorber toward the Doppler limit; Itano and Wineland (1982) worked out the full theory for ions in harmonic and Penning traps. Cooling removes kinetic energy order by order, and in a harmonic confinement the coldest state of a cloud is no cloud at all: the competition between the confining force and the mutual Coulomb repulsion has a crystalline ground state.</p>
+<p>That phase transition was observed in 1987: Diedrich and colleagues in Garching saw laser-cooled stored ions jump from a disordered cloud to an ordered crystal, and Dubin and O'Neil's 1999 review consolidated the whole field — trapped nonneutral plasmas, liquids and crystals — into a single statistical-mechanics framework with the Coulomb coupling parameter as the control variable. For a handful of ions the crystal geometry is dictated by elementary force balance: two ions line up, three form an equilateral triangle, larger ensembles arrange in rings and shells — the finite-N precursors of Wigner crystals.</p>
+<p>The small crystals then became quantum technology. Cirac and Zoller's 1995 proposal used the collective vibrational modes of a trapped-ion string as a data bus for quantum gates, and James (1998) computed the exact normal-mode spectrum of small ion crystals — precisely the object this study verifies classically. Three ions form the smallest ion-crystal quantum simulator (Blatt and Roos 2012), and their mode ladder — zero, centre-of-mass, breathing — is the table-top counterpart of the TRIVORTEX triad: the equilateral configuration of Theorem 3.1, realized in an afternoon experiment with a linear Paul trap and a pair of cooling lasers.</p>
+<h2>2. Physical formulation</h2>
+<p>Three equal ions move in the transverse (x, y) plane of a linear Paul trap. The time-averaged rf pseudopotential is harmonic in the plane, U_trap = mω<sub>0</sub><sup>2</sup>r<sup>2</sup>/2; the mutual Coulomb repulsion κ/rij pushes the ions apart; the Doppler-cooling lasers are modelled by a linear drag −γ_d·v. The dynamics is two-dimensional and dimensionless with ω<sub>0</sub> = κ = m = 1, the state interleaved as [x<sub>1</sub>, y<sub>1</sub>, v<sub>1</sub>ˣ, v<sub>1</sub>ʸ, …] for the three ions, and the Coulomb force is softened as κ·r/(r<sup>2</sup> + ε<sup>2</sup>)^(3/2) with a documented ε during the relaxation stage.</p>
+<p>Two competing length scales leave a single dimensionless combination κ/ω<sub>0</sub><sup>2</sup> that fixes the crystal size: at the equilateral configuration each ion feels a radially outward Coulomb push √3κ/a<sup>2</sup> and an inward trap pull ω<sub>0</sub><sup>2</sup>a/√3, so the balance gives a = (3κ/ω<sub>0</sub><sup>2</sup>)^(1/3) — 3^(1/3) = 1.4422495703 for the preset. Because the trap is isotropic, the orientation of the triangle is free — this is exactly the zero Hessian mode. During cooling the energy is dissipated, but the trap is static in the lab frame, so the crystal is a static equilibrium: with γ_d = 0 and zero initial velocity the conservative dynamics K + U keeps it frozen.</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ω<sub>0</sub>, κ, m</td>
+<td>1, 1, 1</td>
+<td>dimensionless trap frequency, Coulomb strength, ion mass</td>
+</tr>
+<tr>
+<td>state</td>
+<td>interleaved [x<sub>1</sub>, y<sub>1</sub>, v<sub>1</sub>ˣ, v<sub>1</sub>ʸ, …]</td>
+<td>three ions in the transverse trap plane</td>
+</tr>
+<tr>
+<td>initial condition</td>
+<td>seeded random in [−1, 1]<sup>2</sup>, zero velocities</td>
+<td>rng seed 3</td>
+</tr>
+<tr>
+<td>cooling</td>
+<td>γ_d = 0.8, linear drag −γ_d·v</td>
+<td>Doppler-cooling model, relaxation stage only</td>
+</tr>
+<tr>
+<td>softening</td>
+<td>ε_relax = 0.05, polish at ε = 1e-12</td>
+<td>finite cooled wavepacket → strict force balance</td>
+</tr>
+<tr>
+<td>time spans</td>
+<td>T_relax = 60, T_hold = 50</td>
+<td>crystallization window and conservative hold</td>
+</tr>
+<tr>
+<td>Ca<sup>+</sup> mapping</td>
+<td>m = 40 amu, trap 1 MHz</td>
+<td>physical scale; κ sets the trap length scale</td>
+</tr>
+</tbody>
+</table>
+<h2>3. Mathematical model</h2>
+<p>The dynamics (E1) contains two length scales — the trap length (κ/mω<sub>0</sub><sup>2</sup>)^(1/3) fixed by the competition of harmonic confinement and Coulomb repulsion, and the softening ε — and no other parameter. The equilateral configuration is the central configuration of the problem: by the three-fold symmetry the net Coulomb push on each ion is radial, of magnitude √3κ/a<sup>2</sup>, while the trap pulls inward with ω<sub>0</sub><sup>2</sup>a/√3. Equating the two gives the algebraic force balance (E2), a<sup>3</sup> = 3κ/ω<sub>0</sub><sup>2</sup>, whose preset root is a = 3^(1/3) = 1.4422495703 in trap length units.</p>
+<p>The same side follows from energy minimization. Along the equilateral family the potential is U(a) = ω<sub>0</sub><sup>2</sup>a<sup>2</sup>/2 + 3κ/a (three trap terms plus three pair terms), and dU/da = ω<sub>0</sub><sup>2</sup>a − 3κ/a<sup>2</sup> vanishes exactly at the force-balance side; the minimum value is U<em> = 1.5·3^(2/3) = 3.120125734578 (E3). During cooling the drag dissipates this potential downhill, so the released binding energy ΔU = U(random start) − U</em> = 1.7609 measures how far above the crystal the run began. The documented softening ε_relax = 0.05 — a stand-in for the finite size of the cooled ion wavepacket — regularizes the Coulomb singularity during the relaxation stage; the acceptance numbers are then Newton-polished on the strict ε = 1e-12 balance, so they refer to the ideal model.</p>
+<p>Small oscillations follow from the 6×6 position Hessian H of U at the equilibrium; its eigenvalues divided by the mass are the squared mode frequencies (E4). Translation symmetry makes the centre-of-mass pair exact: ω = ω<sub>0</sub> twice. Rotational symmetry of the isotropic trap makes the orientation free: one zero mode — the rigid-rotation nullspace, the analogue of the continuous choreography family. The remaining pair splits into two quadrupole deformations at √(3/2)ω<sub>0</sub> and the breathing mode at √3ω<sub>0</sub> = 1.7320508, where the triangle breathes in and out. Finally, because the trap is static in the lab frame, the equilibrium is an exact solution of the conservative dynamics (E5): started at the crystal with zero velocities and γ_d = 0, the ions stay there — the static hold verified to 3.9e-15 over t = 50.</p>
+<p><strong>Notation</strong></p>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>r_k = (x_k, y_k)</td>
+<td>position of ion k in the transverse plane</td>
+</tr>
+<tr>
+<td>ω<sub>0</sub></td>
+<td>trap pseudopotential frequency (preset 1)</td>
+</tr>
+<tr>
+<td>κ</td>
+<td>Coulomb strength (preset 1)</td>
+</tr>
+<tr>
+<td>γ_d</td>
+<td>Doppler-drag coefficient (preset 0.8)</td>
+</tr>
+<tr>
+<td>ε, ε_relax</td>
+<td>Coulomb softening; 1e-12 in the polish, 0.05 in the relaxation</td>
+</tr>
+<tr>
+<td>a</td>
+<td>equilateral crystal side, a = (3κ/ω<sub>0</sub><sup>2</sup>)^(1/3) = 3^(1/3)</td>
+</tr>
+<tr>
+<td>U</td>
+<td>total potential energy (trap + Coulomb)</td>
+</tr>
+<tr>
+<td>H</td>
+<td>6×6 position Hessian of U at the crystal</td>
+</tr>
+<tr>
+<td>ΔU</td>
+<td>binding energy released during cooling (= 1.7609)</td>
+</tr>
+<tr>
+<td>T_relax, T_hold</td>
+<td>relaxation (60) and static-hold (50) time spans</td>
+</tr>
+<tr>
+<td>t_s</td>
+<td>settle time from the drag sweep</td>
+</tr>
+</tbody>
+</table>
+<p><strong>(E1)</strong> Dynamics of the three-ion crystal (harmonic trap + softened Coulomb repulsion + Doppler drag).</p>
+<p>$$m\ddot{\mathbf{r}}_k = -m\omega_0^2\,\mathbf{r}_k - \gamma_d\dot{\mathbf{r}}_k + \kappa\sum_{l\ne k}\frac{\mathbf{r}_k-\mathbf{r}_l}{\bigl(|\mathbf{r}_k-\mathbf{r}_l|^2+\epsilon^2\bigr)^{3/2}}$$</p>
+<p><strong>(E2)</strong> Equilateral force balance: the crystal side.</p>
+<p>$$\omega_0^2\,\frac{a}{\sqrt{3}} = \sqrt{3}\,\frac{\kappa}{a^2}\quad\Longrightarrow\quad a = \left(\frac{3\kappa}{\omega_0^2}\right)^{1/3} = 3^{1/3} = 1.4422495703$$</p>
+<p><strong>(E3)</strong> Energy along the equilateral family; its minimum is the force-balance side.</p>
+<p>$$U(a) = \tfrac{1}{2}\omega_0^2 a^2 + \frac{3\kappa}{a},\qquad U_* = \tfrac{3}{2}\cdot 3^{2/3} = 3.120125734578$$</p>
+<p><strong>(E4)</strong> Normal-mode ladder: eigenvalues of the 6×6 position Hessian at the crystal.</p>
+<p>$$\omega^2 = \mathrm{eig}\,\frac{\partial^2 U}{\partial x_i\,\partial x_j},\qquad \omega \in \{0,\ \omega_0\ (\times 2),\ \sqrt{\tfrac{3}{2}}\,\omega_0\ (\times 2),\ \sqrt{3}\,\omega_0\}$$</p>
+<p><strong>(E5)</strong> Static hold: the equilibrium is an exact solution of the conservative dynamics.</p>
+<p>$$\mathbf{r}_k(0) = \mathbf{r}_k^{*},\ \dot{\mathbf{r}}_k(0) = 0,\ \gamma_d = 0\ \Longrightarrow\ \mathbf{r}_k(t) = \mathbf{r}_k^{*}$$</p>
+<h2>4. Connection to the TRIVORTEX framework</h2>
+<p>The three-ion crystal is the table-top member of the same central-configuration family that anchors TRIVORTEX. The equilateral triangle is literally the Lagrange solution: one algebraic force balance fixes its size, just as the balance of vortex attractions and Abel–Hertz flux fixes the size of the same-sign vortex triangle of Theorem 3.1 — in both problems two competing scales leave a single dimensionless combination that sets the geometry. The mode correspondence is equally direct: the breathing mode √3ω<sub>0</sub> is the radial modulation of the Theorem 3.1 triangle, the two centre-of-mass modes reflect the shared translational symmetry, and the zero rigid-rotation mode — the free orientation of the crystal in the isotropic trap — is the continuous family of relative equilibria, the same degeneracy that makes the vortex triangle a rotating choreography rather than a static figure. What the ion trap adds is dissipation as a selection mechanism: cooling drives the configuration downhill to the central configuration and freezes it there, which is exactly how the monograph's rotating triads are realized in laboratory matter.</p>
+<table>
+<thead>
+<tr>
+<th>Quantity in this study</th>
+<th>TRIVORTEX analog</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ion crystal triangle</td>
+<td>Lagrange equilateral solution</td>
+<td>same central configuration</td>
+</tr>
+<tr>
+<td>Coulomb repulsion + harmonic trap</td>
+<td>vortex attractions + AH flux</td>
+<td>competing scales fix the size</td>
+</tr>
+<tr>
+<td>Breathing mode √3ω<sub>0</sub></td>
+<td>radial modulation of Theorem 3.1</td>
+<td>collective breathing of the triad</td>
+</tr>
+<tr>
+<td>Zero rotation mode</td>
+<td>continuous choreography family</td>
+<td>free orientation of the relative equilibrium</td>
+</tr>
+</tbody>
+</table>
+<h2>5. Numerical method</h2>
+<p>Crystallization stage: the three ions start from a seeded random configuration in [−1, 1]<sup>2</sup> with zero velocities (rng seed 3) and relax under the damped inertial dynamics (E1) with γ_d = 0.8 and the documented softening ε_relax = 0.05, integrated with the explicit Dormand–Prince 8(5,3) scheme at rtol = atol = 1e-11, max_step 0.05, over T_relax = 60. The end state is the softened equilibrium — the stand-in for the finite cooled wavepacket.</p>
+<p>Polish and spectrum stage: the relaxed configuration seeds a Newton root-find (scipy hybr, tol 1e-14) of the strict force balance at ε = 1e-12, with the analytic triangle as a documented fallback; the polished crystal is compared against a = 3^(1/3) (sides, equality, 2π/3 angles) and against the analytic energy U* = 3.120125734578. Normal modes come from a finite-difference Hessian (central fourth-order stencil, h = 1e-4) diagonalized with eigvalsh; the zero, COM and breathing mode counts are accepted in 5e-6 frequency windows.</p>
+<p>Invariant and sweeps stage: the static hold integrates the conservative dynamics (γ_d = 0) from the analytic equilibrium with rtol = atol = 1e-12 over t = 50, recording the position drift and the total-energy drift. Two sweeps close the protocol: five Coulomb strengths κ ∈ {0.25, 0.5, 1, 2, 4} are re-relaxed and re-polished against the cubic law a(κ) = (3κ/ω<sub>0</sub><sup>2</sup>)^(1/3), and six Doppler drags γ_d ∈ {0.4, 0.6, 0.8, 1.2, 1.6, 2.4} are scored by the settle time — the first moment the side spread stays below 0.01 within the 600-sample window. Every check stores value, target, tolerance, unit and pass flag in the JSON protocol; the run is deterministic, offline and bit-reproducible.</p>
+<h2>6. Results and analysis</h2>
+<h3>fig01 crystal landscape</h3>
+<p><img alt="Model landscape of the three-ion crystal: (a) potential slice with ions 2 and 3 held at the equilibrium vertices and ion 1 scanned over the trap plane; (b) potential energy along the equilateral family U(a) = ω&lt;sub&gt;0&lt;/sub&gt;&lt;sup&gt;2&lt;/sup&gt;a&lt;sup&gt;2&lt;/sup&gt;/2 + 3κ/a." src="../figures/fig01_crystal_landscape.png" /></p>
+<p><em>Model landscape of the three-ion crystal: (a) potential slice with ions 2 and 3 held at the equilibrium vertices and ion 1 scanned over the trap plane; (b) potential energy along the equilateral family U(a) = ω<sub>0</sub><sup>2</sup>a<sup>2</sup>/2 + 3κ/a.</em>
+The scanned-ion minimum lands exactly on the third vertex of the triangle, and the one-dimensional energy profile has its minimum at a<em> = 3^(1/3) = 1.442249570 with U</em> = 3.120125735 (trap energy units) — the force balance (E2) is the minimizer of the energy (E3).</p>
+<h3>fig02 crystal and modes</h3>
+<p><img alt="Headline result: (a) the Newton-polished crystal with the exact force balance on each ion; (b) the six Hessian normal-mode frequencies against the analytic ladder." src="../figures/fig02_crystal_and_modes.png" /></p>
+<p><em>Headline result: (a) the Newton-polished crystal with the exact force balance on each ion; (b) the six Hessian normal-mode frequencies against the analytic ladder.</em>
+The polished triangle has side a = 1.442249570 with all three sides equal to 4.4e-16, and the measured finite-difference spectrum {0, 1.0, 1.0, 1.2247449, 1.2247449, 1.7320508} deviates from the analytic ladder {0, ω<sub>0</sub> (×2), √(3/2)ω<sub>0</sub> (×2), √3ω<sub>0</sub>} by at most 1.4·10<sup>-8</sup> against the 5e-6 tolerance.</p>
+<h3>fig03 scaling sweeps</h3>
+<p><img alt="Parameter sweeps: (a) crystal side versus Coulomb strength κ — relaxation + Newton re-runs against the analytic cubic law; (b) crystallization settle time versus Doppler drag γ_d." src="../figures/fig03_scaling_sweeps.png" /></p>
+<p><em>Parameter sweeps: (a) crystal side versus Coulomb strength κ — relaxation + Newton re-runs against the analytic cubic law; (b) crystallization settle time versus Doppler drag γ_d.</em>
+Independent re-runs reproduce a(κ) = (3κ/ω<sub>0</sub><sup>2</sup>)^(1/3) exactly at all five κ ∈ {0.25, 0.5, 1, 2, 4} — a from 0.908560296 to 2.289428485 — while the settle time decreases monotonically from 24.341 to 5.609 (1/ω<sub>0</sub> units) over γ_d ∈ [0.4, 2.4], with no overdamped upturn inside the scanned window.</p>
+<h3>fig04 crystallization dynamics</h3>
+<p><img alt="Crystallization dynamics: (a) worldlines of the three ions from the seeded random start into the crystal (γ_d = 0.8, T = 60); (b) cooling decay |U(t) − U_min| versus the conservative hold |E(t) − E(0)|." src="../figures/fig04_crystallization_dynamics.png" /></p>
+<p><em>Crystallization dynamics: (a) worldlines of the three ions from the seeded random start into the crystal (γ_d = 0.8, T = 60); (b) cooling decay |U(t) − U_min| versus the conservative hold |E(t) − E(0)|.</em>
+Cooling at γ_d = 0.8 releases the binding energy ΔU = 1.7609 and settles the triangle within the T = 60 window, while the conservative run started at the exact equilibrium keeps the energy drift at 8.9e-16 over t = 50 — the crystal is a frozen choreography.</p>
+<p><strong>Crystallization and global minimum.</strong> From the seeded random start the damped relaxation releases the binding energy ΔU = 1.7609 and descends into the crystal well; after the Newton polish on the strict balance the potential equals the analytic triangle energy exactly — the recorded U_final − U_triangle is 0.0 against the 1e-9 tolerance, with U* = 3.120125734578. The two-stage design is what makes the check honest: the softened relaxation provides a robust landscape, and the strict polish ties the reported numbers to the ideal force balance (E2) rather than to the softening.</p>
+<p><strong>Geometry of the crystal.</strong> The polished triangle has mean side 1.4422495703074085 against the analytic 3^(1/3) = 1.4422495703074083 (agreement far inside the 1e-8 tolerance); the three sides are equal to 4.4e-16 and the three central angles equal 2π/3 = 2.0943951 rad each to 4.4e-16. The crystal recorded in the protocol sits on the canonical orientation with circumradius 0.8326832 = a/√3, but the orientation itself is a free zero mode of the isotropic trap.</p>
+<p><strong>Mode ladder and invariants.</strong> The finite-difference Hessian (h = 1e-4) returns frequencies {0.0, 0.999999997, 1.000000014, 1.224744867, 1.224744882, 1.732050810}: exactly one zero mode, two COM modes at ω<sub>0</sub> and one breathing mode at √3ω<sub>0</sub> = 1.7320508, with the maximum deviation from the analytic ladder of 1.4·10<sup>-8</sup> against the 5e-6 tolerance. The conservative hold started exactly at the equilibrium keeps the positions fixed to 3.9e-15 over t = 50 and the total energy to 8.9e-16 — both round-off level, confirming that the crystal is a static exact solution of the damping-free dynamics.</p>
+<p><strong>Scaling and drag response.</strong> Five independent re-runs reproduce the cubic law a(κ) = (3κ/ω<sub>0</sub><sup>2</sup>)^(1/3) with no free fitting: the numeric sides 0.908560296, 1.144714243, 1.442249570, 1.817120593, 2.289428485 coincide with the analytic values at all five κ ∈ {0.25, 0.5, 1, 2, 4}. The drag sweep shows the settle time falling monotonically from 24.341 to 5.609 (1/ω<sub>0</sub> units) as γ_d grows over [0.4, 2.4] — the underdamped transient penalty dominates the scanned window and the overdamped upturn lies beyond γ_d = 2.4, so the preset γ_d = 0.8 sits in the transient-dominated regime with settle time 11.720.</p>
+<h3>Verification summary</h3>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Recorded value</th>
+<th>Target</th>
+<th>Tolerance</th>
+<th>Pass</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>`global_minimum_reached`</td>
+<td>0</td>
+<td>0</td>
+<td>1e-09</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`crystallization_energy_released`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`crystal_side_equals_analytic`</td>
+<td>1.44225</td>
+<td>1.44225</td>
+<td>1e-08</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`crystal_equilateral`</td>
+<td>4.44089e-16</td>
+<td>0</td>
+<td>1e-08</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`crystal_angles_120deg`</td>
+<td>4.44089e-16</td>
+<td>0</td>
+<td>1e-06</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`zero_rotation_mode`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`two_com_modes_at_omega0`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`breathing_mode_sqrt3`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`static_equilibrium_holds`</td>
+<td>3.94475e-15</td>
+<td>0</td>
+<td>1e-09</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`conservative_energy_conserved`</td>
+<td>8.88178e-16</td>
+<td>0</td>
+<td>1e-10</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p><em>(status: </em><em>PASS</em><em>, mode: full)</em></p>
+<h2>7. Discussion</h2>
+<p>The model is deliberately minimal: two-dimensional, harmonic pseudopotential, identical ions, and cooling reduced to a linear drag. Within these assumptions every reported number is an exact statement about the governing equations rather than a simulation of a specific apparatus. The natural extensions each preserve the verification style: photon-recoil heating added to the drag (a Fokker–Planck rather than deterministic cooling model), axial degrees of freedom and the full 3-D crystal, anharmonic and segmented trap geometries, and the micromotion corrections beyond the pseudopotential approximation — valid whenever the rf drive frequency greatly exceeds ω<sub>0</sub>.</p>
+<p>The parameter regime couples to real hardware through one scale. The dimensionless preset (ω<sub>0</sub> = κ = m = 1) maps to a Ca<sup>+</sup> ion (m = 40 amu) in a 1 MHz trap through κ = q<sup>2</sup>/(4πε<sub>0</sub>)/(mω<sub>0</sub><sup>2</sup>ℓ<sup>3</sup>), which sets the trap length scale ℓ and with it the crystal size a·ℓ; the drag γ_d = 0.8 encodes the Doppler cooling rate in units of ω<sub>0</sub>. The softening ε_relax = 0.05 is the one effective parameter of the relaxation stage, and its role is documented and then removed: all acceptance checks are evaluated on the strict unsoftened balance, so the reported machine-precision agreement is not an artifact of the regularization.</p>
+<p>Within the program this study is the matter-wave anchor of the Lagrange block. It shares the harmonic-balance logic with TRX-01, where the same equilateral configuration appears as the celestial libration points under a laser-renormalized gravity; it is the optical twin of TRX-03, where three solitons play the same central configuration with the same breathing-mode logic; and it hands the exact three-ion geometry and mode ladder to TRX-07, where quantum correlations are layered onto the same three-body skeleton. Together the three studies show the Lagrange triad operating across optics, celestial mechanics and laboratory quantum matter.</p>
+<h2>8. Conclusions</h2>
+<ol>
+<li>Damped Doppler cooling crystallizes three ions into the equilateral Lagrange triangle; the two-stage protocol (softened relaxation, Newton polish on the strict balance) reaches the analytic crystal energy U* = 3.120125734578 with the recorded difference exactly 0.0 (tolerance 1e-9).</li>
+<li>The crystal geometry is machine-exact: side a = 3^(1/3) = 1.4422495703, sides equal to 4.4e-16, central angles 2π/3 = 2.0943951 rad each to 4.4e-16.</li>
+<li>The normal-mode ladder is confirmed by the finite-difference Hessian: exactly one zero mode (rigid rotation), two COM modes at ω<sub>0</sub>, one breathing mode at √3ω<sub>0</sub> = 1.7320508; maximum deviation from the analytic ladder 1.4·10<sup>-8</sup> against the 5e-6 tolerance.</li>
+<li>Started exactly at equilibrium, the conservative dynamics holds the crystal statically to 3.9e-15 over t = 50 with total-energy drift 8.9e-16 — the ion crystal is a frozen choreography.</li>
+<li>The scaling law a(κ) = (3κ/ω<sub>0</sub><sup>2</sup>)^(1/3) is reproduced without free parameters by independent relaxation + Newton re-runs at all five κ ∈ {0.25, 0.5, 1, 2, 4} (a from 0.908560296 to 2.289428485).</li>
+<li>The crystallization (settle) time decreases monotonically from 24.341 to 5.609 (1/ω<sub>0</sub> units) over the Doppler-drag window γ_d ∈ [0.4, 2.4]; the underdamped transient penalty dominates and the preset γ_d = 0.8 settles in 11.720.</li>
+</ol>
+<h2>9. References</h2>
+<ol>
+<li>Paul, W., Steinwedel, H. (1953). <em>Ein neues Massenspektrometer ohne Magnetfeld.</em> Zeitschrift für Naturforschung A 8, 448–450.</li>
+<li>Paul, W. (1990). <em>Electromagnetic traps for charged and neutral particles.</em> Reviews of Modern Physics 62, 531–540.</li>
+<li>Itano, W. M., Wineland, D. J. (1982). <em>Laser cooling of ions stored in harmonic and Penning traps.</em> Physical Review A 25, 35–54.</li>
+<li>Diedrich, F., Peik, E., Chen, J. M., Quint, W., Walther, H. (1987). <em>Observation of a phase transition of stored laser-cooled ions.</em> Physical Review Letters 59, 2931–2934.</li>
+<li>Cirac, J. I., Zoller, P. (1995). <em>Quantum computations with cold trapped ions.</em> Physical Review Letters 74, 4091–4094.</li>
+<li>James, D. F. V. (1998). <em>Quantum dynamics of cold trapped ions with application to quantum computation.</em> Applied Physics B 66, 181–190.</li>
+<li>Dubin, D. H. E., O'Neil, T. M. (1999). <em>Trapped nonneutral plasmas, liquids, and crystals.</em> Reviews of Modern Physics 71, 87–172.</li>
+<li>Blatt, R., Roos, C. F. (2012). <em>Quantum simulations with trapped ions.</em> Nature Physics 8, 277–284.</li>
+</ol>
+<h3>BibTeX</h3>
+<p>```bibtex
+@article{paul1990,
+  author  = {Paul, W.},
+  title   = {Electromagnetic traps for charged and neutral particles},
+  journal = {Reviews of Modern Physics},
+  year    = {1990}, volume = {62}, pages = {531--540}}
+
+@article{itano1982,
+  author  = {Itano, W. M. and Wineland, D. J.},
+  title   = {Laser cooling of ions stored in harmonic and Penning traps},
+  journal = {Physical Review A},
+  year    = {1982}, volume = {25}, pages = {35--54}}
+
+@article{diedrich1987,
+  author  = {Diedrich, F. and Peik, E. and Chen, J. M. and Quint, W. and Walther, H.},
+  title   = {Observation of a phase transition of stored laser-cooled ions},
+  journal = {Physical Review Letters},
+  year    = {1987}, volume = {59}, pages = {2931--2934}}
+
+@article{dubin1999,
+  author  = {Dubin, D. H. E. and O'Neil, T. M.},
+  title   = {Trapped nonneutral plasmas, liquids, and crystals},
+  journal = {Reviews of Modern Physics},
+  year    = {1999}, volume = {71}, pages = {87--172}}
+```</p>
+<h2>Appendix A. Parameter table</h2>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Value</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ω<sub>0</sub>, κ, m</td>
+<td>1, 1, 1</td>
+<td>dimensionless trap frequency, Coulomb strength, ion mass</td>
+</tr>
+<tr>
+<td>γ_d</td>
+<td>0.8</td>
+<td>Doppler drag during relaxation</td>
+</tr>
+<tr>
+<td>ε_relax → ε</td>
+<td>0.05 → 1e-12</td>
+<td>softening in relaxation, strict balance in the polish</td>
+</tr>
+<tr>
+<td>T_relax, T_hold</td>
+<td>60, 50</td>
+<td>relaxation and static-hold spans</td>
+</tr>
+<tr>
+<td>initial condition</td>
+<td>seeded random in [−1, 1]<sup>2</sup>, v = 0 (seed 3)</td>
+<td>crystallization start</td>
+</tr>
+<tr>
+<td>settle criterion</td>
+<td>side spread below 0.01</td>
+<td>gamma-sweep settle time</td>
+</tr>
+<tr>
+<td>sweeps</td>
+<td>κ ∈ {0.25, 0.5, 1, 2, 4}; γ_d ∈ {0.4, 0.6, 0.8, 1.2, 1.6, 2.4}</td>
+<td>scaling and drag-response re-runs</td>
+</tr>
+<tr>
+<td>Ca<sup>+</sup> scale</td>
+<td>m = 40 amu, trap 1 MHz</td>
+<td>physical mapping; κ sets the length scale</td>
+</tr>
+</tbody>
+</table>
+<h2>Appendix B. Reproduction</h2>
+<p>```bash
+python3 research/TRX-08-ion-trap/code/trx08_ion_trap.py --smoke     # < 20 s
+python3 research/TRX-08-ion-trap/code/trx08_ion_trap.py              # full, 6.79 s (6.794 s recorded with --figures)
+python3 research/TRX-08-ion-trap/code/trx08_ion_trap.py --figures   # + 300-DPI figures
+```</p>
+<p>Full runtime on the reference machine: 6.79 s (6.794 s recorded with --figures); smoke mode completes in under 20 seconds and is exercised by the repository CI.</p>
+<h2>Appendix C. Environment</h2>
+<p>Python ≥ 3.11, numpy ≥ 2.0, scipy ≥ 1.14, matplotlib ≥ 3.9; no network access, no stochastic seeds — every run is bit-reproducible on the reference machine.</p><div class="part-banner"><div class="pb-title">ЧАСТЬ II · Русская монография</div><div class="pb-sub">Три лазерно-охлаждённых иона в линейной ловушке Пауля: настольный треугольник Лагранжа</div></div><div lang="ru"><p><em>Исследовательская программа TRIVORTEX · v1.0.0 · Издание монографий</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Исследование / Study</td>
+<td>TRX-08</td>
+</tr>
+<tr>
+<td>Программа</td>
+<td>TRIVORTEX — задача трёх тел в вихревой модели</td>
+</tr>
+<tr>
+<td>Автор</td>
+<td>Исаев Исхак Хамзатович (ORCID 0009-0003-7299-0701)</td>
+</tr>
+<tr>
+<td>DOI</td>
+<td>10.5281/zenodo.21825394</td>
+</tr>
+<tr>
+<td>Дата</td>
+<td>2026-10-06</td>
+</tr>
+<tr>
+<td>Код</td>
+<td>`code/trx08_ion_trap.py`</td>
+</tr>
+<tr>
+<td>Данные</td>
+<td>`results/trx08_results.json`</td>
+</tr>
+</tbody>
+</table>
+<h2>Аннотация</h2>
+<p>Монография рассматривает три лазерно-охлаждённых иона в поперечной плоскости линейной ловушки Пауля как настольную задачу трёх тел: двумерный гармонический радиочастотный псевдопотенциал удерживает ионы, кулоновское отталкивание расталкивает их, а доплеровское охлаждение — в модели линейного трения −γ_d·v — рассеивает энергию, пока ионы не кристаллизуются. Исследование устанавливает сквозным образом и с машинной точностью, что аттрактором охлаждаемой динамики служит равносторонний треугольник Лагранжа со стороной a = (3κ/ω<sub>0</sub><sup>2</sup>)^(1/3) = 3^(1/3) = 1.4422495703: засеянная релаксация с документированным смягчением волнового пакета ε = 0.05, отполированная методом Ньютона на строгом балансе сил, в точности воспроизводит аналитическую энергию кристалла U* = 3.120125734578, все три стороны равны с точностью 4.4e-16, центральные углы 2π/3 — с точностью 4.4e-16. Конечно-разностный гессиан подтверждает полную лестницу нормальных мод {0, ω<sub>0</sub> (×2), √(3/2)ω<sub>0</sub> (×2), √3ω<sub>0</sub>} — одну нулевую моду жёсткого вращения, две моды центра масс, одну дыхательную — на уровне 1.4·10<sup>-8</sup> при допуске 5e-6. Запущенная точно в равновесии консервативная динамика держит кристалл статичным на уровне 3.9e-15 на протяжении пятидесяти единиц времени с дрейфом энергии 8.9e-16: ионный кристалл — замороженная хореография, ионно-ловушечный близнец лагранжева относительного равновесия.</p>
+<h2>Содержание</h2>
+<p><strong>Краткие сведения</strong></p>
+<table>
+<thead>
+<tr>
+<th>Аспект</th>
+<th>Значение</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Блок</td>
+<td>Квантовые задачи трёх тел — исследование 08 из 12</td>
+</tr>
+<tr>
+<td>Модель</td>
+<td>три иона в двумерном гармоническом радиочастотном псевдопотенциале + кулоновское отталкивание (ω<sub>0</sub> = κ = m = 1)</td>
+</tr>
+<tr>
+<td>Ключевая структура</td>
+<td>равносторонний треугольник Лагранжа, a = 3^(1/3) = 1.4422495703, U* = 3.120125734578</td>
+</tr>
+<tr>
+<td>Главный результат</td>
+<td>лестница мод {0, ω<sub>0</sub>×2, √(3/2)ω<sub>0</sub>×2, √3ω<sub>0</sub>} подтверждена на уровне 1.4·10<sup>-8</sup>; статическое удержание 3.9e-15 на t = 50</td>
+</tr>
+<tr>
+<td>Верификация</td>
+<td>10/10 проверок PASS (полный режим)</td>
+</tr>
+<tr>
+<td>Время выполнения</td>
+<td>6.79 с полный · &lt; 20 с smoke</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>Аннотация</li>
+<li>
+<ol>
+<li>Введение и исторический контекст</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>Физическая формулировка</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>Математическая модель</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li>Связь с фреймворком TRIVORTEX</li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li>Численный метод</li>
+</ol>
+</li>
+<li>
+<ol start="6">
+<li>Результаты и анализ</li>
+</ol>
+</li>
+<li>
+<ol start="7">
+<li>Обсуждение</li>
+</ol>
+</li>
+<li>
+<ol start="8">
+<li>Выводы</li>
+</ol>
+</li>
+<li>
+<ol start="9">
+<li>Список литературы
+Приложение A. Таблица параметров
+Приложение B. Воспроизведение</li>
+</ol>
+</li>
+</ol>
+<h2>1. Введение и исторический контекст</h2>
+<p>Квадрупольную ионную ловушку изобрели Вольфганг Пауль и Хельмут Штайнведель в 1953 году как масс-спектрометр без магнитного поля; введённый ими радиочастотный псевдопотенциал позволяет заряженным частицам парить в почти гармонической яме вдали от какой-либо материальной поверхности. Полвека доводки — отмеченное Нобелевской премией 1989 года, разделённой между Паулем и Гансом Демельтом, — превратили ловушку в рабочий инструмент атомной спектроскопии, стандартов частоты, а позднее и квантовой информации. Нобелевская лекция Пауля 1990 года в Reviews of Modern Physics остаётся каноническим введением в картину псевдопотенциала, используемую в этом исследовании.</p>
+<p>Вторым ингредиентом стало лазерное охлаждение. Предложения 1975 года Хенса и Шавлова (свободные атомы) и Винеленда и Демельта (захваченные ионы) показали, что красно-расстроенный свет замедляет поглотитель к доплеровскому пределу; Итано и Винеленд (1982) разработали полную теорию для ионов в гармонических ловушках и ловушках Пеннинга. Охлаждение убирает кинетическую энергию шаг за шагом, и в гармоническом удержании самое холодное состояние облака — вовсе не облако: конкуренция удерживающей силы и взаимного кулоновского отталкивания имеет кристаллическое основное состояние.</p>
+<p>Этот фазовый переход наблюдали в 1987 году: Дидерих и коллеги в Гархинге наблюдали, как как лазерно-охлаждённые захваченные ионы перескакивают из неупорядоченного облака в упорядоченный кристалл, а обзор Дубина и О’Нила 1999 года свёл всю область — захваченные ненейтральные плазмы, жидкости и кристаллы — к единой статистико-механической рамке с кулоновским параметром связи в качестве управляющей переменной. Для горстки ионов геометрию кристалла диктует элементарный баланс сил: два иона выстраиваются в линию, три образуют равносторонний треугольник, более крупные ансамбли — кольца и оболочки, конечные предшественники кристаллов Вигнера.</p>
+<p>Затем малые кристаллы стали квантовой технологией. Предложение Цирака и Цоллера 1995 года использовало коллективные вибрационные моды цепочки ионов как шину данных для квантовых вентилей, а Джеймс (1998) вычислил точный спектр нормальных мод малых ионных кристаллов — ровно тот объект, который данное исследование проверяет классически. Три иона образуют наименьший ионно-кристаллический квантовый симулятор (Блатт и Рос 2012), а их лестница мод — нулевая, центра масс, дыхательная — является настольным двойником триады TRIVORTEX: равносторонней конфигурации теоремы 3.1, воплощённой в эксперименте одного дня с линейной ловушкой Пауля и парой охлаждающих лазеров.</p>
+<h2>2. Физическая формулировка</h2>
+<p>Три одинаковых иона движутся в поперечной плоскости (x, y) линейной ловушки Пауля. Усреднённый по времени радиочастотный псевдопотенциал в плоскости гармоничен, U_лов = mω<sub>0</sub><sup>2</sup>r<sup>2</sup>/2; кулоновское отталкивание κ/rij расталкивает ионы; лазеры доплеровского охлаждения моделируются линейным трением −γ_d·v. Динамика двумерная и безразмерная, ω<sub>0</sub> = κ = m = 1, состояние чередуется как [x<sub>1</sub>, y<sub>1</sub>, v<sub>1</sub>ˣ, v<sub>1</sub>ʸ, …] для трёх ионов, а кулоновская сила смягчается как κ·r/(r<sup>2</sup> + ε<sup>2</sup>)^(3/2) с документированным ε на стадии релаксации.</p>
+<p>Две конкурирующие шкалы длины оставляют одну безразмерную комбинацию κ/ω<sub>0</sub><sup>2</sup>, задающую размер кристалла: в равносторонней конфигурации каждый ион испытывает радиально наружу кулоновский толчок √3κ/a<sup>2</sup> и внутрь гармоническую тягу ω<sub>0</sub><sup>2</sup>a/√3, поэтому баланс даёт a = (3κ/ω<sub>0</sub><sup>2</sup>)^(1/3) — 3^(1/3) = 1.4422495703 для пресета. Поскольку ловушка изотропна, ориентация треугольника свободна — это и есть нулевая мода гессиана. При охлаждении энергия рассеивается, но ловушка статична в лабораторной системе, поэтому кристалл — статическое равновесие: при γ_d = 0 и нулевой начальной скорости консервативная динамика сохраняет энергию K + U и держит его замороженным.</p>
+<table>
+<thead>
+<tr>
+<th>Параметр</th>
+<th>Значение</th>
+<th>Смысл</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ω<sub>0</sub>, κ, m</td>
+<td>1, 1, 1</td>
+<td>безразмерные частота ловушки, кулоновская сила, масса иона</td>
+</tr>
+<tr>
+<td>состояние</td>
+<td>чередование [x<sub>1</sub>, y<sub>1</sub>, v<sub>1</sub>ˣ, v<sub>1</sub>ʸ, …]</td>
+<td>три иона в поперечной плоскости ловушки</td>
+</tr>
+<tr>
+<td>начальное условие</td>
+<td>засеянный случай в [−1, 1]<sup>2</sup>, нулевые скорости</td>
+<td>зерно генератора 3</td>
+</tr>
+<tr>
+<td>охлаждение</td>
+<td>γ_d = 0.8, линейное трение −γ_d·v</td>
+<td>модель доплеровского охлаждения, только стадия релаксации</td>
+</tr>
+<tr>
+<td>смягчение</td>
+<td>ε_relax = 0.05, полировка при ε = 1e-12</td>
+<td>конечный охлаждённый волновой пакет → строгий баланс сил</td>
+</tr>
+<tr>
+<td>интервалы времени</td>
+<td>T_relax = 60, T_hold = 50</td>
+<td>окно кристаллизации и консервативное удержание</td>
+</tr>
+<tr>
+<td>отображение на Ca<sup>+</sup></td>
+<td>m = 40 а.е.м., ловушка 1 МГц</td>
+<td>физический масштаб; κ задаёт масштаб длины ловушки</td>
+</tr>
+</tbody>
+</table>
+<h2>3. Математическая модель</h2>
+<p>Динамика (E1) содержит две шкалы длины — длину ловушки (κ/mω<sub>0</sub><sup>2</sup>)^(1/3), задаваемую конкуренцией гармонического удержания и кулоновского отталкивания, и смягчение ε — и никаких других параметров. Равносторонняя конфигурация — центральная конфигурация задачи: в силу тройной симметрии суммарный кулоновский толчок на каждый ион радиален и равен √3κ/a<sup>2</sup>, тогда как ловушка тянет внутрь с силой ω<sub>0</sub><sup>2</sup>a/√3. Приравнивая их, получаем алгебраический баланс сил (E2), a<sup>3</sup> = 3κ/ω<sub>0</sub><sup>2</sup>, корень которого для пресета — a = 3^(1/3) = 1.4422495703 в единицах длины ловушки.</p>
+<p>Та же сторона следует из минимизации энергии. Вдоль равностороннего семейства потенциал равен U(a) = ω<sub>0</sub><sup>2</sup>a<sup>2</sup>/2 + 3κ/a (три ловушечных слагаемых плюс три парных), и dU/da = ω<sub>0</sub><sup>2</sup>a − 3κ/a<sup>2</sup> обращается в нуль ровно при стороне из баланса сил; минимальное значение U<em> = 1.5·3^(2/3) = 3.120125734578 (E3). При охлаждении трение рассеивает энергию, скатывая систему под гору по этому потенциалу, так что высвобожденная энергия связи ΔU = U(случайный старт) − U</em> = 1.7609 показывает, насколько выше кристалла начался прогон. Документированное смягчение ε_relax = 0.05 — заместитель конечного размера охлаждённого волнового пакета иона — регуляризует кулоновскую сингулярность на стадии релаксации; контрольные числа затем полируются методом Ньютона на строгом балансе при ε = 1e-12, так что они относятся к идеальной модели.</p>
+<p>Малые колебания описываются позиционным гессианом H размера 6×6 потенциала U в равновесии; его собственные значения, делённые на массу, — квадраты частот мод (E4). Трансляционная симметрия делает пару центра масс точной: дважды ω = ω<sub>0</sub>. Вращательная симметрия изотропной ловушки делает ориентацию свободной: одна нулевая мода — нуль-мода — ядро гессиана, отвечающее свободному жёсткому вращению, — аналог непрерывного семейства хореографий. Оставшаяся пара распадается на две квадрупольные деформации на √(3/2)ω<sub>0</sub> и дыхательную моду на √3ω<sub>0</sub> = 1.7320508, при которой треугольник дышит. Наконец, поскольку ловушка статична в лабораторной системе, равновесие — точное решение консервативной динамики (E5): стартовав в кристалле с нулевыми скоростями и γ_d = 0, ионы остаются на месте — статическое удержание, проверенное на уровне 3.9e-15 на t = 50.</p>
+<p><strong>Нотация</strong></p>
+<table>
+<thead>
+<tr>
+<th>Символ</th>
+<th>Смысл</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>r_k = (x_k, y_k)</td>
+<td>положение иона k в поперечной плоскости</td>
+</tr>
+<tr>
+<td>ω<sub>0</sub></td>
+<td>частота псевдопотенциала ловушки (пресет 1)</td>
+</tr>
+<tr>
+<td>κ</td>
+<td>кулоновская сила (пресет 1)</td>
+</tr>
+<tr>
+<td>γ_d</td>
+<td>коэффициент доплеровского трения (пресет 0.8)</td>
+</tr>
+<tr>
+<td>ε, ε_relax</td>
+<td>кулоновское смягчение; 1e-12 в полировке, 0.05 в релаксации</td>
+</tr>
+<tr>
+<td>a</td>
+<td>сторона равностороннего кристалла, a = (3κ/ω<sub>0</sub><sup>2</sup>)^(1/3) = 3^(1/3)</td>
+</tr>
+<tr>
+<td>U</td>
+<td>полная потенциальная энергия (ловушка + кулон)</td>
+</tr>
+<tr>
+<td>H</td>
+<td>позиционный гессиан U размера 6×6 в кристалле</td>
+</tr>
+<tr>
+<td>ΔU</td>
+<td>высвобожденная при охлаждении энергия связи (= 1.7609)</td>
+</tr>
+<tr>
+<td>T_relax, T_hold</td>
+<td>интервалы релаксации (60) и статического удержания (50)</td>
+</tr>
+<tr>
+<td>t_s</td>
+<td>время успокоения из развертки по трению</td>
+</tr>
+</tbody>
+</table>
+<p><strong>(E1)</strong> Динамика трёхионного кристалла (гармоническая ловушка + смягчённое кулоновское отталкивание + доплеровское трение).</p>
+<p>$$m\ddot{\mathbf{r}}_k = -m\omega_0^2\,\mathbf{r}_k - \gamma_d\dot{\mathbf{r}}_k + \kappa\sum_{l\ne k}\frac{\mathbf{r}_k-\mathbf{r}_l}{\bigl(|\mathbf{r}_k-\mathbf{r}_l|^2+\epsilon^2\bigr)^{3/2}}$$</p>
+<p><strong>(E2)</strong> Равновесие сил в равносторонней конфигурации: сторона кристалла.</p>
+<p>$$\omega_0^2\,\frac{a}{\sqrt{3}} = \sqrt{3}\,\frac{\kappa}{a^2}\quad\Longrightarrow\quad a = \left(\frac{3\kappa}{\omega_0^2}\right)^{1/3} = 3^{1/3} = 1.4422495703$$</p>
+<p><strong>(E3)</strong> Энергия вдоль равностороннего семейства; её минимум — сторона из баланса сил.</p>
+<p>$$U(a) = \tfrac{1}{2}\omega_0^2 a^2 + \frac{3\kappa}{a},\qquad U_* = \tfrac{3}{2}\cdot 3^{2/3} = 3.120125734578$$</p>
+<p><strong>(E4)</strong> Лестница нормальных мод: собственные значения позиционного гессиана 6×6 в кристалле.</p>
+<p>$$\omega^2 = \mathrm{eig}\,\frac{\partial^2 U}{\partial x_i\,\partial x_j},\qquad \omega \in \{0,\ \omega_0\ (\times 2),\ \sqrt{\tfrac{3}{2}}\,\omega_0\ (\times 2),\ \sqrt{3}\,\omega_0\}$$</p>
+<p><strong>(E5)</strong> Статическое удержание: равновесие — точное решение консервативной динамики.</p>
+<p>$$\mathbf{r}_k(0) = \mathbf{r}_k^{*},\ \dot{\mathbf{r}}_k(0) = 0,\ \gamma_d = 0\ \Longrightarrow\ \mathbf{r}_k(t) = \mathbf{r}_k^{*}$$</p>
+<h2>4. Связь с фреймворком TRIVORTEX</h2>
+<p>Трёхионный кристалл — настольный член того же семейства центральных конфигураций, на котором стоит TRIVORTEX. Равносторонний треугольник — буквально лагранжево решение: один алгебраический баланс сил фиксирует его размер, точно так же, как баланс вихревых притяжений и потока Абеля–Хертца фиксирует размер одноимённого вихревого треугольника теоремы 3.1, — в обеих задачах две конкурирующие шкалы оставляют одну безразмерную комбинацию, задающую геометрию. Соответствие мод столь же прямое: дыхательная мода √3ω<sub>0</sub> — радиальная модуляция треугольника теоремы 3.1, две моды центра масс отражают общую трансляционную симметрию, а нулевая мода жёсткого вращения — свободная ориентация кристалла в изотропной ловушке — это непрерывное семейство относительных равновесий, та же вырожденность, которая делает вихревой треугольник вращающейся хореографией, а не статичной фигурой. Ловушка ионов добавляет диссипацию как механизм отбора: охлаждение гонит конфигурацию под гору к центральной конфигурации и замораживает её там — ровно так вращающиеся триады монографии воплощаются в лабораторном веществе.</p>
+<table>
+<thead>
+<tr>
+<th>Величина исследования</th>
+<th>Аналог в TRIVORTEX</th>
+<th>Комментарий</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Треугольник ионного кристалла</td>
+<td>лагранжево равностороннее решение</td>
+<td>та же центральная конфигурация</td>
+</tr>
+<tr>
+<td>Кулоновское отталкивание + гармоническая ловушка</td>
+<td>вихревые притяжения + поток АХ</td>
+<td>конкурирующие шкалы фиксируют размер</td>
+</tr>
+<tr>
+<td>Дыхательная мода √3ω<sub>0</sub></td>
+<td>радиальная модуляция теоремы 3.1</td>
+<td>коллективное дыхание триады</td>
+</tr>
+<tr>
+<td>Нулевая вращательная мода</td>
+<td>непрерывное семейство хореографий</td>
+<td>свободная ориентация относительного равновесия</td>
+</tr>
+</tbody>
+</table>
+<h2>5. Численный метод</h2>
+<p>Стадия кристаллизации: три иона стартуют из засеянной случайной конфигурации в [−1, 1]<sup>2</sup> с нулевыми скоростями (зерно генератора 3) и релаксируют в рамках демпфированной инерциальной динамики (E1) с γ_d = 0.8 и документированным смягчением ε_relax = 0.05, интегрируемой явной схемой Дормана–Принса 8(5,3) при rtol = atol = 1e-11, max_step 0.05, на T_relax = 60. Конечное состояние — смягчённое равновесие, заместитель конечного охлаждённого волнового пакета.</p>
+<p>Стадия полировки и спектра: релаксированная конфигурация засевает поиск корня Ньютона (scipy hybr, tol 1e-14) строгого баланса сил при ε = 1e-12 с аналитическим треугольником в качестве документированного резервного старта; отполированный кристалл сверяется с a = 3^(1/3) (стороны, равенство, углы 2π/3) и с аналитической энергией U* = 3.120125734578. Нормальные моды берутся из конечно-разностного гессиана (центральный шаблон четвёртого порядка, h = 1e-4), диагонализуемого eigvalsh; счётчики нулевой моды, мод центра масс и дыхательной принимаются в частотных окнах 5e-6.</p>
+<p>Стадия инварианта и разверток: статическое удержание интегрирует консервативную динамику (γ_d = 0) из аналитического равновесия при rtol = atol = 1e-12 на t = 50, записывая дрейф положений и дрейф полной энергии. Протокол замыкают две развертки: пять кулоновских сил κ ∈ {0.25, 0.5, 1, 2, 4} заново релаксируются и полируются против кубического закона a(κ) = (3κ/ω<sub>0</sub><sup>2</sup>)^(1/3), а шесть доплеровских трений γ_d ∈ {0.4, 0.6, 0.8, 1.2, 1.6, 2.4} оцениваются временем успокоения — первым моментом, когда разброс сторон остаётся ниже 0.01 внутри окна из 600 выборок. Каждая проверка хранит значение, цель, допуск, единицу и флаг прохождения в JSON-протоколе; прогон детерминирован, автономен и бит-в-бит воспроизводим.</p>
+<h2>6. Результаты и анализ</h2>
+<h3>fig01 crystal landscape</h3>
+<p><img alt="Ландшафт модели трёхионного кристалла: (а) срез потенциала при зафиксированных во 2-й и 3-й вершинах равновесия ионах и сканируемом по плоскости ловушки ионе 1; (б) потенциальная энергия вдоль равностороннего семейства U(a) = ω&lt;sub&gt;0&lt;/sub&gt;&lt;sup&gt;2&lt;/sup&gt;a&lt;sup&gt;2&lt;/sup&gt;/2 + 3κ/a." src="../figures/fig01_crystal_landscape.png" /></p>
+<p><em>Ландшафт модели трёхионного кристалла: (а) срез потенциала при зафиксированных во 2-й и 3-й вершинах равновесия ионах и сканируемом по плоскости ловушки ионе 1; (б) потенциальная энергия вдоль равностороннего семейства U(a) = ω<sub>0</sub><sup>2</sup>a<sup>2</sup>/2 + 3κ/a.</em>
+Минимум при сканировании иона 1 попадает точно в третью вершину треугольника, а одномерный профиль энергии имеет минимум при a<em> = 3^(1/3) = 1.442249570 с U</em> = 3.120125735 (энергетические единицы ловушки) — баланс сил (E2) является минимизатором энергии (E3).</p>
+<h3>fig02 crystal and modes</h3>
+<p><img alt="Главный результат: (а) отполированный методом Ньютона кристалл с точным балансом сил на каждом ионе; (б) шесть собственных частот гессиана против аналитической лестницы." src="../figures/fig02_crystal_and_modes.png" /></p>
+<p><em>Главный результат: (а) отполированный методом Ньютона кристалл с точным балансом сил на каждом ионе; (б) шесть собственных частот гессиана против аналитической лестницы.</em>
+Отполированный треугольник имеет сторону a = 1.442249570, все три стороны равны с точностью 4.4e-16, а измеренный конечно-разностный спектр {0, 1.0, 1.0, 1.2247449, 1.2247449, 1.7320508} отклоняется от аналитической лестницы {0, ω<sub>0</sub> (×2), √(3/2)ω<sub>0</sub> (×2), √3ω<sub>0</sub>} не более чем на 1.4·10<sup>-8</sup> при допуске 5e-6.</p>
+<h3>fig03 scaling sweeps</h3>
+<p><img alt="Развертки параметров: (а) сторона кристалла против кулоновской силы κ — прогоны релаксации с полировкой Ньютона против аналитического кубического закона; (б) время кристаллизации против доплеровского трения γ_d." src="../figures/fig03_scaling_sweeps.png" /></p>
+<p><em>Развертки параметров: (а) сторона кристалла против кулоновской силы κ — прогоны релаксации с полировкой Ньютона против аналитического кубического закона; (б) время кристаллизации против доплеровского трения γ_d.</em>
+Независимые прогоны воспроизводят a(κ) = (3κ/ω<sub>0</sub><sup>2</sup>)^(1/3) точно во всех пяти точках κ ∈ {0.25, 0.5, 1, 2, 4} — a от 0.908560296 до 2.289428485, — а время кристаллизации монотонно убывает от 24.341 до 5.609 (единицы 1/ω<sub>0</sub>) по γ_d ∈ [0.4, 2.4] без передемпфированного подъёма внутри сканируемого окна.</p>
+<h3>fig04 crystallization dynamics</h3>
+<p><img alt="Динамика кристаллизации: (а) мировые линии трёх ионов от засеянного случайного старта до кристалла (γ_d = 0.8, T = 60); (б) спад при охлаждении |U(t) − U_min| против консервативного удержания |E(t) − E(0)|." src="../figures/fig04_crystallization_dynamics.png" /></p>
+<p><em>Динамика кристаллизации: (а) мировые линии трёх ионов от засеянного случайного старта до кристалла (γ_d = 0.8, T = 60); (б) спад при охлаждении |U(t) − U_min| против консервативного удержания |E(t) − E(0)|.</em>
+Охлаждение при γ_d = 0.8 высвобождает энергию связи ΔU = 1.7609 и успокаивает треугольник внутри окна T = 60, а консервативный прогон из точного равновесия держит дрейф энергии на уровне 8.9e-16 на протяжении t = 50 — кристалл является замороженной хореографией.</p>
+<p><strong>Кристаллизация и глобальный минимум.</strong> Из засеянного случайного старта демпфированная релаксация высвобождает энергию связи ΔU = 1.7609 и спускается в кристаллическую яму; после полировки Ньютона на строгом балансе потенциал в точности равен аналитической энергии треугольника — записанное U_финал − U_треугольника равно 0.0 при допуске 1e-9, с U* = 3.120125734578. Двухстадийная схема делает проверку честной: смягчённая релаксация даёт устойчивый ландшафт, а строгая полировка привязывает отчётные числа к идеальному балансу сил (E2), а не к смягчению.</p>
+<p><strong>Геометрия кристалла.</strong> Отполированный треугольник имеет среднюю сторону 1.4422495703074085 против аналитической 3^(1/3) = 1.4422495703074083 (согласие много внутри допуска 1e-8); три стороны равны с точностью 4.4e-16, три центральных угла равны 2π/3 = 2.0943951 рад с точностью 4.4e-16. Кристалл, записанный в протоколе, стоит в канонической ориентации с радиусом описанной окружности 0.8326832 = a/√3, но сама ориентация — свободная нулевая мода изотропной ловушки.</p>
+<p><strong>Лестница мод и инварианты.</strong> Конечно-разностный гессиан (h = 1e-4) возвращает частоты {0.0, 0.999999997, 1.000000014, 1.224744867, 1.224744882, 1.732050810}: ровно одна нулевая мода, две моды центра масс на ω<sub>0</sub> и одна дыхательная на √3ω<sub>0</sub> = 1.7320508, с максимальным отклонением от аналитической лестницы 1.4·10<sup>-8</sup> при допуске 5e-6. Консервативное удержание, стартовавшее точно в равновесии, держит положения с точностью 3.9e-15 на t = 50, а полную энергию — 8.9e-16; оба уровня — округление, что подтверждает: кристалл — статическое точное решение динамики без трения.</p>
+<p><strong>Масштабирование и отклик на трение.</strong> Пять независимых прогонов воспроизводят кубический закон a(κ) = (3κ/ω<sub>0</sub><sup>2</sup>)^(1/3) без подгоночных параметров: численные стороны 0.908560296, 1.144714243, 1.442249570, 1.817120593, 2.289428485 совпадают с аналитическими во всех пяти точках κ ∈ {0.25, 0.5, 1, 2, 4}. Развертка по трению показывает монотонное падение времени успокоения от 24.341 до 5.609 (единицы 1/ω<sub>0</sub>) с ростом γ_d по [0.4, 2.4] — штраф недодемпфированного переходного режима доминирует в сканируемом окне, а передемпфированный подъём лежит за γ_d = 2.4, поэтому пресет γ_d = 0.8 сидит в переходном режиме со временем успокоения 11.720.</p>
+<h3>Сводка верификации</h3>
+<table>
+<thead>
+<tr>
+<th>Проверка</th>
+<th>Значение</th>
+<th>Цель</th>
+<th>Допуск</th>
+<th>Прошла</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>`global_minimum_reached`</td>
+<td>0</td>
+<td>0</td>
+<td>1e-09</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`crystallization_energy_released`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`crystal_side_equals_analytic`</td>
+<td>1.44225</td>
+<td>1.44225</td>
+<td>1e-08</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`crystal_equilateral`</td>
+<td>4.44089e-16</td>
+<td>0</td>
+<td>1e-08</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`crystal_angles_120deg`</td>
+<td>4.44089e-16</td>
+<td>0</td>
+<td>1e-06</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`zero_rotation_mode`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`two_com_modes_at_omega0`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`breathing_mode_sqrt3`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`static_equilibrium_holds`</td>
+<td>3.94475e-15</td>
+<td>0</td>
+<td>1e-09</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`conservative_energy_conserved`</td>
+<td>8.88178e-16</td>
+<td>0</td>
+<td>1e-10</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p><em>(status: </em><em>PASS</em><em>, mode: full)</em></p>
+<h2>7. Обсуждение</h2>
+<p>Модель сознательно минимальна: два измерения, гармонический псевдопотенциал, одинаковые ионы, охлаждение сведено к линейному трению. В этих допущениях каждое отчётное число — точное утверждение об определяющих уравнениях, а не симуляция конкретной установки. Естественные расширения сохраняют верификационный стиль: добавленный к трению нагрев фотонной отдачей (фоккеровско-планковская, а не детерминированная модель охлаждения), аксиальные степени свободы и полный 3-D кристалл, ангармоничные и сегментированные геометрии ловушек и поправки на микродвижение за пределами приближения псевдопотенциала — корректные всякий раз, когда частота радиочастотного драйва много больше ω<sub>0</sub>.</p>
+<p>Параметрический режим связывается с реальным оборудованием через одну шкалу. Безразмерный пресет (ω<sub>0</sub> = κ = m = 1) отображается на ион Ca<sup>+</sup> (m = 40 а.е.м.) в ловушке 1 МГц через κ = q<sup>2</sup>/(4πε<sub>0</sub>)/(mω<sub>0</sub><sup>2</sup>ℓ<sup>3</sup>), задающее масштаб длины ловушки ℓ и вместе с ним размер кристалла a·ℓ; трение γ_d = 0.8 кодирует скорость доплеровского охлаждения в единицах ω<sub>0</sub>. Смягчение ε_relax = 0.05 — единственный эффективный параметр стадии релаксации, его роль документирована и затем устранена: все контрольные проверки вычисляются на строгом несмягчённом балансе, поэтому машинно-точное согласие не является артефактом регуляризации.</p>
+<p>В рамках программы это исследование — материально-волновой якорь лагранжева блока. Оно разделяет логику гармонического баланса с TRX-01, где та же равносторонняя конфигурация выступает небесными точками либрации при лазерно-перенормированной гравитации; оно — оптический близнец TRX-03, где три солитона играют ту же центральную конфигурацию с той же логикой дыхательной моды; и оно передаёт точную геометрию трёх ионов и лестницу мод исследованию TRX-07, где квантовые корреляции надстраиваются над тем же трёхтелесным скелетом. Вместе три исследования показывают лагранжеву триаду, работающую в оптике, небесной механике и лабораторной квантовой материи.</p>
+<h2>8. Выводы</h2>
+<ol>
+<li>Демпфированное доплеровское охлаждение кристаллизует три иона в равносторонний треугольник Лагранжа; двухстадийный протокол (смягчённая релаксация, полировка Ньютона на строгом балансе) достигает аналитической энергии кристалла U* = 3.120125734578 с записанной разностью ровно 0.0 (допуск 1e-9).</li>
+<li>Геометрия кристалла машинно-точна: сторона a = 3^(1/3) = 1.4422495703, стороны равны с точностью 4.4e-16, центральные углы 2π/3 = 2.0943951 рад каждый с точностью 4.4e-16.</li>
+<li>Лестница нормальных мод подтверждена конечно-разностным гессианом: ровно одна нулевая мода (жёсткое вращение), две моды центра масс на ω<sub>0</sub>, одна дыхательная на √3ω<sub>0</sub> = 1.7320508; максимальное отклонение от аналитической лестницы 1.4·10<sup>-8</sup> при допуске 5e-6.</li>
+<li>Запущенная точно в равновесии консервативная динамика держит кристалл статичным с точностью 3.9e-15 на t = 50 с дрейфом полной энергии 8.9e-16 — ионный кристалл является замороженной хореографией.</li>
+<li>Закон масштабирования a(κ) = (3κ/ω<sub>0</sub><sup>2</sup>)^(1/3) воспроизводится без подгоночных параметров независимыми прогонами релаксации с полировкой Ньютона во всех пяти точках κ ∈ {0.25, 0.5, 1, 2, 4} (a от 0.908560296 до 2.289428485).</li>
+<li>Время кристаллизации (успокоения) монотонно убывает от 24.341 до 5.609 (единицы 1/ω<sub>0</sub>) в окне доплеровского трения γ_d ∈ [0.4, 2.4]; штраф недодемпфированного переходного режима доминирует, а пресет γ_d = 0.8 успокаивается за 11.720.</li>
+</ol>
+<h2>9. Список литературы</h2>
+<ol>
+<li>Paul, W., Steinwedel, H. (1953). <em>Ein neues Massenspektrometer ohne Magnetfeld.</em> Zeitschrift für Naturforschung A 8, 448–450.</li>
+<li>Paul, W. (1990). <em>Electromagnetic traps for charged and neutral particles.</em> Reviews of Modern Physics 62, 531–540.</li>
+<li>Itano, W. M., Wineland, D. J. (1982). <em>Laser cooling of ions stored in harmonic and Penning traps.</em> Physical Review A 25, 35–54.</li>
+<li>Diedrich, F., Peik, E., Chen, J. M., Quint, W., Walther, H. (1987). <em>Observation of a phase transition of stored laser-cooled ions.</em> Physical Review Letters 59, 2931–2934.</li>
+<li>Cirac, J. I., Zoller, P. (1995). <em>Quantum computations with cold trapped ions.</em> Physical Review Letters 74, 4091–4094.</li>
+<li>James, D. F. V. (1998). <em>Quantum dynamics of cold trapped ions with application to quantum computation.</em> Applied Physics B 66, 181–190.</li>
+<li>Dubin, D. H. E., O'Neil, T. M. (1999). <em>Trapped nonneutral plasmas, liquids, and crystals.</em> Reviews of Modern Physics 71, 87–172.</li>
+<li>Blatt, R., Roos, C. F. (2012). <em>Quantum simulations with trapped ions.</em> Nature Physics 8, 277–284.</li>
+</ol>
+<h3>BibTeX</h3>
+<p>```bibtex
+@article{paul1990,
+  author  = {Paul, W.},
+  title   = {Electromagnetic traps for charged and neutral particles},
+  journal = {Reviews of Modern Physics},
+  year    = {1990}, volume = {62}, pages = {531--540}}
+
+@article{itano1982,
+  author  = {Itano, W. M. and Wineland, D. J.},
+  title   = {Laser cooling of ions stored in harmonic and Penning traps},
+  journal = {Physical Review A},
+  year    = {1982}, volume = {25}, pages = {35--54}}
+
+@article{diedrich1987,
+  author  = {Diedrich, F. and Peik, E. and Chen, J. M. and Quint, W. and Walther, H.},
+  title   = {Observation of a phase transition of stored laser-cooled ions},
+  journal = {Physical Review Letters},
+  year    = {1987}, volume = {59}, pages = {2931--2934}}
+
+@article{dubin1999,
+  author  = {Dubin, D. H. E. and O'Neil, T. M.},
+  title   = {Trapped nonneutral plasmas, liquids, and crystals},
+  journal = {Reviews of Modern Physics},
+  year    = {1999}, volume = {71}, pages = {87--172}}
+```</p>
+<h2>Приложение A. Таблица параметров</h2>
+<table>
+<thead>
+<tr>
+<th>Символ</th>
+<th>Значение</th>
+<th>Роль</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ω<sub>0</sub>, κ, m</td>
+<td>1, 1, 1</td>
+<td>безразмерные частота ловушки, кулоновская сила, масса иона</td>
+</tr>
+<tr>
+<td>γ_d</td>
+<td>0.8</td>
+<td>доплеровское трение при релаксации</td>
+</tr>
+<tr>
+<td>ε_relax → ε</td>
+<td>0.05 → 1e-12</td>
+<td>смягчение в релаксации, строгий баланс в полировке</td>
+</tr>
+<tr>
+<td>T_relax, T_hold</td>
+<td>60, 50</td>
+<td>интервалы релаксации и статического удержания</td>
+</tr>
+<tr>
+<td>начальное условие</td>
+<td>засеянный случай в [−1, 1]<sup>2</sup>, v = 0 (зерно 3)</td>
+<td>старт кристаллизации</td>
+</tr>
+<tr>
+<td>критерий успокоения</td>
+<td>разброс сторон ниже 0.01</td>
+<td>время успокоения в развертке по γ</td>
+</tr>
+<tr>
+<td>развертки</td>
+<td>κ ∈ {0.25, 0.5, 1, 2, 4}; γ_d ∈ {0.4, 0.6, 0.8, 1.2, 1.6, 2.4}</td>
+<td>прогоны масштабирования и отклика на трение</td>
+</tr>
+<tr>
+<td>шкала Ca<sup>+</sup></td>
+<td>m = 40 а.е.м., ловушка 1 МГц</td>
+<td>физическое отображение; κ задаёт масштаб длины</td>
+</tr>
+</tbody>
+</table>
+<h2>Приложение B. Воспроизведение</h2>
+<p>```bash
+python3 research/TRX-08-ion-trap/code/trx08_ion_trap.py --smoke     # < 20 с
+python3 research/TRX-08-ion-trap/code/trx08_ion_trap.py              # полный прогон, 6.79 s (6.794 s recorded with --figures)
+python3 research/TRX-08-ion-trap/code/trx08_ion_trap.py --figures   # + графики 300 DPI
+```</p>
+<p>Полное время выполнения на референсной машине — 6.79 s (6.794 s recorded with --figures); smoke-режим укладывается в 20 секунд и используется CI репозитория.</p>
+<h2>Приложение C. Окружение</h2>
+<p>Python ≥ 3.11, numpy ≥ 2.0, scipy ≥ 1.14, matplotlib ≥ 3.9; без доступа к сети и без стохастических зёрен — каждый прогон бит-в-бит воспроизводим на референсной машине.</p></div></div>
+<div class="ending">
+  <div class="end-title">TRIVORTEX</div>
+  <div class="end-small">The Three-Body Problem in the Vortex Model</div>
+  <div class="end-rule"></div>
+  <div class="colophon-line"><b>Three Laser-Cooled Ions in a Linear Paul Trap: the Table-Top Lagrange Triangle</b> — research monograph of the TRIVORTEX program, studying the three-body problem in the vortex model and its laser, celestial-mechanical and quantum crossings.</div><div class="colophon-line">Full verification protocol: <b>results JSON + figures + code</b> in research/TRX-08-ion-trap/; reproduction commands in Appendix B.</div>
+  <div class="end-small">
+    Isaev Iskhak Khamzatovich · ORCID 0009-0003-7299-0701<br>
+    DOI (concept) 10.5281/zenodo.21825393 · DOI (version) 10.5281/zenodo.21825394<br>
+    License IPL-RP-1.0 · v1.0.0 · 2026-10-07
+  </div>
+</div>
+
+</body>
+</html>

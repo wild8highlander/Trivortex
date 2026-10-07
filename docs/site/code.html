@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Code — 22 Sections — TRIVORTEX</title>
+<meta name="description" content="The TRIVORTEX core document: three language mirrors, 22 sections, the report engine and the interactive menu.">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<header class="site"><div class="wrap">
+  <a class="brand" href="index.html">TRIVORTEX</a>
+  <nav class="main"><a href="index.html">Overview</a><a href="vortex-model.html">Vortex Model</a><a href="theorem-3-1.html">Theorem 3.1</a><a href="code.html" class="active">Code</a><a href="system-presets.html">System Presets</a><a href="verification.html">Verification</a><a href="research.html">Research Lab</a><a href="publications.html">Publications</a><a href="citation.html">Citation</a><a href="license.html">License</a></nav>
+</div></header>
+<main class="wrap">
+
+<h1 style="letter-spacing:2px;font-size:36px">The Code — 22 Sections</h1>
+<p class="muted">One physics kernel, three language mirrors, an in-document report
+engine — the layout of <span class="mono">code/</span> and what every section does.</p>
+
+<h2 id="files">Files</h2>
+<table>
+<tr><th>File</th><th>Console language</th><th>Contents</th></tr>
+<tr><td class="mono">trivortex_core.py</td><td>English (default)</td>
+<td>the canonical document; identical physics in all three mirrors</td></tr>
+<tr><td class="mono">trivortex_core_ru.py</td><td>Russian</td>
+<td>RU mirror — same 22-section structure</td></tr>
+<tr><td class="mono">trivortex_core_en.py</td><td>English</td>
+<td>EN mirror — same 22-section structure</td></tr>
+</table>
+<p class="small muted">Provenance: the files were renamed from
+the three mirrors share one title and one author (Isaev Iskhak Khamzatovich);
+the docstring headers keep the former name. The Julia twin
+is part of the companion history; a TRIVORTEX-branded Julia port is on the
+roadmap.</p>
+
+<h2 id="map">Section map</h2>
+<table>
+<tr><th style="width:9%">№</th><th style="width:34%">Section</th><th>What it does</th></tr>
+<tr><td class="mono">1</td><td>Imports and Dependencies</td><td class="small">numpy/scipy/matplotlib stack, optional mpmath, font and DPI configuration.</td></tr>
+<tr><td class="mono">2</td><td>Constants and Global Configuration</td><td class="small">SI constants (G, ħ, k_B, c, e), RMT reference values, the Config class with all tunable parameters.</td></tr>
+<tr><td class="mono">3</td><td>Data Structures</td><td class="small">Result containers: ChaplyginResults, RMTResults, TopologicalResults, AdvancedRMTResults, ChaosResults.</td></tr>
+<tr><td class="mono">4</td><td>Hamiltonian Construction</td><td class="small">L×L Hofstadter matrix with N_v embedded vortices: Peierls + AB phases, charge-weighted core potential, Hermitian symmetrization.</td></tr>
+<tr><td class="mono">5</td><td>Analytical Solution (Theorem 3.1)</td><td class="small">The closed form r_k(t), θ_k(t), the frequency ω and amplitude ε, and the Chaplygin combination C_Ch.</td></tr>
+<tr><td class="mono">6</td><td>Chaplygin Conservation Verification</td><td class="small">Section-6 procedure: C_Ch(t) recorded along the closed form over [0, 100·T] with endpoint-drift diagnostic.</td></tr>
+<tr><td class="mono">7</td><td>Spectral Statistics (GUE/GOE/Poisson)</td><td class="small">Polynomial unfolding, ⟨r⟩ statistic, manual KS tests against GUE/GOE/Poisson CDFs, ensemble verdict.</td></tr>
+<tr><td class="mono">8</td><td>Zeta Zeros and Montgomery Test</td><td class="small">First 50 Riemann ζ-zeros as reference spectrum; Montgomery pair-correlation test against the model spectrum.</td></tr>
+<tr><td class="mono">9</td><td>Quantum Version with Topological Qubits</td><td class="small">Quantized vortex model: topological qubit states, braiding-style operations.</td></tr>
+<tr><td class="mono">10</td><td>Real System Presets</td><td class="small">Sun–Earth–Moon, α Centauri, Pluto–Charon–Nix: masses, distances, periods as ready configurations.</td></tr>
+<tr><td class="mono">11</td><td>High-Resolution Plot Generation</td><td class="small">300-dpi figures: analytical solution, spectra, phase diagrams.</td></tr>
+<tr><td class="mono">12</td><td>Report Generation</td><td class="small">One data model, seven formats: TXT, MD, HTML, CSV, JSON, DOCX, PDF report writers.</td></tr>
+<tr><td class="mono">13</td><td>Comprehensive Test Functions</td><td class="small">In-document self-tests for the analytic and spectral layers.</td></tr>
+<tr><td class="mono">14</td><td>Interactive Menu</td><td class="small">15-mode console menu: verification suites, presets, reports, plots, cross-correlations.</td></tr>
+<tr><td class="mono">15</td><td>Main Entry Point</td><td class="small">The interactive driver and banner.</td></tr>
+<tr><td class="mono">16</td><td>Berry Phase Calculation</td><td class="small">Berry phase along parameter loops in the vortex background (Section 6 NEW block).</td></tr>
+<tr><td class="mono">17</td><td>Chern Number Computation</td><td class="small">Fukui–Hatsugai–Suzuki lattice method for the Chern numbers.</td></tr>
+<tr><td class="mono">18</td><td>TKNN Hall Conductance</td><td class="small">Topological transport from the Chern markers.</td></tr>
+<tr><td class="mono">19</td><td>Dirac Cone Analysis</td><td class="small">Locating and fitting Dirac points in the band structure.</td></tr>
+<tr><td class="mono">20</td><td>Spectral Form Factor</td><td class="small">K(t) diagnostics with GUE ramp/plateau comparison.</td></tr>
+<tr><td class="mono">21</td><td>Number Variance and IPR</td><td class="small">Σ²(L) spectral rigidity and inverse-participation-ratio localization.</td></tr>
+<tr><td class="mono">22</td><td>Lyapunov Exponent + Permutation Test</td><td class="small">Chaos diagnostics: largest Lyapunov exponent, permutation Z-score, KAM statistics.</td></tr>
+</table>
+
+<h2 id="run">Running the document</h2>
+<pre><code>cd code
+python3 trivortex_core_en.py</code></pre>
+<p>The document opens a menu — the main suites:</p>
+<table>
+<tr><th>Mode</th><th>What runs</th><th>Typical output</th></tr>
+<tr><td class="mono">1</td><td>Full verification</td><td>the whole analytic + spectral chain in one pass</td></tr>
+<tr><td class="mono">2</td><td>Chaplygin verification suite</td><td>C_Ch diagnostics across parameter ranges</td></tr>
+<tr><td class="mono">3–4</td><td>RMT statistics + Montgomery test</td><td>⟨r⟩, KS verdicts, zeta-zero comparison</td></tr>
+<tr><td class="mono">5</td><td>Quantum suite</td><td>Berry phase, Chern numbers, Hall conductance over α-grid</td></tr>
+<tr><td class="mono">6</td><td>Real systems</td><td>presets of Section 10 printed and analysed</td></tr>
+<tr><td class="mono">7–9</td><td>Spectrum · theorem check · custom N_v</td><td>eigenvalues, closed-form residuals, generalized simulations</td></tr>
+<tr><td class="mono">10–11</td><td>Reports &amp; plots</td><td>TXT/MD/HTML/CSV/JSON/DOCX/PDF bundle; 300-dpi figures</td></tr>
+<tr><td class="mono">12–15</td><td>Topological · advanced RMT · chaos · correlations</td><td>the NEW blocks 16–22 in action</td></tr>
+</table>
+
+<h2 id="reports">The report engine</h2>
+<p>Section 12 is unusual for a research script: it renders the same result object
+into seven formats, including RTF-based DOCX and PDF writers with no external
+dependencies beyond the standard library. The repository discipline is that
+<em>every number in a report must be traceable to a parameter snapshot</em> — the
+report header carries the title, the version and the configuration used, and the
+independent ladder (<a href="verification.html">Verification</a>) re-checks the
+core claims outside the document's own code path.</p>
+
+<div class="note">
+<strong>Interaction with the verification ladder.</strong> The core document and
+<span class="mono">verification/trivortex/python/verify.py</span> are deliberately
+independent: different code, same objects. If a refactor ever makes the document
+and the ladder disagree, the pytest suite
+(<span class="mono">verification/tests/</span>) will catch it at the reference
+values before either side drifts.
+</div>
+
+</main>
+<footer class="site"><div class="wrap"><div class="cols">
+  <div>
+    <div style="color:var(--gold-l);letter-spacing:2px;font-size:18px">TRIVORTEX</div>
+    <p class="small">The Three-Body Problem in the Vortex Model — a research
+    document with a verification ladder, by Isaev Iskhak Khamzatovich.</p>
+    <p class="small mono">DOI 10.5281/zenodo.21825394</p>
+  </div>
+  <div class="small">
+    <strong style="color:var(--ink)">Repository</strong><br>
+    <a href="https://github.com/wild8highlander/research-papers">GitHub source</a><br>
+    <a href="https://github.com/wild8highlander/research-papers/blob/main/LICENSE.md">License IPL-RP-1.0</a><br>
+    <a href="https://zenodo.org/records/21825394">Zenodo record</a><br>
+    <a href="https://orcid.org/0009-0003-7299-0701">ORCID profile</a>
+  </div>
+  <div class="small">
+    <strong style="color:var(--ink)">Document</strong><br>
+    <a href="vortex-model.html">Vortex model</a><br>
+    <a href="theorem-3-1.html">Theorem 3.1</a><br>
+    <a href="code.html">Code — 22 sections</a><br>
+    <a href="verification.html">Verification V1–V4</a>
+  </div>
+</div>
+<p class="small" style="text-align:center;margin-top:26px">© 2026 Isaev Iskhak Khamzatovich ·
+Proprietary license · Concept DOI 10.5281/zenodo.21825393</p>
+</div></footer>
+</body>
+</html>

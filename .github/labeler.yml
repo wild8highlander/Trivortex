@@ -1,0 +1,85 @@
+# Labeler configuration — maps file paths to labels
+# https://github.com/actions/labeler
+documentation:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/*.md'
+      - 'docs/**'
+
+document:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'code/**'
+
+formal-verification:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'verification/lean4/**'
+      - 'verification/coq/**'
+      - 'verification/isabelle/**'
+      - 'verification/agda/**'
+
+lean4:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'verification/lean4/**'
+
+coq:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'verification/coq/**'
+
+isabelle:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'verification/isabelle/**'
+
+python:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'verification/python/**'
+      - '**/*.py'
+      - 'pyproject.toml'
+
+julia:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'verification/julia/**'
+      - '**/*.jl'
+
+rust:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'verification/rust/**'
+      - '**/*.rs'
+      - '**/Cargo.toml'
+
+cpp:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'verification/cpp/**'
+      - '**/*.cpp'
+      - '**/*.hpp'
+      - '**/CMakeLists.txt'
+
+ci:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '.github/workflows/**'
+      - '.pre-commit-config.yaml'
+      - 'Makefile'
+
+security:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'SECURITY.md'
+      - '.github/workflows/codeql.yml'
+      - '.github/workflows/scorecard.yml'
+
+dependencies:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'pyproject.toml'
+      - 'environment.yml'
+      - '**/Cargo.toml'
+      - '**/requirements*.txt'

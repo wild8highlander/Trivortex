@@ -1,0 +1,175 @@
+{
+  "study": "TRX-03",
+  "title": "Three-soliton molecule in a mode-locked fiber laser",
+  "status": "PASS",
+  "smoke": true,
+  "runtime_s": 1.153,
+  "checks": [
+    {
+      "name": "pair_equilibrium_numeric_vs_analytic",
+      "value": 5.551115123125783e-17,
+      "target": 0.0,
+      "tol": 1e-10,
+      "unit": "length",
+      "pass": true,
+      "note": "r0 = L*ln(2C1/C2) = 0.287682072452"
+    },
+    {
+      "name": "antiphase_pi2_purely_repulsive",
+      "value": 1.0,
+      "target": 1.0,
+      "tol": 1e-12,
+      "unit": "bool",
+      "pass": true,
+      "note": "min pair force over r in [0.05,20] = 6.183461e-09 (must be > 0)"
+    },
+    {
+      "name": "molecule_final_spacings_equal",
+      "value": 2.220446049250313e-16,
+      "target": 0.0,
+      "tol": 1e-08,
+      "unit": "length",
+      "pass": true,
+      "note": "d1=0.2018926516, d2=0.2018926516"
+    },
+    {
+      "name": "molecule_final_spacing_equals_s_star",
+      "value": 2.7755575615628914e-17,
+      "target": 0.0,
+      "tol": 1e-06,
+      "unit": "length",
+      "pass": true,
+      "note": "3-chain equilibrium s* (F(s)+F(2s)=0) = 0.2018926516; pair r0 = 0.287682"
+    },
+    {
+      "name": "conservative_energy_drift",
+      "value": 1.3322676295501878e-15,
+      "target": 0.0,
+      "tol": 1e-10,
+      "unit": "energy",
+      "pass": true,
+      "note": "damping-free molecule, t=100"
+    },
+    {
+      "name": "breathing_mode_frequency",
+      "value": 0.46882500000000005,
+      "target": 0.46876631044552824,
+      "tol": 0.004687663104455283,
+      "unit": "1/time",
+      "pass": true,
+      "note": "FFT peak vs nearest chain mode from Hessian: [0.390507 0.468766]"
+    }
+  ],
+  "series": {
+    "t": [
+      0.0,
+      5.0125,
+      10.0251,
+      15.0376,
+      20.0501,
+      25.0627,
+      30.0752,
+      35.0877,
+      40.1003,
+      45.1128,
+      50.1253,
+      55.1378,
+      60.1504,
+      65.1629,
+      70.1754,
+      75.188,
+      80.2005,
+      85.213,
+      90.2256,
+      95.2381
+    ],
+    "x1": [
+      -0.20189265,
+      -0.19662207,
+      -0.19751886,
+      -0.20175215,
+      -0.19591602,
+      -0.19852329,
+      -0.20133846,
+      -0.19545841,
+      -0.19953547,
+      -0.20067733,
+      -0.19528032,
+      -0.20045335,
+      -0.19981705,
+      -0.1953899,
+      -0.20118877,
+      -0.19883085,
+      -0.19577656,
+      -0.20167902,
+      -0.19781264,
+      -0.19641232
+    ],
+    "x2": [
+      0.01,
+      -0.00056202,
+      0.00121893,
+      0.00969972,
+      -0.00199215,
+      0.00319048,
+      0.00882582,
+      -0.00294262,
+      0.00517517,
+      0.00745678,
+      -0.00332753,
+      0.0069941,
+      0.0057159,
+      -0.00311194,
+      0.00848305,
+      0.00376027,
+      -0.0023153,
+      0.00950767,
+      0.00176638,
+      -0.00100968
+    ],
+    "x3": [
+      0.20189265,
+      0.20718409,
+      0.20629993,
+      0.20205242,
+      0.20790817,
+      0.20533282,
+      0.20251264,
+      0.20840103,
+      0.20436029,
+      0.20322055,
+      0.20860785,
+      0.20345926,
+      0.20410115,
+      0.20850183,
+      0.20270572,
+      0.20507058,
+      0.20809186,
+      0.20217136,
+      0.20604626,
+      0.207422
+    ]
+  },
+  "meta": {
+    "equations": [
+      "V(r, dphi) = C1 exp(-2r/L) - C2 exp(-r/L) cos(2 dphi)",
+      "m x_k'' = -sum_l dV/dx_k - gamma_d x_k'",
+      "r0 = L ln(2C1/(C2 cos 2dphi)) ; omega_b = sqrt(3 V''(r0))"
+    ],
+    "parameters": {
+      "C1": 2.0,
+      "C2": 3.0,
+      "L": 1.0,
+      "m": 1.0,
+      "dphi_locked": 0.0,
+      "gamma_relax": 0.5
+    },
+    "Vpp_r0": 2.250000000000001,
+    "chain_equilibrium_s_star": 0.20189265157156813,
+    "chain_mode_frequencies": [
+      2.4536290211302063,
+      2.9453455942921276
+    ],
+    "note": "phase-locked triplet = optical three-body choreography; the same exponential-cosine structure appears in TRX-09 vortices and TRX-04 beams"
+  }
+}

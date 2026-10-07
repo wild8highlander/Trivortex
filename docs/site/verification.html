@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verification V1-V4 — TRIVORTEX</title>
+<meta name="description" content="The independent verification ladder: four checks, registered criteria, JSON protocols, pytest guard and the multi-language roadmap.">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<header class="site"><div class="wrap">
+  <a class="brand" href="index.html">TRIVORTEX</a>
+  <nav class="main"><a href="index.html">Overview</a><a href="vortex-model.html">Vortex Model</a><a href="theorem-3-1.html">Theorem 3.1</a><a href="code.html">Code</a><a href="system-presets.html">System Presets</a><a href="verification.html" class="active">Verification</a><a href="research.html">Research Lab</a><a href="publications.html">Publications</a><a href="citation.html">Citation</a><a href="license.html">License</a></nav>
+</div></header>
+<main class="wrap">
+
+<h1 style="letter-spacing:2px;font-size:36px">Verification — Ladder V1–V4</h1>
+<p class="muted">An independent checker, a pytest guard, seven pinned toolchains and
+a formalization roadmap.</p>
+
+<h2 id="principle">The principle</h2>
+<p>Numbers printed by the code that defines them are repetition, not verification.
+The TRIVORTEX ladder therefore lives in
+<span class="mono">verification/trivortex/python/verify.py</span> — a script that
+shares <em>no code</em> with the core document: it re-implements the closed form of
+Theorem 3.1, the Chaplygin combination, the Kirchhoff right-hand side and its own
+RK4 stepper from scratch, then checks the document's claims against its own
+arithmetic. Every run emits a JSON protocol (parameters, residuals, tolerances,
+wall time) — the same "numbers are bound to runs" discipline used across the
+repository.</p>
+
+<h2 id="checks">The four checks</h2>
+<table>
+<tr><th>Check</th><th>Statement</th><th>Criterion (registered)</th><th>Result</th></tr>
+<tr><td class="mono">V1</td>
+<td>Theorem 3.1 closed form: 2π/3 choreography + periodicity T_r = 2π/ω</td>
+<td>separation error ≤ 1e-12; periodicity residual ≤ 1e-12</td>
+<td class="pass">PASS — 6.9e-14 / 9.4e-14</td></tr>
+<tr><td class="mono">V2</td>
+<td>Lagrange triangle: rigid rotation at ω = 3Γ/(2πa²)</td>
+<td>shape drift ≤ 1e-10; ω relative error ≤ 1e-6</td>
+<td class="pass">PASS — 1.6e-14 / 2.9e-12</td></tr>
+<tr><td class="mono">V3</td>
+<td>Vortex integrals H, P, Q, I conserved (equal Γ)</td>
+<td>worst relative drift ≤ 1e-10</td>
+<td class="pass">PASS — 2.9e-14</td></tr>
+<tr><td class="mono">V4</td>
+<td>Integrals conserved for Γ = (1, 2, 3), generic triangle</td>
+<td>worst relative drift ≤ 1e-10</td>
+<td class="pass">PASS — 2.9e-14</td></tr>
+</table>
+
+<h2 id="run">Run it</h2>
+<pre><code>python3 verification/trivortex/python/verify.py --preset quick    # ~0.5 s (CI)
+python3 verification/trivortex/python/verify.py --preset default  # ~2 s
+python3 verification/trivortex/python/verify.py --preset full     # ~35 s
+python -m pytest verification/tests/ -v                           # 13 tests</code></pre>
+
+<h2 id="honesty">Honesty notes</h2>
+<div class="note">
+<strong>The C_Ch drift is a diagnostic, not a conservation law.</strong> The
+combination C_Ch(t) = r²(θ̇ − q·A_θ) with A_θ = 1/r oscillates together with the
+radial modulation of Theorem 3.1 — Section 6 of the document records its endpoint
+drift over the window [0, 100·T], and the ladder reports the same number as a
+diagnostic with no pass/fail role. The window-independent conserved quantities of
+the dynamics are the vortex integrals H, P, Q, I — and those are what V3–V4
+certify. Any future language port must keep this separation.
+</div>
+
+<h2 id="roadmap">Multi-language roadmap</h2>
+<table>
+<tr><th>Directory</th><th>Artifact</th><th>Milestone</th><th>Status</th></tr>
+<tr><td class="mono">trivortex/python/</td><td>working ladder V1–V4 + JSON</td><td>M0</td><td class="pass">done</td></tr>
+<tr><td class="mono">tests/</td><td>pytest guard (13 tests)</td><td>M0</td><td class="pass">done</td></tr>
+<tr><td class="mono">coq/ · lean4/ · rust/</td><td>statement layer + second FP implementation</td><td>M1</td><td class="warn">planned — skeleton</td></tr>
+<tr><td class="mono">isabelle/ · agda/</td><td>SMT bounds + constructive angles</td><td>M2</td><td class="warn">planned — skeleton</td></tr>
+<tr><td class="mono">cpp/ · haskell/</td><td>benchmark ladder + exact-rational dual</td><td>M3</td><td class="warn">planned — skeleton</td></tr>
+</table>
+<p class="small muted">Seven Docker toolchains are already pinned under
+<span class="mono">verification/docker/</span>; each roadmap stub states its
+acceptance criteria before the artifacts land. Full details in the
+<a href="https://github.com/wild8highlander/research-papers/tree/main/verification">framework README</a>.</p>
+
+</main>
+<footer class="site"><div class="wrap"><div class="cols">
+  <div>
+    <div style="color:var(--gold-l);letter-spacing:2px;font-size:18px">TRIVORTEX</div>
+    <p class="small">The Three-Body Problem in the Vortex Model — a research
+    document with a verification ladder, by Isaev Iskhak Khamzatovich.</p>
+    <p class="small mono">DOI 10.5281/zenodo.21825394</p>
+  </div>
+  <div class="small">
+    <strong style="color:var(--ink)">Repository</strong><br>
+    <a href="https://github.com/wild8highlander/research-papers">GitHub source</a><br>
+    <a href="https://github.com/wild8highlander/research-papers/blob/main/LICENSE.md">License IPL-RP-1.0</a><br>
+    <a href="https://zenodo.org/records/21825394">Zenodo record</a><br>
+    <a href="https://orcid.org/0009-0003-7299-0701">ORCID profile</a>
+  </div>
+  <div class="small">
+    <strong style="color:var(--ink)">Document</strong><br>
+    <a href="vortex-model.html">Vortex model</a><br>
+    <a href="theorem-3-1.html">Theorem 3.1</a><br>
+    <a href="code.html">Code — 22 sections</a><br>
+    <a href="verification.html">Verification V1–V4</a>
+  </div>
+</div>
+<p class="small" style="text-align:center;margin-top:26px">© 2026 Isaev Iskhak Khamzatovich ·
+Proprietary license · Concept DOI 10.5281/zenodo.21825393</p>
+</div></footer>
+</body>
+</html>

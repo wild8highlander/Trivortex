@@ -1,0 +1,81 @@
+{
+  "study": "TRX-06",
+  "title": "Helium atom as the quantum Coulomb three-body problem (CTMC)",
+  "status": "PASS",
+  "smoke": true,
+  "runtime_s": 3.605,
+  "checks": [
+    {
+      "name": "max_relative_energy_drift_valid",
+      "value": 2.883893521896108e-06,
+      "target": 0.0,
+      "tol": 0.0004,
+      "unit": "rel",
+      "pass": true,
+      "note": "max |dE| = 1.154e-04 a.u.; 0/120 filtered out"
+    },
+    {
+      "name": "outcome_classes_sum_to_N",
+      "value": 120,
+      "target": 120,
+      "tol": 1e-12,
+      "unit": "count",
+      "pass": true,
+      "note": "valid=120, filtered=0"
+    },
+    {
+      "name": "autoionization_channel_active",
+      "value": 1.0,
+      "target": 1.0,
+      "tol": 1e-12,
+      "unit": "bool",
+      "pass": true,
+      "note": "single-escape fraction = 1.000 (energy transfer via e-e repulsion)"
+    },
+    {
+      "name": "escaping_electron_energy_overshoot",
+      "value": 1.0,
+      "target": 1.0,
+      "tol": 1e-12,
+      "unit": "bool",
+      "pass": true,
+      "note": "escaping electron carries 7.83x the total excess energy (binding released)"
+    },
+    {
+      "name": "fit_reproducible",
+      "value": 1.0,
+      "target": 1.0,
+      "tol": 1e-12,
+      "unit": "bool",
+      "pass": true,
+      "note": "same stored counts reproduce the same alpha"
+    }
+  ],
+  "series": {
+    "E": [
+      0.05,
+      0.12,
+      0.3
+    ],
+    "P_DE": [
+      0.0001,
+      0.0001,
+      0.0001
+    ],
+    "P_DE_poisson_err": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "meta": {
+    "equations": [
+      "H = p1^2/2 + p2^2/2 - Z/r1 - Z/r2 + 1/r12   (Z=2, softened eps=0.1)",
+      "Wannier law: P_DE(E) ~ E^alpha, alpha = 1.056"
+    ],
+    "experiment": "Wannier-configuration launch: R0 = 3 a.u., radially staggered collinear chain (delta_r in [0.8, 2.0]), equal outward speeds on the exact energy shell, fixed transverse kick sigma = 0.01, escape radius 30 a.u.",
+    "n_trajectories": 120,
+    "alpha_fitted": 4.011872789999887e-16,
+    "laser_link": "three-step model of HHG: electron + parent ion + laser field; strong-field double ionization shows the same Wannier kinematics"
+  }
+}

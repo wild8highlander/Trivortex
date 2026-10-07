@@ -1,0 +1,8 @@
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# .gitignore — Comprehensive ignore rules for research-papers
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# ─── TRIVORTEX verification outputs ───
+verification/outputs/
+docs/site/.jekyll-cache/
+

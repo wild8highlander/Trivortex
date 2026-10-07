@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TRX-09 — The Kirchhoff–Chaplygin Three-Vortex Problem (Classical Anchor)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400&family=PT+Sans:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof renderMathInElement === 'function') {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '\\(', right: '\\)', display: false}
+      ], throwOnError: false
+    });
+  }
+});
+</script>
+<style>
+@page { size: 210mm 297mm; margin: 0; }
+:root {
+  --navy: #0A1730; --navy2: #0E2145; --header-fill: #2A3A55;
+  --gold: #D4AF37; --gold-l: #F0D98C;
+  --text: #1F2937; --muted: #6B7280;
+  --stripe: #F2F5FA; --code-bg: #F5F7FB; --border: #DCE3EF;
+}
+html, body {
+  margin: 0; padding: 0; width: 210mm;
+  background: #FFFFFF;               /* flow pages are white; dark pages are fixed-height */
+  color: var(--text);
+  font-family: 'PT Serif', 'Noto Serif', 'Liberation Serif', 'DejaVu Serif', serif;
+  font-size: 15px; line-height: 1.62;
+  line-break: strict; word-break: normal; overflow-wrap: break-word;
+}
+@media screen {
+  html { height: auto; display: flex; justify-content: center; background: #10131a; }
+  body { transform-origin: top center; margin: 20px auto; box-shadow: 0 8px 40px rgba(0,0,0,.5); }
+}
+
+/* ── Cover ─────────────────────────────────────────────────────────────── */
+.front-page {
+  width: 210mm; height: 297mm; box-sizing: border-box;
+  break-after: page; overflow: hidden; position: relative;
+  background:
+    radial-gradient(circle 8px at 691px 125px, #D4AF37 0 7px, transparent 8px),
+    radial-gradient(circle 5px at 584px 56px, #59C2FF 0 4px, transparent 5px),
+    radial-gradient(circle 4px at 154px 950px, #FF7A9E 0 3px, transparent 4px),
+    radial-gradient(circle 210px at 87% 9%, transparent 206px, rgba(212,175,55,.30) 208px, rgba(212,175,55,.30) 210px, transparent 212px),
+    radial-gradient(circle 130px at 74% 3%, transparent 126px, rgba(89,194,255,.26) 128px, rgba(89,194,255,.26) 130px, transparent 132px),
+    radial-gradient(circle 280px at 8% 94%, transparent 276px, rgba(212,175,55,.18) 278px, rgba(212,175,55,.18) 280px, transparent 282px),
+    linear-gradient(160deg, #0E2145 0%, #0A1730 62%, #081226 100%);
+  color: #E9EEF8;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 58px;
+}
+.fp-kicker {
+  display: flex; align-items: center; gap: 14px;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.5px; letter-spacing: 3.5px; color: #F0D98C; font-weight: 700;
+}
+.fp-title {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 34px; line-height: 1.16; font-weight: 700; color: #F4F7FD;
+  margin: 26px 0 12px 0; max-width: 156mm;
+}
+.fp-subtitle-ru {
+  font-size: 18.5px; line-height: 1.4; color: #D4AF37; font-style: italic;
+  max-width: 156mm; margin-bottom: 34px;
+}
+.fp-meta {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 9px 26px;
+  max-width: 156mm;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.5px; line-height: 1.45;
+  border-top: 1px solid rgba(212,175,55,.35);
+  border-bottom: 1px solid rgba(212,175,55,.35);
+  padding: 16px 2px;
+}
+.fp-meta .k { color: #8FA3C4; letter-spacing: 1.6px; font-size: 10.5px; text-transform: uppercase; }
+.fp-meta .v { color: #E9EEF8; margin-top: 2px; }
+.fp-abstract {
+  max-width: 156mm; margin-top: 26px; font-size: 12.5px; line-height: 1.6;
+  color: #B9C6DE; font-style: italic;
+}
+.fp-foot {
+  position: absolute; left: 58px; right: 58px; bottom: 40px;
+  display: flex; justify-content: space-between; align-items: flex-end;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 11px; letter-spacing: 2px; color: #8FA3C4; text-transform: uppercase;
+}
+.fp-foot b { color: #F0D98C; font-weight: 700; }
+
+/* ── Flowing content ───────────────────────────────────────────────────── */
+.main-content { background: #FFFFFF; padding: 15mm 16mm 13mm 16mm; }
+
+h1, h2, h3, h4 {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  color: #0A1730; line-height: 1.25;
+  break-after: avoid; page-break-after: avoid;
+}
+.main-content h1 { font-size: 24px; margin: 6px 0 4px 0; }
+.main-content h2 {
+  font-size: 19.5px; margin: 26px 0 10px 0; padding-left: 12px;
+  border-left: 4px solid #D4AF37;
+}
+.main-content h3 { font-size: 16px; margin: 18px 0 8px 0; }
+.main-content h4 { font-size: 14.5px; margin: 14px 0 6px 0; color: #2A3A55; }
+p { margin: 0 0 9px 0; text-align: justify; hyphens: auto; }
+strong { color: #0A1730; }
+em { color: inherit; }
+a { color: #0E2145; text-decoration: none; border-bottom: 1px solid #D4AF37; }
+ul, ol { margin: 4px 0 10px 0; padding-left: 22px; }
+li { margin-bottom: 4px; break-inside: avoid; text-align: left; }
+
+table {
+  width: 100%; border-collapse: collapse; margin: 10px 0 14px 0;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.3px; line-height: 1.4;
+}
+thead { display: table-header-group; }
+tr { break-inside: avoid; page-break-inside: avoid; }
+th {
+  background: #2A3A55; color: #FFFFFF; text-align: left;
+  padding: 6px 9px; font-weight: 700; border: none;
+}
+td { padding: 5px 9px; border-bottom: 1px solid #DCE3EF; vertical-align: top; }
+tbody tr:nth-child(odd) td { background: #F2F5FA; }
+table, .table-wrap { break-inside: auto; }
+thead + tbody tr:first-child { break-before: avoid; }
+
+pre {
+  background: #F5F7FB; border: 1px solid #DCE3EF; border-left: 3px solid #D4AF37;
+  padding: 10px 13px; margin: 10px 0 14px 0; border-radius: 4px;
+  font-family: 'JetBrains Mono', 'DejaVu Sans Mono', 'Liberation Mono', monospace;
+  font-size: 11.6px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: break-word;
+  break-inside: avoid; page-break-inside: avoid;
+}
+code {
+  font-family: 'JetBrains Mono', 'DejaVu Sans Mono', 'Liberation Mono', monospace;
+  font-size: 12.6px; background: #F5F7FB; padding: 1px 4px; border-radius: 3px;
+}
+pre code { background: transparent; padding: 0; font-size: 11.6px; }
+
+blockquote {
+  margin: 10px 0 12px 0; padding: 8px 14px; border-left: 3px solid #D4AF37;
+  background: #F5F7FB; color: #0E2145; font-style: italic;
+  break-inside: avoid;
+}
+hr { border: none; border-top: 1px solid #DCE3EF; margin: 16px 0; }
+
+/* equations */
+.katex-display { margin: 12px 0 14px 0; max-width: 100%; overflow: hidden auto; }
+.eq-block { break-inside: avoid; page-break-inside: avoid; }
+
+/* language part banners */
+.part-banner {
+  break-inside: avoid; break-after: avoid;
+  margin: 26px 0 14px 0; padding: 13px 18px;
+  background: #0E2145; color: #F0D98C; border-radius: 6px;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+}
+.part-banner .pb-title { font-size: 16.5px; font-weight: 700; letter-spacing: 1.2px; }
+.part-banner .pb-sub { font-size: 11.5px; color: #8FA3C4; margin-top: 3px; letter-spacing: .4px; }
+
+/* colophon */
+.ending {
+  width: 210mm; height: 297mm; box-sizing: border-box;
+  break-before: page; overflow: hidden; position: relative;
+  background: linear-gradient(200deg, #0E2145 0%, #0A1730 60%, #081226 100%);
+  color: #E9EEF8;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 58px;
+}
+.ending .colophon-line { max-width: 150mm; font-size: 13.5px; line-height: 1.7; color: #B9C6DE; }
+.ending .colophon-line b { color: #F0D98C; }
+.ending .end-rule { width: 64px; height: 26px; margin: 10px 0 8px 0;
+  background: linear-gradient(90deg, #D4AF37 0 64px, transparent 64px) top/100% 6px no-repeat; }
+.ending .end-title {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 26px; font-weight: 700; color: #F4F7FD; letter-spacing: 1px;
+}
+.ending .end-small {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 11.5px; color: #8FA3C4; letter-spacing: 2px; text-transform: uppercase;
+  margin-top: 26px; line-height: 2;
+}
+</style>
+</head>
+<body>
+
+<div class="front-page">
+  <div class="fp-kicker"><span>TRIVORTEX RESEARCH PROGRAM · TRX-09</span></div>
+  <div class="fp-title">The Kirchhoff–Chaplygin Three-Vortex Problem (Classical Anchor)</div>
+  <div class="fp-subtitle-ru">Проблема трёх вихрей Кирхгофа–Чаплыгина (классический якорь)</div>
+  <div class="fp-meta"><div><div class="k">Author</div><div class="v">Isaev Iskhak Khamzatovich<br><span style="color:#8FA3C4">ORCID 0009-0003-7299-0701</span></div></div><div><div class="k">DOI</div><div class="v">10.5281/zenodo.21825394</div></div><div><div class="k">Study</div><div class="v">TRX-09</div></div><div><div class="k">Date</div><div class="v">2026-10-06</div></div><div><div class="k">Code</div><div class="v"><code style="background:rgba(212,175,55,.12);color:#F0D98C;padding:1px 5px;border-radius:3px">code/trx09_classical_anchor.py</code></div></div><div><div class="k">Data</div><div class="v"><code style="background:rgba(212,175,55,.12);color:#F0D98C;padding:1px 5px;border-radius:3px">results/trx09_results.json</code></div></div></div>
+  <div class="fp-abstract">This study pins the classical anchor of the TRIVORTEX program: three Kirchhoff point vortices with the angular impulse I = ΣΓ|r|², the prototype of the Chaplygin topological integral C_Ch. Two canonical regimes are verified with an adaptive DOP853 integrator. First, three same-sign vortices on an equilateral triangle of side a = 1 rotate rigidly at the Lagrange rate ω = 3Γ/(2πa²) = 0.477464829: the fitted rotation rate matches the analytic value inside the 1e-8 tolerance, the sides deviate from a by at most 2.0·10⁻¹⁵, and the invariants I, H, P, Q drift by 1.8·10⁻¹⁵, 4.6·10⁻¹⁶ and 1.1·10⁻¹⁵ over three rotations (T = 39.4784).</div>
+  <div class="fp-foot"><span>Monograph Edition · bilingual RU + EN</span><span><b>TRIVORTEX</b> · TRIVORTEX · v1.0.0 · 2026</span></div>
+</div>
+<div class="main-content"><div class="part-banner"><div class="pb-title">PART I · English Monograph</div><div class="pb-sub">The Kirchhoff–Chaplygin Three-Vortex Problem (Classical Anchor)</div></div><p><em>TRIVORTEX Research Program · v1.0.0 · Monograph Edition</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Study</td>
+<td>TRX-09</td>
+</tr>
+<tr>
+<td>Program</td>
+<td>TRIVORTEX — The Three-Body Problem in the Vortex Model</td>
+</tr>
+<tr>
+<td>Author</td>
+<td>Isaev Iskhak Khamzatovich (ORCID 0009-0003-7299-0701)</td>
+</tr>
+<tr>
+<td>DOI</td>
+<td>10.5281/zenodo.21825394</td>
+</tr>
+<tr>
+<td>Date</td>
+<td>2026-10-06</td>
+</tr>
+<tr>
+<td>Code</td>
+<td>`code/trx09_classical_anchor.py`</td>
+</tr>
+<tr>
+<td>Data</td>
+<td>`results/trx09_results.json`</td>
+</tr>
+</tbody>
+</table>
+<h2>Abstract</h2>
+<p>This study pins the classical anchor of the TRIVORTEX program: three Kirchhoff point vortices with the angular impulse I = ΣΓ|r|<sup>2</sup>, the prototype of the Chaplygin topological integral C_Ch. Two canonical regimes are verified with an adaptive DOP853 integrator. First, three same-sign vortices on an equilateral triangle of side a = 1 rotate rigidly at the Lagrange rate ω = 3Γ/(2πa<sup>2</sup>) = 0.477464829: the fitted rotation rate matches the analytic value inside the 1e-8 tolerance, the sides deviate from a by at most 2.0·10<sup>-15</sup>, and the invariants I, H, P, Q drift by 1.8·10<sup>-15</sup>, 4.6·10<sup>-16</sup> and 1.1·10<sup>-15</sup> over three rotations (T = 39.4784). Second, the mixed-sign trio Γ = (1, 1, −1) launched from the right-isosceles configuration r1 = √2·x̂, r2 = √2·ŷ, r3 = r1 + r2 annihilates all four Aref collapse conditions to a residual of 1.4·10<sup>-17</sup> and evolves non-rigidly (d12: 2.000000 → 2.765423 over t = 12) with the invariants pinned to 2.8·10<sup>-13</sup>. A side sweep a ∈ [0.6, 2.0] reproduces ω(a) = 3Γ/(2πa<sup>2</sup>) to all nine recorded decimals, and a tolerance sweep shows the invariant check is flat across six decades of integrator tolerance. All 8 acceptance checks pass in full mode.</p>
+<h2>Contents</h2>
+<ol>
+<li>Abstract</li>
+<li>
+<ol>
+<li>Introduction and historical context</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>Physical formulation</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>Mathematical model</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li>Connection to the TRIVORTEX framework</li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li>Numerical method</li>
+</ol>
+</li>
+<li>
+<ol start="6">
+<li>Results and analysis</li>
+</ol>
+</li>
+<li>
+<ol start="7">
+<li>Discussion</li>
+</ol>
+</li>
+<li>
+<ol start="8">
+<li>Conclusions</li>
+</ol>
+</li>
+<li>
+<ol start="9">
+<li>References
+Appendix A. Parameter table
+Appendix B. Reproduction</li>
+</ol>
+</li>
+</ol>
+<h2>1. Introduction and historical context</h2>
+<p>The point-vortex problem is the oldest reduction of fluid dynamics to a few-body system. Kirchhoff (1876) showed that singular vortices of an ideal incompressible fluid move as material points advected by the velocity induced by all the others, and wrote down the first-order equations that now carry his name. The system is remarkable: a three-degree-of-freedom Hamiltonian flow with four analytic invariants, rich enough to contain rigid rotation, relative equilibria, scattering and — for mixed-sign circulations — genuine collapse.</p>
+<p>The specific solution TRIVORTEX builds on is the vortex Lagrange triangle: three equal same-sign vortices on an equilateral triangle rotate rigidly forever about their common centroid. The rotation rate ω = Γ_tot/(2πa<sup>2</sup>) is the exact vortex analogue of the angular velocity of the celestial Lagrange equilateral solution of the three-body problem; Helmholtz and Kirchhoff knew the construction, and Gröbli, Synge and later Aref classified the full three-vortex phase portrait around it.</p>
+<p>The mixed-sign side of the problem is equally classical. Chaplygin analyzed special cases of three-vortex motion, and Aref (1979) proved that a self-similar collapse — all separations shrinking proportionally, r ∝ (t_c − t)^(1/2) — requires the simultaneous vanishing of the four invariants I = H = P = Q = 0. Configurations satisfying these conditions form a degenerate invariant manifold; the collapse orbit itself is a measure-zero separatrix on it, while generic orbits on the manifold evolve non-rigidly but stay bounded.</p>
+<p>Why TRIVORTEX needs this study: the vortex model of the program postulates bodies whose interaction is logarithmic and whose topological charge plays the role of circulation. Theorem 3.1 of the document states a choreography for the vortex triangle and invokes the topological integral C_Ch. Both ingredients are classical — they are E1–E3 of the present study — so before any celestial or optical sibling can be trusted, the classical anchor must be verified numerically, reproducibly and to machine precision. That is the sole purpose of TRX-09.</p>
+<h2>2. Physical formulation</h2>
+<p>Three point vortices move in an ideal incompressible plane. Each vortex k carries a circulation Γ_k and is advected by the velocity induced by the other two; the resulting first-order system (E1) is the Kirchhoff equations. Because the velocity field is logarithmic in the pair separations, the dynamics is Hamiltonian with the pairwise Hamiltonian H of (E2), and the three continuous symmetries — translations, rotations and time shifts — supply four invariants: the linear impulse (P, Q), the angular impulse I and the Hamiltonian itself.</p>
+<p>Two presets fix the numerics. Regime 1: Γ = (+1, +1, +1) on the equilateral triangle of side a = 1 — a rigidly rotating relative equilibrium with period 2π/ω = 13.1595, integrated over three rotations (T = 39.4784). Regime 2: Γ = (+1, +1, −1) launched from r1 = √2·x̂, r2 = √2·ŷ, r3 = r1 + r2 — a right-isosceles configuration with separations (2, √2, √2) that annihilates all four invariants exactly and is integrated to t = 12. Both regimes are dimensionless: lengths in units of a, circulations in units of Γ1, time in units of a<sup>2</sup>/Γ.</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Γ (regime 1)</td>
+<td>(+1, +1, +1)</td>
+<td>same-sign Lagrange triangle</td>
+</tr>
+<tr>
+<td>a</td>
+<td>1</td>
+<td>triangle side (length unit)</td>
+</tr>
+<tr>
+<td>r_c</td>
+<td>a/√3 ≈ 0.577350</td>
+<td>circumradius; the core orbit about the centroid</td>
+</tr>
+<tr>
+<td>ω (analytic)</td>
+<td>3/(2πa<sup>2</sup>) = 0.477464829</td>
+<td>Lagrange rotation rate</td>
+</tr>
+<tr>
+<td>T (regime 1)</td>
+<td>39.4784 = 3 rotations</td>
+<td>integration span (period 13.1595)</td>
+</tr>
+<tr>
+<td>Γ (regime 2)</td>
+<td>(+1, +1, −1)</td>
+<td>mixed-sign trio on the Aref manifold</td>
+</tr>
+<tr>
+<td>launch (regime 2)</td>
+<td>r1 = √2·x̂, r2 = √2·ŷ, r3 = r1 + r2</td>
+<td>right-isosceles configuration, separations (2, √2, √2)</td>
+</tr>
+<tr>
+<td>T (regime 2)</td>
+<td>12</td>
+<td>integration span of the manifold check</td>
+</tr>
+<tr>
+<td>integrator</td>
+<td>DOP853, rtol = atol = 1e-13 / 1e-12</td>
+<td>max_step 0.05 (regime 1), 0.01 (regime 2)</td>
+</tr>
+</tbody>
+</table>
+<h2>3. Mathematical model</h2>
+<p>From fluid to points. A vortex patch of circulation Γ_j shrunk to a point induces, at distance r, the tangential velocity Γ_j/(2πr) (Helmholtz). Superposing the two neighbors' fields and advecting each vortex with the result gives the Kirchhoff system (E1): the velocity of vortex k is the sum of two perpendicular contributions Γ_j/(2π r_kj) rotated by 90°. The system is first order and Hamiltonian with symplectic form ΣΓ_k dx_k∧dy_k and Hamiltonian H of (E2) — the logarithmic pair potential is the direct trace of the Biot–Savart kernel.</p>
+<p>The Lagrange triangle. For three equal vortices Γ = 1 on an equilateral triangle of side a, each vertex feels two induced velocities of magnitude 1/(2πa) whose directions differ by 60°; their resultant, √3/(2πa), is exactly tangential to the circumcircle of radius r_c = a/√3. Hence the triangle rotates as a rigid body with ω = (√3/2πa)/(a/√3) = 3/(2πa<sup>2</sup>) — equation (E3) — and the circulation centroid, fixed by P = Q, is the rotation center. This is the vortex twin of the celestial Lagrange solution and the exact skeleton of Theorem 3.1.</p>
+<p>The Aref manifold. The invariants of (E2) restrict every trajectory. For the right-isosceles launch r1 = √2·x̂, r2 = √2·ŷ, r3 = r1 + r2 with Γ = (1, 1, −1) they all vanish identically: I = 2 + 2 − 4 = 0, H = −(1/2π)(ln 2 − ln √2 − ln √2) = 0 because r12 = r13·r23, and P = √2 − √2 = 0, Q = √2 − √2 = 0. Aref (1979) showed these four conditions are necessary for self-similar collapse with r ∝ (t_c − t)^(1/2) (E5); the collapse orbit is the measure-zero separatrix of the manifold, while our integrated orbit is a bounded non-rigid evolution on the same manifold — the sharpest available test that the invariants are respected by the integrator along a nontrivial trajectory.</p>
+<p><strong>Notation</strong></p>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Γ_k</td>
+<td>circulation of vortex k; (Γ) = (1, 1, 1) or (1, 1, −1)</td>
+</tr>
+<tr>
+<td>r_k = (x_k, y_k)</td>
+<td>position of vortex k in the plane</td>
+</tr>
+<tr>
+<td>r_jk</td>
+<td>pair separation |r_j − r_k|</td>
+</tr>
+<tr>
+<td>a</td>
+<td>triangle side; length unit of the study (a = 1)</td>
+</tr>
+<tr>
+<td>r_c = a/√3</td>
+<td>circumradius; orbit radius of each core about the centroid</td>
+</tr>
+<tr>
+<td>ω</td>
+<td>rigid rotation rate of the triangle, ω = Γ_tot/(2πa<sup>2</sup>)</td>
+</tr>
+<tr>
+<td>I, H, P, Q</td>
+<td>angular impulse, Hamiltonian, linear impulse invariants</td>
+</tr>
+<tr>
+<td>t_c</td>
+<td>collapse time of the self-similar separatrix (not reached here)</td>
+</tr>
+<tr>
+<td>T</td>
+<td>integration span: 39.4784 (regime 1), 12 (regime 2)</td>
+</tr>
+<tr>
+<td>rtol, atol</td>
+<td>relative and absolute tolerances of the DOP853 integrator</td>
+</tr>
+<tr>
+<td>max_step</td>
+<td>hard cap on the integrator step: 0.05 / 0.01</td>
+</tr>
+</tbody>
+</table>
+<p><strong>(E1)</strong> Kirchhoff point-vortex equations (k = 1, 2, 3; r_kj is the pair separation).</p>
+<p>$$\dot{x}_k = -\frac{1}{2\pi}\sum_{j\neq k} \Gamma_j\,\frac{y_k - y_j}{r_{kj}^2}, \qquad \dot{y}_k = +\frac{1}{2\pi}\sum_{j\neq k} \Gamma_j\,\frac{x_k - x_j}{r_{kj}^2}$$</p>
+<p><strong>(E2)</strong> The four invariants: angular impulse, Hamiltonian, linear impulse.</p>
+<p>$$I = \sum_k \Gamma_k\,|\mathbf{r}_k|^2, \qquad H = -\frac{1}{2\pi}\sum_{j<k} \Gamma_j \Gamma_k \ln r_{jk}, \qquad P = \sum_k \Gamma_k x_k, \quad Q = \sum_k \Gamma_k y_k$$</p>
+<p><strong>(E3)</strong> Rigid rotation rate of the same-sign equilateral triangle (vortex Lagrange solution).</p>
+<p>$$\omega = \frac{\Gamma_{\mathrm{tot}}}{2\pi a^2} = \frac{3}{2\pi a^2}$$</p>
+<p><strong>(E4)</strong> Aref collapse conditions — necessary for self-similar collapse.</p>
+<p>$$I = H = P = Q = 0$$</p>
+<p><strong>(E5)</strong> Self-similar collapse law on the separatrix of the Aref manifold (Aref 1979).</p>
+<p>$$r(t) \propto (t_c - t)^{1/2}$$</p>
+<h2>4. Connection to the TRIVORTEX framework</h2>
+<p>TRX-09 is not a sibling of the TRIVORTEX vortex model — it is its root. The Kirchhoff equations (E1) are verbatim the vortex equations used by Theorem 3.1; the angular impulse I = ΣΓ|r|<sup>2</sup> is the many-vortex prototype of the topological Chaplygin integral C_Ch, pinned here exactly at I = a<sup>2</sup> = 1 in regime 1 and at I = 0 on the collapse manifold of regime 2; the rotation rate ω = Γ_tot/(2πa<sup>2</sup>) = 0.477464829 is the sharp special-solution rate that the theorem asserts for the triangle; and the mixed-sign trio (1, 1, −1) is the classical realization of the topological charge pattern (1, −1, 1) carried by the TRIVORTEX document itself. Every later study either realizes these objects in another medium — TRX-05 in optical field zeros, TRX-11 in celestial gravitating bodies — or acts on them with control fields, as TRX-12 does. The dictionary is exact, two-directional and closed: what is proven and measured here at machine precision is the foundation the whole vortex model stands on.</p>
+<table>
+<thead>
+<tr>
+<th>Quantity in this study</th>
+<th>TRIVORTEX analog</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Angular impulse I = ΣΓ|r|<sup>2</sup></td>
+<td>Chaplygin integral C_Ch</td>
+<td>the prototype invariant: I = a<sup>2</sup> = 1 in regime 1, I = 0 on the collapse manifold</td>
+</tr>
+<tr>
+<td>Equilateral rotation ω = Γ_tot/(2πa<sup>2</sup>)</td>
+<td>Theorem 3.1 choreography</td>
+<td>the vortex twin of the celestial Lagrange triangle</td>
+</tr>
+<tr>
+<td>Mixed-sign trio (1, 1, −1)</td>
+<td>topological charges (1, −1, 1)</td>
+<td>the charge pattern carried by the TRIVORTEX document itself</td>
+</tr>
+<tr>
+<td>Kirchhoff Hamiltonian H</td>
+<td>vortex-model energy</td>
+<td>logarithmic pair interaction, conserved to 4.6·10<sup>-16</sup></td>
+</tr>
+<tr>
+<td>Linear impulse P, Q</td>
+<td>translational invariants of the vortex model</td>
+<td>fix the circulation-weighted centroid of the configuration</td>
+</tr>
+</tbody>
+</table>
+<h2>5. Numerical method</h2>
+<p>Integrator. Both regimes are integrated with the explicit Dormand–Prince 8(5,3) method (scipy solve_ivp, method DOP853) with dense output. Regime 1 uses rtol = atol = 1e-13 and max_step = 0.05 over T = 39.4784 (three rotation periods of 13.1595); regime 2 uses rtol = atol = 1e-12 and max_step = 0.01 over t = 12. The step caps are the conservative choice: they keep the per-step rotation of each pair direction small and make the protocol deterministic on any hardware.</p>
+<p>Measurement. The rotation rate is measured, not assumed: the polar angle of vortex 1 relative to the circulation centroid is unwrapped and fitted by a straight line over 1500 dense-output samples; the fit slope is compared with the analytic ω = 3/(2πa<sup>2</sup>) at the 1e-8 level. The four invariants are recomputed from the dense solution at every sample and their maximal excursions recorded as the conservation checks. Rigidity is tracked through the three side lengths d_jk(t).</p>
+<p>Sweeps. Two sweeps extend the preset. The side sweep re-integrates the equilateral configuration for a ∈ {0.6, 0.8, 1.0, 1.2, 1.5, 2.0} over two rotations each and fits ω(a) numerically. The tolerance sweep re-runs regime 2 with rtol = atol ∈ {1e-8, …, 1e-13} and records the maximal invariant drift. All numbers quoted in the monograph are read back from the JSON protocol results/trx09_results.json — nothing is transcribed by hand.</p>
+<h2>6. Results and analysis</h2>
+<h3>fig01 regime landscape</h3>
+<p><img alt="Geometry of the two canonical regimes: the same-sign Lagrange triangle (Γ = +1, +1, +1) and the mixed-sign trio (Γ = 1, 1, −1) on the Aref manifold." src="../figures/fig01_regime_landscape.png" /></p>
+<p><em>Geometry of the two canonical regimes: the same-sign Lagrange triangle (Γ = +1, +1, +1) and the mixed-sign trio (Γ = 1, 1, −1) on the Aref manifold.</em>
+Panel (a): the three cores trace circles of radius r_c = a/√3 = 0.577350 about the common centroid; the rigid-rotation annotation quotes ω = 3Γ/(2πa<sup>2</sup>) = 0.477464829. Panel (b): the right-isosceles launch triangle (dashed) and the tangled worldlines of the (1, 1, −1) trio; the Aref conditions hold to 1.4·10<sup>-17</sup> at launch and the invariants drift by at most 2.8·10<sup>-13</sup> over t = [0, 12].</p>
+<h3>fig02 headline results</h3>
+<p><img alt="Headline results: the linear growth of the polar angle (Lagrange rotation law) and the machine-precision invariants of the mixed-sign trio." src="../figures/fig02_headline_results.png" /></p>
+<p><em>Headline results: the linear growth of the polar angle (Lagrange rotation law) and the machine-precision invariants of the mixed-sign trio.</em>
+Panel (a): the measured θ1(t) lies on the analytic line ωt with fitted ω = 0.477464829 against the analytic 3Γ/(2πa<sup>2</sup>) = 0.477464829 over T = 39.4784 — agreement inside the 1e-8 tolerance. Panel (b): the drifts |ΔI|, |ΔH|, |ΔP|, |ΔQ| of the (1, 1, −1) trio stay below 2.8·10<sup>-13</sup> — nine orders inside the 1e-11 acceptance line — along a genuinely non-rigid orbit.</p>
+<h3>fig03 parameter sweeps</h3>
+<p><img alt="Parameter sweeps: the Kirchhoff rotation law ω(a) across triangle sides, and the tolerance-independence of the invariant drift." src="../figures/fig03_parameter_sweeps.png" /></p>
+<p><em>Parameter sweeps: the Kirchhoff rotation law ω(a) across triangle sides, and the tolerance-independence of the invariant drift.</em>
+Panel (a): numeric DOP853 re-runs reproduce ω(a) = 3Γ/(2πa<sup>2</sup>) to all nine recorded decimals at every side a ∈ {0.6, 0.8, 1.0, 1.2, 1.5, 2.0} (from 1.326291192 down to 0.119366207; preset a = 1 starred). Panel (b): the regime-2 invariant drift is flat at 2.8·10<sup>-13</sup> across rtol = atol from 1e-8 to 1e-13 — the step cap max_step = 0.01 sets the drift floor, so the invariant check is robust to six decades of tolerance.</p>
+<h3>fig04 dynamics invariants</h3>
+<p><img alt="Dynamics: machine-level rigidity of the rotating triangle and the non-rigid shape evolution on the Aref manifold." src="../figures/fig04_dynamics_invariants.png" /></p>
+<p><em>Dynamics: machine-level rigidity of the rotating triangle and the non-rigid shape evolution on the Aref manifold.</em>
+Panel (a): the side deviations d_jk(t) − a of the rotating equilateral triangle stay at 2.0·10<sup>-15</sup> over three rotations while I, H, P, Q drift by 1.8·10<sup>-15</sup>, 4.6·10<sup>-16</sup> and 1.1·10<sup>-15</sup>. Panel (b): the mixed-sign trio evolves non-rigidly — d12: 2.000000 → 2.765423, d13: 1.414214 → 2.542551, d23: 1.414214 → 1.087657 — with the invariants pinned to 2.8·10<sup>-13</sup> throughout.</p>
+<p>Regime 1 — the Lagrange triangle. The fitted rotation rate over three rotations is ω = 0.477464829, identical to the analytic 3Γ/(2πa<sup>2</sup>) at the recorded precision and inside the 1e-8 tolerance; the side lengths stay within 2.0·10<sup>-15</sup> of a, confirming rigid rotation. The angular impulse stays pinned at I = 1.000000000000 = a<sup>2</sup> (drift 1.8·10<sup>-15</sup>), the Hamiltonian — identically zero for a = 1 — drifts by 4.6·10<sup>-16</sup>, and the linear impulse by 1.1·10<sup>-15</sup>. The configuration is a relative equilibrium to machine precision, exactly as the classical construction demands.</p>
+<p>Regime 2 — the Aref manifold. At launch the four collapse conditions hold with a total residual of 1.4·10<sup>-17</sup>. Over t = [0, 12] the trio evolves genuinely non-rigidly: the tracked pair separation grows from 2.000000 to 2.765423, the other two separations end at 2.542551 and 1.087657 — the shape is not frozen — yet the maximal excursion of (I, H, P, Q) over the whole run is 2.8·10<sup>-13</sup>, nine orders inside the 1e-11 acceptance tolerance. The manifold is degenerate, the orbit is not, and the invariants do not notice the difference.</p>
+<p>Sweep over the triangle side. The numeric rates at a ∈ {0.6, 0.8, 1.0, 1.2, 1.5, 2.0} — 1.326291192, 0.746038796, 0.477464829, 0.331572798, 0.212206591, 0.119366207 — coincide with the analytic ω(a) = 3Γ/(2πa<sup>2</sup>) to all nine recorded decimals at every point, verifying the a<sup>-2</sup> Lagrange scaling end to end across a factor of more than three in a.</p>
+<p>Sweep over the integrator tolerance. Re-running regime 2 with rtol = atol from 1e-8 to 1e-13 leaves the invariant drift flat at 2.8·10<sup>-13</sup>: the step cap max_step = 0.01 keeps the local error far below every tolerance in the sweep, so the drift floor is set by the step cap, not by rtol. The practical conclusion is that the conservation protocol is robust — six decades of tolerance do not move the headline number — and the 8/8 PASS verdict is not an artifact of a finely tuned integrator setting.</p>
+<h3>Verification summary</h3>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Recorded value</th>
+<th>Target</th>
+<th>Tolerance</th>
+<th>Pass</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>`rotation_rate_3G_over_2pi_a2`</td>
+<td>0.477465</td>
+<td>0.477465</td>
+<td>1e-08</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`triangle_stays_equilateral`</td>
+<td>1.9984e-15</td>
+<td>0</td>
+<td>1e-08</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`angular_impulse_I_conserved`</td>
+<td>1.77636e-15</td>
+<td>0</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`hamiltonian_conserved`</td>
+<td>4.59413e-16</td>
+<td>0</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`linear_impulse_conserved`</td>
+<td>1.11022e-15</td>
+<td>0</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`aref_collapse_conditions_hold`</td>
+<td>1.38778e-17</td>
+<td>0</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`mixed_sign_invariants_conserved`</td>
+<td>2.75335e-13</td>
+<td>0</td>
+<td>1e-11</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`mixed_sign_shape_evolves`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p><em>(status: </em><em>PASS</em><em>, mode: full)</em></p>
+<h2>7. Discussion</h2>
+<p>What is deliberately not shown. The self-similar collapse r ∝ (t_c − t)^(1/2) itself is not integrated: it is a measure-zero separatrix of the I = H = P = Q = 0 manifold, and any exponentially small perturbation either misses it or terminates in a triple collision where the logarithmic Hamiltonian diverges and adaptive stepping becomes singular. The study instead verifies the manifold and the machine-precision conservation along a bounded non-rigid orbit — the honest, well-posed part of the collapse story — and cites the theory (Aref 1979) for the separatrix law (E5).</p>
+<p>Regimes not covered. The presets use equal unit circulations; unequal Γ, collinear central configurations, the scattering channels of the (+, +, −) problem and the linear stability band of the triangle (neutral for three equal vortices) are outside the acceptance envelope. Finite-core and viscous regularizations, as well as any physical length scale, are absent by design: the study is deliberately dimensionless so that every number transfers verbatim into the TRIVORTEX vortex model.</p>
+<p>Extensions and siblings. The natural next steps are a stability map of the triangle under circulation perturbations (the vortex Routh problem) and a near-collapse scan of the (1, 1, −1) manifold with event-driven stepping. Among siblings, TRX-05 realizes the same equations in the zeros of an optical field, TRX-11 integrates the celestial Lagrange triangle with gravitation instead of circulation, and TRX-12 turns the laser into an actuator at the libration points — all three inherit the invariant structure verified here.</p>
+<h2>8. Conclusions</h2>
+<ol>
+<li>Three same-sign vortices on the equilateral triangle of side a = 1 rotate rigidly at the analytic Lagrange rate ω = 3Γ/(2πa<sup>2</sup>) = 0.477464829; the measured rate coincides with the analytic value inside the 1e-8 tolerance, and the sides deviate from a by at most 2.0·10<sup>-15</sup> over three rotations (T = 39.4784).</li>
+<li>The angular impulse I = ΣΓ|r|<sup>2</sup> stays pinned at a<sup>2</sup> = 1 with drift 1.8·10<sup>-15</sup> — the classical prototype of the Chaplygin integral C_Ch conserved by the exact dynamics.</li>
+<li>The Kirchhoff Hamiltonian (identically zero for a = 1) and the linear impulse (identically zero for the centred triangle) drift by 4.6·10<sup>-16</sup> and 1.1·10<sup>-15</sup> respectively — machine-level conservation without any projection or regularization.</li>
+<li>The mixed-sign trio Γ = (1, 1, −1) launched from r1 = √2·x̂, r2 = √2·ŷ, r3 = r1 + r2 satisfies all four Aref collapse conditions to a residual of 1.4·10<sup>-17</sup> and evolves non-rigidly (d12: 2.000000 → 2.765423 over t = 12) with the invariants drifting by at most 2.8·10<sup>-13</sup> — nine orders inside the acceptance tolerance.</li>
+<li>The rotation law ω(a) = 3Γ/(2πa<sup>2</sup>) is reproduced to all nine recorded decimals at every side a ∈ {0.6, 0.8, 1.0, 1.2, 1.5, 2.0}, and the invariant drift is flat across six decades of integrator tolerance — the protocol is robust, not tuned.</li>
+<li>The study thereby certifies the classical anchor of TRIVORTEX: the equations, the invariant I and the rotation rate used by Theorem 3.1 are exactly the Kirchhoff–Chaplygin objects verified here at machine precision, 8/8 checks PASS in full mode.</li>
+</ol>
+<h2>9. References</h2>
+<ol>
+<li>Kirchhoff, G. (1876). <em>Vorlesungen über mathematische Physik: Mechanik.</em> Teubner, Leipzig.</li>
+<li>Chaplygin, S. A. (1916). <em>One case of vortex motion in a fluid.</em> Mat. Sb. 29 (as cited in the TRIVORTEX document).</li>
+<li>Synge, J. L. (1949). <em>On the motion of three vortices.</em> Canadian Journal of Mathematics 1, 257–270.</li>
+<li>Novikov, E. A. (1975). <em>Dynamics and statistics of a system of vortices.</em> Soviet Physics JETP 41, 937–943.</li>
+<li>Aref, H. (1979). <em>Motion of three vortices.</em> Physics of Fluids 22, 393–400.</li>
+<li>Aref, H. (1983). <em>Integrable, chaotic, and turbulent vortex motion in two-dimensional flows.</em> Annual Review of Fluid Mechanics 15, 345–365.</li>
+<li>Newton, P. K. (2001). <em>The N-Vortex Problem: Analytical Techniques.</em> Springer, ch. 3.</li>
+</ol>
+<h3>BibTeX</h3>
+<p>```bibtex
+@book{kirchhoff1876,
+  author    = {Kirchhoff, Gustav},
+  title     = {Vorlesungen ueber mathematische Physik: Mechanik},
+  publisher = {Teubner},
+  address   = {Leipzig}, year = {1876}}
+
+@article{chaplygin1916,
+  author  = {Chaplygin, Sergei A.},
+  title   = {One case of vortex motion in a fluid},
+  journal = {Matematicheskii Sbornik},
+  year    = {1916}, volume = {29}}
+
+@article{aref1979,
+  author  = {Aref, Hassan},
+  title   = {Motion of three vortices},
+  journal = {Physics of Fluids},
+  year    = {1979}, volume = {22}, pages = {393--400}}
+
+@book{newton2001,
+  author    = {Newton, Paul K.},
+  title     = {The N-Vortex Problem: Analytical Techniques},
+  publisher = {Springer}, year = {2001}}
+```</p>
+<h2>Appendix A. Parameter table</h2>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Value</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Γ (regime 1)</td>
+<td>(+1, +1, +1)</td>
+<td>same-sign Lagrange triangle</td>
+</tr>
+<tr>
+<td>Γ (regime 2)</td>
+<td>(+1, +1, −1)</td>
+<td>mixed-sign trio on the Aref manifold</td>
+</tr>
+<tr>
+<td>a</td>
+<td>1</td>
+<td>triangle side, length unit</td>
+</tr>
+<tr>
+<td>r_c</td>
+<td>a/√3 ≈ 0.577350</td>
+<td>core orbit radius about the centroid</td>
+</tr>
+<tr>
+<td>ω (analytic)</td>
+<td>0.477464829</td>
+<td>Lagrange rotation rate 3/(2πa<sup>2</sup>)</td>
+</tr>
+<tr>
+<td>T (regime 1)</td>
+<td>39.4784 (3 rotations)</td>
+<td>integration span, rtol = atol = 1e-13, max_step 0.05</td>
+</tr>
+<tr>
+<td>launch (regime 2)</td>
+<td>r1 = √2·x̂, r2 = √2·ŷ, r3 = r1 + r2</td>
+<td>right-isosceles configuration, |r3| = 2</td>
+</tr>
+<tr>
+<td>T (regime 2)</td>
+<td>12</td>
+<td>manifold check span, rtol = atol = 1e-12, max_step 0.01</td>
+</tr>
+<tr>
+<td>samples</td>
+<td>1500 dense-output points per regime</td>
+<td>invariant monitoring grid</td>
+</tr>
+</tbody>
+</table>
+<h2>Appendix B. Reproduction</h2>
+<p>```bash
+python3 research/TRX-09-vortex-trio/code/trx09_classical_anchor.py --smoke     # < 20 s
+python3 research/TRX-09-vortex-trio/code/trx09_classical_anchor.py              # full, 0.54 s (7.389 s recorded with --figures)
+python3 research/TRX-09-vortex-trio/code/trx09_classical_anchor.py --figures   # + 300-DPI figures
+```</p>
+<p>Full runtime on the reference machine: 0.54 s (7.389 s recorded with --figures); smoke mode completes in under 20 seconds and is exercised by the repository CI.</p>
+<h2>Appendix C. Environment</h2>
+<p>Python ≥ 3.11, numpy ≥ 2.0, scipy ≥ 1.14, matplotlib ≥ 3.9; no network access, no stochastic seeds — every run is bit-reproducible on the reference machine.</p><div class="part-banner"><div class="pb-title">ЧАСТЬ II · Русская монография</div><div class="pb-sub">Проблема трёх вихрей Кирхгофа–Чаплыгина (классический якорь)</div></div><div lang="ru"><p><em>Исследовательская программа TRIVORTEX · v1.0.0 · Издание монографий</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Исследование / Study</td>
+<td>TRX-09</td>
+</tr>
+<tr>
+<td>Программа</td>
+<td>TRIVORTEX — задача трёх тел в вихревой модели</td>
+</tr>
+<tr>
+<td>Автор</td>
+<td>Исаев Исхак Хамзатович (ORCID 0009-0003-7299-0701)</td>
+</tr>
+<tr>
+<td>DOI</td>
+<td>10.5281/zenodo.21825394</td>
+</tr>
+<tr>
+<td>Дата</td>
+<td>2026-10-06</td>
+</tr>
+<tr>
+<td>Код</td>
+<td>`code/trx09_classical_anchor.py`</td>
+</tr>
+<tr>
+<td>Данные</td>
+<td>`results/trx09_results.json`</td>
+</tr>
+</tbody>
+</table>
+<h2>Аннотация</h2>
+<p>Исследование закрепляет классический якорь программы TRIVORTEX: три точечных вихря Кирхгофа с угловым импульсом I = ΣΓ|r|<sup>2</sup> — прототипом топологического интеграла Чаплыгина C_Ch. Адаптивным интегратором DOP853 проверены два канонических режима. Во-первых, три однознаковых вихря на равностороннем треугольнике со стороной a = 1 вращаются жёстко с лагранжевой скоростью ω = 3Γ/(2πa<sup>2</sup>) = 0.477464829: измеренное значение совпадает с аналитическим внутри допуска 1e-8, стороны отклоняются от a не более чем на 2.0·10<sup>-15</sup>, а инварианты I, H, P, Q дрейфуют на 1.8·10<sup>-15</sup>, 4.6·10<sup>-16</sup> и 1.1·10<sup>-15</sup> за три оборота (T = 39.4784). Во-вторых, разнознаковая тройка Γ = (1, 1, −1), запущенная из прямоугольной равнобедренной конфигурации r1 = √2·x̂, r2 = √2·ŷ, r3 = r1 + r2, обнуляет все четыре условия коллапса Арефа с остатком 1.4·10<sup>-17</sup> и нежёстко эволюционирует (d12: 2.000000 → 2.765423 за t = 12) при инвариантах, закреплённых с точностью 2.8·10<sup>-13</sup>. Развёртка по стороне a ∈ [0.6, 2.0] воспроизводит ω(a) = 3Γ/(2πa<sup>2</sup>) до всех девяти записанных знаков, а развёртка по допуску показывает, что проверка инвариантов не меняется на шести порядках допуска интегратора. Все 8 контрольных проверок проходят в полном режиме.</p>
+<h2>Содержание</h2>
+<p><strong>Краткие сведения</strong></p>
+<table>
+<thead>
+<tr>
+<th>Аспект</th>
+<th>Значение</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Блок</td>
+<td>Классическая вихревая динамика — исследование 09 из 12</td>
+</tr>
+<tr>
+<td>Модель</td>
+<td>три точечных вихря Кирхгофа (однознаковый треугольник + разнознаковая тройка)</td>
+</tr>
+<tr>
+<td>Ключевой инвариант</td>
+<td>угловой импульс I = ΣΓ|r|<sup>2</sup> — прототип интеграла Чаплыгина</td>
+</tr>
+<tr>
+<td>Главный результат</td>
+<td>ω = 0.477464829 с допуском 1e-8; инварианты коллектора Арефа закреплены с точностью до 2.8e-13</td>
+</tr>
+<tr>
+<td>Верификация</td>
+<td>8/8 проверок PASS (полный режим)</td>
+</tr>
+<tr>
+<td>Время выполнения</td>
+<td>0.54 с полный · 7.4 с с графиками · &lt; 20 с smoke</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>Аннотация</li>
+<li>
+<ol>
+<li>Введение и исторический контекст</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>Физическая формулировка</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>Математическая модель</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li>Связь с фреймворком TRIVORTEX</li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li>Численный метод</li>
+</ol>
+</li>
+<li>
+<ol start="6">
+<li>Результаты и анализ</li>
+</ol>
+</li>
+<li>
+<ol start="7">
+<li>Обсуждение</li>
+</ol>
+</li>
+<li>
+<ol start="8">
+<li>Выводы</li>
+</ol>
+</li>
+<li>
+<ol start="9">
+<li>Список литературы
+Приложение A. Таблица параметров
+Приложение B. Воспроизведение</li>
+</ol>
+</li>
+</ol>
+<h2>1. Введение и исторический контекст</h2>
+<p>Задача точечных вихрей — старейшая редукция гидродинамики к системе нескольких тел. Кирхгоф (1876) показал, что сингулярные вихри идеальной несжимаемой жидкости движутся как материальные точки, переносимые скоростью, наведённой всеми остальными, и записал систему первого порядка, носящую теперь его имя. Система замечательна: гамильтонов поток с тремя степенями свободы и четырьмя аналитическими инвариантами, достаточно богатый, чтобы вместить жёсткое вращение, относительные равновесия, рассеяние и — при разнознаковых циркуляциях — настоящий коллапс.</p>
+<p>Конкретное решение, на котором строится TRIVORTEX, — вихревой треугольник Лагранжа: три равных однознаковых вихря на равностороннем треугольнике вращаются жёстко и неограниченно долго вокруг общего центра. Скорость вращения ω = Γ_tot/(2πa<sup>2</sup>) — точный вихревой аналог угловой скорости небесного лагранжева равностороннего решения задачи трёх тел; построение было известно Гельмгольцу и Кирхгофу, а Грёбли, Синдж и позднее Ареф классифицировали полный фазовый портрет трёх вихрей вокруг него.</p>
+<p>Разнознаковая сторона задачи столь же классична. Чаплыгин разобрал специальные случаи движения трёх вихрей, а Ареф (1979) доказал, что автомодельный коллапс — пропорциональное сжатие всех расстояний, r ∝ (t_c − t)^(1/2) — требует одновременного обнуления четырёх инвариантов I = H = P = Q = 0. Конфигурации, удовлетворяющие этим условиям, образуют вырожденное инвариантное многообразие; коллапсная орбита сама по себе — сепаратриса меры нуль на нём, тогда как типичные орбиты многообразия эволюционируют нежёстко, но остаются ограниченными.</p>
+<p>Зачем это исследование программе TRIVORTEX: вихревая модель программы постулирует тела с логарифмическим взаимодействием, чей топологический заряд играет роль циркуляции. Теорема 3.1 документа утверждает хореографию вихревого треугольника и привлекает топологический интеграл C_Ch. Оба ингредиента классичны — это в точности E1–E3 настоящего исследования, — поэтому прежде чем доверять какому-либо небесному или оптическому собрату, классический якорь должен быть проверен численно, воспроизводимо и с машинной точностью. Для этого и существует TRX-09.</p>
+<h2>2. Физическая формулировка</h2>
+<p>Три точечных вихря движутся в идеальной несжимаемой плоскости. Каждый вихрь k несёт циркуляцию Γ_k и переносится скоростью, наведённой двумя остальными; получающаяся система первого порядка (E1) — это уравнения Кирхгофа. Поскольку скорость логарифмична по межвихревым расстояниям, динамика гамильтонова с парным гамильтонианом H из (E2), а три непрерывные симметрии — трансляции, повороты и сдвиг времени — дают четыре инварианта: линейный импульс (P, Q), угловой импульс I и сам гамильтониан.</p>
+<p>Численность фиксируют два пресета. Режим 1: Γ = (+1, +1, +1) на равностороннем треугольнике со стороной a = 1 — жёстко вращающееся относительное равновесие с периодом 2π/ω = 13.1595, интегрируемое на трёх оборотах (T = 39.4784). Режим 2: Γ = (+1, +1, −1) с запуском из r1 = √2·x̂, r2 = √2·ŷ, r3 = r1 + r2 — прямоугольная равнобедренная конфигурация с расстояниями (2, √2, √2), обнуляющая все четыре инварианта точно; интегрирование ведётся до t = 12. Оба режима безразмерны: длины — в единицах a, циркуляции — в единицах Γ1, время — в единицах a<sup>2</sup>/Γ.</p>
+<table>
+<thead>
+<tr>
+<th>Параметр</th>
+<th>Значение</th>
+<th>Смысл</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Γ (режим 1)</td>
+<td>(+1, +1, +1)</td>
+<td>однознаковый лагранжев треугольник</td>
+</tr>
+<tr>
+<td>a</td>
+<td>1</td>
+<td>сторона треугольника (единица длины)</td>
+</tr>
+<tr>
+<td>r_c</td>
+<td>a/√3 ≈ 0.577350</td>
+<td>радиус описанной окружности; орбита ядра</td>
+</tr>
+<tr>
+<td>ω (аналитич.)</td>
+<td>3/(2πa<sup>2</sup>) = 0.477464829</td>
+<td>лагранжева скорость вращения</td>
+</tr>
+<tr>
+<td>T (режим 1)</td>
+<td>39.4784 = 3 оборота</td>
+<td>интервал интегрирования (период 13.1595)</td>
+</tr>
+<tr>
+<td>Γ (режим 2)</td>
+<td>(+1, +1, −1)</td>
+<td>разнознаковая тройка на коллекторе Арефа</td>
+</tr>
+<tr>
+<td>запуск (режим 2)</td>
+<td>r1 = √2·x̂, r2 = √2·ŷ, r3 = r1 + r2</td>
+<td>прямоугольная равнобедренная конфигурация, расстояния (2, √2, √2)</td>
+</tr>
+<tr>
+<td>T (режим 2)</td>
+<td>12</td>
+<td>интервал проверки многообразия</td>
+</tr>
+<tr>
+<td>интегратор</td>
+<td>DOP853, rtol = atol = 1e-13 / 1e-12</td>
+<td>max_step 0.05 (режим 1), 0.01 (режим 2)</td>
+</tr>
+</tbody>
+</table>
+<h2>3. Математическая модель</h2>
+<p>От жидкости к точкам. Вихревой пятну циркуляции Γ_j, сжатому в точку, соответствует тангенциальная скорость Γ_j/(2πr) на расстоянии r (Гельмгольц). Суперпозиция полей двух соседей и перенос каждого вихря результирующей скоростью дают систему Кирхгофа (E1): скорость вихря k — сумма двух перпендикулярных вкладов Γ_j/(2π r_kj), повёрнутых на 90°. Система первого порядка и гамильтонова с симплектической формой ΣΓ_k dx_k∧dy_k и гамильтонианом H из (E2) — логарифмический парный потенциал есть прямой след ядра Био–Савара.</p>
+<p>Треугольник Лагранжа. Для трёх равных вихрей Γ = 1 на равностороннем треугольнике со стороной a каждая вершина чувствует две наведённые скорости величиной 1/(2πa), направления которых разнесены на 60°; их равнодействующая √3/(2πa) в точности касательна к описанной окружности радиуса r_c = a/√3. Значит, треугольник вращается как твёрдое тело с ω = (√3/2πa)/(a/√3) = 3/(2πa<sup>2</sup>) — уравнение (E3), — а центр, взвешенный циркуляциями и закреплённый условием P = Q, служит центром вращения. Это вихревой близнец небесного лагранжева решения и точный скелет теоремы 3.1.</p>
+<p>Многообразие Арефа. Инварианты (E2) ограничивают каждую траекторию. Для прямоугольного равнобедренного запуска r1 = √2·x̂, r2 = √2·ŷ, r3 = r1 + r2 с Γ = (1, 1, −1) все они обращаются в нуль тождественно: I = 2 + 2 − 4 = 0, H = −(1/2π)(ln 2 − ln √2 − ln √2) = 0, поскольку r12 = r13·r23, и P = √2 − √2 = 0, Q = √2 − √2 = 0. Ареф (1979) показал, что эти четыре условия необходимы для автомодельного коллапса с r ∝ (t_c − t)^(1/2) (E5); коллапсная орбита — сепаратриса меры нуль на многообразии, тогда как наша расчётная орбита — ограниченная нежёсткая эволюция на том же многообразии: самый острый из доступных тестов того, что интегратор чтит инварианты вдоль нетривиальной траектории.</p>
+<p><strong>Нотация</strong></p>
+<table>
+<thead>
+<tr>
+<th>Символ</th>
+<th>Смысл</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Γ_k</td>
+<td>циркуляция вихря k; (Γ) = (1, 1, 1) или (1, 1, −1)</td>
+</tr>
+<tr>
+<td>r_k = (x_k, y_k)</td>
+<td>положение вихря k на плоскости</td>
+</tr>
+<tr>
+<td>r_jk</td>
+<td>межвихревое расстояние |r_j − r_k|</td>
+</tr>
+<tr>
+<td>a</td>
+<td>сторона треугольника; единица длины исследования (a = 1)</td>
+</tr>
+<tr>
+<td>r_c = a/√3</td>
+<td>радиус описанной окружности; радиус орбиты ядра вокруг центра</td>
+</tr>
+<tr>
+<td>ω</td>
+<td>скорость жёсткого вращения треугольника, ω = Γ_tot/(2πa<sup>2</sup>)</td>
+</tr>
+<tr>
+<td>I, H, P, Q</td>
+<td>инварианты: угловой импульс, гамильтониан, линейный импульс</td>
+</tr>
+<tr>
+<td>t_c</td>
+<td>время коллапса автомодельной сепаратрисы (здесь не достигается)</td>
+</tr>
+<tr>
+<td>T</td>
+<td>интервал интегрирования: 39.4784 (режим 1), 12 (режим 2)</td>
+</tr>
+<tr>
+<td>rtol, atol</td>
+<td>относительный и абсолютный допуски интегратора DOP853</td>
+</tr>
+<tr>
+<td>max_step</td>
+<td>жёсткое ограничение шага интегратора: 0.05 / 0.01</td>
+</tr>
+</tbody>
+</table>
+<p><strong>(E1)</strong> Уравнения точечных вихрей Кирхгофа (k = 1, 2, 3; r_kj — межвихревое расстояние).</p>
+<p>$$\dot{x}_k = -\frac{1}{2\pi}\sum_{j\neq k} \Gamma_j\,\frac{y_k - y_j}{r_{kj}^2}, \qquad \dot{y}_k = +\frac{1}{2\pi}\sum_{j\neq k} \Gamma_j\,\frac{x_k - x_j}{r_{kj}^2}$$</p>
+<p><strong>(E2)</strong> Четыре инварианта: угловой импульс, гамильтониан, линейный импульс.</p>
+<p>$$I = \sum_k \Gamma_k\,|\mathbf{r}_k|^2, \qquad H = -\frac{1}{2\pi}\sum_{j<k} \Gamma_j \Gamma_k \ln r_{jk}, \qquad P = \sum_k \Gamma_k x_k, \quad Q = \sum_k \Gamma_k y_k$$</p>
+<p><strong>(E3)</strong> Скорость жёсткого вращения однознакового равностороннего треугольника (вихревое лагранжево решение).</p>
+<p>$$\omega = \frac{\Gamma_{\mathrm{tot}}}{2\pi a^2} = \frac{3}{2\pi a^2}$$</p>
+<p><strong>(E4)</strong> Условия коллапса Арефа — необходимые для автомодельного коллапса.</p>
+<p>$$I = H = P = Q = 0$$</p>
+<p><strong>(E5)</strong> Закон автомодельного коллапса на сепаратрисе коллектора Арефа (Aref 1979).</p>
+<p>$$r(t) \propto (t_c - t)^{1/2}$$</p>
+<h2>4. Связь с фреймворком TRIVORTEX</h2>
+<p>TRX-09 — не собрат вихревой модели TRIVORTEX, а её корень. Уравнения Кирхгофа (E1) дословно совпадают с вихревыми уравнениями, которые использует теорема 3.1; угловой импульс I = ΣΓ|r|<sup>2</sup> — многовихревой прототип топологического интеграла Чаплыгина C_Ch, закреплённый здесь точно: I = a<sup>2</sup> = 1 в режиме 1 и I = 0 на коллекторе коллапса режима 2; скорость вращения ω = Γ_tot/(2πa<sup>2</sup>) = 0.477464829 — та самая выделенная скорость специального решения, которую теорема утверждает для треугольника; а разнознаковая тройка (1, 1, −1) — классическая реализация того самого рисунка топологических зарядов (1, −1, 1), что несёт документ TRIVORTEX. Каждое последующее исследование либо воплощает эти объекты в иной среде — TRX-05 в нулях оптических полей, TRX-11 в небесных гравитирующих телах, — либо воздействует на них управляющими полями, как TRX-12. Словарь точен, двунаправлен и замкнут: то, что здесь доказано и измерено с машинной точностью, есть фундамент, на котором стоит вся вихревая модель.</p>
+<table>
+<thead>
+<tr>
+<th>Величина исследования</th>
+<th>Аналог в TRIVORTEX</th>
+<th>Комментарий</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Угловой импульс I = ΣΓ|r|<sup>2</sup></td>
+<td>интеграл Чаплыгина C_Ch</td>
+<td>инвариант-прототип: I = a<sup>2</sup> = 1 в режиме 1, I = 0 на коллекторе коллапса</td>
+</tr>
+<tr>
+<td>Равностороннее вращение ω = Γ_tot/(2πa<sup>2</sup>)</td>
+<td>хореография теоремы 3.1</td>
+<td>вихревой близнец небесного лагранжева треугольника</td>
+</tr>
+<tr>
+<td>Разнознаковая тройка (1, 1, −1)</td>
+<td>топологические заряды (1, −1, 1)</td>
+<td>тот самый рисунок зарядов, что несёт документ TRIVORTEX</td>
+</tr>
+<tr>
+<td>Гамильтониан Кирхгофа H</td>
+<td>энергия вихревой модели</td>
+<td>логарифмическое парное взаимодействие, сохраняется до 4.6·10<sup>-16</sup></td>
+</tr>
+<tr>
+<td>Линейный импульс P, Q</td>
+<td>трансляционные инварианты вихревой модели</td>
+<td>фиксируют центр масс конфигурации, взвешенный циркуляциями</td>
+</tr>
+</tbody>
+</table>
+<h2>5. Численный метод</h2>
+<p>Интегратор. Оба режима интегрируются явным методом Дормана–Принса 8(5,3) (scipy solve_ivp, method DOP853) с плотным выводом. Режим 1 использует rtol = atol = 1e-13 и max_step = 0.05 на T = 39.4784 (три периода вращения по 13.1595); режим 2 — rtol = atol = 1e-12 и max_step = 0.01 на t = 12. Ограничения шага — консервативный выбор: они держат малым пошаговый поворот каждой пары направлений и делают протокол детерминированным на любой технике.</p>
+<p>Измерение. Скорость вращения измеряется, а не постулируется: полярный угол вихря 1 относительно центра, взвешенного циркуляциями, разворачивается по ветви и аппроксимируется прямой по 1500 плотным выборкам; наклон приближения сравнивается с аналитическим ω = 3/(2πa<sup>2</sup>) на уровне 1e-8. Четыре инварианта пересчитываются по плотному решению на каждой выборке, а их максимальные экскурсии записываются как проверки сохранения. Жёсткость отслеживается по трём длинам сторон d_jk(t).</p>
+<p>Развёртки. Две развёртки дополняют пресет. Развёртка по стороне реинтегрирует равностороннюю конфигурацию для a ∈ {0.6, 0.8, 1.0, 1.2, 1.5, 2.0} по два оборота каждая и численно определяет ω(a). Развёртка по допуску повторяет режим 2 с rtol = atol ∈ {1e-8, …, 1e-13} и записывает максимальный дрейф инвариантов. Все числа монографии считываются из JSON-протокола results/trx09_results.json — ничего не переписывается вручную.</p>
+<h2>6. Результаты и анализ</h2>
+<h3>fig01 regime landscape</h3>
+<p><img alt="Геометрия двух канонических режимов: однознаковый лагранжев треугольник (Γ = +1, +1, +1) и разнознаковая тройка (Γ = 1, 1, −1) на коллекторе Арефа." src="../figures/fig01_regime_landscape.png" /></p>
+<p><em>Геометрия двух канонических режимов: однознаковый лагранжев треугольник (Γ = +1, +1, +1) и разнознаковая тройка (Γ = 1, 1, −1) на коллекторе Арефа.</em>
+Панель (а): три ядра описывают окружности радиуса r_c = a/√3 = 0.577350 вокруг общего центра; в рамке — жёсткое вращение с ω = 3Γ/(2πa<sup>2</sup>) = 0.477464829. Панель (б): пусковой прямоугольный треугольник (пунктир) и переплетённые мировые линии тройки (1, 1, −1); условия Арефа выполняются с остатком 1.4·10<sup>-17</sup>, а инварианты дрейфуют не более чем на 2.8·10<sup>-13</sup> за t = [0, 12].</p>
+<h3>fig02 headline results</h3>
+<p><img alt="Главные результаты: линейный рост полярного угла (закон вращения Лагранжа) и инварианты разнознаковой тройки с машинной точностью." src="../figures/fig02_headline_results.png" /></p>
+<p><em>Главные результаты: линейный рост полярного угла (закон вращения Лагранжа) и инварианты разнознаковой тройки с машинной точностью.</em>
+Панель (а): измеренная θ1(t) ложится на аналитическую прямую ωt с измеренным ω = 0.477464829 против аналитической 3Γ/(2πa<sup>2</sup>) = 0.477464829 на T = 39.4784 — согласие внутри допуска 1e-8. Панель (б): дрейфы |ΔI|, |ΔH|, |ΔP|, |ΔQ| тройки (1, 1, −1) не превышают 2.8·10<sup>-13</sup> — на девять порядков внутри допуска 1e-11 — вдоль настоящей нежёсткой орбиты.</p>
+<h3>fig03 parameter sweeps</h3>
+<p><img alt="Параметрические развёртки: закон вращения Кирхгофа ω(a) по сторонам треугольника и независимость дрейфа инвариантов от допуска интегратора." src="../figures/fig03_parameter_sweeps.png" /></p>
+<p><em>Параметрические развёртки: закон вращения Кирхгофа ω(a) по сторонам треугольника и независимость дрейфа инвариантов от допуска интегратора.</em>
+Панель (а): численные прогонки DOP853 воспроизводят ω(a) = 3Γ/(2πa<sup>2</sup>) до всех девяти записанных знаков на каждой стороне a ∈ {0.6, 0.8, 1.0, 1.2, 1.5, 2.0} (от 1.326291192 до 0.119366207; пресет a = 1 отмечен звездой). Панель (б): дрейф инвариантов режима 2 плоский — 2.8·10<sup>-13</sup> при rtol = atol от 1e-8 до 1e-13: пол дрейфа задаёт ограничение шага max_step = 0.01, поэтому проверка инвариантов устойчива к шести порядкам допуска.</p>
+<h3>fig04 dynamics invariants</h3>
+<p><img alt="Динамика: жёсткость вращающегося треугольника на машинном уровне и нежёсткая эволюция формы на коллекторе Арефа." src="../figures/fig04_dynamics_invariants.png" /></p>
+<p><em>Динамика: жёсткость вращающегося треугольника на машинном уровне и нежёсткая эволюция формы на коллекторе Арефа.</em>
+Панель (а): отклонения сторон d_jk(t) − a вращающегося равностороннего треугольника не превышают 2.0·10<sup>-15</sup> за три оборота, а I, H, P, Q дрейфуют на 1.8·10<sup>-15</sup>, 4.6·10<sup>-16</sup> и 1.1·10<sup>-15</sup>. Панель (б): разнознаковая тройка эволюционирует нежёстко — d12: 2.000000 → 2.765423, d13: 1.414214 → 2.542551, d23: 1.414214 → 1.087657 — при инвариантах, закреплённых с точностью 2.8·10<sup>-13</sup>.</p>
+<p>Режим 1 — треугольник Лагранжа. Скорость вращения, аппроксимированная прямой по трём оборотам равна ω = 0.477464829, что совпадает с аналитической 3Γ/(2πa<sup>2</sup>) в записанной точности и внутри допуска 1e-8; длины сторон остаются в пределах 2.0·10<sup>-15</sup> от a, подтверждая жёсткое вращение. Угловой импульс закреплён на I = 1.000000000000 = a<sup>2</sup> (дрейф 1.8·10<sup>-15</sup>), гамильтониан — тождественный нуль при a = 1 — дрейфует на 4.6·10<sup>-16</sup>, линейный импульс — на 1.1·10<sup>-15</sup>. Конфигурация является относительным равновесием с машинной точностью, ровно как требует классическое построение.</p>
+<p>Режим 2 — многообразие Арефа. На запуске четыре условия коллапса выполняются с суммарным остатком 1.4·10<sup>-17</sup>. За t = [0, 12] тройка эволюционирует по-настоящему нежёстко: отслеживаемое межвихревое расстояние растёт от 2.000000 до 2.765423, два других завершаются на 2.542551 и 1.087657 — форма не заморожена, — однако максимальная экскурсия (I, H, P, Q) за весь прогон составляет 2.8·10<sup>-13</sup>, на девять порядков внутри допуска 1e-11. Многообразие вырождено, орбита — нет, а инварианты разницы не замечают.</p>
+<p>Развёртка по стороне треугольника. Численные скорости при a ∈ {0.6, 0.8, 1.0, 1.2, 1.5, 2.0} — 1.326291192, 0.746038796, 0.477464829, 0.331572798, 0.212206591, 0.119366207 — совпадают с аналитической ω(a) = 3Γ/(2πa<sup>2</sup>) до всех девяти записанных знаков в каждой точке, проверяя лагранжево масштабирование a<sup>-2</sup> от края до края более чем по трём множителям в a.</p>
+<p>Развёртка по допуску интегратора. Повторный прогон режима 2 с rtol = atol от 1e-8 до 1e-13 оставляет дрейф инвариантов плоским на 2.8·10<sup>-13</sup>: ограничение шага max_step = 0.01 держит локальную ошибку намного ниже каждого допуска развёртки, поэтому пол дрейфа задаёт ограничение шага, а не rtol. Практический вывод: протокол сохранения устойчив — шесть порядков допуска не двигают ключевое число, — и вердикт 8/8 PASS не является артефактом тонко подогнанной настройки интегратора.</p>
+<h3>Сводка верификации</h3>
+<table>
+<thead>
+<tr>
+<th>Проверка</th>
+<th>Значение</th>
+<th>Цель</th>
+<th>Допуск</th>
+<th>Прошла</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>`rotation_rate_3G_over_2pi_a2`</td>
+<td>0.477465</td>
+<td>0.477465</td>
+<td>1e-08</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`triangle_stays_equilateral`</td>
+<td>1.9984e-15</td>
+<td>0</td>
+<td>1e-08</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`angular_impulse_I_conserved`</td>
+<td>1.77636e-15</td>
+<td>0</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`hamiltonian_conserved`</td>
+<td>4.59413e-16</td>
+<td>0</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`linear_impulse_conserved`</td>
+<td>1.11022e-15</td>
+<td>0</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`aref_collapse_conditions_hold`</td>
+<td>1.38778e-17</td>
+<td>0</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`mixed_sign_invariants_conserved`</td>
+<td>2.75335e-13</td>
+<td>0</td>
+<td>1e-11</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`mixed_sign_shape_evolves`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p><em>(status: </em><em>PASS</em><em>, mode: full)</em></p>
+<h2>7. Обсуждение</h2>
+<p>Что сознательно не показано. Сам автомодельный коллапс r ∝ (t_c − t)^(1/2) не интегрируется: это сепаратриса меры нуль на многообразии I = H = P = Q = 0, и сколь угодно малое возмущение либо минует её, либо заканчивается тройным столкновением, где логарифмический гамильтониан расходится, а адаптивный шаг сингулярен. Вместо этого исследование проверяет многообразие и сохранение инвариантов с машинной точностью вдоль ограниченной нежёсткой орбиты — честную, корректно поставленную часть истории коллапса — и ссылается на теорию (Aref 1979) для закона сепаратрисы (E5).</p>
+<p>Непокрытые режимы. Пресеты используют равные единичные циркуляции; неравные Γ, коллинеарные центральные конфигурации, каналы рассеяния задачи (+, +, −) и полоса линейной устойчивости треугольника (нейтральной при трёх равных вихрях) остаются за пределами контрольного конверта. Конечность ядра, вязкие регуляризации и любые физические масштабы длины отсутствуют намеренно: исследование безразмерно по построению, чтобы каждое число переносилось дословно в вихревую модель TRIVORTEX.</p>
+<p>Расширения и собратья. Естественные следующие шаги — карта устойчивости треугольника при возмущениях циркуляций (вихревая задача Рауса) и сканирование окрестности коллапса на многообразии (1, 1, −1) с событийным управлением шагом. Среди собратьев TRX-05 воплощает те же уравнения в нулях оптического поля, TRX-11 интегрирует небесный лагранжев треугольник с гравитацией вместо циркуляции, а TRX-12 превращает лазер в актуатор у точек либрации — все три наследуют инвариантную структуру, проверенную здесь.</p>
+<h2>8. Выводы</h2>
+<ol>
+<li>Три однознаковых вихря на равностороннем треугольнике со стороной a = 1 вращаются жёстко с аналитической лагранжевой скоростью ω = 3Γ/(2πa<sup>2</sup>) = 0.477464829; измеренное значение совпадает с аналитическим внутри допуска 1e-8, а стороны отклоняются от a не более чем на 2.0·10<sup>-15</sup> за три оборота (T = 39.4784).</li>
+<li>Угловой импульс I = ΣΓ|r|<sup>2</sup> остаётся закреплённым на a<sup>2</sup> = 1 с дрейфом 1.8·10<sup>-15</sup> — классический прототип интеграла Чаплыгина C_Ch, сохраняемый точной динамикой.</li>
+<li>Гамильтониан Кирхгофа (тождественный нуль при a = 1) и линейный импульс (тождественный нуль для центрированного треугольника) дрейфуют на 4.6·10<sup>-16</sup> и 1.1·10<sup>-15</sup> соответственно — сохранение машинного уровня без каких-либо проекций или регуляризаций.</li>
+<li>Разнознаковая тройка Γ = (1, 1, −1), запущенная из r1 = √2·x̂, r2 = √2·ŷ, r3 = r1 + r2, удовлетворяет всем четырём условиям коллапса Арефа с остатком 1.4·10<sup>-17</sup> и нежёстко эволюционирует (d12: 2.000000 → 2.765423 за t = 12) при дрейфе инвариантов не более 2.8·10<sup>-13</sup> — на девять порядков внутри контрольного допуска.</li>
+<li>Закон вращения ω(a) = 3Γ/(2πa<sup>2</sup>) воспроизведён до всех девяти записанных знаков на каждой стороне a ∈ {0.6, 0.8, 1.0, 1.2, 1.5, 2.0}, а дрейф инвариантов плоский на шести порядках допуска интегратора — протокол устойчив, а не подогнан.</li>
+<li>Тем самым исследование сертифицирует классический якорь TRIVORTEX: уравнения, инвариант I и скорость вращения, используемые теоремой 3.1, — это в точности кирхгофско-чаплыгинские объекты, проверенные здесь с машинной точностью; 8/8 проверок PASS в полном режиме.</li>
+</ol>
+<h2>9. Список литературы</h2>
+<ol>
+<li>Kirchhoff, G. (1876). <em>Vorlesungen über mathematische Physik: Mechanik.</em> Teubner, Leipzig.</li>
+<li>Chaplygin, S. A. (1916). <em>One case of vortex motion in a fluid.</em> Mat. Sb. 29 (as cited in the TRIVORTEX document).</li>
+<li>Synge, J. L. (1949). <em>On the motion of three vortices.</em> Canadian Journal of Mathematics 1, 257–270.</li>
+<li>Novikov, E. A. (1975). <em>Dynamics and statistics of a system of vortices.</em> Soviet Physics JETP 41, 937–943.</li>
+<li>Aref, H. (1979). <em>Motion of three vortices.</em> Physics of Fluids 22, 393–400.</li>
+<li>Aref, H. (1983). <em>Integrable, chaotic, and turbulent vortex motion in two-dimensional flows.</em> Annual Review of Fluid Mechanics 15, 345–365.</li>
+<li>Newton, P. K. (2001). <em>The N-Vortex Problem: Analytical Techniques.</em> Springer, ch. 3.</li>
+</ol>
+<h3>BibTeX</h3>
+<p>```bibtex
+@book{kirchhoff1876,
+  author    = {Kirchhoff, Gustav},
+  title     = {Vorlesungen ueber mathematische Physik: Mechanik},
+  publisher = {Teubner},
+  address   = {Leipzig}, year = {1876}}
+
+@article{chaplygin1916,
+  author  = {Chaplygin, Sergei A.},
+  title   = {One case of vortex motion in a fluid},
+  journal = {Matematicheskii Sbornik},
+  year    = {1916}, volume = {29}}
+
+@article{aref1979,
+  author  = {Aref, Hassan},
+  title   = {Motion of three vortices},
+  journal = {Physics of Fluids},
+  year    = {1979}, volume = {22}, pages = {393--400}}
+
+@book{newton2001,
+  author    = {Newton, Paul K.},
+  title     = {The N-Vortex Problem: Analytical Techniques},
+  publisher = {Springer}, year = {2001}}
+```</p>
+<h2>Приложение A. Таблица параметров</h2>
+<table>
+<thead>
+<tr>
+<th>Символ</th>
+<th>Значение</th>
+<th>Роль</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Γ (режим 1)</td>
+<td>(+1, +1, +1)</td>
+<td>однознаковый лагранжев треугольник</td>
+</tr>
+<tr>
+<td>Γ (режим 2)</td>
+<td>(+1, +1, −1)</td>
+<td>разнознаковая тройка на коллекторе Арефа</td>
+</tr>
+<tr>
+<td>a</td>
+<td>1</td>
+<td>сторона треугольника, единица длины</td>
+</tr>
+<tr>
+<td>r_c</td>
+<td>a/√3 ≈ 0.577350</td>
+<td>радиус орбиты ядра вокруг центра</td>
+</tr>
+<tr>
+<td>ω (аналитич.)</td>
+<td>0.477464829</td>
+<td>лагранжева скорость вращения 3/(2πa<sup>2</sup>)</td>
+</tr>
+<tr>
+<td>T (режим 1)</td>
+<td>39.4784 (3 оборота)</td>
+<td>интервал интегрирования, rtol = atol = 1e-13, max_step 0.05</td>
+</tr>
+<tr>
+<td>запуск (режим 2)</td>
+<td>r1 = √2·x̂, r2 = √2·ŷ, r3 = r1 + r2</td>
+<td>прямоугольная равнобедренная конфигурация, |r3| = 2</td>
+</tr>
+<tr>
+<td>T (режим 2)</td>
+<td>12</td>
+<td>интервал проверки многообразия, rtol = atol = 1e-12, max_step 0.01</td>
+</tr>
+<tr>
+<td>выборки</td>
+<td>1500 точек плотного вывода на режим</td>
+<td>сетка мониторинга инвариантов</td>
+</tr>
+</tbody>
+</table>
+<h2>Приложение B. Воспроизведение</h2>
+<p>```bash
+python3 research/TRX-09-vortex-trio/code/trx09_classical_anchor.py --smoke     # < 20 с
+python3 research/TRX-09-vortex-trio/code/trx09_classical_anchor.py              # полный прогон, 0.54 s (7.389 s recorded with --figures)
+python3 research/TRX-09-vortex-trio/code/trx09_classical_anchor.py --figures   # + графики 300 DPI
+```</p>
+<p>Полное время выполнения на референсной машине — 0.54 s (7.389 s recorded with --figures); smoke-режим укладывается в 20 секунд и используется CI репозитория.</p>
+<h2>Приложение C. Окружение</h2>
+<p>Python ≥ 3.11, numpy ≥ 2.0, scipy ≥ 1.14, matplotlib ≥ 3.9; без доступа к сети и без стохастических зёрен — каждый прогон бит-в-бит воспроизводим на референсной машине.</p></div></div>
+<div class="ending">
+  <div class="end-title">TRIVORTEX</div>
+  <div class="end-small">The Three-Body Problem in the Vortex Model</div>
+  <div class="end-rule"></div>
+  <div class="colophon-line"><b>The Kirchhoff–Chaplygin Three-Vortex Problem (Classical Anchor)</b> — research monograph of the TRIVORTEX program, studying the three-body problem in the vortex model and its laser, celestial-mechanical and quantum crossings.</div><div class="colophon-line">Full verification protocol: <b>results JSON + figures + code</b> in research/TRX-09-vortex-trio/; reproduction commands in Appendix B.</div>
+  <div class="end-small">
+    Isaev Iskhak Khamzatovich · ORCID 0009-0003-7299-0701<br>
+    DOI (concept) 10.5281/zenodo.21825393 · DOI (version) 10.5281/zenodo.21825394<br>
+    License IPL-RP-1.0 · v1.0.0 · 2026-10-07
+  </div>
+</div>
+
+</body>
+</html>

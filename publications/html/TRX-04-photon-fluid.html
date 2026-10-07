@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TRX-04 — Photon Fluid: Three Kerr Solitons (Spatial, 2-D)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400&family=PT+Sans:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof renderMathInElement === 'function') {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '\\(', right: '\\)', display: false}
+      ], throwOnError: false
+    });
+  }
+});
+</script>
+<style>
+@page { size: 210mm 297mm; margin: 0; }
+:root {
+  --navy: #0A1730; --navy2: #0E2145; --header-fill: #2A3A55;
+  --gold: #D4AF37; --gold-l: #F0D98C;
+  --text: #1F2937; --muted: #6B7280;
+  --stripe: #F2F5FA; --code-bg: #F5F7FB; --border: #DCE3EF;
+}
+html, body {
+  margin: 0; padding: 0; width: 210mm;
+  background: #FFFFFF;               /* flow pages are white; dark pages are fixed-height */
+  color: var(--text);
+  font-family: 'PT Serif', 'Noto Serif', 'Liberation Serif', 'DejaVu Serif', serif;
+  font-size: 15px; line-height: 1.62;
+  line-break: strict; word-break: normal; overflow-wrap: break-word;
+}
+@media screen {
+  html { height: auto; display: flex; justify-content: center; background: #10131a; }
+  body { transform-origin: top center; margin: 20px auto; box-shadow: 0 8px 40px rgba(0,0,0,.5); }
+}
+
+/* ── Cover ─────────────────────────────────────────────────────────────── */
+.front-page {
+  width: 210mm; height: 297mm; box-sizing: border-box;
+  break-after: page; overflow: hidden; position: relative;
+  background:
+    radial-gradient(circle 8px at 691px 125px, #D4AF37 0 7px, transparent 8px),
+    radial-gradient(circle 5px at 584px 56px, #59C2FF 0 4px, transparent 5px),
+    radial-gradient(circle 4px at 154px 950px, #FF7A9E 0 3px, transparent 4px),
+    radial-gradient(circle 210px at 87% 9%, transparent 206px, rgba(212,175,55,.30) 208px, rgba(212,175,55,.30) 210px, transparent 212px),
+    radial-gradient(circle 130px at 74% 3%, transparent 126px, rgba(89,194,255,.26) 128px, rgba(89,194,255,.26) 130px, transparent 132px),
+    radial-gradient(circle 280px at 8% 94%, transparent 276px, rgba(212,175,55,.18) 278px, rgba(212,175,55,.18) 280px, transparent 282px),
+    linear-gradient(160deg, #0E2145 0%, #0A1730 62%, #081226 100%);
+  color: #E9EEF8;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 58px;
+}
+.fp-kicker {
+  display: flex; align-items: center; gap: 14px;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.5px; letter-spacing: 3.5px; color: #F0D98C; font-weight: 700;
+}
+.fp-title {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 34px; line-height: 1.16; font-weight: 700; color: #F4F7FD;
+  margin: 26px 0 12px 0; max-width: 156mm;
+}
+.fp-subtitle-ru {
+  font-size: 18.5px; line-height: 1.4; color: #D4AF37; font-style: italic;
+  max-width: 156mm; margin-bottom: 34px;
+}
+.fp-meta {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 9px 26px;
+  max-width: 156mm;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.5px; line-height: 1.45;
+  border-top: 1px solid rgba(212,175,55,.35);
+  border-bottom: 1px solid rgba(212,175,55,.35);
+  padding: 16px 2px;
+}
+.fp-meta .k { color: #8FA3C4; letter-spacing: 1.6px; font-size: 10.5px; text-transform: uppercase; }
+.fp-meta .v { color: #E9EEF8; margin-top: 2px; }
+.fp-abstract {
+  max-width: 156mm; margin-top: 26px; font-size: 12.5px; line-height: 1.6;
+  color: #B9C6DE; font-style: italic;
+}
+.fp-foot {
+  position: absolute; left: 58px; right: 58px; bottom: 40px;
+  display: flex; justify-content: space-between; align-items: flex-end;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 11px; letter-spacing: 2px; color: #8FA3C4; text-transform: uppercase;
+}
+.fp-foot b { color: #F0D98C; font-weight: 700; }
+
+/* ── Flowing content ───────────────────────────────────────────────────── */
+.main-content { background: #FFFFFF; padding: 15mm 16mm 13mm 16mm; }
+
+h1, h2, h3, h4 {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  color: #0A1730; line-height: 1.25;
+  break-after: avoid; page-break-after: avoid;
+}
+.main-content h1 { font-size: 24px; margin: 6px 0 4px 0; }
+.main-content h2 {
+  font-size: 19.5px; margin: 26px 0 10px 0; padding-left: 12px;
+  border-left: 4px solid #D4AF37;
+}
+.main-content h3 { font-size: 16px; margin: 18px 0 8px 0; }
+.main-content h4 { font-size: 14.5px; margin: 14px 0 6px 0; color: #2A3A55; }
+p { margin: 0 0 9px 0; text-align: justify; hyphens: auto; }
+strong { color: #0A1730; }
+em { color: inherit; }
+a { color: #0E2145; text-decoration: none; border-bottom: 1px solid #D4AF37; }
+ul, ol { margin: 4px 0 10px 0; padding-left: 22px; }
+li { margin-bottom: 4px; break-inside: avoid; text-align: left; }
+
+table {
+  width: 100%; border-collapse: collapse; margin: 10px 0 14px 0;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.3px; line-height: 1.4;
+}
+thead { display: table-header-group; }
+tr { break-inside: avoid; page-break-inside: avoid; }
+th {
+  background: #2A3A55; color: #FFFFFF; text-align: left;
+  padding: 6px 9px; font-weight: 700; border: none;
+}
+td { padding: 5px 9px; border-bottom: 1px solid #DCE3EF; vertical-align: top; }
+tbody tr:nth-child(odd) td { background: #F2F5FA; }
+table, .table-wrap { break-inside: auto; }
+thead + tbody tr:first-child { break-before: avoid; }
+
+pre {
+  background: #F5F7FB; border: 1px solid #DCE3EF; border-left: 3px solid #D4AF37;
+  padding: 10px 13px; margin: 10px 0 14px 0; border-radius: 4px;
+  font-family: 'JetBrains Mono', 'DejaVu Sans Mono', 'Liberation Mono', monospace;
+  font-size: 11.6px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: break-word;
+  break-inside: avoid; page-break-inside: avoid;
+}
+code {
+  font-family: 'JetBrains Mono', 'DejaVu Sans Mono', 'Liberation Mono', monospace;
+  font-size: 12.6px; background: #F5F7FB; padding: 1px 4px; border-radius: 3px;
+}
+pre code { background: transparent; padding: 0; font-size: 11.6px; }
+
+blockquote {
+  margin: 10px 0 12px 0; padding: 8px 14px; border-left: 3px solid #D4AF37;
+  background: #F5F7FB; color: #0E2145; font-style: italic;
+  break-inside: avoid;
+}
+hr { border: none; border-top: 1px solid #DCE3EF; margin: 16px 0; }
+
+/* equations */
+.katex-display { margin: 12px 0 14px 0; max-width: 100%; overflow: hidden auto; }
+.eq-block { break-inside: avoid; page-break-inside: avoid; }
+
+/* language part banners */
+.part-banner {
+  break-inside: avoid; break-after: avoid;
+  margin: 26px 0 14px 0; padding: 13px 18px;
+  background: #0E2145; color: #F0D98C; border-radius: 6px;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+}
+.part-banner .pb-title { font-size: 16.5px; font-weight: 700; letter-spacing: 1.2px; }
+.part-banner .pb-sub { font-size: 11.5px; color: #8FA3C4; margin-top: 3px; letter-spacing: .4px; }
+
+/* colophon */
+.ending {
+  width: 210mm; height: 297mm; box-sizing: border-box;
+  break-before: page; overflow: hidden; position: relative;
+  background: linear-gradient(200deg, #0E2145 0%, #0A1730 60%, #081226 100%);
+  color: #E9EEF8;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 58px;
+}
+.ending .colophon-line { max-width: 150mm; font-size: 13.5px; line-height: 1.7; color: #B9C6DE; }
+.ending .colophon-line b { color: #F0D98C; }
+.ending .end-rule { width: 64px; height: 26px; margin: 10px 0 8px 0;
+  background: linear-gradient(90deg, #D4AF37 0 64px, transparent 64px) top/100% 6px no-repeat; }
+.ending .end-title {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 26px; font-weight: 700; color: #F4F7FD; letter-spacing: 1px;
+}
+.ending .end-small {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 11.5px; color: #8FA3C4; letter-spacing: 2px; text-transform: uppercase;
+  margin-top: 26px; line-height: 2;
+}
+</style>
+</head>
+<body>
+
+<div class="front-page">
+  <div class="fp-kicker"><span>TRIVORTEX RESEARCH PROGRAM · TRX-04</span></div>
+  <div class="fp-title">Photon Fluid: Three Kerr Solitons (Spatial, 2-D)</div>
+  <div class="fp-subtitle-ru">Фотонная жидкость: три керровских солитона (пространственные, 2-D)</div>
+  <div class="fp-meta"><div><div class="k">Author</div><div class="v">Isaev Iskhak Khamzatovich<br><span style="color:#8FA3C4">ORCID 0009-0003-7299-0701</span></div></div><div><div class="k">DOI</div><div class="v">10.5281/zenodo.21825394</div></div><div><div class="k">Study</div><div class="v">TRX-04</div></div><div><div class="k">Date</div><div class="v">2026-10-06</div></div><div><div class="k">Code</div><div class="v"><code style="background:rgba(212,175,55,.12);color:#F0D98C;padding:1px 5px;border-radius:3px">code/trx04_photon_fluid.py</code></div></div><div><div class="k">Data</div><div class="v"><code style="background:rgba(212,175,55,.12);color:#F0D98C;padding:1px 5px;border-radius:3px">results/trx04_results.json</code></div></div></div>
+  <div class="fp-abstract">This monograph treats three laser beams propagating through a focusing Kerr medium as a photon fluid whose members — spatial solitons of the nonlinear Schrödinger equation — interact through phase-dependent two-body forces: in-phase beams attract with V = −Ue^(−r/w), anti-phase beams repel with V = +Ue^(−r/w). In the particle approximation the in-phase triplet forms a Lagrange central configuration: an equilateral beam triangle of side a = 3 rotating rigidly at ω = 0.223130160, fixed by the force balance ω² = 3Ue^(−a/w)/(maw) — the optical sibling of Newton&#x27;s Lagrange solution.</div>
+  <div class="fp-foot"><span>Monograph Edition · bilingual RU + EN</span><span><b>TRIVORTEX</b> · TRIVORTEX · v1.0.0 · 2026</span></div>
+</div>
+<div class="main-content"><div class="part-banner"><div class="pb-title">PART I · English Monograph</div><div class="pb-sub">Photon Fluid: Three Kerr Solitons (Spatial, 2-D)</div></div><p><em>TRIVORTEX Research Program · v1.0.0 · Monograph Edition</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Study</td>
+<td>TRX-04</td>
+</tr>
+<tr>
+<td>Program</td>
+<td>TRIVORTEX — The Three-Body Problem in the Vortex Model</td>
+</tr>
+<tr>
+<td>Author</td>
+<td>Isaev Iskhak Khamzatovich (ORCID 0009-0003-7299-0701)</td>
+</tr>
+<tr>
+<td>DOI</td>
+<td>10.5281/zenodo.21825394</td>
+</tr>
+<tr>
+<td>Date</td>
+<td>2026-10-06</td>
+</tr>
+<tr>
+<td>Code</td>
+<td>`code/trx04_photon_fluid.py`</td>
+</tr>
+<tr>
+<td>Data</td>
+<td>`results/trx04_results.json`</td>
+</tr>
+</tbody>
+</table>
+<h2>Abstract</h2>
+<p>This monograph treats three laser beams propagating through a focusing Kerr medium as a photon fluid whose members — spatial solitons of the nonlinear Schrödinger equation — interact through phase-dependent two-body forces: in-phase beams attract with V = −Ue^(−r/w), anti-phase beams repel with V = +Ue^(−r/w). In the particle approximation the in-phase triplet forms a Lagrange central configuration: an equilateral beam triangle of side a = 3 rotating rigidly at ω = 0.223130160, fixed by the force balance ω<sup>2</sup> = 3Ue^(−a/w)/(maw) — the optical sibling of Newton's Lagrange solution. The numerical experiment verifies the choreography to machine precision: the triangle stays equilateral to 1.8e-08 over three full rotations (T = 84.4778), the measured rotation rate matches the analytic value to 1.1×10<sup>-11</sup>, energy and angular momentum are conserved to 4.7e-16 and 2.2e-15, the anti-phase trio expands to 23.476 without collapse, and an in-phase binary with E_rel = −0.027 stays bound (separation within [0.635, 3.000], energy drift 3.0e-12) over t = 80. All nine acceptance checks PASS.</p>
+<h2>Contents</h2>
+<ol>
+<li>Abstract</li>
+<li>
+<ol>
+<li>Introduction and historical context</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>Physical formulation</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>Mathematical model</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li>Connection to the TRIVORTEX framework</li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li>Numerical method</li>
+</ol>
+</li>
+<li>
+<ol start="6">
+<li>Results and analysis</li>
+</ol>
+</li>
+<li>
+<ol start="7">
+<li>Discussion</li>
+</ol>
+</li>
+<li>
+<ol start="8">
+<li>Conclusions</li>
+</ol>
+</li>
+<li>
+<ol start="9">
+<li>References
+Appendix A. Parameter table
+Appendix B. Reproduction</li>
+</ol>
+</li>
+</ol>
+<h2>1. Introduction and historical context</h2>
+<p>Self-trapping of light is as old as nonlinear optics. Askar'yan proposed in 1962 that an intense beam could raise the refractive index enough to guide itself, and Chiao, Garmire and Townes demonstrated self-trapping of optical beams in 1964 — the experiment that made "a beam of light behaving as a particle of light" concrete. The pure Kerr nonlinearity, however, makes the two-dimensional self-trapping problem critical (the Townes collapse), so stable spatial solitons in real media rely on saturation — photorefractive crystals, nematic liquid crystals, atomic vapors. The concept that survives in every such medium is the same: a beam that carries itself like a particle.</p>
+<p>The next step was the realization that two such light particles exert forces on each other. Reynaud and Barthelemy (1990) demonstrated optically controlled interaction between two fundamental soliton beams, and Aitchison and colleagues (1991) observed spatial soliton interactions directly in a nonlinear glass waveguide. The decisive control knob is the relative phase: coherent in-phase beams attract, anti-phase beams repel, and quadrature beams pass through — the phase acts as a switchable gravitational charge. Stegeman and Segev (1999) consolidated this physics in their review of optical spatial solitons and their interactions, the founding literature of beam-by-beam collision experiments.</p>
+<p>The collective picture — many beams as a gas or fluid of mutually attracting particles — was pushed by Snyder, Mitchell and Kivshar (1995), who unified the self-trapping of light and matter waves, and by Bialynicki-Birula's photon-wave description of light as a many-body wave system. Today the umbrella term is quantum fluids of light, reviewed by Carusotto and Ciuti (2013); nematicons in nematic liquid crystals (Assanto and Peccianti, 2012) remain the cleanest classical realization of long-range, phase-tunable beam forces. Within this literature the three-beam triangle is the simplest genuinely collective object: every member feels both others, and no pairwise subproblem predicts the outcome.</p>
+<p>That is precisely the situation Lagrange analyzed in 1772, when he found that three bodies placed at the vertices of an equilateral triangle and given the right velocities rotate rigidly forever — the only non-collinear central configuration of the Newtonian three-body problem and the content of Theorem 3.1 in the TRIVORTEX monograph. This study transplants that construction into the photon fluid: the exponential Kerr force replaces the Newtonian 1/r force, the phase replaces the mass sign, and the equilateral beam triangle replaces the celestial one. The siblings are already in place — TRX-03 in the temporal (fiber-laser) domain, TRX-05 with field zeros instead of maxima, TRX-08 with ions in a trap — making TRX-04 the spatial-optics anchor of the choreography family.</p>
+<h2>2. Physical formulation</h2>
+<p>In a medium with a focusing Kerr nonlinearity the refractive index grows with intensity, so a bright beam digs its own waveguide and propagates without diffracting — a spatial soliton of the equation iA_z + ½∇<sup>2</sup>A + |A|<sup>2</sup>A = 0. Two such beams whose tails overlap exert forces on one another through the shared nonlinear index: coherent, in-phase beams interfere constructively in the overlap region and attract, while anti-phase beams interfere destructively and repel. In the particle approximation — the working horse of this study — each beam is replaced by a point body of mass m moving in the transverse plane, and the pair interaction is the exponential law V_pm(r) = −Ue^(−r/w) (in phase) and V_ap(r) = +Ue^(−r/w) (anti-phase), with force magnitude (U/w)·e^(−r/w). The length w is the interaction scale (beam-waist unit) and U the potential depth.</p>
+<p>The equilateral triangle is special for any central force between equal members. At the vertices of an equilateral triangle of side a each beam feels two edge forces of magnitude F = (U/w)e^(−a/w) directed along the sides; their resultant is √3·F and points exactly at the centroid, at distance r_c = a/√3. The balance √3·F = mω<sup>2</sup>r_c then fixes the rigid rotation rate ω<sup>2</sup> = 3Ue^(−a/w)/(maw) — the same central-configuration balance that produces the Lagrange equilateral solution in the Newtonian problem, where ω<sup>2</sup> = 3Gm/a<sup>3</sup>. Sign flips matter as much as magnitudes: switching one phase to anti-phase converts one edge force from attraction to repulsion, the resultant no longer points at the centroid, and the rigid rotation is destroyed — the anti-phase trio simply expands. A pair of in-phase beams with negative relative energy forms a bound binary whose orbit precesses, because the exponential force is not inverse-square.</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>U, w, m</td>
+<td>1, 1, 1</td>
+<td>potential depth, interaction scale, soliton mass (natural units)</td>
+</tr>
+<tr>
+<td>a</td>
+<td>3</td>
+<td>triangle side of the rotation run; operating point</td>
+</tr>
+<tr>
+<td>r_c</td>
+<td>a/√3 = 1.732051</td>
+<td>orbit radius of each beam about the centroid</td>
+</tr>
+<tr>
+<td>ω</td>
+<td>e^(−3/2) = 0.223130160</td>
+<td>analytic rotation rate (ω<sup>2</sup> = e^(−3) = 0.049787)</td>
+</tr>
+<tr>
+<td>T_rotation</td>
+<td>84.4778 = 3·2π/ω</td>
+<td>rotation run: three full turns</td>
+</tr>
+<tr>
+<td>anti-phase run</td>
+<td>same geometry, zero velocities, T = 40</td>
+<td>repulsive expansion test</td>
+</tr>
+<tr>
+<td>binary</td>
+<td>r<sub>0</sub> = 3, v_b = ±0.15, E_rel = −0.027, T = 80</td>
+<td>in-phase bound-pair run</td>
+</tr>
+<tr>
+<td>integrator</td>
+<td>DOP853, rtol = atol = 1e-12, max_step = 0.1</td>
+<td>all runs, dense output</td>
+</tr>
+</tbody>
+</table>
+<h2>3. Mathematical model</h2>
+<p>From field to particles. The focusing NLS (E1) admits the fundamental spatial soliton, and for well-separated beams the overlap of their exponential tails reduces the field problem to pairwise forces. Keeping the leading tail-overlap term gives the potentials (E2): V_pm(r) = −Ue^(−r/w) for coherent in-phase beams and V_ap(r) = +Ue^(−r/w) for anti-phase beams, with radial force magnitude (U/w)e^(−r/w). The equations of motion (E3) are then Newtonian mechanics on the transverse plane with N = 3 bodies and a soft, everywhere-regular interaction; the sign s = ±1 per pair encodes the optical phase. The model conserves the total energy E and the angular momentum L_z exactly, Eq. (E5), which provides the two invariants monitored by the acceptance checks.</p>
+<p>The Lagrange balance. For the equilateral triangle of side a, each beam feels two edge forces of magnitude F = (U/w)e^(−a/w) whose directions meet at 60°; their resultant is √3·F along the median, aimed at the centroid at distance r_c = a/√3. Uniform rotation with angular rate ω requires √3·F = mω<sup>2</sup>r_c, which solves to the rotation law (E4), ω<sup>2</sup> = 3Ue^(−a/w)/(maw). At the preset a = 3, w = U = m = 1 this gives ω<sup>2</sup> = e^(−3) = 0.049787 and ω = e^(−3/2) = 0.223130160 — numerically the same constant as the binary escape threshold of (E6), a coincidence specific to the preset a = 3. The Newtonian counterpart ω<sup>2</sup> = 3Gm/a<sup>3</sup> differs only in the force law: the geometry of the central configuration is universal, its rotation rate is not.</p>
+<p>The binary energetics. Two equal in-phase beams launched at separation r<sub>0</sub> with transverse velocities ±v_b carry relative energy (E6): E_rel = m·v_b<sup>2</sup> − Ue^(−r<sub>0</sub>/w) with the reduced-mass factors absorbed into the equal-mass normalization. At the preset r<sub>0</sub> = 3, v_b = 0.15: E_rel = 0.0225 − 0.049787 = −0.027 &lt; 0, bound. The escape threshold is v_b<em> = √(Ue^(−r<sub>0</sub>/w)) = e^(−3/2) = 0.223130. Because the exponential force is not inverse-square, the bound orbit is not a closed Kepler ellipse: the separation oscillates between fixed turning points while the orbit axis precesses, and the angular-momentum barrier even traps launches slightly above v_b</em> for finite observation times — the boundary structure the velocity sweep of fig03 exposes.</p>
+<p><strong>Notation</strong></p>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td>slowly varying beam envelope; A_z, ∇<sup>2</sup>⊥ are the z-derivative and transverse Laplacian</td>
+</tr>
+<tr>
+<td>U, w, m</td>
+<td>potential depth, interaction scale (beam-waist unit) and soliton mass; all 1 at the preset</td>
+</tr>
+<tr>
+<td>s</td>
+<td>pair sign: −1 in phase (attraction), +1 anti-phase (repulsion)</td>
+</tr>
+<tr>
+<td>r, r_kl</td>
+<td>pair separation between beams k and l</td>
+</tr>
+<tr>
+<td>a, r_c</td>
+<td>triangle side and centroid orbit radius a/√3</td>
+</tr>
+<tr>
+<td>ω</td>
+<td>rotation rate of the rigid triangle; ω<sup>2</sup> = 3Ue^(−a/w)/(maw)</td>
+</tr>
+<tr>
+<td>v_b</td>
+<td>binary transverse launch velocity (preset 0.15)</td>
+</tr>
+<tr>
+<td>E_rel</td>
+<td>relative energy of the binary pair, m·v_b<sup>2</sup> − Ue^(−r<sub>0</sub>/w)</td>
+</tr>
+<tr>
+<td>E, L_z</td>
+<td>total energy and angular momentum, the conserved invariants (E5)</td>
+</tr>
+<tr>
+<td>T</td>
+<td>duration of a run (rotation 84.4778; anti-phase 40; binary 80)</td>
+</tr>
+<tr>
+<td>V_pm, V_ap</td>
+<td>in-phase and anti-phase pair potentials (E2)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>(E1)</strong> Focusing nonlinear Schrödinger equation — the underlying field equation (documented context).</p>
+<p>$$i\,\frac{\partial A}{\partial z} + \tfrac{1}{2}\nabla_\perp^2 A + |A|^2 A = 0$$</p>
+<p><strong>(E2)</strong> Pair potentials of two spatial solitons: in phase (attraction) and anti-phase (repulsion).</p>
+<p>$$V_{\rm pm}(r) = -U\,e^{-r/w}, \qquad V_{\rm ap}(r) = +U\,e^{-r/w}$$</p>
+<p><strong>(E3)</strong> Planar equations of motion of the N photon-fluid bodies with all-pairs forces.</p>
+<p>$$m\,\ddot{\mathbf{r}}_k = \sum_{l\neq k} s\,\frac{U}{w}\,e^{-r_{kl}/w}\,\frac{\mathbf{r}_k-\mathbf{r}_l}{r_{kl}}, \quad s=-1\ \text{(in phase)},\ s=+1\ \text{(anti-phase)}$$</p>
+<p><strong>(E4)</strong> Rotation rate of the rigidly rotating equilateral beam triangle (Lagrange central configuration).</p>
+<p>$$\omega^2 = \frac{3U\,e^{-a/w}}{m\,a\,w} \;\left(= e^{-3} = 0.049787\ \text{at the preset}\right)$$</p>
+<p><strong>(E5)</strong> Conserved invariants of the planar model: total energy and angular momentum.</p>
+<p>$$E = \sum_k \tfrac{1}{2}m\,|\dot{\mathbf{r}}_k|^2 + \sum_{k<l} s\,U\,e^{-r_{kl}/w}, \qquad L_z = \sum_k m\,(x_k\dot{y}_k - y_k\dot{x}_k)$$</p>
+<p><strong>(E6)</strong> Bound-state condition of the in-phase binary at launch separation r<sub>0</sub> (preset: 0.0225 − 0.049787 = −0.027).</p>
+<p>$$E_{\rm rel} = m\,v_b^2 - U\,e^{-r_0/w} < 0 \;\Leftrightarrow\; v_b < \sqrt{U\,e^{-r_0/w}} = e^{-3/2} \approx 0.223130$$</p>
+<h2>4. Connection to the TRIVORTEX framework</h2>
+<p>Within the TRIVORTEX program this study is the spatial-optics realization of Theorem 3.1. The three Kerr solitons play the three gravitating bodies; the rotating beam triangle is the Lagrange equilateral solution; and the measured rotation rate checks the central-configuration balance exactly as the Newtonian ω<sup>2</sup> = 3Gm/a<sup>3</sup> does, with the exponential force ω<sup>2</sup> = 3Ue^(−a/w)/(maw) = 0.049787 at the preset. The relative optical phase plays the role of the circulation sign in the vortex model: in-phase is the equal-circulation, mutually attracting case that supports the choreography, anti-phase is the repulsive sign that destroys it — the same sign hierarchy that separates bound from unbound vortex pairs. The precessing binary adds the two-body layer of the same mapping: eccentric orbits, fixed turning points, conserved E and L_z, but a non-Kepler force law. TRX-03 repeats this structure on a line with temporal solitons, TRX-05 replaces field maxima by field zeros and recovers Kirchhoff's vortex equations, and TRX-08 trades photons for ions; together they demonstrate that the choreography sequence — pair law, central configuration, invariants — is portable across optics, fluids and celestial mechanics.</p>
+<table>
+<thead>
+<tr>
+<th>Quantity in this study</th>
+<th>TRIVORTEX analog</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Three Kerr solitons</td>
+<td>three gravitating bodies</td>
+<td>same central-configuration problem</td>
+</tr>
+<tr>
+<td>Exponential attraction e^(−r/w)</td>
+<td>Newtonian 1/r attraction</td>
+<td>force law changes, geometry does not</td>
+</tr>
+<tr>
+<td>Rotating beam triangle</td>
+<td>Lagrange equilateral solution</td>
+<td>identical balance structure, Theorem 3.1</td>
+</tr>
+<tr>
+<td>Relative phase (in/anti)</td>
+<td>circulation sign in the vortex model</td>
+<td>attraction ↔ repulsion switch</td>
+</tr>
+<tr>
+<td>Rotation law ω<sup>2</sup> = 3Ue^(−a/w)/(maw)</td>
+<td>ω<sup>2</sup> = 3Gm/a<sup>3</sup> for point masses</td>
+<td>third-law-type verification target</td>
+</tr>
+<tr>
+<td>In-phase binary with precession</td>
+<td>eccentric two-body orbit</td>
+<td>non-Kepler force, same invariant bookkeeping</td>
+</tr>
+</tbody>
+</table>
+<h2>5. Numerical method</h2>
+<p>The model is a planar N-body system with the interleaved state layout [x<sub>1</sub>, y<sub>1</sub>, vx<sub>1</sub>, vy<sub>1</sub>, …]. At the preset U = w = m = 1 the triangle side is a = 3, the initial positions sit on the circle r_c = a/√3 = 1.732051, and the initial velocities are the rigid-rotation field ω·r_c with the analytic rate ω = √(3Ue^(−a/w)/(maw)) = 0.22313016014842985. All runs integrate the equations of motion (E3) with the explicit Dormand–Prince 8(5,3) scheme (scipy DOP853, rtol = atol = 1e-12, max_step = 0.1, dense output for uniform sampling). The rotation run lasts T = 3·2π/ω = 84.4778 — three full turns — sampled at 2400 points.</p>
+<p>Diagnostics are exact and independent of the integrator's internal steps. The equilateral rigidity is the maximum over time of |d(t) − a|/a for all three pairwise distances. The rotation rate is measured by unwrapping the polar angle of beam 1 about the instantaneous centroid and fitting a straight line in time — the slope is the recorded rotation rate. The total energy (E5) and the angular momentum L_z are evaluated on ~300 uniformly spaced samples per run. The anti-phase run starts from the same triangle at rest and integrates to T = 40; the binary run launches two beams at (±1.5, 0) with transverse velocities ∓0.15 and integrates to T = 80, both at the same tolerances.</p>
+<p>Every acceptance check is registered in the JSON protocol with its value, target, tolerance, unit and pass flag; the recorded full run passes 9/9. The --figures mode adds the scheme SVG and four 300-DPI PNG panels together with two parameter sweeps stored in the protocol: the side sweep (seven sides a = 2.0…8.0, each with a full re-integration over one rotation period and a fresh slope measurement) and the binary velocity sweep (sixteen launch velocities v_b = 0.06…0.34 over T = 40). No network access and no stochastic seeds are used; the run is bit-reproducible on the reference machine.</p>
+<h2>6. Results and analysis</h2>
+<h3>fig01 photon fluid landscape</h3>
+<p><img alt="Model landscape: photon-fluid pair interaction and the initial beam triangle of the rotation run." src="../figures/fig01_photon_fluid_landscape.png" /></p>
+<p><em>Model landscape: photon-fluid pair interaction and the initial beam triangle of the rotation run.</em>
+Panel (a) shows the pair interaction landscape: in-phase attraction V = −U·e^(−r/w) (gold) against anti-phase repulsion V = +U·e^(−r/w) (red dashed) — the phase acts as an attractive/repulsive charge; the operating point a = 3 sits at force (U/w)·e^(−a/w) = 0.0498. Panel (b) shows the initial condition of the rotation run: the equilateral beam triangle with side a = 3, orbit radius r_c = a/√3 = 1.732051, and pair forces supplying the centripetal balance mω<sup>2</sup>r_c at the preset rate ω = 0.223130.</p>
+<h3>fig02 triangle rotation</h3>
+<p><img alt="Headline result: rigid rotation of the photon-fluid triangle over three full turns and its equilateral rigidity." src="../figures/fig02_triangle_rotation.png" /></p>
+<p><em>Headline result: rigid rotation of the photon-fluid triangle over three full turns and its equilateral rigidity.</em>
+Panel (a) shows the worldlines of the three beams over three full turns (T = 84.4778): circular orbits about the common centroid, the triangle carried rigidly like a solid body. Panel (b) plots the relative side deviations |d(t) − a|/a on a log scale: they never exceed 1.8e-08, a factor of about 56 inside the 1e-6 acceptance tolerance, while the measured rotation rate 0.223130160 matches the analytic ω = 0.223130160 — the optical Lagrange configuration confirmed dynamically.</p>
+<h3>fig03 parameter sweeps</h3>
+<p><img alt="Parameter sweeps: rotation rate versus triangle side and the binary bound/unbound map versus launch velocity." src="../figures/fig03_parameter_sweeps.png" /></p>
+<p><em>Parameter sweeps: rotation rate versus triangle side and the binary bound/unbound map versus launch velocity.</em>
+Panel (a) sweeps the triangle side: the analytic Kerr law ω(a) = √(3Ue^(−a/w)/(maw)) runs from 0.450558 at a = 2 through the preset 0.223130 at a = 3 down to 0.011216 at a = 8, numeric DOP853 re-runs sit on the curve at all seven grid sides, and the Newtonian 1/r reference (0.333333 at the preset) decays markedly slower — 0.076547 at a = 8 against the Kerr 0.011216. Panel (b) maps the binary outcome versus launch velocity: max separation stays at 3.0 for v_b ≤ 0.26 and grows to 7.7515, 13.2491, 16.4935 and 19.1521 for v_b = 0.28–0.34 over T = 40, bracketing the analytic escape threshold v_b* = e^(−3/2) = 0.223130.</p>
+<h3>fig04 binary dynamics invariants</h3>
+<p><img alt="Dynamics and invariants: precessing bound orbit of the in-phase binary and the energy-drift bookkeeping of all three runs." src="../figures/fig04_binary_dynamics_invariants.png" /></p>
+<p><em>Dynamics and invariants: precessing bound orbit of the in-phase binary and the energy-drift bookkeeping of all three runs.</em>
+Panel (a) shows the precessing bound orbit of the in-phase binary (launch separation 3, transverse velocity 0.15, E_rel = −0.027 &lt; 0, T = 80): the separation breathes inside [0.635, 3.000] while the orbit axis slowly rotates — the signature of a non-inverse-square force. Panel (b) tracks the energy drift |E(t) − E(0)| of the three runs on a log scale: 4.7e-16 (rotation), 3.6e-16 (anti-phase trio) and 3.0e-12 (binary), all far below the 1e-10 acceptance tolerance.</p>
+<p><strong>Rigid rotation.</strong> Over three full turns (T = 84.4778) the triangle stays equilateral to 1.8e-08 in relative side deviation — a factor of about 56 inside the 1e-6 acceptance tolerance (fig02b). The measured rotation rate 0.223130160 reproduces the analytic ω = 0.223130160 to 1.1×10<sup>-11</sup> in absolute terms, versus a tolerance of 1e-8 — the central-configuration balance (E4) is not merely satisfied but satisfied at round-off level. The invariants confirm the cleanliness of the run: energy drift 4.7e-16 and angular-momentum drift 2.2e-15, both orders of magnitude below the 1e-10 gate.</p>
+<p><strong>Side sweep.</strong> The rotation law is verified as a law, not a point: re-integrating one full period at each of the seven grid sides a = 2.0, 2.5, 3.0, 4.0, 5.0, 6.5, 8.0 reproduces the analytic curve everywhere — ω from 0.450558 at a = 2 through 0.313850 (a = 2.5), 0.223130 (a = 3), 0.117204 (a = 4), 0.063583 (a = 5), 0.026342 (a = 6.5) down to 0.011216 at a = 8. The Newtonian 1/r reference rotates systematically faster at large separations: 0.333333 against the Kerr 0.223130 at the preset, and 0.076547 against 0.011216 at a = 8 — the exponential tail dies out, and the choreography slows down correspondingly (fig03a).</p>
+<p><strong>Anti-phase expansion.</strong> With all phases flipped, the same triangle at rest expands monotonically: the minimum pairwise distance never drops below 3.0000 (the initial value; the 0.95a = 2.85 floor is never approached), and the final separation reaches 23.476 at T = 40 — a clean repulsive scattering event with energy conserved to 3.6e-16. This is the sign-flip control experiment: identical geometry, identical integrator, opposite outcome — the phase, not the geometry, decides the fate of the triplet.</p>
+<p><strong>Binary and bound/unbound map.</strong> The in-phase binary with v_b = 0.15 breathes inside [0.635, 3.000] over the whole t = 80 window (fig04a) with energy drift 3.0e-12 — the largest of the three runs yet still a factor of about 33 below the 1e-10 tolerance. The velocity sweep turns the single trajectory into a map (fig03b): max separation stays at the initial 3.0 for all v_b ≤ 0.26 and jumps to 7.7515, 13.2491, 16.4935 and 19.1521 for v_b = 0.28–0.34 over T = 40. The analytic threshold v_b<em> = e^(−3/2) = 0.223130 sits inside the trapped band: the angular-momentum barrier keeps near-threshold launches bound for the whole observation window, so the numerically observed escape edge lies between 0.26 and 0.28 rather than exactly at v_b</em>.</p>
+<h3>Verification summary</h3>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Recorded value</th>
+<th>Target</th>
+<th>Tolerance</th>
+<th>Pass</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>`triangle_equilateral_deviation`</td>
+<td>1.79409e-08</td>
+<td>0</td>
+<td>1e-06</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`measured_rotation_rate`</td>
+<td>0.22313</td>
+<td>0.22313</td>
+<td>1e-08</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`energy_conservation_rotation`</td>
+<td>4.71845e-16</td>
+<td>0</td>
+<td>1e-10</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`angular_momentum_conservation`</td>
+<td>2.22045e-15</td>
+<td>0</td>
+<td>1e-10</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`antiphase_no_collapse`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`antiphase_expands`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`energy_conservation_repulsion`</td>
+<td>3.60822e-16</td>
+<td>0</td>
+<td>1e-10</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`binary_stays_bound`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`binary_energy_conservation`</td>
+<td>3.02496e-12</td>
+<td>0</td>
+<td>1e-10</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p><em>(status: </em><em>PASS</em><em>, mode: full)</em></p>
+<h2>7. Discussion</h2>
+<p>The model is deliberately minimal: point-like beams, an isotropic exponential pair force, no retardation, no absorption, and the optical phase entering only as the sign s = ±1 of each pair. Within these assumptions every statement in this study is an exact property of the governing equations rather than a simulation of a particular experiment. The particle approximation is the standard reduction for well-separated solitons; its breakdown at near-field overlap (where beams deform, fuse or shed radiation) is outside the conservative scope here, and the natural extensions — full NLS integration of the same triangle, saturating media, unequal beams, three-dimensional geometries — would each preserve the verification style established above.</p>
+<p>The parameter regime is chosen where the physics is clean. At the preset a = 3 the edge force is (U/w)e^(−3) = 0.049787 — weak, so the beams are well separated in units of the interaction scale and the particle picture is self-consistent — and the rotation is correspondingly slow, ω = 0.223130. The binary preset v_b = 0.15 sits at 67 % of the escape threshold 0.223130, comfortably inside the bound region but far enough from zero to give a visibly precessing orbit. The velocity sweep shows the interesting boundary structure: the escape edge observed numerically (between 0.26 and 0.28) lies above the two-body threshold 0.223130 because the centrifugal barrier temporarily traps marginally supercritical launches — a genuinely three-dimensional-in-time effect that a static energy argument alone would miss.</p>
+<p>Within the program, TRX-04 plays the role of the spatial optics bridge. Upstream, TRX-03 verifies the same molecular physics in the temporal domain of a fiber laser, where the force law carries an additional phase-cosine modulation; downstream, TRX-05 moves from field maxima to field zeros — optical vortices — and recovers Kirchhoff's vortex equations, while TRX-08 replaces photons by laser-cooled ions with a harmonic trap and Coulomb tail. Together with the celestial block (TRX-01, TRX-11) these studies show that the equilateral central configuration is a form, not an accident: it re-emerges in every medium whose two-body law is central, conservative and pair-additive, with only the rotation law changing.</p>
+<h2>8. Conclusions</h2>
+<ol>
+<li>The equilateral beam triangle is a genuine optical central configuration: it rotates rigidly over three full turns (T = 84.4778) with the side staying equilateral to 1.8e-08, versus the 1e-6 acceptance gate.</li>
+<li>The measured rotation rate 0.223130160 reproduces the analytic Lagrange law ω<sup>2</sup> = 3Ue^(−a/w)/(maw) (ω = e^(−3/2) = 0.223130160 at the preset) to 1.1×10<sup>-11</sup> — the balance is confirmed at round-off level.</li>
+<li>The rotation law is verified as a law across the side sweep a = 2.0…8.0: numeric re-runs sit on the analytic curve at all seven sides (ω from 0.450558 down to 0.011216), while the Newtonian 1/r reference decays markedly slower (0.076547 at a = 8).</li>
+<li>Invariants are conserved at machine level in all runs: energy drift 4.7e-16 (rotation), 3.6e-16 (anti-phase trio), 3.0e-12 (binary), angular-momentum drift 2.2e-15 — all below the 1e-10 tolerance.</li>
+<li>The phase sign controls the outcome: the anti-phase trio never collapses (min pairwise distance 3.0000 ≥ 0.95a) and expands to 23.476, while the in-phase binary with E_rel = −0.027 stays bound with its separation inside [0.635, 3.000] over t = 80.</li>
+<li>The bound/unbound map is established: max separation stays 3.0 for v_b ≤ 0.26 and escape follows for v_b = 0.28–0.34 (7.7515 → 19.1521 over T = 40); the observed escape edge lies above the two-body threshold v_b* = e^(−3/2) = 0.223130 because the centrifugal barrier temporarily traps near-threshold launches.</li>
+</ol>
+<h2>9. References</h2>
+<ol>
+<li>Chiao, R. Y., Garmire, E., Townes, C. H. (1964). <em>Self-trapping of optical beams.</em> Phys. Rev. Lett. 13, 479–482.</li>
+<li>Snyder, A. W., Mitchell, D. J., Kivshar, Y. S. (1995). <em>Unification of self-trapping of light and matter waves.</em> Phys. Rev. E 51, 3061–3066.</li>
+<li>Stegeman, G. I., Segev, M. (1999). <em>Optical spatial solitons and their interactions.</em> Science 286, 1518–1523.</li>
+<li>Reynaud, F., Barthelemy, A. (1990). <em>Optically controlled interaction between two fundamental soliton beams.</em> Europhys. Lett. 12, 401–405.</li>
+<li>Aitchison, J. S., Weiner, A. M., Silberberg, Y., Oliver, M. K., Jackel, J. L., Leaird, D. E., Vogel, E. M., Smith, P. W. E. (1991). <em>Experimental observation of spatial soliton interactions.</em> Opt. Lett. 16, 15–17.</li>
+<li>Assanto, G., Peccianti, M. (2012). <em>Nematicons: spatial optical solitons in nematic liquid crystals.</em> Phys. Rep. 516, 147–208.</li>
+<li>Carusotto, I., Ciuti, C. (2013). <em>Quantum fluids of light.</em> Rev. Mod. Phys. 85, 291–315.</li>
+<li>Bialynicki-Birula, I. (2006). <em>Photon waves.</em> Acta Phys. Pol. A 109, 20–32.</li>
+<li>Lagrange, J.-L. (1772). <em>Essai sur le problème des trois corps.</em> In: Œuvres de Lagrange, Vol. 6. Gauthier-Villars, Paris (1873).</li>
+</ol>
+<h3>BibTeX</h3>
+<p>```bibtex
+@article{chiao1964,
+  author  = {Chiao, R. Y. and Garmire, E. and Townes, C. H.},
+  title   = {Self-trapping of optical beams},
+  journal = {Physical Review Letters},
+  year    = {1964}, volume = {13}, pages = {479--482}}
+
+@article{snyder1995,
+  author  = {Snyder, A. W. and Mitchell, D. J. and Kivshar, Y. S.},
+  title   = {Unification of self-trapping of light and matter waves},
+  journal = {Physical Review E},
+  year    = {1995}, volume = {51}, pages = {3061--3066}}
+
+@article{aitchison1991,
+  author  = {Aitchison, J. S. and Weiner, A. M. and Silberberg, Y. and Oliver, M. K. and Jackel, J. L. and Leaird, D. E. and Vogel, E. M. and Smith, P. W. E.},
+  title   = {Experimental observation of spatial soliton interactions},
+  journal = {Optics Letters},
+  year    = {1991}, volume = {16}, pages = {15--17}}
+
+@article{carusotto2013,
+  author  = {Carusotto, Iacopo and Ciuti, Cristiano},
+  title   = {Quantum fluids of light},
+  journal = {Reviews of Modern Physics},
+  year    = {2013}, volume = {85}, pages = {291--315}}
+
+@misc{lagrange1772,
+  author  = {Lagrange, Joseph-Louis},
+  title   = {Essai sur le probl{\`e}me des trois corps},
+  year    = {1772},
+  note    = {In: Œuvres de Lagrange, Vol. 6, Gauthier-Villars, Paris, 1873}}
+```</p>
+<h2>Appendix A. Parameter table</h2>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Value</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>U, w, m</td>
+<td>1, 1, 1</td>
+<td>natural units: energy, length, mass</td>
+</tr>
+<tr>
+<td>a</td>
+<td>3</td>
+<td>triangle side; operating point of the rotation run</td>
+</tr>
+<tr>
+<td>r_c</td>
+<td>a/√3 = 1.732051</td>
+<td>beam orbit radius about the centroid</td>
+</tr>
+<tr>
+<td>(U/w)e^(−a/w)</td>
+<td>0.049787</td>
+<td>edge force at the operating point (= ω<sup>2</sup>)</td>
+</tr>
+<tr>
+<td>ω</td>
+<td>e^(−3/2) = 0.22313016014842985</td>
+<td>analytic rotation rate at the preset</td>
+</tr>
+<tr>
+<td>T_rotation</td>
+<td>84.4778</td>
+<td>rotation run: three full turns, 2400 samples</td>
+</tr>
+<tr>
+<td>anti-phase run</td>
+<td>same triangle at rest, T = 40</td>
+<td>repulsive expansion control</td>
+</tr>
+<tr>
+<td>binary preset</td>
+<td>r<sub>0</sub> = 3, v_b = ±0.15, E_rel = −0.027, T = 80</td>
+<td>in-phase bound-pair run</td>
+</tr>
+<tr>
+<td>v_b*</td>
+<td>e^(−3/2) = 0.223130</td>
+<td>analytic escape threshold of the binary</td>
+</tr>
+<tr>
+<td>velocity sweep</td>
+<td>16 launches, v_b = 0.06…0.34, T = 40</td>
+<td>bound/unbound map of fig03b</td>
+</tr>
+<tr>
+<td>integrator</td>
+<td>DOP853, rtol = atol = 1e-12, max_step = 0.1</td>
+<td>all runs, dense output</td>
+</tr>
+</tbody>
+</table>
+<h2>Appendix B. Reproduction</h2>
+<p>```bash
+python3 research/TRX-04-photon-fluid/code/trx04_photon_fluid.py --smoke     # < 20 s
+python3 research/TRX-04-photon-fluid/code/trx04_photon_fluid.py              # full, 9.4 s (9.415 s recorded with --figures)
+python3 research/TRX-04-photon-fluid/code/trx04_photon_fluid.py --figures   # + 300-DPI figures
+```</p>
+<p>Full runtime on the reference machine: 9.4 s (9.415 s recorded with --figures); smoke mode completes in under 20 seconds and is exercised by the repository CI.</p>
+<h2>Appendix C. Environment</h2>
+<p>Python ≥ 3.11, numpy ≥ 2.0, scipy ≥ 1.14, matplotlib ≥ 3.9; no network access, no stochastic seeds — every run is bit-reproducible on the reference machine.</p><div class="part-banner"><div class="pb-title">ЧАСТЬ II · Русская монография</div><div class="pb-sub">Фотонная жидкость: три керровских солитона (пространственные, 2-D)</div></div><div lang="ru"><p><em>Исследовательская программа TRIVORTEX · v1.0.0 · Издание монографий</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Исследование / Study</td>
+<td>TRX-04</td>
+</tr>
+<tr>
+<td>Программа</td>
+<td>TRIVORTEX — задача трёх тел в вихревой модели</td>
+</tr>
+<tr>
+<td>Автор</td>
+<td>Исаев Исхак Хамзатович (ORCID 0009-0003-7299-0701)</td>
+</tr>
+<tr>
+<td>DOI</td>
+<td>10.5281/zenodo.21825394</td>
+</tr>
+<tr>
+<td>Дата</td>
+<td>2026-10-06</td>
+</tr>
+<tr>
+<td>Код</td>
+<td>`code/trx04_photon_fluid.py`</td>
+</tr>
+<tr>
+<td>Данные</td>
+<td>`results/trx04_results.json`</td>
+</tr>
+</tbody>
+</table>
+<h2>Аннотация</h2>
+<p>Монография рассматривает три лазерных пучка, распространяющихся в фокусирующей керровской среде, как фотонную жидкость, участники которой — пространственные солитоны нелинейного уравнения Шрёдингера — взаимодействуют через фазозависимые двухтельные силы: синфазные пучки притягиваются с V = −Ue^(−r/w), противофазные отталкиваются с V = +Ue^(−r/w). В частичном приближении синфазный триплет образует лагранжеву центральную конфигурацию: равносторонний треугольник пучков со стороной a = 3 жёстко вращается с ω = 0.223130160, что фиксируется силовым балансом ω<sup>2</sup> = 3Ue^(−a/w)/(maw) — оптический брат лагранжева решения Ньютона. Численный эксперимент верифицирует хореографию с машинной точностью: треугольник остаётся равносторонним до 1.8e-08 на протяжении трёх полных оборотов (T = 84.4778), измеренная скорость вращения совпадает с аналитической до 1.1×10<sup>-11</sup>, энергия и момент импульса сохраняются до 4.7e-16 и 2.2e-15, противофазное трио разлетается до 23.476 без коллапса, а синфазная бинарная пара с E_rel = −0.027 остаётся связанной (расстояние в [0.635, 3.000], дрейф энергии 3.0e-12) на протяжении t = 80. Развёртка по стороне треугольника подтверждает закон вращения именно как закон: численные повторные прогоны DOP853 ложатся на аналитическую кривую во всех семи точках сетки a = 2.0…8.0. Все девять контрольных проверок PASS.</p>
+<h2>Содержание</h2>
+<p><strong>Краткие сведения</strong></p>
+<table>
+<thead>
+<tr>
+<th>Аспект</th>
+<th>Значение</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Блок</td>
+<td>Лазерная оптика — исследование 04 из 12</td>
+</tr>
+<tr>
+<td>Модель</td>
+<td>три пространственных керровских солитона с экспоненциальной парной силой, подписанной фазой (U = w = m = 1)</td>
+</tr>
+<tr>
+<td>Ключевой инвариант</td>
+<td>полная энергия всех трёх прогонов (дрейф ≤ 3.0e-12; вращение 4.7e-16)</td>
+</tr>
+<tr>
+<td>Главный результат</td>
+<td>жёсткое вращение треугольника пучков с ω = 0.223130160 против аналитики до 1.1×10<sup>-11</sup>; жёсткость 1.8e-08</td>
+</tr>
+<tr>
+<td>Верификация</td>
+<td>9/9 проверок PASS (полный режим)</td>
+</tr>
+<tr>
+<td>Время выполнения</td>
+<td>9.4 с записанный полный прогон (с --figures) · smoke &lt; 20 с</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>Аннотация</li>
+<li>
+<ol>
+<li>Введение и исторический контекст</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>Физическая формулировка</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>Математическая модель</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li>Связь с фреймворком TRIVORTEX</li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li>Численный метод</li>
+</ol>
+</li>
+<li>
+<ol start="6">
+<li>Результаты и анализ</li>
+</ol>
+</li>
+<li>
+<ol start="7">
+<li>Обсуждение</li>
+</ol>
+</li>
+<li>
+<ol start="8">
+<li>Выводы</li>
+</ol>
+</li>
+<li>
+<ol start="9">
+<li>Список литературы
+Приложение A. Таблица параметров
+Приложение B. Воспроизведение</li>
+</ol>
+</li>
+</ol>
+<h2>1. Введение и исторический контекст</h2>
+<p>Самозахват света ровесник нелинейной оптики. Аскарьян предположил в 1962 году, что интенсивный пучок способен поднять показатель преломления настолько, чтобы направлять сам себя, а Чио, Гармир и Таунс продемонстрировали в 1964 году самозахват оптических пучков — эксперимент, сделавший осязаемой формулу «пучок света ведёт себя как частица света». Однако чистая керровская нелинейность делает двумерную задачу самозахвата критической (коллапс Таунса), поэтому устойчивые пространственные солитоны в реальных средах опираются на насыщение — фоторефрактивные кристаллы, нематические жидкие кристаллы, атомные пары. Понятие, которое переживает каждую такую среду, одно: пучок, несущий сам себя, как частица.</p>
+<p>Следующим шагом стало осознание, что две такие световые частицы действуют друг на друга с силой. Рено и Бартелеми (1990) продемонстрировали оптически управляемое взаимодействие двух фундаментальных солитонных пучков, а Айтчисон с соавторами (1991) наблюдали взаимодействие пространственных солитонов непосредственно в нелинейном стеклянном волноводе. Решающая ручка управления — относительная фаза: когерентные синфазные пучки притягиваются, противофазные отталкиваются, пучки в квадратуре проходят насквозь — фаза действует как переключаемый гравитационный заряд. Стегеман и Сегев (1999) свели эту физику воедино в обзоре оптических пространственных солитонов и их взаимодействий — основополагающей литературе пучок-к-пучку столкновительных экспериментов.</p>
+<p>Коллективную картину — много пучков как газ или жидкость взаимно притягивающихся частиц — продвинули Снайдер, Митчелл и Кившар (1995), объединившие самозахват света и волн материи, и Бялыницкий-Бируля, описавший свет как волновую систему многих тел. Сегодня зонтичный термин — квантовые жидкости света, обзор Карузотто и Чути (2013); нематиконы в нематических жидких кристаллах (Ассанто и Печчанти, 2012) остаются чистейшей классической реализацией дальнодействующих, настраиваемых фазой пучковых сил. В этой литературе треугольник из трёх пучков — простейший подлинно коллективный объект: каждый участник чувствует двух других, и ни одна парная подзадача не предсказывает исход.</p>
+<p>Это в точности ситуация, которую проанализировал Лагранж в 1772 году: три тела в вершинах равностороннего треугольника с подходящими скоростями вращаются жёстко вечно — единственная неколлинеарная центральная конфигурация ньютоновской задачи трёх тел и содержание теоремы 3.1 монографии TRIVORTEX. Данное исследование пересаживает эту конструкцию в фотонную жидкость: экспоненциальная керровская сила заменяет ньютоновскую 1/r, фаза заменяет знак массы, а равносторонний треугольник пучков — небесный. Братья уже на местах — TRX-03 во временной (волоконно-лазерной) области, TRX-05 с нулями поля вместо максимумов, TRX-08 с ионами в ловушке, — что делает TRX-04 пространственно-оптическим якорем семейства хореографий.</p>
+<h2>2. Физическая формулировка</h2>
+<p>В среде с фокусирующей керровской нелинейностью показатель преломления растёт с интенсивностью, поэтому яркий пучок выкапывает собственный волновод и распространяется без дифракционного расплывания — это пространственный солитон уравнения iA_z + ½∇<sup>2</sup>A + |A|<sup>2</sup>A = 0. Два таких пучка с перекрывающимися хвостами действуют друг на друга через общую нелинейную добавку к показателю: когерентные синфазные пучки интерферируют конструктивно в области перекрытия и притягиваются, а противофазные интерферируют деструктивно и отталкиваются. В частичном приближении — рабочем инструменте данного исследования — каждый пучок заменяется точечным телом массы m, движущимся в поперечной плоскости, а парное взаимодействие задаётся экспоненциальным законом V_pm(r) = −Ue^(−r/w) (синфазно) и V_ap(r) = +Ue^(−r/w) (в противофазе) с величиной силы (U/w)·e^(−r/w). Длина w — масштаб взаимодействия (единица перетяжки пучка), U — глубина потенциала.</p>
+<p>Равносторонний треугольник выделен для любой центральной силы между равными участниками. В вершинах равностороннего треугольника со стороной a каждый пучок чувствует две силы вдоль сторон величиной F = (U/w)e^(−a/w); их равнодействующая равна √3·F и направлена точно в центроид, находящийся на расстоянии r_c = a/√3. Баланс √3·F = mω<sup>2</sup>r_c фиксирует скорость жёсткого вращения ω<sup>2</sup> = 3Ue^(−a/w)/(maw) — тот же баланс центральной конфигурации, что даёт лагранжево равностороннее решение в ньютоновской задаче, где ω<sup>2</sup> = 3Gm/a<sup>3</sup>. Смены знака важны не меньше величин: перевод одной фазы в противофазу превращает одну краевую силу из притяжения в отталкивание, равнодействующая перестаёт указывать в центроид, и жёсткое вращение разрушается — противофазное трио просто разлетается. Пара синфазных пучков с отрицательной относительной энергией образует связанную бинарную систему с прецессирующей орбитой, поскольку экспоненциальная сила не является обратно-квадратичной.</p>
+<table>
+<thead>
+<tr>
+<th>Параметр</th>
+<th>Значение</th>
+<th>Смысл</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>U, w, m</td>
+<td>1, 1, 1</td>
+<td>глубина потенциала, масштаб взаимодействия, масса солитона (естественные единицы)</td>
+</tr>
+<tr>
+<td>a</td>
+<td>3</td>
+<td>сторона треугольника во вращательном прогоне; рабочая точка</td>
+</tr>
+<tr>
+<td>r_c</td>
+<td>a/√3 = 1.732051</td>
+<td>радиус орбиты каждого пучка вокруг центроида</td>
+</tr>
+<tr>
+<td>ω</td>
+<td>e^(−3/2) = 0.223130160</td>
+<td>аналитическая скорость вращения (ω<sup>2</sup> = e^(−3) = 0.049787)</td>
+</tr>
+<tr>
+<td>T_rotation</td>
+<td>84.4778 = 3·2π/ω</td>
+<td>вращательный прогон: три полных оборота</td>
+</tr>
+<tr>
+<td>противофазный прогон</td>
+<td>та же геометрия, нулевые скорости, T = 40</td>
+<td>тест отталкивающего разлёта</td>
+</tr>
+<tr>
+<td>бинарная пара</td>
+<td>r<sub>0</sub> = 3, v_b = ±0.15, E_rel = −0.027, T = 80</td>
+<td>прогон синфазной связанной пары</td>
+</tr>
+<tr>
+<td>интегратор</td>
+<td>DOP853, rtol = atol = 1e-12, max_step = 0.1</td>
+<td>все прогоны, плотный вывод</td>
+</tr>
+</tbody>
+</table>
+<h2>3. Математическая модель</h2>
+<p>От поля к частицам. Фокусирующее НУШ (E1) допускает фундаментальный пространственный солитон, и для хорошо разделённых пучков перекрытие их экспоненциальных хвостов сводит полевую задачу к парным силам. Удержание главного члена перекрытия хвостов даёт потенциалы (E2): V_pm(r) = −Ue^(−r/w) для когерентных синфазных пучков и V_ap(r) = +Ue^(−r/w) для противофазных с радиальной величиной силы (U/w)e^(−r/w). Уравнения движения (E3) — это ньютоновская механика на поперечной плоскости с N = 3 телами и мягким, всюду регулярным взаимодействием; знак s = ±1 для каждой пары кодирует оптическую фазу. Модель в точности сохраняет полную энергию E и момент импульса L_z, уравнение (E5), — это два инварианта, отслеживаемых контрольными проверками.</p>
+<p>Лагранжев баланс. Для равностороннего треугольника со стороной a каждый пучок чувствует две силы вдоль сторон величиной F = (U/w)e^(−a/w), направления которых сходятся под углом 60°; их равнодействующая равна √3·F вдоль медианы и нацелена в центроид на расстоянии r_c = a/√3. Равномерное вращение с угловой скоростью ω требует √3·F = mω<sup>2</sup>r_c, откуда закон вращения (E4): ω<sup>2</sup> = 3Ue^(−a/w)/(maw). В пресете a = 3, w = U = m = 1 это даёт ω<sup>2</sup> = e^(−3) = 0.049787 и ω = e^(−3/2) = 0.223130160 — численно ту же константу, что и порог убегания бинарной пары из (E6), совпадение, специфичное для пресета a = 3. Ньютоновский аналог ω<sup>2</sup> = 3Gm/a<sup>3</sup> отличается только законом силы: геометрия центральной конфигурации универсальна, её скорость вращения — нет.</p>
+<p>Энергетика бинарной пары. Два равных синфазных пучка, запущенные на расстоянии r<sub>0</sub> с поперечными скоростями ±v_b, несут относительную энергию (E6): E_rel = m·v_b<sup>2</sup> − Ue^(−r<sub>0</sub>/w) с факторами приведённой массы, поглощёнными нормировкой равных масс. В пресете r<sub>0</sub> = 3, v_b = 0.15: E_rel = 0.0225 − 0.049787 = −0.027 &lt; 0 — связанное состояние. Порог убегания v_b<em> = √(Ue^(−r<sub>0</sub>/w)) = e^(−3/2) = 0.223130. Поскольку экспоненциальная сила не обратно-квадратична, связанная орбита не является замкнутым кеплеровым эллипсом: расстояние колеблется между фиксированными поворотными точками, пока ось орбиты прецессирует, а центробежный барьер даже запирает запуски слегка выше v_b</em> на конечные времена наблюдения — граничная структура, которую обнажает развёртка по скорости на fig03.</p>
+<p><strong>Нотация</strong></p>
+<table>
+<thead>
+<tr>
+<th>Символ</th>
+<th>Смысл</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td>медленно меняющаяся огибающая пучка; A_z, ∇<sup>2</sup>⊥ — производная по z и поперечный лапласиан</td>
+</tr>
+<tr>
+<td>U, w, m</td>
+<td>глубина потенциала, масштаб взаимодействия (единица перетяжки) и масса солитона; в пресете все равны 1</td>
+</tr>
+<tr>
+<td>s</td>
+<td>знак пары: −1 синфазно (притяжение), +1 в противофазе (отталкивание)</td>
+</tr>
+<tr>
+<td>r, r_kl</td>
+<td>парное расстояние между пучками k и l</td>
+</tr>
+<tr>
+<td>a, r_c</td>
+<td>сторона треугольника и радиус орбиты вокруг центроида a/√3</td>
+</tr>
+<tr>
+<td>ω</td>
+<td>скорость вращения жёсткого треугольника; ω<sup>2</sup> = 3Ue^(−a/w)/(maw)</td>
+</tr>
+<tr>
+<td>v_b</td>
+<td>поперечная стартовая скорость бинарной пары (пресет 0.15)</td>
+</tr>
+<tr>
+<td>E_rel</td>
+<td>относительная энергия бинарной пары, m·v_b<sup>2</sup> − Ue^(−r<sub>0</sub>/w)</td>
+</tr>
+<tr>
+<td>E, L_z</td>
+<td>полная энергия и момент импульса — сохраняющиеся инварианты (E5)</td>
+</tr>
+<tr>
+<td>T</td>
+<td>длительность прогона (вращение 84.4778; противофаза 40; бинарная пара 80)</td>
+</tr>
+<tr>
+<td>V_pm, V_ap</td>
+<td>синфазный и противофазный парные потенциалы (E2)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>(E1)</strong> Фокусирующее нелинейное уравнение Шрёдингера — исходное полевое уравнение (контекст).</p>
+<p>$$i\,\frac{\partial A}{\partial z} + \tfrac{1}{2}\nabla_\perp^2 A + |A|^2 A = 0$$</p>
+<p><strong>(E2)</strong> Парные потенциалы двух пространственных солитонов: синфазно (притяжение) и в противофазе (отталкивание).</p>
+<p>$$V_{\rm pm}(r) = -U\,e^{-r/w}, \qquad V_{\rm ap}(r) = +U\,e^{-r/w}$$</p>
+<p><strong>(E3)</strong> Плоские уравнения движения N тел фотонной жидкости с силами всех пар.</p>
+<p>$$m\,\ddot{\mathbf{r}}_k = \sum_{l\neq k} s\,\frac{U}{w}\,e^{-r_{kl}/w}\,\frac{\mathbf{r}_k-\mathbf{r}_l}{r_{kl}}, \quad s=-1\ \text{(in phase)},\ s=+1\ \text{(anti-phase)}$$</p>
+<p><strong>(E4)</strong> Скорость вращения жёсткого равностороннего треугольника пучков (лагранжева центральная конфигурация).</p>
+<p>$$\omega^2 = \frac{3U\,e^{-a/w}}{m\,a\,w} \;\left(= e^{-3} = 0.049787\ \text{at the preset}\right)$$</p>
+<p><strong>(E5)</strong> Сохраняющиеся инварианты плоской модели: полная энергия и момент импульса.</p>
+<p>$$E = \sum_k \tfrac{1}{2}m\,|\dot{\mathbf{r}}_k|^2 + \sum_{k<l} s\,U\,e^{-r_{kl}/w}, \qquad L_z = \sum_k m\,(x_k\dot{y}_k - y_k\dot{x}_k)$$</p>
+<p><strong>(E6)</strong> Условие связанности синфазной бинарной пары при стартовом расстоянии r<sub>0</sub> (пресет: 0.0225 − 0.049787 = −0.027).</p>
+<p>$$E_{\rm rel} = m\,v_b^2 - U\,e^{-r_0/w} < 0 \;\Leftrightarrow\; v_b < \sqrt{U\,e^{-r_0/w}} = e^{-3/2} \approx 0.223130$$</p>
+<h2>4. Связь с фреймворком TRIVORTEX</h2>
+<p>В рамках программы TRIVORTEX данное исследование — пространственно-оптическая реализация теоремы 3.1. Три керровских солитона играют три гравитирующих тела; вращающийся треугольник пучков — лагранжево равностороннее решение; а измеренная скорость вращения проверяет баланс центральной конфигурации в точности так, как это делает ньютоновская ω<sup>2</sup> = 3Gm/a<sup>3</sup>, с экспоненциальной силой ω<sup>2</sup> = 3Ue^(−a/w)/(maw) = 0.049787 в пресете. Относительная оптическая фаза играет знак циркуляции в вихревой модели: синфазный случай — равные циркуляции, взаимное притяжение, поддерживающее хореографию; противофазный — отталкивающий знак, её разрушающий, — та же иерархия знаков, что разделяет связанные и несвязанные вихревые пары. Прецессирующая бинарная пара добавляет двухтельный слой того же соответствия: эксцентрические орбиты, фиксированные поворотные точки, сохранённые E и L_z, но некеплеров закон силы. TRX-03 повторяет эту структуру на прямой с временными солитонами, TRX-05 заменяет максимумы поля нулями и восстанавливает уравнения Кирхгофа, TRX-08 меняет фотоны на ионы; вместе они демонстрируют, что хореографическая последовательность — парной закон, центральная конфигурация, инварианты — переносима между оптикой, гидродинамикой и небесной механикой.</p>
+<table>
+<thead>
+<tr>
+<th>Величина исследования</th>
+<th>Аналог в TRIVORTEX</th>
+<th>Комментарий</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Три керровских солитона</td>
+<td>три гравитирующих тела</td>
+<td>та же задача центральной конфигурации</td>
+</tr>
+<tr>
+<td>Экспоненциальное притяжение e^(−r/w)</td>
+<td>ньютоновское притяжение 1/r</td>
+<td>закон силы меняется, геометрия — нет</td>
+</tr>
+<tr>
+<td>Вращающийся треугольник пучков</td>
+<td>лагранжево равностороннее решение</td>
+<td>идентичная структура баланса, теорема 3.1</td>
+</tr>
+<tr>
+<td>Относительная фаза (синфазно/противофазно)</td>
+<td>знак циркуляции в вихревой модели</td>
+<td>переключатель притяжение ↔ отталкивание</td>
+</tr>
+<tr>
+<td>Закон вращения ω<sup>2</sup> = 3Ue^(−a/w)/(maw)</td>
+<td>ω<sup>2</sup> = 3Gm/a<sup>3</sup> для точечных масс</td>
+<td>проверочная цель «третьего закона»</td>
+</tr>
+<tr>
+<td>Синфазная бинарная пара с прецессией</td>
+<td>эксцентрическая двухтельная орбита</td>
+<td>некеплерова сила, тот же учёт инвариантов</td>
+</tr>
+</tbody>
+</table>
+<h2>5. Численный метод</h2>
+<p>Модель — плоская система N тел с чередующейся раскладкой состояния [x<sub>1</sub>, y<sub>1</sub>, vx<sub>1</sub>, vy<sub>1</sub>, …]. В пресете U = w = m = 1 сторона треугольника a = 3, начальные позиции лежат на окружности r_c = a/√3 = 1.732051, а начальные скорости — поле жёсткого вращения ω·r_c с аналитической скоростью ω = √(3Ue^(−a/w)/(maw)) = 0.22313016014842985. Все прогоны интегрируют уравнения движения (E3) явной схемой Дормана–Принса 8(5,3) (scipy DOP853, rtol = atol = 1e-12, max_step = 0.1, плотный вывод для равномерной выборки). Вращательный прогон длится T = 3·2π/ω = 84.4778 — три полных оборота — и снимается в 2400 точек.</p>
+<p>Диагностика точна и не зависит от внутренних шагов интегратора. Равносторонняя жёсткость — это максимум по времени величины |d(t) − a|/a по всем трём парным расстояниям. Скорость вращения измеряется разворачиванием полярного угла пучка 1 относительно мгновенного центроида и подгонкой прямой по времени — наклон и есть записанная скорость вращения. Полная энергия (E5) и момент импульса L_z вычисляются на ~300 равномерно расставленных выборках каждого прогона. Противофазный прогон стартует из того же треугольника в покое и интегрируется до T = 40; бинарный прогон запускает два пучка в (±1.5, 0) с поперечными скоростями ∓0.15 и интегрируется до T = 80 — оба с теми же допусками.</p>
+<p>Каждая контрольная проверка регистрируется в JSON-протоколе со значением, целью, допуском, единицей и флагом прохождения; записанный полный прогон проходит 9/9. Режим --figures добавляет схему SVG и четыре PNG-панели 300 DPI вместе с двумя развёртками параметров, сохранёнными в протоколе: развёртка по стороне (семь сторон a = 2.0…8.0, каждая с полным повторным интегрированием на один период вращения и свежим измерением наклона) и развёртка бинарной пары по скорости (шестнадцать стартовых скоростей v_b = 0.06…0.34 за T = 40). Сетевой доступ и стохастические зёрна не используются; прогон бит-в-бит воспроизводим на референсной машине.</p>
+<h2>6. Результаты и анализ</h2>
+<h3>fig01 photon fluid landscape</h3>
+<p><img alt="Ландшафт модели: парное взаимодействие фотонной жидкости и стартовый треугольник пучков вращательного прогона." src="../figures/fig01_photon_fluid_landscape.png" /></p>
+<p><em>Ландшафт модели: парное взаимодействие фотонной жидкости и стартовый треугольник пучков вращательного прогона.</em>
+Панель (а) показывает ландшафт парного взаимодействия: синфазное притяжение V = −U·e^(−r/w) (золотое) против противофазного отталкивания V = +U·e^(−r/w) (красный пунктир) — фаза действует как притягивающий/отталкивающий заряд; рабочая точка a = 3 лежит при силе (U/w)·e^(−a/w) = 0.0498. Панель (б) показывает начальное условие вращательного прогона: равносторонний треугольник пучков со стороной a = 3, радиус орбиты r_c = a/√3 = 1.732051 и парные силы, создающие центростремительный баланс mω<sup>2</sup>r_c при пресетной скорости ω = 0.223130.</p>
+<h3>fig02 triangle rotation</h3>
+<p><img alt="Главный результат: жёсткое вращение треугольника фотонной жидкости за три полных оборота и его равносторонняя жёсткость." src="../figures/fig02_triangle_rotation.png" /></p>
+<p><em>Главный результат: жёсткое вращение треугольника фотонной жидкости за три полных оборота и его равносторонняя жёсткость.</em>
+Панель (а) показывает мировые линии трёх пучков за три полных оборота (T = 84.4778): круговые орбиты вокруг общего центроида, треугольник переносится жёстко, как твёрдое тело. Панель (б) откладывает относительные отклонения сторон |d(t) − a|/a в логарифмическом масштабе: они не превышают 1.8e-08 — примерно в 56 раз внутри допуска 1e-6, — а измеренная скорость вращения 0.223130160 совпадает с аналитической ω = 0.223130160: оптическая лагранжева конфигурация подтверждена динамически.</p>
+<h3>fig03 parameter sweeps</h3>
+<p><img alt="Развёртки параметров: скорость вращения в зависимости от стороны треугольника и карта связанности бинарной пары в зависимости от стартовой скорости." src="../figures/fig03_parameter_sweeps.png" /></p>
+<p><em>Развёртки параметров: скорость вращения в зависимости от стороны треугольника и карта связанности бинарной пары в зависимости от стартовой скорости.</em>
+Панель (а) развёртывает сторону треугольника: аналитический керровский закон ω(a) = √(3Ue^(−a/w)/(maw)) идёт от 0.450558 при a = 2 через пресет 0.223130 при a = 3 до 0.011216 при a = 8, численные повторные прогоны DOP853 ложатся на кривую во всех семи точках сетки, а ньютоновская эталонная кривая 1/r (0.333333 в пресете) спадает заметно медленнее — 0.076547 при a = 8 против керровских 0.011216. Панель (б) картирует исход для бинарной пары в зависимости от стартовой скорости: максимальное расстояние остаётся 3.0 при v_b ≤ 0.26 и растёт до 7.7515, 13.2491, 16.4935 и 19.1521 при v_b = 0.28–0.34 за T = 40, обрамляя аналитический порог убегания v_b* = e^(−3/2) = 0.223130.</p>
+<h3>fig04 binary dynamics invariants</h3>
+<p><img alt="Динамика и инварианты: прецессирующая связанная орбита синфазной бинарной пары и учёт дрейфа энергии во всех трёх прогонах." src="../figures/fig04_binary_dynamics_invariants.png" /></p>
+<p><em>Динамика и инварианты: прецессирующая связанная орбита синфазной бинарной пары и учёт дрейфа энергии во всех трёх прогонах.</em>
+Панель (а) показывает прецессирующую связанную орбиту синфазной бинарной пары (стартовое расстояние 3, поперечная скорость 0.15, E_rel = −0.027 &lt; 0, T = 80): расстояние дышит внутри [0.635, 3.000], а ось орбиты медленно поворачивается — подпись не обратно-квадратичной силы. Панель (б) отслеживает дрейф энергии |E(t) − E(0)| трёх прогонов в логарифмическом масштабе: 4.7e-16 (вращение), 3.6e-16 (противофазное трио) и 3.0e-12 (бинарная пара) — всё далеко ниже допуска 1e-10.</p>
+<p><strong>Жёсткое вращение.</strong> За три полных оборота (T = 84.4778) треугольник остаётся равносторонним до 1.8e-08 относительного изменения стороны — примерно в 56 раз внутри допуска 1e-6 (fig02b). Измеренная скорость вращения 0.223130160 воспроизводит аналитическую ω = 0.223130160 с абсолютной точностью 1.1×10<sup>-11</sup> против допуска 1e-8 — баланс центральной конфигурации (E4) не просто выполнен, а выполнен на уровне машинного округления. Инварианты подтверждают чистоту прогона: дрейф энергии 4.7e-16 и дрейф момента импульса 2.2e-15, на порядки ниже рубежа 1e-10.</p>
+<p><strong>Развёртка по стороне.</strong> Закон вращения верифицирован как закон, а не точка: повторное интегрирование одного полного периода на каждой из семи сторон сетки a = 2.0, 2.5, 3.0, 4.0, 5.0, 6.5, 8.0 воспроизводит аналитическую кривую всюду — ω от 0.450558 при a = 2 через 0.313850 (a = 2.5), 0.223130 (a = 3), 0.117204 (a = 4), 0.063583 (a = 5), 0.026342 (a = 6.5) до 0.011216 при a = 8. Ньютоновская эталонная кривая 1/r вращается систематически быстрее на больших расстояниях: 0.333333 против керровских 0.223130 в пресете и 0.076547 против 0.011216 при a = 8 — экспоненциальный хвост вымирает, и хореография замедляется соответственно (fig03a).</p>
+<p><strong>Противофазный разлёт.</strong> При смене всех фаз тот же треугольник в покое разлетается монотонно: минимальное парное расстояние никогда не опускается ниже 3.0000 (начального значения; пол 0.95a = 2.85 не приближается ни разу), а конечное расстояние достигает 23.476 при T = 40 — чистое отталкивающее событие рассеяния с сохранением энергии до 3.6e-16. Это контрольный эксперимент по смене знака: та же геометрия, тот же интегратор, противоположный исход — судьбу триплета решает фаза, а не геометрия.</p>
+<p><strong>Бинарная пара и карта связанности.</strong> Синфазная бинарная пара с v_b = 0.15 дышит внутри [0.635, 3.000] на всём окне t = 80 (fig04a) с дрейфом энергии 3.0e-12 — наибольшим из трёх прогонов, но всё ещё примерно в 33 раза ниже допуска 1e-10. Развёртка по скорости превращает единственную траекторию в карту (fig03b): максимальное расстояние остаётся на начальном 3.0 для всех v_b ≤ 0.26 и скачет к 7.7515, 13.2491, 16.4935 и 19.1521 при v_b = 0.28–0.34 за T = 40. Аналитический порог v_b<em> = e^(−3/2) = 0.223130 лежит внутри запертой полосы: центробежный барьер удерживает околопороговые запуски связанными всё время наблюдения, поэтому численно наблюдаемая граница убегания лежит между 0.26 и 0.28, а не ровно на v_b</em>.</p>
+<h3>Сводка верификации</h3>
+<table>
+<thead>
+<tr>
+<th>Проверка</th>
+<th>Значение</th>
+<th>Цель</th>
+<th>Допуск</th>
+<th>Прошла</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>`triangle_equilateral_deviation`</td>
+<td>1.79409e-08</td>
+<td>0</td>
+<td>1e-06</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`measured_rotation_rate`</td>
+<td>0.22313</td>
+<td>0.22313</td>
+<td>1e-08</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`energy_conservation_rotation`</td>
+<td>4.71845e-16</td>
+<td>0</td>
+<td>1e-10</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`angular_momentum_conservation`</td>
+<td>2.22045e-15</td>
+<td>0</td>
+<td>1e-10</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`antiphase_no_collapse`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`antiphase_expands`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`energy_conservation_repulsion`</td>
+<td>3.60822e-16</td>
+<td>0</td>
+<td>1e-10</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`binary_stays_bound`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`binary_energy_conservation`</td>
+<td>3.02496e-12</td>
+<td>0</td>
+<td>1e-10</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p><em>(status: </em><em>PASS</em><em>, mode: full)</em></p>
+<h2>7. Обсуждение</h2>
+<p>Модель нарочито минимальна: точечные пучки, изотропная экспоненциальная парная сила, без запаздывания, без поглощения, а оптическая фаза входит только как знак s = ±1 каждой пары. В этих допущениях каждое утверждение данного исследования — точное свойство определяющих уравнений, а не симуляция конкретного эксперимента. Частичное приближение — стандартная редукция для хорошо разделённых солитонов; его разрушение при ближнеполевом перекрытии (где пучки деформируются, сливаются или сбрасывают излучение) остаётся вне консервативного охвата, а естественные расширения — полное интегрирование НУШ для того же треугольника, насыщающиеся среды, неравные пучки, трёхмерные геометрии — каждое сохранит установленный выше верификационный стиль.</p>
+<p>Диапазон параметров выбран там, где физика чиста. В пресете a = 3 краевая сила равна (U/w)e^(−3) = 0.049787 — слабая, поэтому пучки хорошо разделены в единицах масштаба взаимодействия и частичная картина самосогласованна, — а вращение соответственно медленное, ω = 0.223130. Пресет бинарной пары v_b = 0.15 составляет 67 % порога убегания 0.223130 — с запасом внутри связанной области, но достаточно далеко от нуля, чтобы дать заметно прецессирующую орбиту. Развёртка по скорости обнаруживает интересную граничную структуру: численно наблюдаемая граница убегания (между 0.26 и 0.28) лежит выше двухтельного порога 0.223130, потому что центробежный барьер временно запирает маргинально закритические запуски — подлинно динамический эффект, который статический энергетический аргумент в одиночку пропустил бы.</p>
+<p>В рамках программы TRX-04 играет роль пространственно-оптического моста. Выше по течению TRX-03 верифицирует ту же молекулярную физику во временной области волоконного лазера, где закон силы несёт дополнительную фазово-косинусную модуляцию; ниже по течению TRX-05 переходит от максимумов поля к нулям поля — оптическим вихрям — и восстанавливает уравнения вихрей Кирхгофа, а TRX-08 меняет фотоны на лазерно-охлаждённые ионы с гармонической ловушкой и кулоновским хвостом. Вместе с небесным блоком (TRX-01, TRX-11) эти исследования показывают, что равносторонняя центральная конфигурация — форма, а не случайность: она возникает заново в каждой среде, чей двухтельный закон централен, консервативен и парно-аддитивен, и меняется только закон вращения.</p>
+<h2>8. Выводы</h2>
+<ol>
+<li>Равносторонний треугольник пучков — подлинная оптическая центральная конфигурация: он жёстко вращается три полных оборота (T = 84.4778) со стороной, остающейся равносторонней до 1.8e-08 против рубежа 1e-6.</li>
+<li>Измеренная скорость вращения 0.223130160 воспроизводит аналитический лагранжев закон ω<sup>2</sup> = 3Ue^(−a/w)/(maw) (ω = e^(−3/2) = 0.223130160 в пресете) с точностью 1.1×10<sup>-11</sup> — баланс подтверждён на уровне машинного округления.</li>
+<li>Закон вращения верифицирован как закон на развёртке по сторонам a = 2.0…8.0: численные повторные прогоны ложатся на аналитическую кривую во всех семи точках (ω от 0.450558 до 0.011216), а ньютоновская эталонная кривая 1/r спадает заметно медленнее (0.076547 при a = 8).</li>
+<li>Инварианты сохраняются на машинном уровне во всех прогонах: дрейф энергии 4.7e-16 (вращение), 3.6e-16 (противофазное трио), 3.0e-12 (бинарная пара), дрейф момента импульса 2.2e-15 — всё ниже допуска 1e-10.</li>
+<li>Знак фазы решает исход: противофазное трио никогда не коллапсирует (мин. парное расстояние 3.0000 ≥ 0.95a) и разлетается до 23.476, а синфазная бинарная пара с E_rel = −0.027 остаётся связанной с расстоянием внутри [0.635, 3.000] на протяжении t = 80.</li>
+<li>Карта связанности построена: максимальное расстояние остаётся 3.0 при v_b ≤ 0.26, а убегание наступает при v_b = 0.28–0.34 (7.7515 → 19.1521 за T = 40); наблюдаемая граница убегания лежит выше двухтельного порога v_b* = e^(−3/2) = 0.223130, поскольку центробежный барьер временно запирает околопороговые запуски.</li>
+</ol>
+<h2>9. Список литературы</h2>
+<ol>
+<li>Chiao, R. Y., Garmire, E., Townes, C. H. (1964). <em>Self-trapping of optical beams.</em> Phys. Rev. Lett. 13, 479–482.</li>
+<li>Snyder, A. W., Mitchell, D. J., Kivshar, Y. S. (1995). <em>Unification of self-trapping of light and matter waves.</em> Phys. Rev. E 51, 3061–3066.</li>
+<li>Stegeman, G. I., Segev, M. (1999). <em>Optical spatial solitons and their interactions.</em> Science 286, 1518–1523.</li>
+<li>Reynaud, F., Barthelemy, A. (1990). <em>Optically controlled interaction between two fundamental soliton beams.</em> Europhys. Lett. 12, 401–405.</li>
+<li>Aitchison, J. S., Weiner, A. M., Silberberg, Y., Oliver, M. K., Jackel, J. L., Leaird, D. E., Vogel, E. M., Smith, P. W. E. (1991). <em>Experimental observation of spatial soliton interactions.</em> Opt. Lett. 16, 15–17.</li>
+<li>Assanto, G., Peccianti, M. (2012). <em>Nematicons: spatial optical solitons in nematic liquid crystals.</em> Phys. Rep. 516, 147–208.</li>
+<li>Carusotto, I., Ciuti, C. (2013). <em>Quantum fluids of light.</em> Rev. Mod. Phys. 85, 291–315.</li>
+<li>Bialynicki-Birula, I. (2006). <em>Photon waves.</em> Acta Phys. Pol. A 109, 20–32.</li>
+<li>Lagrange, J.-L. (1772). <em>Essai sur le problème des trois corps.</em> In: Œuvres de Lagrange, Vol. 6. Gauthier-Villars, Paris (1873).</li>
+</ol>
+<h3>BibTeX</h3>
+<p>```bibtex
+@article{chiao1964,
+  author  = {Chiao, R. Y. and Garmire, E. and Townes, C. H.},
+  title   = {Self-trapping of optical beams},
+  journal = {Physical Review Letters},
+  year    = {1964}, volume = {13}, pages = {479--482}}
+
+@article{snyder1995,
+  author  = {Snyder, A. W. and Mitchell, D. J. and Kivshar, Y. S.},
+  title   = {Unification of self-trapping of light and matter waves},
+  journal = {Physical Review E},
+  year    = {1995}, volume = {51}, pages = {3061--3066}}
+
+@article{aitchison1991,
+  author  = {Aitchison, J. S. and Weiner, A. M. and Silberberg, Y. and Oliver, M. K. and Jackel, J. L. and Leaird, D. E. and Vogel, E. M. and Smith, P. W. E.},
+  title   = {Experimental observation of spatial soliton interactions},
+  journal = {Optics Letters},
+  year    = {1991}, volume = {16}, pages = {15--17}}
+
+@article{carusotto2013,
+  author  = {Carusotto, Iacopo and Ciuti, Cristiano},
+  title   = {Quantum fluids of light},
+  journal = {Reviews of Modern Physics},
+  year    = {2013}, volume = {85}, pages = {291--315}}
+
+@misc{lagrange1772,
+  author  = {Lagrange, Joseph-Louis},
+  title   = {Essai sur le probl{\`e}me des trois corps},
+  year    = {1772},
+  note    = {In: Œuvres de Lagrange, Vol. 6, Gauthier-Villars, Paris, 1873}}
+```</p>
+<h2>Приложение A. Таблица параметров</h2>
+<table>
+<thead>
+<tr>
+<th>Символ</th>
+<th>Значение</th>
+<th>Роль</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>U, w, m</td>
+<td>1, 1, 1</td>
+<td>естественные единицы: энергия, длина, масса</td>
+</tr>
+<tr>
+<td>a</td>
+<td>3</td>
+<td>сторона треугольника; рабочая точка вращательного прогона</td>
+</tr>
+<tr>
+<td>r_c</td>
+<td>a/√3 = 1.732051</td>
+<td>радиус орбиты пучков вокруг центроида</td>
+</tr>
+<tr>
+<td>(U/w)e^(−a/w)</td>
+<td>0.049787</td>
+<td>краевая сила в рабочей точке (= ω<sup>2</sup>)</td>
+</tr>
+<tr>
+<td>ω</td>
+<td>e^(−3/2) = 0.22313016014842985</td>
+<td>аналитическая скорость вращения в пресете</td>
+</tr>
+<tr>
+<td>T_rotation</td>
+<td>84.4778</td>
+<td>вращательный прогон: три полных оборота, 2400 выборок</td>
+</tr>
+<tr>
+<td>противофазный прогон</td>
+<td>тот же треугольник в покое, T = 40</td>
+<td>контроль отталкивающего разлёта</td>
+</tr>
+<tr>
+<td>пресет бинарной пары</td>
+<td>r<sub>0</sub> = 3, v_b = ±0.15, E_rel = −0.027, T = 80</td>
+<td>прогон синфазной связанной пары</td>
+</tr>
+<tr>
+<td>v_b*</td>
+<td>e^(−3/2) = 0.223130</td>
+<td>аналитический порог убегания бинарной пары</td>
+</tr>
+<tr>
+<td>развёртка по скорости</td>
+<td>16 запусков, v_b = 0.06…0.34, T = 40</td>
+<td>карта связанности fig03b</td>
+</tr>
+<tr>
+<td>интегратор</td>
+<td>DOP853, rtol = atol = 1e-12, max_step = 0.1</td>
+<td>все прогоны, плотный вывод</td>
+</tr>
+</tbody>
+</table>
+<h2>Приложение B. Воспроизведение</h2>
+<p>```bash
+python3 research/TRX-04-photon-fluid/code/trx04_photon_fluid.py --smoke     # < 20 с
+python3 research/TRX-04-photon-fluid/code/trx04_photon_fluid.py              # полный прогон, 9.4 s (9.415 s recorded with --figures)
+python3 research/TRX-04-photon-fluid/code/trx04_photon_fluid.py --figures   # + графики 300 DPI
+```</p>
+<p>Полное время выполнения на референсной машине — 9.4 s (9.415 s recorded with --figures); smoke-режим укладывается в 20 секунд и используется CI репозитория.</p>
+<h2>Приложение C. Окружение</h2>
+<p>Python ≥ 3.11, numpy ≥ 2.0, scipy ≥ 1.14, matplotlib ≥ 3.9; без доступа к сети и без стохастических зёрен — каждый прогон бит-в-бит воспроизводим на референсной машине.</p></div></div>
+<div class="ending">
+  <div class="end-title">TRIVORTEX</div>
+  <div class="end-small">The Three-Body Problem in the Vortex Model</div>
+  <div class="end-rule"></div>
+  <div class="colophon-line"><b>Photon Fluid: Three Kerr Solitons (Spatial, 2-D)</b> — research monograph of the TRIVORTEX program, studying the three-body problem in the vortex model and its laser, celestial-mechanical and quantum crossings.</div><div class="colophon-line">Full verification protocol: <b>results JSON + figures + code</b> in research/TRX-04-photon-fluid/; reproduction commands in Appendix B.</div>
+  <div class="end-small">
+    Isaev Iskhak Khamzatovich · ORCID 0009-0003-7299-0701<br>
+    DOI (concept) 10.5281/zenodo.21825393 · DOI (version) 10.5281/zenodo.21825394<br>
+    License IPL-RP-1.0 · v1.0.0 · 2026-10-07
+  </div>
+</div>
+
+</body>
+</html>

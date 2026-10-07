@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vortex Model — TRIVORTEX</title>
+<meta name="description" content="From bodies to vortices: the Hofstadter-type Hamiltonian with N vortices, the Chaplygin topological integral, spectral and topological observables.">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<header class="site"><div class="wrap">
+  <a class="brand" href="index.html">TRIVORTEX</a>
+  <nav class="main"><a href="index.html">Overview</a><a href="vortex-model.html" class="active">Vortex Model</a><a href="theorem-3-1.html">Theorem 3.1</a><a href="code.html">Code</a><a href="system-presets.html">System Presets</a><a href="verification.html">Verification</a><a href="research.html">Research Lab</a><a href="publications.html">Publications</a><a href="citation.html">Citation</a><a href="license.html">License</a></nav>
+</div></header>
+<main class="wrap">
+
+<h1 style="letter-spacing:2px;font-size:36px">The Vortex Model</h1>
+<p class="muted">How the three-body problem becomes a problem about vortices, flux
+and a topological integral.</p>
+
+<h2 id="from-bodies-to-vortices">From bodies to vortices</h2>
+<p>The classical three-body problem asks for the motion of three masses under mutual
+Newtonian attraction; its vortex twin replaces masses by vortices with circulations
+and topological charges <code>q_k = (1, −1, 1)</code>. The trade is deliberate:
+point-vortex dynamics are Hamiltonian and first-order in time, their configuration
+space is the plane, and their conserved quantities are algebraic rather than
+transcendental. What is lost in literal gravitational realism is gained in exact
+statements — the Lagrange equilateral rotation becomes a theorem one can pin to
+machine precision, and the chaotic N-vortex regime remains available for study as
+<em>N</em> grows.</p>
+<p>TRIVORTEX goes one step further than plain point vortices: each vortex sits in an
+effective magnetic flux, so the model lives at the intersection of hydrodynamics and
+the Aharonov–Bohm physics of charged particles on a lattice. The single-vortex
+conserved combination is the Chaplygin topological integral
+<span class="formula">C_Ch = r² · (θ̇ − q·A_θ),&nbsp;&nbsp; A_θ = 1/r</span>
+which binds the angular momentum to the gauge flux — the quantity Section 6 of the
+core document records along trajectories.</p>
+
+<h2 id="hamiltonian">The Hamiltonian</h2>
+<p>Section 4 of the document builds an <strong>L×L Hofstadter Hamiltonian with
+N_v embedded vortices</strong>: a square lattice with periodic boundary conditions,
+Peierls phases <code>φ = 2πα(ix−1)dy</code> from the uniform flux α plus
+vortex-induced AB phases, and a diagonal potential that falls off as the inverse
+square of the distance to each vortex core, weighted by its charge. The result is a
+Hermitian matrix whose spectrum is analysed by the spectral-statistics machinery of
+Section 7 (GUE/GOE/Poisson classification, ⟨r⟩ statistic, KS tests against the
+classical random-matrix ensembles).</p>
+<table>
+<tr><th>Ingredient</th><th>Symbol</th><th>Default</th><th>Role</th></tr>
+<tr><td>lattice size</td><td class="mono">L</td><td>20 (20×20)</td><td>discretization of the plane</td></tr>
+<tr><td>number of vortices</td><td class="mono">N_v</td><td>3</td><td>the three bodies</td></tr>
+<tr><td>effective flux</td><td class="mono">α</td><td>0.5</td><td>uniform Peierls phase</td></tr>
+<tr><td>disorder strength</td><td class="mono">W</td><td>2.0</td><td>vortex-core potential scale</td></tr>
+<tr><td>topological charges</td><td class="mono">q_k</td><td>(1, −1, 1)</td><td>vortex orientations</td></tr>
+<tr><td>Chaplygin constant</td><td class="mono">C_Ch</td><td>1.0</td><td>integral of motion</td></tr>
+</table>
+
+<h2 id="observables">Observables the document tracks</h2>
+<div class="grid">
+  <div class="card"><h3>Spectral statistics</h3><p>Unfolded spacings, ⟨r⟩ statistic
+  against GUE (0.5996), GOE (0.5307) and Poisson (0.3863) references, KS tests,
+  number variance and spectral form factor (Sections 7, 13, 20–21).</p></div>
+  <div class="card"><h3>Quantum-topological</h3><p>Berry phase, Chern numbers via
+  Fukui–Hatsugai–Suzuki, TKNN Hall conductance, Dirac-cone analysis (Sections
+  16–19) — the quantum layer of the same model.</p></div>
+  <div class="card"><h3>Chaos diagnostics</h3><p>Lyapunov exponents for vortex vs
+  Newtonian dynamics, a permutation test with Z-scores, KAM-tori fraction and
+  Poincaré sections (Section 22).</p></div>
+  <div class="card"><h3>Real systems</h3><p>Sun–Earth–Moon, α Centauri and
+  Pluto–Charon–Nix presets map astronomical masses, distances and periods into the
+  model (Section 10, <a href="system-presets.html">dedicated page</a>).</p></div>
+</div>
+
+<h2 id="literature">Where the model stands in the literature</h2>
+<p>The three-body problem needs no introduction — from Newton through Poincaré's
+memoir and the discovery of chaos to Chenciner–Montgomery's figure-eight
+choreography (2000) and the modern zoo of choreographic solutions. The point-vortex
+formulation goes back to Kirchhoff and to the exact results of the 19th century
+(Thomson's vortex atoms, the Lagrange triangle of vortices); Chaplygin's name is
+attached to the invariants of vortex systems and to the gas-dynamical reduction
+bearing his name. TRIVORTEX borrows the choreography viewpoint (exact relative
+equilibria) and the vortex formalism (Hamiltonian, invariants), then adds its own
+layer: the AB-flux gauge potential that turns the angular momentum into a
+<em>topological</em> integral. The document is honest about this lineage — it is a
+model study with exact checks, not a claim about planetary motion.</p>
+
+</main>
+<footer class="site"><div class="wrap"><div class="cols">
+  <div>
+    <div style="color:var(--gold-l);letter-spacing:2px;font-size:18px">TRIVORTEX</div>
+    <p class="small">The Three-Body Problem in the Vortex Model — a research
+    document with a verification ladder, by Isaev Iskhak Khamzatovich.</p>
+    <p class="small mono">DOI 10.5281/zenodo.21825394</p>
+  </div>
+  <div class="small">
+    <strong style="color:var(--ink)">Repository</strong><br>
+    <a href="https://github.com/wild8highlander/research-papers">GitHub source</a><br>
+    <a href="https://github.com/wild8highlander/research-papers/blob/main/LICENSE.md">License IPL-RP-1.0</a><br>
+    <a href="https://zenodo.org/records/21825394">Zenodo record</a><br>
+    <a href="https://orcid.org/0009-0003-7299-0701">ORCID profile</a>
+  </div>
+  <div class="small">
+    <strong style="color:var(--ink)">Document</strong><br>
+    <a href="vortex-model.html">Vortex model</a><br>
+    <a href="theorem-3-1.html">Theorem 3.1</a><br>
+    <a href="code.html">Code — 22 sections</a><br>
+    <a href="verification.html">Verification V1–V4</a>
+  </div>
+</div>
+<p class="small" style="text-align:center;margin-top:26px">© 2026 Isaev Iskhak Khamzatovich ·
+Proprietary license · Concept DOI 10.5281/zenodo.21825393</p>
+</div></footer>
+</body>
+</html>

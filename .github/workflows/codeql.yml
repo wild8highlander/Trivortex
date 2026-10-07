@@ -1,0 +1,56 @@
+---
+# CodeQL Security Analysis
+# https://docs.github.com/en/code-security/code-scanning/introduction-to-code-scanning
+#
+# Only Python is analyzed: the repository currently ships no C/C++ or
+# standalone JavaScript sources (site HTML has no <script> blocks), and a
+# CodeQL matrix language without extractable source fails the whole run.
+name: CodeQL
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 6 * * 1'  # Weekly on Monday at 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+
+jobs:
+  analyze:
+    name: Analyze (python)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: python
+          build-mode: none
+          queries: security-extended,security-and-quality
+          config: |
+            paths-ignore:
+              - '**/test/**'
+              - '**/tests/**'
+              - '**/spec/**'
+
+      # github/codeql-action/analyze performs the analysis AND uploads the
+      # resulting SARIF to code scanning automatically; no separate
+      # upload-sarif step is needed (a wrong sarif path fails the job).
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:python"
+          upload: always

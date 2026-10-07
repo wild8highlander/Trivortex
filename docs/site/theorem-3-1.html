@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Theorem 3.1 — TRIVORTEX</title>
+<meta name="description" content="The closed-form rotating solution of the TRIVORTEX document: statement, reference values, what is certified and what is recorded.">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<header class="site"><div class="wrap">
+  <a class="brand" href="index.html">TRIVORTEX</a>
+  <nav class="main"><a href="index.html">Overview</a><a href="vortex-model.html">Vortex Model</a><a href="theorem-3-1.html" class="active">Theorem 3.1</a><a href="code.html">Code</a><a href="system-presets.html">System Presets</a><a href="verification.html">Verification</a><a href="research.html">Research Lab</a><a href="publications.html">Publications</a><a href="citation.html">Citation</a><a href="license.html">License</a></nav>
+</div></header>
+<main class="wrap">
+
+<h1 style="letter-spacing:2px;font-size:36px">Theorem 3.1</h1>
+<p class="muted">The closed-form rotating solution at the heart of the document —
+and exactly what the verification ladder certifies about it.</p>
+
+<h2 id="statement">Statement</h2>
+<p>For the vortex model with the Chaplygin constant <code>C_Ch</code>, the document
+constructs (Section 5) the following solution, a Lagrange-type relative equilibrium
+with radial modulation:</p>
+<div class="formula">
+r_k(t) = √C_Ch · (1 + ε·cos(ωt + 2πk/3)),&nbsp;&nbsp; k = 0, 1, 2<br>
+θ_k(t) = ω·t + 2π·k/3
+</div>
+with the frequency and amplitude fixed by the Chaplygin constant:
+<div class="formula">
+ω = (2π/T)·e^(C_Ch/π),&nbsp;&nbsp;&nbsp; ε = 1/(e^(C_Ch/π) − 1)
+</div>
+<p>Two structural facts follow immediately from the form itself and are the subject
+of ladder check <strong>V1</strong>:</p>
+<ul>
+<li><strong>Equilateral choreography.</strong> The angular positions differ by
+exactly 2π/3 at every instant — the three vortices form an equilateral triangle
+that rotates rigidly, the vortex analogue of the classical Lagrange solution of
+the three-body problem.</li>
+<li><strong>Periodicity.</strong> The radial modulation repeats with period
+T_r = 2π/ω; the closed form is a periodic orbit of the model.</li>
+</ul>
+
+<h2 id="numbers">Reference values (C_Ch = 1, T = 2π)</h2>
+<table>
+<tr><th>Quantity</th><th>Value</th><th>Verified by</th></tr>
+<tr><td>frequency ω = (2π/T)·e^(1/π)</td><td class="mono">1.3748022274393588</td>
+<td>pytest pin, exact to float64</td></tr>
+<tr><td>amplitude ε = 1/(e^(1/π)−1)</td><td class="mono">0.7276379117656014</td>
+<td>pytest pin, exact to float64</td></tr>
+<tr><td>angular separation (all times)</td><td class="mono">2π/3 ± 6.9e-14</td>
+<td>V1, residual table</td></tr>
+<tr><td>periodicity residual over 100·T</td><td class="mono">≤ 9.4e-14</td>
+<td>V1, residual table</td></tr>
+</table>
+
+<h2 id="what-is-certified">What the ladder certifies — and what it only records</h2>
+<p>An honest boundary separates two kinds of statements about the closed form:</p>
+<div class="grid">
+  <div class="card"><h3 class="pass">Certified (pass/fail)</h3>
+  <p>The 2π/3 choreography and the periodicity are <em>properties of the formulas
+  themselves</em>: substituting the closed form, the angular separation is
+  2π/3 up to float64 argument reduction, and r_k(t + T_r) = r_k(t) up to the same
+  round-off. These hold for every C_Ch &gt; 0.01, on every probed time window
+  (V1), and the same quantities are pinned by independent pytest reference
+  values.</p></div>
+  <div class="card"><h3 class="warn">Recorded (diagnostic)</h3>
+  <p>The combination C_Ch(t) = r²(θ̇ − q·A_θ) with A_θ = 1/r <em>oscillates
+  together with the radial modulation</em> — by construction of the model, not by
+  a failure of conservation. Section 6 of the document records its endpoint
+  drift over [0, 100·T] as a diagnostic; the window-independent conserved
+  quantities of the dynamics are the vortex integrals H, P, Q, I, certified
+  numerically in V3–V4.</p></div>
+</div>
+
+<h2 id="numerical-twin">The numerical twin: the Lagrange triangle</h2>
+<p>Theorem 3.1 has an exact numerical counterpart that needs no closed form at all.
+Take three <em>equal</em> point vortices on an equilateral triangle of side a and
+integrate the Kirchhoff equations with RK4. Classical theory says the triangle
+rotates rigidly with angular velocity</p>
+<div class="formula">ω_L = 3Γ / (2π·a²)</div>
+<p>— for Γ = 1, a = 1 that is ω_L = 3/(2π) ≈ 0.4775. Ladder check <strong>V2</strong>
+confirms both halves of this statement numerically: the side lengths stay equilateral
+to ≤ 1e-10 over multiple full rotations, and the measured rotation frequency matches
+3Γ/(2πa²) to a relative error ≤ 1e-6. Checks <strong>V3–V4</strong> then verify the
+conservation of the four classical integrals along the same trajectory — first for
+the symmetric configuration, then for unequal circulations Γ = (1, 2, 3) from a
+generic triangle, where no symmetry can carry the answer.</p>
+
+<h2 id="why-lagrange">Why «Lagrange»</h2>
+<p>In the gravitational three-body problem, the equilateral configuration rotating
+rigidly is one of Euler–Lagrange's central configurations (1772, the <em>essai sur
+le problème des trois corps</em>); in the vortex world the same triangle is an exact
+relative equilibrium known since Kirchhoff. Theorem 3.1 is the TRIVORTEX document's
+version of this classical object, dressed in the Chaplygin gauge: the radial
+modulation ε·cos(...) is the model-specific addition that the topological integral
+controls. The resonance between the gravitational and vortex stories is the quiet
+engine of the whole document — the reason a "three-body problem" paper is allowed
+to compute Berry phases and Chern numbers on the side.</p>
+
+</main>
+<footer class="site"><div class="wrap"><div class="cols">
+  <div>
+    <div style="color:var(--gold-l);letter-spacing:2px;font-size:18px">TRIVORTEX</div>
+    <p class="small">The Three-Body Problem in the Vortex Model — a research
+    document with a verification ladder, by Isaev Iskhak Khamzatovich.</p>
+    <p class="small mono">DOI 10.5281/zenodo.21825394</p>
+  </div>
+  <div class="small">
+    <strong style="color:var(--ink)">Repository</strong><br>
+    <a href="https://github.com/wild8highlander/research-papers">GitHub source</a><br>
+    <a href="https://github.com/wild8highlander/research-papers/blob/main/LICENSE.md">License IPL-RP-1.0</a><br>
+    <a href="https://zenodo.org/records/21825394">Zenodo record</a><br>
+    <a href="https://orcid.org/0009-0003-7299-0701">ORCID profile</a>
+  </div>
+  <div class="small">
+    <strong style="color:var(--ink)">Document</strong><br>
+    <a href="vortex-model.html">Vortex model</a><br>
+    <a href="theorem-3-1.html">Theorem 3.1</a><br>
+    <a href="code.html">Code — 22 sections</a><br>
+    <a href="verification.html">Verification V1–V4</a>
+  </div>
+</div>
+<p class="small" style="text-align:center;margin-top:26px">© 2026 Isaev Iskhak Khamzatovich ·
+Proprietary license · Concept DOI 10.5281/zenodo.21825393</p>
+</div></footer>
+</body>
+</html>

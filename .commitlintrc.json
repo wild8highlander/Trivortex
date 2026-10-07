@@ -1,0 +1,43 @@
+# Commitlint — Enforce conventional commit messages
+# https://commitlint.js.org
+{
+  "extends": ["@commitlint/config-conventional"],
+  "rules": {
+    "type-enum": [2, "always", [
+      "build",
+      "ci",
+      "docs",
+      "feat",
+      "fix",
+      "math",
+      "perf",
+      "proof",
+      "refactor",
+      "revert",
+      "style",
+      "test",
+      "verify"
+    ]],
+    "scope-enum": [1, "always", [
+      "nse",
+      "ab-cloud",
+      "riemann",
+      "kdv",
+      "klein",
+      "lean4",
+      "coq",
+      "isabelle",
+      "agda",
+      "python",
+      "julia",
+      "rust",
+      "cpp",
+      "haskell",
+      "docs",
+      "ci",
+      "deps"
+    ]],
+    "subject-max-length": [2, "always", 100],
+    "body-max-line-length": [1, "always", 200]
+  }
+}

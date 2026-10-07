@@ -1,0 +1,88 @@
+{
+  "study": "TRX-07",
+  "title": "The Efimov effect: universal quantum three-body physics",
+  "status": "PASS",
+  "smoke": true,
+  "runtime_s": 0.015,
+  "checks": [
+    {
+      "name": "s0_transcendental_root",
+      "value": 1.0062378251027817,
+      "target": 1.0062458,
+      "tol": 1e-05,
+      "unit": "dimless",
+      "pass": true,
+      "note": "s0*cosh(pi s0/2) = (8/sqrt(3)) sinh(pi s0/6)"
+    },
+    {
+      "name": "efimov_length_ratio",
+      "value": 22.694382595366676,
+      "target": 22.7,
+      "tol": 0.05,
+      "unit": "a-ratio",
+      "pass": true,
+      "note": "a_*/a_*' = exp(pi/s0)"
+    },
+    {
+      "name": "efimov_energy_ratio",
+      "value": 515.0350013848819,
+      "target": 515.03,
+      "tol": 0.05,
+      "unit": "E-ratio",
+      "pass": true,
+      "note": "E/E' = exp(2*pi/s0)"
+    },
+    {
+      "name": "spectrum_all_negative",
+      "value": 1.0,
+      "target": 1.0,
+      "tol": 1e-12,
+      "unit": "bool",
+      "pass": true,
+      "note": "4 negative levels found"
+    },
+    {
+      "name": "ladder_ratio_E0_over_E1",
+      "value": 515.4770480625078,
+      "target": 515.0350013848819,
+      "tol": 180.26225048470863,
+      "unit": "E-ratio",
+      "pass": true,
+      "note": "|E0/E1| = 515.5"
+    },
+    {
+      "name": "ladder_ratio_E1_over_E2",
+      "value": 514.9320638190297,
+      "target": 515.0350013848819,
+      "tol": 180.26225048470863,
+      "unit": "E-ratio",
+      "pass": true,
+      "note": "|E1/E2| = 514.9"
+    }
+  ],
+  "series": {
+    "levels_E": [
+      -45.181243482629625,
+      -0.08764937964250709,
+      -0.00017021542413274738,
+      -3.305137471515585e-07
+    ]
+  },
+  "meta": {
+    "equations": [
+      "s0*cosh(pi*s0/2) = (8/sqrt(3))*sinh(pi*s0/6),  s0 = 1.0062458",
+      "a ladder: exp(pi/s0) = 22.7 ;  E ladder: exp(2*pi/s0) = 515",
+      "-u''(R) - (s0^2 - 1/4)/R^2 u = E u,  u(R0)=u(Rmax)=0"
+    ],
+    "s0": 1.0062378251027817,
+    "levels": [
+      -45.181243482629625,
+      -0.08764937964250709,
+      -0.00017021542413274738,
+      -3.305137471515585e-07
+    ],
+    "R0": 0.01,
+    "Rmax": 10000.0,
+    "laser_link": "observed in laser-cooled Cs (Kraemer et al. 2006); Feshbach-tuned, laser-spectroscopied trimers"
+  }
+}

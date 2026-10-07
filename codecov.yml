@@ -1,0 +1,69 @@
+# Codecov Configuration
+# https://docs.codecov.com/docs/codecov-yaml
+codecov:
+  require_ci_to_pass: true
+  notify:
+    wait_for_ci: true
+
+coverage:
+  precision: 2
+  round: down
+  range: "70...100"
+  status:
+    project:
+      default:
+        target: 80%
+        threshold: 5%
+        if_ci_failed: error
+        informational: false
+        only_pulls: false
+    patch:
+      default:
+        target: 80%
+        threshold: 5%
+        informational: false
+    changes:
+      default:
+        branches:
+          - main
+
+  parsers:
+    javascript:
+      enable_partials: false
+
+ignore:
+  - "verification/lean4/**"
+  - "verification/coq/**"
+  - "verification/isabelle/**"
+  - "verification/agda/**"
+  - "papers/**"
+  - "docs/**"
+  - "src/**/*.tex"
+
+comment:
+  layout: "reach, diff, flags, files, footer"
+  behavior: default
+  require_changes: false
+  require_base: yes
+  require_head: yes
+  hide_partial_details: false
+  show_critical_paths: true
+
+component_management:
+  individual_components:
+    - component_id: python-verification
+      name: Python Verification
+      paths:
+        - verification/python/
+    - component_id: julia-verification
+      name: Julia Verification
+      paths:
+        - verification/julia/
+    - component_id: rust-verification
+      name: Rust Verification
+      paths:
+        - verification/rust/
+    - component_id: cpp-verification
+      name: C++ Verification
+      paths:
+        - verification/cpp/

@@ -1,0 +1,35 @@
+{
+  "name": "TRIVORTEX Research Program",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "postCreateCommand": "pip install --user numpy scipy matplotlib mpmath pytest ruff pypdf python-docx && echo 'TRIVORTEX v1.0.0 devcontainer ready — try: make verify-quick'",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "charliermarsh.ruff",
+        "ms-toolsai.jupyter",
+        "yzhang.markdown-all-in-one",
+        "James-Yu.latex-workshop"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/bin/python3",
+        "editor.rulers": [100],
+        "files.exclude": {
+          "**/__pycache__": true
+        }
+      }
+    }
+  },
+  "forwardPorts": [8080],
+  "portsAttributes": {
+    "8080": {
+      "label": "Documentation site preview",
+      "onAutoForward": "openBrowser"
+    }
+  },
+  "remoteUser": "vscode"
+}

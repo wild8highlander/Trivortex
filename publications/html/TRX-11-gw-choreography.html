@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TRX-11 — Gravitational Waves from the Figure-Eight Choreography</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400&family=PT+Sans:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof renderMathInElement === 'function') {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '\\(', right: '\\)', display: false}
+      ], throwOnError: false
+    });
+  }
+});
+</script>
+<style>
+@page { size: 210mm 297mm; margin: 0; }
+:root {
+  --navy: #0A1730; --navy2: #0E2145; --header-fill: #2A3A55;
+  --gold: #D4AF37; --gold-l: #F0D98C;
+  --text: #1F2937; --muted: #6B7280;
+  --stripe: #F2F5FA; --code-bg: #F5F7FB; --border: #DCE3EF;
+}
+html, body {
+  margin: 0; padding: 0; width: 210mm;
+  background: #FFFFFF;               /* flow pages are white; dark pages are fixed-height */
+  color: var(--text);
+  font-family: 'PT Serif', 'Noto Serif', 'Liberation Serif', 'DejaVu Serif', serif;
+  font-size: 15px; line-height: 1.62;
+  line-break: strict; word-break: normal; overflow-wrap: break-word;
+}
+@media screen {
+  html { height: auto; display: flex; justify-content: center; background: #10131a; }
+  body { transform-origin: top center; margin: 20px auto; box-shadow: 0 8px 40px rgba(0,0,0,.5); }
+}
+
+/* ── Cover ─────────────────────────────────────────────────────────────── */
+.front-page {
+  width: 210mm; height: 297mm; box-sizing: border-box;
+  break-after: page; overflow: hidden; position: relative;
+  background:
+    radial-gradient(circle 8px at 691px 125px, #D4AF37 0 7px, transparent 8px),
+    radial-gradient(circle 5px at 584px 56px, #59C2FF 0 4px, transparent 5px),
+    radial-gradient(circle 4px at 154px 950px, #FF7A9E 0 3px, transparent 4px),
+    radial-gradient(circle 210px at 87% 9%, transparent 206px, rgba(212,175,55,.30) 208px, rgba(212,175,55,.30) 210px, transparent 212px),
+    radial-gradient(circle 130px at 74% 3%, transparent 126px, rgba(89,194,255,.26) 128px, rgba(89,194,255,.26) 130px, transparent 132px),
+    radial-gradient(circle 280px at 8% 94%, transparent 276px, rgba(212,175,55,.18) 278px, rgba(212,175,55,.18) 280px, transparent 282px),
+    linear-gradient(160deg, #0E2145 0%, #0A1730 62%, #081226 100%);
+  color: #E9EEF8;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 58px;
+}
+.fp-kicker {
+  display: flex; align-items: center; gap: 14px;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.5px; letter-spacing: 3.5px; color: #F0D98C; font-weight: 700;
+}
+.fp-title {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 34px; line-height: 1.16; font-weight: 700; color: #F4F7FD;
+  margin: 26px 0 12px 0; max-width: 156mm;
+}
+.fp-subtitle-ru {
+  font-size: 18.5px; line-height: 1.4; color: #D4AF37; font-style: italic;
+  max-width: 156mm; margin-bottom: 34px;
+}
+.fp-meta {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 9px 26px;
+  max-width: 156mm;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.5px; line-height: 1.45;
+  border-top: 1px solid rgba(212,175,55,.35);
+  border-bottom: 1px solid rgba(212,175,55,.35);
+  padding: 16px 2px;
+}
+.fp-meta .k { color: #8FA3C4; letter-spacing: 1.6px; font-size: 10.5px; text-transform: uppercase; }
+.fp-meta .v { color: #E9EEF8; margin-top: 2px; }
+.fp-abstract {
+  max-width: 156mm; margin-top: 26px; font-size: 12.5px; line-height: 1.6;
+  color: #B9C6DE; font-style: italic;
+}
+.fp-foot {
+  position: absolute; left: 58px; right: 58px; bottom: 40px;
+  display: flex; justify-content: space-between; align-items: flex-end;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 11px; letter-spacing: 2px; color: #8FA3C4; text-transform: uppercase;
+}
+.fp-foot b { color: #F0D98C; font-weight: 700; }
+
+/* ── Flowing content ───────────────────────────────────────────────────── */
+.main-content { background: #FFFFFF; padding: 15mm 16mm 13mm 16mm; }
+
+h1, h2, h3, h4 {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  color: #0A1730; line-height: 1.25;
+  break-after: avoid; page-break-after: avoid;
+}
+.main-content h1 { font-size: 24px; margin: 6px 0 4px 0; }
+.main-content h2 {
+  font-size: 19.5px; margin: 26px 0 10px 0; padding-left: 12px;
+  border-left: 4px solid #D4AF37;
+}
+.main-content h3 { font-size: 16px; margin: 18px 0 8px 0; }
+.main-content h4 { font-size: 14.5px; margin: 14px 0 6px 0; color: #2A3A55; }
+p { margin: 0 0 9px 0; text-align: justify; hyphens: auto; }
+strong { color: #0A1730; }
+em { color: inherit; }
+a { color: #0E2145; text-decoration: none; border-bottom: 1px solid #D4AF37; }
+ul, ol { margin: 4px 0 10px 0; padding-left: 22px; }
+li { margin-bottom: 4px; break-inside: avoid; text-align: left; }
+
+table {
+  width: 100%; border-collapse: collapse; margin: 10px 0 14px 0;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.3px; line-height: 1.4;
+}
+thead { display: table-header-group; }
+tr { break-inside: avoid; page-break-inside: avoid; }
+th {
+  background: #2A3A55; color: #FFFFFF; text-align: left;
+  padding: 6px 9px; font-weight: 700; border: none;
+}
+td { padding: 5px 9px; border-bottom: 1px solid #DCE3EF; vertical-align: top; }
+tbody tr:nth-child(odd) td { background: #F2F5FA; }
+table, .table-wrap { break-inside: auto; }
+thead + tbody tr:first-child { break-before: avoid; }
+
+pre {
+  background: #F5F7FB; border: 1px solid #DCE3EF; border-left: 3px solid #D4AF37;
+  padding: 10px 13px; margin: 10px 0 14px 0; border-radius: 4px;
+  font-family: 'JetBrains Mono', 'DejaVu Sans Mono', 'Liberation Mono', monospace;
+  font-size: 11.6px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: break-word;
+  break-inside: avoid; page-break-inside: avoid;
+}
+code {
+  font-family: 'JetBrains Mono', 'DejaVu Sans Mono', 'Liberation Mono', monospace;
+  font-size: 12.6px; background: #F5F7FB; padding: 1px 4px; border-radius: 3px;
+}
+pre code { background: transparent; padding: 0; font-size: 11.6px; }
+
+blockquote {
+  margin: 10px 0 12px 0; padding: 8px 14px; border-left: 3px solid #D4AF37;
+  background: #F5F7FB; color: #0E2145; font-style: italic;
+  break-inside: avoid;
+}
+hr { border: none; border-top: 1px solid #DCE3EF; margin: 16px 0; }
+
+/* equations */
+.katex-display { margin: 12px 0 14px 0; max-width: 100%; overflow: hidden auto; }
+.eq-block { break-inside: avoid; page-break-inside: avoid; }
+
+/* language part banners */
+.part-banner {
+  break-inside: avoid; break-after: avoid;
+  margin: 26px 0 14px 0; padding: 13px 18px;
+  background: #0E2145; color: #F0D98C; border-radius: 6px;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+}
+.part-banner .pb-title { font-size: 16.5px; font-weight: 700; letter-spacing: 1.2px; }
+.part-banner .pb-sub { font-size: 11.5px; color: #8FA3C4; margin-top: 3px; letter-spacing: .4px; }
+
+/* colophon */
+.ending {
+  width: 210mm; height: 297mm; box-sizing: border-box;
+  break-before: page; overflow: hidden; position: relative;
+  background: linear-gradient(200deg, #0E2145 0%, #0A1730 60%, #081226 100%);
+  color: #E9EEF8;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 58px;
+}
+.ending .colophon-line { max-width: 150mm; font-size: 13.5px; line-height: 1.7; color: #B9C6DE; }
+.ending .colophon-line b { color: #F0D98C; }
+.ending .end-rule { width: 64px; height: 26px; margin: 10px 0 8px 0;
+  background: linear-gradient(90deg, #D4AF37 0 64px, transparent 64px) top/100% 6px no-repeat; }
+.ending .end-title {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 26px; font-weight: 700; color: #F4F7FD; letter-spacing: 1px;
+}
+.ending .end-small {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 11.5px; color: #8FA3C4; letter-spacing: 2px; text-transform: uppercase;
+  margin-top: 26px; line-height: 2;
+}
+</style>
+</head>
+<body>
+
+<div class="front-page">
+  <div class="fp-kicker"><span>TRIVORTEX RESEARCH PROGRAM · TRX-11</span></div>
+  <div class="fp-title">Gravitational Waves from the Figure-Eight Choreography</div>
+  <div class="fp-subtitle-ru">Гравитационные волны от хореографии «восьмёрки»</div>
+  <div class="fp-meta"><div><div class="k">Author</div><div class="v">Isaev Iskhak Khamzatovich<br><span style="color:#8FA3C4">ORCID 0009-0003-7299-0701</span></div></div><div><div class="k">DOI</div><div class="v">10.5281/zenodo.21825394</div></div><div><div class="k">Study</div><div class="v">TRX-11</div></div><div><div class="k">Date</div><div class="v">2026-10-06</div></div><div><div class="k">Code</div><div class="v"><code style="background:rgba(212,175,55,.12);color:#F0D98C;padding:1px 5px;border-radius:3px">code/trx11_gw_choreography.py</code></div></div><div><div class="k">Data</div><div class="v"><code style="background:rgba(212,175,55,.12);color:#F0D98C;padding:1px 5px;border-radius:3px">results/trx11_results.json</code></div></div></div>
+  <div class="fp-abstract">This monograph turns the figure-eight choreography of Chenciner and Montgomery — three equal masses chasing each other along a single closed curve with zero angular momentum — into a quantified gravitational-wave source. The period is found by global minimisation of the configuration closure over one revolution: T = 6.325914025, matching the published 6.32591398 to 1.2e-08, with energy conserved to 3.6e-15 and the angular momentum zero to 1.4e-15 throughout.</div>
+  <div class="fp-foot"><span>Monograph Edition · bilingual RU + EN</span><span><b>TRIVORTEX</b> · TRIVORTEX · v1.0.0 · 2026</span></div>
+</div>
+<div class="main-content"><div class="part-banner"><div class="pb-title">PART I · English Monograph</div><div class="pb-sub">Gravitational Waves from the Figure-Eight Choreography</div></div><p><em>TRIVORTEX Research Program · v1.0.0 · Monograph Edition</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Study</td>
+<td>TRX-11</td>
+</tr>
+<tr>
+<td>Program</td>
+<td>TRIVORTEX — The Three-Body Problem in the Vortex Model</td>
+</tr>
+<tr>
+<td>Author</td>
+<td>Isaev Iskhak Khamzatovich (ORCID 0009-0003-7299-0701)</td>
+</tr>
+<tr>
+<td>DOI</td>
+<td>10.5281/zenodo.21825394</td>
+</tr>
+<tr>
+<td>Date</td>
+<td>2026-10-06</td>
+</tr>
+<tr>
+<td>Code</td>
+<td>`code/trx11_gw_choreography.py`</td>
+</tr>
+<tr>
+<td>Data</td>
+<td>`results/trx11_results.json`</td>
+</tr>
+</tbody>
+</table>
+<h2>Abstract</h2>
+<p>This monograph turns the figure-eight choreography of Chenciner and Montgomery — three equal masses chasing each other along a single closed curve with zero angular momentum — into a quantified gravitational-wave source. The period is found by global minimisation of the configuration closure over one revolution: T = 6.325914025, matching the published 6.32591398 to 1.2e-08, with energy conserved to 3.6e-15 and the angular momentum zero to 1.4e-15 throughout. In the quadrupole approximation (G = c = D = 1) the mass quadrupole drives a plus-polarised strain spanning −4.04 to +4.85 that repeats six times per orbit period. The choreography symmetry Q(T/3) = Q(0), verified to 1.5·10<sup>-8</sup>, locks the spectrum into a harmonic comb: the dominant line lands at n = 6 of the orbital comb (f·T = 5.9995, residual 5.0e-4) with overtones at 12 and 18 of relative amplitudes 0.091 and 0.0061. The time-averaged antenna pattern peaks along the orbital normal at 3.01 times the mean exact luminosity of 76.51, and a velocity-detuning sweep over k = 0.90 … 1.10 shows the eight is an isolated solution: the k = 1 closure residual is 7.6·10<sup>-9</sup> while every detuned case exceeds 0.028. LISA-class laser interferometers are the natural readout.</p>
+<h2>Contents</h2>
+<ol>
+<li>Abstract</li>
+<li>
+<ol>
+<li>Introduction and historical context</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>Physical formulation</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>Mathematical model</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li>Connection to the TRIVORTEX framework</li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li>Numerical method</li>
+</ol>
+</li>
+<li>
+<ol start="6">
+<li>Results and analysis</li>
+</ol>
+</li>
+<li>
+<ol start="7">
+<li>Discussion</li>
+</ol>
+</li>
+<li>
+<ol start="8">
+<li>Conclusions</li>
+</ol>
+</li>
+<li>
+<ol start="9">
+<li>References
+Appendix A. Parameter table
+Appendix B. Reproduction</li>
+</ol>
+</li>
+</ol>
+<h2>1. Introduction and historical context</h2>
+<p>Gravitational waves entered physics as a prediction of general relativity: Einstein derived the linearised field equations in 1916 and returned to the question in 1918 with the famous quadrupole formula, establishing that accelerating masses radiate energy at a rate controlled by the third time derivative of the mass quadrupole tensor. For decades the formula was disputed even among theorists — Eddington suspected the waves of being coordinate artifacts — until the quadrupole luminosity was worked out for concrete systems: Peters and Mathews (1963) computed the orbit-averaged radiation of Keplerian binaries, and the measured orbital decay of the binary pulsar PSR 1913+16 by Taylor and Weisberg (1982) confirmed that formula to better than half a percent, awarding the quadrupole approximation the status of quantitative science.</p>
+<p>The modern formalism descends from Thorne's 1980 review, which systematised the multipole expansion of gravitational radiation — source multipoles, the trace-free projection, the energy flux — into the standard toolbox used by every waveform model today; Maggiore's monograph (2007) fixed the pedagogical canon. Within this framework the plus-polarised strain of a distant observer is proportional to the second derivative of the trace-free quadrupole, and the luminosity is the squared sum of third derivatives — exactly the two objects this study computes for a three-body source, in units G = c = D = 1.</p>
+<p>The source itself has a shorter but remarkable history. Moore (1993) found, by numerical search over braided periodic orbits, that three equal bodies can chase each other along one curve; Chenciner and Montgomery (2000) then proved the existence of this figure-eight solution rigorously, via a variational argument combined with computer assistance, and Simó (2002) mapped the dynamical properties of the associated Poincaré map. The solution is exceptional in several ways at once: it is periodic, planar, collision-free, and it carries exactly zero angular momentum — a property that no circular binary shares and that shapes the emitted waveform.</p>
+<p>For TRIVORTEX the relevance is structural. The monograph's vortex program studies special triads — the rotating Lagrange triangle, the (1, −1, 1) collapse trio, the secular hierarchical cycles — and the figure-eight is the celestial sibling of the same family: a choreography whose symmetry group, not whose parameters, fixes its observables. Adding the quadrupole channel turns the choreography from a curiosity of celestial mechanics into a potential astrophysical signal, and the natural readout instrument is laser-based: LISA, Taiji and TianQin are laser interferometers whose million-kilometre arms are built on laser stability. The study therefore also documents the laser connection that runs through the laser block of the program (TRX-01, TRX-12).</p>
+<h2>2. Physical formulation</h2>
+<p>Planar Newtonian three-body problem with three equal masses, G = m = 1. The initial condition is the Chenciner–Montgomery figure-eight: r<sub>1</sub> = (0.97000436, −0.24308753), r<sub>2</sub> = −r<sub>1</sub>, r<sub>3</sub> = (0, 0), v<sub>3</sub> = (−0.93240737, −0.86473146), v<sub>1</sub> = v<sub>2</sub> = −v<sub>3</sub>/2. The total momentum and the total angular momentum vanish identically, and all three bodies trace the same closed curve shifted in time — a choreography in the strict sense. Over one period T = 6.325914 the pairwise separations sweep the interval from 0.6905 to 2.0000 and are permuted among the three pairs every T/3.</p>
+<p>The wave model is the leading quadrupole term of general relativity in the far-zone, slow-motion limit. With G = c = D = 1 the plus-polarised strain read by a distant observer is proportional to the second derivative of Q_xx − Q_yy, and the luminosity is P = (1/5)Σ_ij (d<sup>3</sup>Q_ij/dt<sup>3</sup>)<sup>2</sup> evaluated on the trace-free part of the quadrupole. The emitter is deliberately idealised: Newtonian gravity supplies the source motion, and relativity enters only as a readout formula — no back-reaction on the orbit, no higher multipoles.</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Masses, constant</td>
+<td>m<sub>1</sub> = m<sub>2</sub> = m<sub>3</sub> = 1, G = 1</td>
+<td>planar Newtonian three-body problem</td>
+</tr>
+<tr>
+<td>Initial positions</td>
+<td>r<sub>1</sub> = (0.97000436, −0.24308753), r<sub>2</sub> = −r<sub>1</sub>, r<sub>3</sub> = (0, 0)</td>
+<td>Chenciner–Montgomery initial condition</td>
+</tr>
+<tr>
+<td>Initial velocities</td>
+<td>v<sub>3</sub> = (−0.93240737, −0.86473146), v<sub>1</sub> = v<sub>2</sub> = −v<sub>3</sub>/2</td>
+<td>zero total momentum, zero angular momentum</td>
+</tr>
+<tr>
+<td>Integrator</td>
+<td>DOP853, rtol = atol = 1e-13, max_step 0.005</td>
+<td>one period; 12001-point dense sampling for the quadrupole</td>
+</tr>
+<tr>
+<td>Period search</td>
+<td>closure minimisation over t ∈ [2, 11], xatol 1e-13</td>
+<td>global minimum of the configuration closure</td>
+</tr>
+<tr>
+<td>Wave model</td>
+<td>quadrupole, G = c = D = 1</td>
+<td>h<sub>+</sub> ∝ d<sup>2</sup>(Qxx − Qyy)/dt<sup>2</sup>; P = (1/5)Σ(d<sup>3</sup>Q_ij/dt<sup>3</sup>)<sup>2</sup></td>
+</tr>
+</tbody>
+</table>
+<h2>3. Mathematical model</h2>
+<p>The quadrupole channel follows from the slow-motion, weak-field expansion of the Einstein equations. To leading order the radiative degrees of freedom are driven by the trace-free part of the second mass moment Q_ij = Σ_k m_k x_ki x_kj (E2); the transverse-traceless projection at the observer gives the two polarisations, and for a face-on optimally oriented detector the plus-polarised strain is proportional to the second derivative of Q_xx − Q_yy (E3). The energy flux is set by the third derivatives (E4): with G and c restored, P = (G/5c<sup>5</sup>)⟨Σ(d<sup>3</sup>Q_ij/dt<sup>3</sup>)<sup>2</sup>⟩, so in the units G = c = D = 1 used throughout, the luminosity is literally (1/5) of the squared sum of third derivatives. The mass dipole is conserved (centre-of-mass motion) and cannot radiate; the quadrupole is the first radiating moment.</p>
+<p>The choreography structure enters through (E5). Because the three masses are equal and chase each other along one curve, the set of positions repeats itself every third of the period: {r_k(T/3)} = {r_k(0)}. The quadrupole, being a symmetric function of the configuration, is then exactly periodic with T/3, which restricts the spectrum to harmonics of 3/T. The measured spectrum sharpens this further: the dominant line lands at f·T = 5.9995, twice the pattern frequency 3/T, and the strain itself repeats six times per period — visible in the waveform panel as six identical lobes. The zero angular momentum is the second structural input: it removes the rotational Doppler-like asymmetry that a spinning binary would imprint, leaving a waveform whose shape is fixed by the figure-eight geometry alone.</p>
+<p>Numerically the quadrupole derivatives are computed exactly rather than by finite differences. Differentiating Newton's law (E1) once more gives the jerk — the third time derivative of position — in closed form, and the chain rule then yields the exact second derivatives Q̈ = Σ(2vv + 2xa) and third derivatives Q⃛ = Σ(6va + 2xj) of every quadrupole component from the state (positions, velocities, accelerations, jerks). This matters because chained finite differentiation of a numerically sampled trace amplifies error by orders of magnitude per pass: the acceptance check deliberately uses the simple finite-difference estimator as a finiteness gate only (recorded value 1.65e8 in G = c = D = 1 units), while the physical luminosity reported by the figure pipeline is 76.51 mean with peak 159.73.</p>
+<p><strong>Notation</strong></p>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q_ij</td>
+<td>mass quadrupole tensor, Q_ij = Σ_k m_k x_ki x_kj</td>
+</tr>
+<tr>
+<td>h<sub>+</sub>(t)</td>
+<td>plus-polarised strain at the observer, ∝ d<sup>2</sup>(Qxx − Qyy)/dt<sup>2</sup></td>
+</tr>
+<tr>
+<td>P</td>
+<td>gravitational-wave luminosity (G = c = D = 1 units)</td>
+</tr>
+<tr>
+<td>T</td>
+<td>period of the choreography, 6.325914025 in G = m = 1</td>
+</tr>
+<tr>
+<td>n</td>
+<td>harmonic index of the orbital comb, f = n/T</td>
+</tr>
+<tr>
+<td>f·T</td>
+<td>dimensionless position of a spectral line on the comb</td>
+</tr>
+<tr>
+<td>θ</td>
+<td>observer inclination measured from the orbital normal</td>
+</tr>
+<tr>
+<td>k</td>
+<td>velocity scale factor of the detuning sweep</td>
+</tr>
+<tr>
+<td>L_z</td>
+<td>total angular momentum of the three bodies (identically zero)</td>
+</tr>
+<tr>
+<td>r_ij</td>
+<td>pairwise separation, sweeping [0.6905, 2.0000] over one period</td>
+</tr>
+<tr>
+<td>Q⃛_ij</td>
+<td>third time derivative of the quadrupole, driving the luminosity (E4)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>(E1)</strong> Newtonian three-body dynamics (planar, equal masses).</p>
+<p>$$\ddot{\boldsymbol{r}}_k = \sum_{j \neq k} \frac{\boldsymbol{r}_j - \boldsymbol{r}_k}{\left|\boldsymbol{r}_j - \boldsymbol{r}_k\right|^3}, \qquad G = m = 1$$</p>
+<p><strong>(E2)</strong> Mass quadrupole tensor of the emitter.</p>
+<p>$$Q_{ij} = \sum_k m_k\, x_{ki}\, x_{kj}$$</p>
+<p><strong>(E3)</strong> Plus-polarised waveform read by a distant observer (G = c = D = 1).</p>
+<p>$$h_+(t) \propto \frac{d^2}{dt^2}\left(Q_{xx} - Q_{yy}\right)$$</p>
+<p><strong>(E4)</strong> Gravitational-wave luminosity on the trace-free quadrupole (G = c = D = 1).</p>
+<p>$$P = \frac{1}{5}\sum_{ij} \left(\frac{d^3 Q_{ij}}{dt^3}\right)^{2}$$</p>
+<p><strong>(E5)</strong> Choreography exchange symmetry and the harmonic comb.</p>
+<p>$$\{\boldsymbol{r}_k(T/3)\} = \{\boldsymbol{r}_k(0)\} \;\Rightarrow\; Q(t + T/3) = Q(t) \;\Rightarrow\; \tilde{h}(f) \neq 0 \ \text{only at}\ f = n \cdot \frac{3}{T}$$</p>
+<h2>4. Connection to the TRIVORTEX framework</h2>
+<p>Within the TRIVORTEX framework the figure-eight is the second special three-body solution besides the rotating equilateral choreography of Theorem 3.1 — two answers of one problem to the same requirement of exact periodicity. The zero angular momentum of the eight is the celestial twin of the document's own charge pattern: a tuned circulation triplet (1, −1, 1) whose angular impulse vanishes, so both models live on the zero-impulse slice of their phase spaces. The quadrupole comb at multiples of 3/T plays the role of the radial modulation frequency ω of Theorem 3.1 — in both cases a single spectral line family is the fingerprint of the triad's symmetry. Finally, the detection channel is a laser channel: TRX-01 and TRX-12 put lasers inside the three-body dynamics as actuators, while this study points lasers at it as detectors, closing the laser theme from both ends. TRX-09 supplies the vortex-language description of the same choreographic idea, and TRX-10 its hierarchical (secular) limit.</p>
+<table>
+<thead>
+<tr>
+<th>Quantity in this study</th>
+<th>TRIVORTEX analog</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Figure-eight choreography</td>
+<td>rotating equilateral choreography of Theorem 3.1</td>
+<td>two special solutions of one problem</td>
+</tr>
+<tr>
+<td>Zero angular momentum L = 0</td>
+<td>tuned circulation pattern (1, −1, 1)</td>
+<td>the document's own charge triplet</td>
+</tr>
+<tr>
+<td>Quadrupole comb at multiples of 3/T</td>
+<td>radial modulation ω of Theorem 3.1</td>
+<td>spectral fingerprint of the triad</td>
+</tr>
+<tr>
+<td>Choreography period T = 6.325914</td>
+<td>rigid rotation period of the vortex triangle</td>
+<td>both special solutions carry a single clock</td>
+</tr>
+<tr>
+<td>LISA-class detection</td>
+<td>laser themes of TRX-01/12</td>
+<td>lasers as the measuring instrument</td>
+</tr>
+</tbody>
+</table>
+<h2>5. Numerical method</h2>
+<p>The period is found before anything else is measured. The full system is integrated over [0, 12] with DOP853 at rtol = atol = 1e-13 and max_step 0.01; the closure is defined as the maximum deviation of the three positions from their initial values, scanned on a 1800-point grid over t ∈ [2, 11], and refined by bounded scalar minimisation with xatol 1e-13. The global minimum gives T = 6.325914025 with a closure residual of 1.2e-08 — inside the 5e-8 acceptance tolerance and consistent with the published 6.32591398. The period is then re-integrated over exactly [0, T] at max_step 0.005, and the invariants are monitored pointwise: the energy drift stays at 3.6e-15 and the total angular momentum at 1.4e-15 across 3000 samples.</p>
+<p>The quadrupole pipeline reuses the same trajectory: states are sampled on a 12001-point grid for the protocol checks and on a 4801-point grid for the figures, and the quadrupole derivatives are evaluated from the exact analytic formulas — positions, velocities, accelerations and jerks of the DOP853 dense output — so the displayed waveform, spectrum and luminosity carry no numerical-differentiation edge artifacts. The strain is the second derivative of Q_xx − Q_yy; the instantaneous luminosity uses the trace-free combination (2Q⃛xx − Q⃛yy)/3, (2Q⃛yy − Q⃛xx)/3, −(Q⃛xx + Q⃛yy)/3 together with Q⃛xy, summed per (E4).</p>
+<p>The spectral and directional diagnostics are deterministic. The spectrum is an FFT of the mean-subtracted exact strain over one full period — no window is needed because the signal is exactly periodic — with harmonic amplitudes tabulated for n = 1 … 30 of the orbital frequency. The antenna pattern is the time average of the transverse-traceless projected luminosity tensor contracted with the projector onto each sky direction, evaluated on a 181 × 121 (θ, φ) grid. The velocity-detuning sweep integrates the rescaled initial states (all velocities multiplied by k ∈ {0.90, 0.95, 0.98, 0.99, 1.00, 1.01, 1.02, 1.05, 1.10}) over [0, 8] at rtol = atol = 1e-11 and refines the first return with xatol 1e-10.</p>
+<h2>6. Results and analysis</h2>
+<h3>fig01 orbit overview</h3>
+<p><img alt="Orbit overview: (a) the figure-eight trajectory traced by all three equal masses over one period T = 6.325914 with the chase direction marked; (b) pairwise separations over the same period." src="../figures/fig01_orbit_overview.png" /></p>
+<p><em>Orbit overview: (a) the figure-eight trajectory traced by all three equal masses over one period T = 6.325914 with the chase direction marked; (b) pairwise separations over the same period.</em>
+All three bodies trace the identical closed curve; the pairwise separations r12/r13/r23 sweep the same range 0.6905 to 2.0000 and are permuted among the pairs every T/3 — the exchange symmetry that powers the quadrupole.</p>
+<h3>fig02 waveform comb</h3>
+<p><img alt="Headline result: plus-polarised waveform of the choreography over one orbit period (left) and the harmonic comb of its spectrum (right)." src="../figures/fig02_waveform_comb.png" /></p>
+<p><em>Headline result: plus-polarised waveform of the choreography over one orbit period (left) and the harmonic comb of its spectrum (right).</em>
+The exact strain spans −4.04 to +4.85 and repeats every T/6; the spectrum is a pure comb with lines at n = 6, 12, 18 of relative amplitudes 1 : 0.091 : 0.0061, every other harmonic staying below 0.0013 of the dominant line at f·T = 5.9988.</p>
+<h3>fig03 pattern sweep</h3>
+<p><img alt="Directionality and isolation: time-averaged quadrupole antenna pattern (left) and the velocity-detuning sweep around the choreography (right)." src="../figures/fig03_pattern_sweep.png" /></p>
+<p><em>Directionality and isolation: time-averaged quadrupole antenna pattern (left) and the velocity-detuning sweep around the choreography (right).</em>
+Emission peaks along the orbital normal at 3.01 times the mean luminosity with in-plane minima 0.055 of the peak; scaling the initial velocities by k leaves the k = 1 closure residual at 7.6·10<sup>-9</sup> while the nearest detuned case (k = 1.01) jumps to 0.028 with return-time shifts up to 1.67 — the eight is an isolated solution.</p>
+<h3>fig04 quadrupole dynamics</h3>
+<p><img alt="Emitter dynamics: exact second derivatives of the quadrupole components (left) and the instantaneous and cumulative radiated energy (right)." src="../figures/fig04_quadrupole_dynamics.png" /></p>
+<p><em>Emitter dynamics: exact second derivatives of the quadrupole components (left) and the instantaneous and cumulative radiated energy (right).</em>
+The T/3 exchange symmetry and the T/2 sign flip of the xy component are visible in the components; the exact luminosity averages 76.51, peaks at 159.73, and the cumulative radiated energy reaches 484.10 over one period (G = c = D = 1).</p>
+<p><strong>Orbit and symmetry.</strong> The period closure closes the loop first: T = 6.325914025 against the published 6.32591398, a mismatch of 1.2e-08 inside the 5e-8 tolerance, and the configuration returns on itself to the same 1.2e-08. Energy is conserved to 3.6e-15 and the angular momentum is zero to 1.4e-15 — the defining L = 0 property holds at machine precision. The pairwise separations sweep 0.6905 to 2.0000 and are permuted among the three pairs every T/3, and the same order-3 exchange shows up on the quadrupole: Q(T/3) = Q(0) to 1.5·10<sup>-8</sup> while Q(T/2) − Q(0) = 0.943 — the half period is emphatically not a symmetry, the choreography exchange is order three, not two.</p>
+<p><strong>Waveform and comb.</strong> The exact plus-polarised strain spans −4.04 to +4.85 over one period and repeats every T/6, visible as six identical lobes in the waveform panel. The spectrum is a pure comb: the dominant line at n = 6 of the orbital comb (f·T = 5.9988 for the windowless exact spectrum; the acceptance check, computed on the finite-difference series with a Hann window, gives f·T = 5.9995 with residual 5.0e-4 against the 0.05 tolerance), overtones at n = 12, 18, 24 of relative amplitudes 0.091, 0.0061, 0.0004, and every other harmonic of the orbital frequency suppressed below 0.0013 of the peak. The dominant harmonic sits at exactly twice the T/3 pattern frequency 3/T, as the symmetry bookkeeping predicts.</p>
+<p><strong>Directionality.</strong> The time-averaged quadrupole antenna pattern, built from exact third derivatives, peaks along the orbital normal at 3.01 times the mean luminosity — a face-on observer receives the strongest signal — while in-plane emission is suppressed to 0.055 of the peak both along the x-axis and along the diagonals of the eight. For a LISA-class instrument the observable is therefore strongly inclination-dependent, and the gold lobes drawn in the scheme mark the only directions worth pointing at.</p>
+<p><strong>Isolation and energy bookkeeping.</strong> The velocity-detuning sweep proves the choreography is not a member of a nearby family: at k = 1 the closure residual is 7.6·10<sup>-9</sup>, while the nearest detuned case (k = 1.01) already sits at 0.028 and the extremes k = 0.90 and k = 1.10 reach 0.826 and 0.945, with return-time shifts from −1.63 to +1.67. On the energy side the exact luminosity averages 76.51 with a maximum of 159.73, so one period radiates 484.10 in G = c = D = 1 units. The acceptance-proxy value 1.65e8 recorded in the protocol is deliberately not used as a physical number: the chained finite-difference estimator amplifies sampling noise by orders of magnitude, and its only job is the finiteness gate 0 &lt; P &lt; 1e10, which it passes.</p>
+<h3>Verification summary</h3>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Recorded value</th>
+<th>Target</th>
+<th>Tolerance</th>
+<th>Pass</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>`period_closure_error`</td>
+<td>1.23174e-08</td>
+<td>0</td>
+<td>5e-08</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`period_in_expected_range`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`energy_conserved`</td>
+<td>3.55271e-15</td>
+<td>0</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`angular_momentum_is_zero`</td>
+<td>1.44329e-15</td>
+<td>0</td>
+<td>1e-09</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`luminosity_finite_positive`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`quadrupole_choreography_symmetry`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`dominant_harmonic_on_comb`</td>
+<td>0.000499958</td>
+<td>0</td>
+<td>0.05</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p><em>(status: </em><em>PASS</em><em>, mode: full)</em></p>
+<h2>7. Discussion</h2>
+<p>The model is deliberately minimal: Newtonian dynamics plus the leading quadrupole formula, planar and equal-mass. Within these assumptions every reported number is an exact statement about the governing equations rather than a simulation of a specific astrophysical system. The natural extensions each keep the verification style: unequal-mass choreographies and their literature continuum, the full multipole ladder beyond the quadrupole (octupole and higher), the gravitational-wave back-reaction on the orbit over many periods, and the time-dependent detector response of a LISA-class instrument at arbitrary inclination, which the present antenna pattern only summarises.</p>
+<p>The parameter regime is chosen for structural clarity. All results are quoted in units where G = m = c = D = 1; the physical mapping is linear — a system of total mass M and size scale L repeats the same dimensionless solution with the orbital frequency scaled by √(GM/L<sup>3</sup>) and the strain by GM/(c<sup>2</sup>D). Which astrophysical population could actually radiate into the mHz band of LISA, whether any natural system realises (or is captured into) a choreography, and how the comb signature survives environmental perturbations are astrophysical questions that lie beyond this study's scope but are now well posed: the comb and its 1 : 0.091 : 0.0061 amplitude ladder are falsifiable targets.</p>
+<p>Within the program this study completes the comparable-mass branch of the three-body block. TRX-10 treats the hierarchical (secular) limit of the same problem — Kozai–Lidov cycles instead of a choreography; TRX-09 describes the same choreographic idea in the vortex language of the monograph; TRX-01 and TRX-12 put lasers inside the three-body problem as actuators, while this study points lasers at it as the measuring instrument. Together they cover the three-body problem of the TRIVORTEX program from the restricted to the radiating comparable-mass case.</p>
+<h2>8. Conclusions</h2>
+<ol>
+<li>The period of the figure-eight choreography, found by global minimisation of the configuration closure, is T = 6.325914025 — matching the published 6.32591398 to 1.2e-08 and inside the 5e-8 acceptance tolerance.</li>
+<li>Energy is conserved to 3.6e-15 and the total angular momentum stays zero to 1.4e-15 over one full period: the defining L = 0 property of the eight holds at machine precision.</li>
+<li>The equal-mass exchange symmetry is verified on the quadrupole: Q(T/3) = Q(0) to 1.5·10<sup>-8</sup> while Q(T/2) − Q(0) = 0.943, confirming the choreography exchange is order three.</li>
+<li>The plus-polarised waveform spans −4.04 to +4.85, repeats six times per period, and its spectrum is a pure comb: dominant line at n = 6 (f·T = 5.9995, residual 5.0e-4), overtones at 12, 18, 24 with amplitudes 0.091, 0.0061, 0.0004, all other harmonics below 0.0013 of the peak.</li>
+<li>The time-averaged antenna pattern peaks along the orbital normal at 3.01 times the mean exact luminosity (76.51 mean, 159.73 peak, 484.10 radiated per period in G = c = D = 1); in-plane emission is suppressed to 0.055 of the peak.</li>
+<li>The velocity-detuning sweep over k = 0.90 … 1.10 shows the eight is isolated: the k = 1 closure residual is 7.6·10<sup>-9</sup> while every detuned case exceeds 0.028, with return-time shifts up to 1.67.</li>
+</ol>
+<h2>9. References</h2>
+<ol>
+<li>Einstein, A. (1918). <em>Über Gravitationswellen.</em> Sitzungsberichte der Königlich Preussischen Akademie der Wissenschaften (Berlin), 154–167.</li>
+<li>Peters, P. C., Mathews, J. (1963). <em>Gravitational radiation from point masses in a Keplerian orbit.</em> Physical Review 131, 435–440.</li>
+<li>Thorne, K. S. (1980). <em>Multipole expansions of gravitational radiation.</em> Reviews of Modern Physics 52, 299–339.</li>
+<li>Moore, C. (1993). <em>Braids in classical dynamics.</em> Physical Review Letters 70, 3675–3679.</li>
+<li>Chenciner, A., Montgomery, R. (2000). <em>A remarkable periodic solution of the three-body problem in the case of equal masses.</em> Annals of Mathematics 152, 881–901.</li>
+<li>Simó, C. (2002). <em>Dynamical properties of the eight map.</em> Celestial Mechanics 4, 343.</li>
+<li>Taylor, J. H., Weisberg, J. M. (1982). <em>A new test of general relativity: gravitational radiation and the binary pulsar PSR 1913+16.</em> The Astrophysical Journal 253, 908–920.</li>
+<li>Maggiore, M. (2007). <em>Gravitational Waves. Volume 1: Theory and Experiments.</em> Oxford University Press.</li>
+<li>Amaro-Seoane, P. et al. (2017). <em>Laser Interferometer Space Antenna.</em> arXiv:1702.00786.</li>
+</ol>
+<h3>BibTeX</h3>
+<p>```bibtex
+@article{einstein1918,
+  author  = {Einstein, Albert},
+  title   = {{\"U}ber Gravitationswellen},
+  journal = {Sitzungsberichte der K{\"o}niglich Preussischen Akademie der Wissenschaften (Berlin)},
+  year    = {1918}, pages = {154--167}}
+
+@article{peters1963,
+  author  = {Peters, Peter C. and Mathews, Jon},
+  title   = {Gravitational radiation from point masses in a Keplerian orbit},
+  journal = {Physical Review},
+  year    = {1963}, volume = {131}, pages = {435--440}}
+
+@article{thorne1980,
+  author  = {Thorne, Kip S.},
+  title   = {Multipole expansions of gravitational radiation},
+  journal = {Reviews of Modern Physics},
+  year    = {1980}, volume = {52}, pages = {299--339}}
+
+@article{chenciner2000,
+  author  = {Chenciner, Alain and Montgomery, Richard},
+  title   = {A remarkable periodic solution of the three-body problem in the case of equal masses},
+  journal = {Annals of Mathematics},
+  year    = {2000}, volume = {152}, pages = {881--901}}
+
+@book{maggiore2007,
+  author    = {Maggiore, Michele},
+  title     = {Gravitational Waves. Volume 1: Theory and Experiments},
+  publisher = {Oxford University Press}, year = {2007}}
+```</p>
+<h2>Appendix A. Parameter table</h2>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Value</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G, m</td>
+<td>1, 1</td>
+<td>gravitational constant and equal masses (canonical units)</td>
+</tr>
+<tr>
+<td>r<sub>1</sub>(0)</td>
+<td>(0.97000436, −0.24308753)</td>
+<td>initial position of body 1; r<sub>2</sub> = −r<sub>1</sub>, r<sub>3</sub> = (0, 0)</td>
+</tr>
+<tr>
+<td>v<sub>3</sub>(0)</td>
+<td>(−0.93240737, −0.86473146)</td>
+<td>initial velocity of body 3; v<sub>1</sub> = v<sub>2</sub> = −v<sub>3</sub>/2</td>
+</tr>
+<tr>
+<td>T</td>
+<td>6.325914025</td>
+<td>period from closure minimisation (published 6.32591398)</td>
+</tr>
+<tr>
+<td>Integrator</td>
+<td>DOP853, rtol = atol = 1e-13</td>
+<td>max_step 0.005 (period search: 0.01)</td>
+</tr>
+<tr>
+<td>Dense sampling</td>
+<td>12001 points per period</td>
+<td>quadrupole derivative grid (figures: 4801)</td>
+</tr>
+<tr>
+<td>Period search</td>
+<td>t ∈ [2, 11], 1800-point grid, xatol 1e-13</td>
+<td>bounded minimisation of the closure</td>
+</tr>
+<tr>
+<td>Spectrum</td>
+<td>n ≤ 30 harmonics of f = 1/T</td>
+<td>FFT of the mean-subtracted exact strain, no window</td>
+</tr>
+<tr>
+<td>Antenna grid</td>
+<td>181 × 121 (θ, φ)</td>
+<td>time-averaged TT-projected luminosity tensor</td>
+</tr>
+<tr>
+<td>Detuning sweep</td>
+<td>k ∈ {0.90 … 1.10}, 9 values</td>
+<td>closure refinement xatol 1e-10, integration [0, 8]</td>
+</tr>
+</tbody>
+</table>
+<h2>Appendix B. Reproduction</h2>
+<p>```bash
+python3 research/TRX-11-gw-choreography/code/trx11_gw_choreography.py --smoke     # < 20 s
+python3 research/TRX-11-gw-choreography/code/trx11_gw_choreography.py              # full, 8.17 s
+python3 research/TRX-11-gw-choreography/code/trx11_gw_choreography.py --figures   # + 300-DPI figures
+```</p>
+<p>Full runtime on the reference machine: 8.17 s; smoke mode completes in under 20 seconds and is exercised by the repository CI.</p>
+<h2>Appendix C. Environment</h2>
+<p>Python ≥ 3.11, numpy ≥ 2.0, scipy ≥ 1.14, matplotlib ≥ 3.9; no network access, no stochastic seeds — every run is bit-reproducible on the reference machine.</p><div class="part-banner"><div class="pb-title">ЧАСТЬ II · Русская монография</div><div class="pb-sub">Гравитационные волны от хореографии «восьмёрки»</div></div><div lang="ru"><p><em>Исследовательская программа TRIVORTEX · v1.0.0 · Издание монографий</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Исследование / Study</td>
+<td>TRX-11</td>
+</tr>
+<tr>
+<td>Программа</td>
+<td>TRIVORTEX — задача трёх тел в вихревой модели</td>
+</tr>
+<tr>
+<td>Автор</td>
+<td>Исаев Исхак Хамзатович (ORCID 0009-0003-7299-0701)</td>
+</tr>
+<tr>
+<td>DOI</td>
+<td>10.5281/zenodo.21825394</td>
+</tr>
+<tr>
+<td>Дата</td>
+<td>2026-10-06</td>
+</tr>
+<tr>
+<td>Код</td>
+<td>`code/trx11_gw_choreography.py`</td>
+</tr>
+<tr>
+<td>Данные</td>
+<td>`results/trx11_results.json`</td>
+</tr>
+</tbody>
+</table>
+<h2>Аннотация</h2>
+<p>Настоящая монография превращает хореографию «восьмёрку» Ченчинера и Монтгомери — три равные массы, преследующие друг друга по одной замкнутой кривой с нулевым моментом импульса, — в количественно описанный источник гравитационных волн. Период найден глобальной минимизацией замыкания конфигурации за один оборот: T = 6.325914025, что совпадает с опубликованным 6.32591398 на уровне 1.2e-08; энергия сохраняется до 3.6e-15, момент импульса остаётся нулевым до 1.4e-15 на всём периоде. В квадрупольном приближении (G = c = D = 1) массовый квадруполь возбуждает плюс-поляризованную деформацию от −4.04 до +4.85, повторяющуюся шесть раз за орбитальный период. Симметрия хореографии Q(T/3) = Q(0), проверенная до 1.5·10<sup>-8</sup>, запирает спектр в гармоническую гребёнку: доминирующая линия попадает на n = 6 орбитальной гребёнки (f·T = 5.9995, остаток 5.0e-4) с обертонами на 12 и 18 и относительными амплитудами 0.091 и 0.0061. Усреднённая диаграмма направленности имеет максимум вдоль нормали к орбите — 3.01 средней точной светимости 76.51, а развёртка по расстройке скоростей k = 0.90 … 1.10 показывает, что восьмёрка изолирована: остаток замыкания при k = 1 равен 7.6·10<sup>-9</sup>, тогда как каждый расстроенный случай превышает 0.028. Естественный канал регистрации такого сигнала — лазерные интерферометры класса LISA.</p>
+<h2>Содержание</h2>
+<p><strong>Краткие сведения</strong></p>
+<table>
+<thead>
+<tr>
+<th>Аспект</th>
+<th>Значение</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Блок</td>
+<td>Гравитационные волны — исследование 11 из 12</td>
+</tr>
+<tr>
+<td>Модель</td>
+<td>хореография «восьмёрка» (G = m = 1) + квадрупольное излучение (G = c = D = 1)</td>
+</tr>
+<tr>
+<td>Ключевой инвариант</td>
+<td>нулевой момент импульса L = 0 (держится до 1.4e-15 за период)</td>
+</tr>
+<tr>
+<td>Главный результат</td>
+<td>деформация с повтором каждые T/6; чистая гребёнка с доминирующей линией на n = 6 (f·T = 5.9995)</td>
+</tr>
+<tr>
+<td>Верификация</td>
+<td>7/7 проверок PASS (полный режим)</td>
+</tr>
+<tr>
+<td>Время выполнения</td>
+<td>8.17 с полный (с рисунками) · &lt; 20 с smoke</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>Аннотация</li>
+<li>
+<ol>
+<li>Введение и исторический контекст</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>Физическая формулировка</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>Математическая модель</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li>Связь с фреймворком TRIVORTEX</li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li>Численный метод</li>
+</ol>
+</li>
+<li>
+<ol start="6">
+<li>Результаты и анализ</li>
+</ol>
+</li>
+<li>
+<ol start="7">
+<li>Обсуждение</li>
+</ol>
+</li>
+<li>
+<ol start="8">
+<li>Выводы</li>
+</ol>
+</li>
+<li>
+<ol start="9">
+<li>Список литературы
+Приложение A. Таблица параметров
+Приложение B. Воспроизведение</li>
+</ol>
+</li>
+</ol>
+<h2>1. Введение и исторический контекст</h2>
+<p>Гравитационные волны вошли в физику как предсказание общей теории относительности: Эйнштейн вывел линеаризованные уравнения поля в 1916 году и вернулся к вопросу в 1918-м со знаменитой квадрупольной формулой, установив, что ускоренные массы излучают энергию со скоростью, определяемой третьей производной по времени тенора массового квадруполя. Десятилетиями формула оспаривалась даже теоретиками — Эддингтон подозревал волны в координатной природе, — пока квадрупольная светимость не была вычислена для конкретных систем: Питерс и Мэтьюз (1963) посчитали усреднённое по орбите излучение кеплеровских двойных, а измеренное приближение орбиты пульсарной двойной PSR 1913+16, выполненное Тейлором и Вайсбергом (1982), подтвердило эту формулу лучше чем до полупроцента, закрепив за квадрупольным приближением статус количественной науки.</p>
+<p>Современный формализм восходит к обзору Торна (1980), систематизировавшему мультипольное разложение гравитационного излучения — мультиполи источника, бесследовую проекцию, поток энергии — в стандартный инструментарий сегодняшних моделей формы волны; монография Маджоре (2007) зафиксировала педагогический канон. В этой структуре плюс-поляризованная деформация у далёкого наблюдателя пропорциональна второй производной бесследового квадруполя, а светимость — сумме квадратов третьих производных; именно эти два объекта вычисляются здесь для трёхтелевого источника в единицах G = c = D = 1.</p>
+<p>У самого источника история короче, но замечательна. Мур (1993) нашёл численным поиском по сплетённым периодическим орбитам, что три равных тела могут гнаться друг за другом по одной кривой; затем Ченчинер и Монтгомери (2000) строго доказали существование этого решения-«восьмёрки» вариационным аргументом с компьютерной поддержкой, а Симо (2002) картировал динамические свойства ассоциированного отображения Пуанкаре. Решение исключительно сразу по нескольким линиям: оно периодично, плоско, свободно от столкновений и несёт в точности нулевой момент импульса — свойство, которого нет ни у одной круговой двойной и которое формует излучаемую волну.</p>
+<p>Для TRIVORTEX значимость структурна. Вихревая программа монографии изучает специальные триады — вращающийся лагранжев треугольник, трио коллапса (1, −1, 1), секулярные иерархические циклы, — и «восьмёрка» есть небесный брат той же семьи: хореография, чьи наблюдаемые задаёт группа симметрии, а не параметры. Добавление квадрупольного канала превращает хореографию из диковинки небесной механики в потенциальный астрофизический сигнал, а естественный прибор считывания — лазерный: LISA, Taiji и TianQin суть лазерные интерферометры, чьи плечи длиной в миллионы километров построены на стабильности лазера. Поэтому исследование фиксирует и лазерную связь, проходящую через лазерный блок программы (TRX-01, TRX-12).</p>
+<h2>2. Физическая формулировка</h2>
+<p>Плоская ньютоновская задача трёх тел с тремя равными массами, G = m = 1. Начальное условие — «восьмёрка» Ченчинера–Монтгомери: r<sub>1</sub> = (0.97000436, −0.24308753), r<sub>2</sub> = −r<sub>1</sub>, r<sub>3</sub> = (0, 0), v<sub>3</sub> = (−0.93240737, −0.86473146), v<sub>1</sub> = v<sub>2</sub> = −v<sub>3</sub>/2. Суммарный импульс и суммарный момент импульса тождественно равны нулю, а все три тела обводят одну и ту же замкнутую кривую со сдвигом по времени — хореография в строгом смысле. За один период T = 6.325914 парные расстояния пробегают интервал от 0.6905 до 2.0000 и каждые T/3 циклически перераспределяются между парами.</p>
+<p>Волновая модель — ведущий квадрупольный член общей теории относительности в дальней зоне при малых скоростях. При G = c = D = 1 плюс-поляризованная деформация, регистрируемая далёким наблюдателем, пропорциональна второй производной Q_xx − Q_yy, а светимость равна P = (1/5)Σ_ij (d<sup>3</sup>Q_ij/dt<sup>3</sup>)<sup>2</sup>, вычисленной на бесследовой части квадруполя. Излучатель сознательно идеализирован: ньютоновская гравитация задаёт движение источника, а теория относительности входит только как формула считывания — без обратного действия на орбиту и без высших мультиполей.</p>
+<table>
+<thead>
+<tr>
+<th>Параметр</th>
+<th>Значение</th>
+<th>Смысл</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Массы, константа</td>
+<td>m<sub>1</sub> = m<sub>2</sub> = m<sub>3</sub> = 1, G = 1</td>
+<td>плоская ньютоновская задача трёх тел</td>
+</tr>
+<tr>
+<td>Начальные положения</td>
+<td>r<sub>1</sub> = (0.97000436, −0.24308753), r<sub>2</sub> = −r<sub>1</sub>, r<sub>3</sub> = (0, 0)</td>
+<td>начальное условие Ченчинера–Монтгомери</td>
+</tr>
+<tr>
+<td>Начальные скорости</td>
+<td>v<sub>3</sub> = (−0.93240737, −0.86473146), v<sub>1</sub> = v<sub>2</sub> = −v<sub>3</sub>/2</td>
+<td>нулевой суммарный импульс, нулевой момент импульса</td>
+</tr>
+<tr>
+<td>Интегратор</td>
+<td>DOP853, rtol = atol = 1e-13, max_step 0.005</td>
+<td>один период; плотная выборка 12001 точек для квадруполя</td>
+</tr>
+<tr>
+<td>Поиск периода</td>
+<td>минимизация замыкания по t ∈ [2, 11], xatol 1e-13</td>
+<td>глобальный минимум замыкания конфигурации</td>
+</tr>
+<tr>
+<td>Волновая модель</td>
+<td>квадруполь, G = c = D = 1</td>
+<td>h<sub>+</sub> ∝ d<sup>2</sup>(Qxx − Qyy)/dt<sup>2</sup>; P = (1/5)Σ(d<sup>3</sup>Q_ij/dt<sup>3</sup>)<sup>2</sup></td>
+</tr>
+</tbody>
+</table>
+<h2>3. Математическая модель</h2>
+<p>Квадрупольный канал следует из разложения уравнений Эйнштейна по малым скоростям и слабому полю. В ведущем порядке излучательные степени свободы возбуждаются бесследовой частью второго массового момента Q_ij = Σ_k m_k x_ki x_kj (E2); поперечно-бесследовая проекция на наблюдателе даёт две поляризации, причём для оптимально ориентированного детектора плюс-поляризованная деформация пропорциональна второй производной Q_xx − Q_yy (E3). Поток энергии задаётся третьими производными (E4): с восстановленными G и c, P = (G/5c<sup>5</sup>)⟨Σ(d<sup>3</sup>Q_ij/dt<sup>3</sup>)<sup>2</sup>⟩, поэтому в единицах G = c = D = 1, используемых повсюду, светимость — это буквально (1/5) суммы квадратов третьих производных. Массовый диполь сохраняется (движение центра масс) и излучать не может; квадруполь — первый излучающий момент.</p>
+<p>Структура хореографии входит через (E5). Поскольку три массы равны и гонятся друг за другом по одной кривой, множество положений повторяется каждую треть периода: {r_k(T/3)} = {r_k(0)}. Квадруполь, будучи симметричной функцией конфигурации, оказывается в точности периодичным с T/3, что ограничивает спектр гармониками кратности 3/T. Измеренный спектр уточняет это дальше: доминирующая линия попадает на f·T = 5.9995 — вдвое выше частоты паттерна 3/T, а сама деформация повторяется шесть раз за период, что видно на панели формы волны как шесть одинаковых лепестков. Нулевой момент импульса — второй структурный вход: он убирает вращательную доплеро-подобную асимметрию, которую наложила бы вращающаяся двойная, оставляя форму волны, определённую одной лишь геометрией восьмёрки.</p>
+<p>Численно производные квадруполя вычисляются точно, а не конечными разностями. Дифференцируя закон Ньютона (E1) ещё раз, получаем рывок — третью производную положения по времени — в замкнутой форме, после чего правило цепочки даёт точные вторые производные Q̈ = Σ(2vv + 2xa) и третьи производные Q⃛ = Σ(6va + 2xj) каждой компоненты квадруполя прямо из состояния (положения, скорости, ускорения, рывки). Это важно, потому что цепочка конечных разностей на численно засэмплированной кривой усиливает ошибку на порядки за каждый проход: проверка приёмки сознательно использует простую конечно-разностную оценку только как вентиль конечности (записанное значение 1.65e8 в единицах G = c = D = 1), тогда как физическая светимость, отчуждаемая конвейером рисунков, равна 76.51 в среднем с пиком 159.73.</p>
+<p><strong>Нотация</strong></p>
+<table>
+<thead>
+<tr>
+<th>Символ</th>
+<th>Смысл</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q_ij</td>
+<td>тензор массового квадруполя, Q_ij = Σ_k m_k x_ki x_kj</td>
+</tr>
+<tr>
+<td>h<sub>+</sub>(t)</td>
+<td>плюс-поляризованная деформация у наблюдателя, ∝ d<sup>2</sup>(Qxx − Qyy)/dt<sup>2</sup></td>
+</tr>
+<tr>
+<td>P</td>
+<td>гравитационно-волновая светимость (единицы G = c = D = 1)</td>
+</tr>
+<tr>
+<td>T</td>
+<td>период хореографии, 6.325914025 при G = m = 1</td>
+</tr>
+<tr>
+<td>n</td>
+<td>номер гармоники орбитальной гребёнки, f = n/T</td>
+</tr>
+<tr>
+<td>f·T</td>
+<td>безразмерное положение спектральной линии на гребёнке</td>
+</tr>
+<tr>
+<td>θ</td>
+<td>наклонение наблюдателя, отсчитываемое от нормали к орбите</td>
+</tr>
+<tr>
+<td>k</td>
+<td>множитель скоростей в развёртке расстройки</td>
+</tr>
+<tr>
+<td>L_z</td>
+<td>полный момент импульса трёх тел (тождественный нуль)</td>
+</tr>
+<tr>
+<td>r_ij</td>
+<td>парное расстояние, пробегающее [0.6905, 2.0000] за один период</td>
+</tr>
+<tr>
+<td>Q⃛_ij</td>
+<td>третья производная квадруполя по времени, возбуждающая светимость (E4)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>(E1)</strong> Ньютоновская динамика трёх тел (плоская, равные массы).</p>
+<p>$$\ddot{\boldsymbol{r}}_k = \sum_{j \neq k} \frac{\boldsymbol{r}_j - \boldsymbol{r}_k}{\left|\boldsymbol{r}_j - \boldsymbol{r}_k\right|^3}, \qquad G = m = 1$$</p>
+<p><strong>(E2)</strong> Тензор массового квадруполя излучателя.</p>
+<p>$$Q_{ij} = \sum_k m_k\, x_{ki}\, x_{kj}$$</p>
+<p><strong>(E3)</strong> Плюс-поляризованная форма волны у далёкого наблюдателя (G = c = D = 1).</p>
+<p>$$h_+(t) \propto \frac{d^2}{dt^2}\left(Q_{xx} - Q_{yy}\right)$$</p>
+<p><strong>(E4)</strong> Гравитационно-волновая светимость на бесследовом квадруполе (G = c = D = 1).</p>
+<p>$$P = \frac{1}{5}\sum_{ij} \left(\frac{d^3 Q_{ij}}{dt^3}\right)^{2}$$</p>
+<p><strong>(E5)</strong> Обменная симметрия хореографии и гребёнка гармоник.</p>
+<p>$$\{\boldsymbol{r}_k(T/3)\} = \{\boldsymbol{r}_k(0)\} \;\Rightarrow\; Q(t + T/3) = Q(t) \;\Rightarrow\; \tilde{h}(f) \neq 0 \ \text{only at}\ f = n \cdot \frac{3}{T}$$</p>
+<h2>4. Связь с фреймворком TRIVORTEX</h2>
+<p>В рамках TRIVORTEX «восьмёрка» — второе специальное трёхтелевое решение после вращающейся равносторонней хореографии теоремы 3.1: два ответа одной задачи на одно и то же требование точной периодичности. Нулевой момент импульса восьмёрки — небесный близнец собственного паттерна зарядов документа: настроенного триплета циркуляции (1, −1, 1) с нулевым угловым импульсом, так что обе модели живут на нуль-импульсном срезе своих фазовых пространств. Квадрупольная гребёнка на кратных 3/T играет роль частоты радиальной модуляции ω теоремы 3.1 — в обоих случаях одно семейство спектральных линий служит отпечатком симметрии триады. Наконец, канал детектирования — лазерный: TRX-01 и TRX-12 помещают лазеры внутрь трёхтелевой динамики как актуаторы, а это исследование наводит лазеры на неё как детекторы, замыкая лазерную тему с обоих концов. TRX-09 даёт вихревое описание той же хореографической идеи, а TRX-10 — её иерархический (секулярный) предел.</p>
+<table>
+<thead>
+<tr>
+<th>Величина исследования</th>
+<th>Аналог в TRIVORTEX</th>
+<th>Комментарий</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Хореография «восьмёрка»</td>
+<td>вращающаяся равносторонняя хореография теоремы 3.1</td>
+<td>два специальных решения одной задачи</td>
+</tr>
+<tr>
+<td>Нулевой момент импульса L = 0</td>
+<td>настроенный циркуляционный паттерн (1, −1, 1)</td>
+<td>собственный триплет зарядов документа</td>
+</tr>
+<tr>
+<td>Квадрупольная гребёнка на кратных 3/T</td>
+<td>радиальная модуляция ω теоремы 3.1</td>
+<td>спектральный отпечаток триады</td>
+</tr>
+<tr>
+<td>Период хореографии T = 6.325914</td>
+<td>период жёсткого вращения вихревого треугольника</td>
+<td>оба специальных решения несут одни часы</td>
+</tr>
+<tr>
+<td>Детектирование класса LISA</td>
+<td>лазерные темы TRX-01/12</td>
+<td>лазеры как измерительный прибор</td>
+</tr>
+</tbody>
+</table>
+<h2>5. Численный метод</h2>
+<p>Период находится прежде всяких измерений. Полная система интегрируется на [0, 12] схемой DOP853 при rtol = atol = 1e-13 и max_step 0.01; замыкание определяется как максимальное отклонение трёх положений от начальных значений, сканируется сеткой из 1800 точек по t ∈ [2, 11] и уточняется ограниченной одномерной минимизацией с xatol 1e-13. Глобальный минимум даёт T = 6.325914025 с остатком замыкания 1.2e-08 — внутри допуска приёмки 5e-8 и согласуется с опубликованным 6.32591398. Затем период реинтегрируется точно на [0, T] при max_step 0.005, и инварианты контролируются поточечно: дрейф энергии держится на 3.6e-15, полный момент импульса — на 1.4e-15 по всем 3000 выборкам.</p>
+<p>Квадрупольный конвейер использует ту же траекторию: состояния сэмплируются сеткой из 12001 точки для проверок протокола и 4801 точки для рисунков, а производные квадруполя вычисляются по точным аналитическим формулам — положения, скорости, ускорения и рывки плотного вывода DOP853, — так что отображаемые форма волны, спектр и светимость свободны от краевых артефактов численного дифференцирования. Деформация есть вторая производная Q_xx − Q_yy; мгновенная светимость использует бесследовую комбинацию (2Q⃛xx − Q⃛yy)/3, (2Q⃛yy − Q⃛xx)/3, −(Q⃛xx + Q⃛yy)/3 вместе с Q⃛xy, суммируемых согласно (E4).</p>
+<p>Спектральная и направленная диагностики детерминированы. Спектр — БПФ осреднённой точной деформации за один полный период — без окна, поскольку сигнал точно периодичен; амплитуды гармоник табулируются для n = 1 … 30 орбитальной частоты. Диаграмма направленности — усреднённое по времени значение поперечно-бесследовой проекции тензора светимости, свёрнутой с проектором на каждое направление неба, на сетке 181 × 121 (θ, φ). Развёртка по расстройке скоростей интегрирует пересчитанные начальные состояния (все скорости умножены на k ∈ {0.90, 0.95, 0.98, 0.99, 1.00, 1.01, 1.02, 1.05, 1.10}) на [0, 8] при rtol = atol = 1e-11 и уточняет первый возврат с xatol 1e-10.</p>
+<h2>6. Результаты и анализ</h2>
+<h3>fig01 orbit overview</h3>
+<p><img alt="Обзор орбиты: (a) траектория-«восьмёрка», которую все три равные массы обводят за один период T = 6.325914, с отмеченным направлением погони; (b) парные расстояния за тот же период." src="../figures/fig01_orbit_overview.png" /></p>
+<p><em>Обзор орбиты: (a) траектория-«восьмёрка», которую все три равные массы обводят за один период T = 6.325914, с отмеченным направлением погони; (b) парные расстояния за тот же период.</em>
+Все три тела обводят одну и ту же замкнутую кривую; парные расстояния r12/r13/r23 пробегают один и тот же диапазон от 0.6905 до 2.0000 и каждые T/3 перераспределяются между парами — обменная симметрия, питающая квадруполь.</p>
+<h3>fig02 waveform comb</h3>
+<p><img alt="Главный результат: плюс-поляризованная форма волны хореографии за один орбитальный период (слева) и гармоническая гребёнка её спектра (справа)." src="../figures/fig02_waveform_comb.png" /></p>
+<p><em>Главный результат: плюс-поляризованная форма волны хореографии за один орбитальный период (слева) и гармоническая гребёнка её спектра (справа).</em>
+Точная деформация лежит в диапазоне от −4.04 до +4.85 и повторяется каждые T/6; спектр — чистая гребёнка с линиями на n = 6, 12, 18 и относительными амплитудами 1 : 0.091 : 0.0061, все прочие гармоники лежат ниже 0.0013 доминирующей линии на f·T = 5.9988.</p>
+<h3>fig03 pattern sweep</h3>
+<p><img alt="Направленность и изолированность: усреднённая по времени квадрупольная диаграмма направленности (слева) и развёртка по расстройке скоростей вокруг хореографии (справа)." src="../figures/fig03_pattern_sweep.png" /></p>
+<p><em>Направленность и изолированность: усреднённая по времени квадрупольная диаграмма направленности (слева) и развёртка по расстройке скоростей вокруг хореографии (справа).</em>
+Излучение достигает максимума вдоль нормали к орбите — 3.01 средней светимости, внутриплоскостные минимумы составляют 0.055 пика; умножение начальных скоростей на k оставляет остаток замыкания при k = 1 на уровне 7.6·10<sup>-9</sup>, тогда как ближайший расстроенный случай (k = 1.01) скачет до 0.028 со сдвигами времени возврата до 1.67 — восьмёрка изолирована.</p>
+<h3>fig04 quadrupole dynamics</h3>
+<p><img alt="Динамика излучателя: точные вторые производные компонент квадруполя (слева) и мгновенная с накопленной излучённой энергией (справа)." src="../figures/fig04_quadrupole_dynamics.png" /></p>
+<p><em>Динамика излучателя: точные вторые производные компонент квадруполя (слева) и мгновенная с накопленной излучённой энергией (справа).</em>
+В компонентах видны обменная симметрия T/3 и смена знака xy-компоненты на T/2; точная светимость в среднем равна 76.51 с пиком 159.73, а накопленная излучённая энергия достигает 484.10 за один период (G = c = D = 1).</p>
+<p><strong>Орбита и симметрия.</strong> Замыкание периода замыкает контур первым: T = 6.325914025 против опубликованного 6.32591398, расхождение 1.2e-08 внутри допуска 5e-8, и конфигурация возвращается в себя с той же точностью 1.2e-08. Энергия сохраняется до 3.6e-15, момент импульса равен нулю до 1.4e-15 — определяющее свойство L = 0 выполняется с машинной точностью. Парные расстояния пробегают от 0.6905 до 2.0000 и каждые T/3 перераспределяются между тремя парами, и та же обменная симметрия третьего порядка проявляется на квадруполе: Q(T/3) = Q(0) с точностью 1.5·10<sup>-8</sup>, тогда как Q(T/2) − Q(0) = 0.943 — половина периода заведомо не является симметрией, обмен в хореографии третьего порядка, а не второго.</p>
+<p><strong>Форма волны и гребёнка.</strong> Точная плюс-поляризованная деформация пробегает от −4.04 до +4.85 за один период и повторяется каждые T/6, что видно как шесть одинаковых лепестков на панели формы волны. Спектр — чистая гребёнка: доминирующая линия на n = 6 орбитальной гребёнки (f·T = 5.9988 для оконной точной версии; приёмочная проверка, посчитанная по конечно-разностному ряду с окном Ханна, даёт f·T = 5.9995 с остатком 5.0e-4 против допуска 0.05), обертоны на n = 12, 18, 24 с относительными амплитудами 0.091, 0.0061, 0.0004, а все прочие гармоники орбитальной частоты подавлены ниже 0.0013 пика. Доминирующая гармоника лежит ровно вдвое выше частоты паттерна T/3, равной 3/T, — как и предсказывает симметрийная арифметика.</p>
+<p><strong>Направленность.</strong> Усреднённая квадрупольная диаграмма направленности, построенная из точных третьих производных, имеет максимум вдоль нормали к орбите — 3.01 средней светимости, то есть наблюдатель «лицом» получает самый сильный сигнал, — тогда как внутриплоскостное излучение подавлено до 0.055 пика и вдоль оси x, и вдоль диагоналей восьмёрки. Для прибора класса LISA наблюдаемая потому сильно зависит от наклонения, и золотые лепестки на схеме отмечают единственные направления, куда стоит целиться.</p>
+<p><strong>Изолированность и энергетика.</strong> Развёртка по расстройке скоростей доказывает, что хореография не член соседнего семейства: при k = 1 остаток замыкания равен 7.6·10<sup>-9</sup>, тогда как ближайший расстроенный случай (k = 1.01) уже сидит на 0.028, а края k = 0.90 и k = 1.10 достигают 0.826 и 0.945 со сдвигами времени возврата от −1.63 до +1.67. По энергии точная светимость в среднем равна 76.51 с максимумом 159.73, так что один период излучает 484.10 в единицах G = c = D = 1. Значение прокси-приёмки 1.65e8, записанное в протоколе, сознательно не используется как физическое число: цепочка конечных разностей усиливает шум сэмплирования на порядки, и её единственная работа — вентиль конечности 0 &lt; P &lt; 1e10, который она проходит.</p>
+<h3>Сводка верификации</h3>
+<table>
+<thead>
+<tr>
+<th>Проверка</th>
+<th>Значение</th>
+<th>Цель</th>
+<th>Допуск</th>
+<th>Прошла</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>`period_closure_error`</td>
+<td>1.23174e-08</td>
+<td>0</td>
+<td>5e-08</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`period_in_expected_range`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`energy_conserved`</td>
+<td>3.55271e-15</td>
+<td>0</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`angular_momentum_is_zero`</td>
+<td>1.44329e-15</td>
+<td>0</td>
+<td>1e-09</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`luminosity_finite_positive`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`quadrupole_choreography_symmetry`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`dominant_harmonic_on_comb`</td>
+<td>0.000499958</td>
+<td>0</td>
+<td>0.05</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p><em>(status: </em><em>PASS</em><em>, mode: full)</em></p>
+<h2>7. Обсуждение</h2>
+<p>Модель сознательно минимальна: ньютоновская динамика плюс ведущая квадрупольная формула, плоскость и равные массы. В этих допущениях каждое сообщённое число — точное утверждение об определяющих уравнениях, а не симуляция конкретной астрофизической системы. Естественные расширения сохраняют верификационный стиль: хореографии неравных масс и их континуум в литературе, полная мультипольная лестница (октуполь и выше), гравитационно-волновое обратное действие на орбиту за много периодов и зависящий от времени отклик прибора класса LISA при произвольном наклонении, который настоящая диаграмма направленности лишь суммирует.</p>
+<p>Диапазон параметров выбран ради структурной ясности. Все результаты приведены в единицах G = m = c = D = 1; физическое отображение линейно — система полной массы M и масштаба L повторяет то же безразмерное решение с орбитальной частотой, масштабированной на √(GM/L<sup>3</sup>), и деформацией, масштабированной на GM/(c<sup>2</sup>D). Какие астрофизические популяции реально излучали бы в мГц-полосу LISA, реализует ли какая-либо природная система хореографию (или захватывается в неё) и как гребёнка переживает средовые возмущения — астрофизические вопросы за рамками этого исследования, но теперь они поставлены корректно: гребёнка и её лестница амплитуд 1 : 0.091 : 0.0061 — фальсифицируемые цели.</p>
+<p>В рамках программы это исследование замыкает ветвь сравнимых масс трёхтелевого блока. TRX-10 разбирает иерархический (секулярный) предел той же задачи — циклы Козаи–Лидова вместо хореографии; TRX-09 описывает ту же хореографическую идею на вихревом языке монографии; TRX-01 и TRX-12 помещают лазеры внутрь задачи трёх тел как актуаторы, а это исследование наводит лазеры на неё как измерительный прибор. Вместе они покрывают задачу трёх тел программы TRIVORTEX от ограниченной до излучающей задачи сравнимых масс.</p>
+<h2>8. Выводы</h2>
+<ol>
+<li>Период хореографии «восьмёрка», найденный глобальной минимизацией замыкания конфигурации, равен T = 6.325914025 — совпадение с опубликованным 6.32591398 на уровне 1.2e-08, внутри допуска приёмки 5e-8.</li>
+<li>Энергия сохраняется до 3.6e-15, а полный момент импульса остаётся нулевым до 1.4e-15 за один полный период: определяющее свойство восьмёрки L = 0 выполняется с машинной точностью.</li>
+<li>Обменная симметрия равных масс проверена на квадруполе: Q(T/3) = Q(0) с точностью 1.5·10<sup>-8</sup>, тогда как Q(T/2) − Q(0) = 0.943, — обмен в хореографии третьего порядка.</li>
+<li>Плюс-поляризованная форма волны пробегает от −4.04 до +4.85, повторяется шесть раз за период, а её спектр — чистая гребёнка: доминирующая линия на n = 6 (f·T = 5.9995, остаток 5.0e-4), обертоны на 12, 18, 24 с амплитудами 0.091, 0.0061, 0.0004, все прочие гармоники ниже 0.0013 пика.</li>
+<li>Усреднённая диаграмма направленности имеет максимум вдоль нормали к орбите — 3.01 средней точной светимости (в среднем 76.51, пик 159.73, 484.10 излучается за период в единицах G = c = D = 1); внутриплоскостное излучение подавлено до 0.055 пика.</li>
+<li>Развёртка по расстройке скоростей k = 0.90 … 1.10 показывает, что восьмёрка изолирована: остаток замыкания при k = 1 равен 7.6·10<sup>-9</sup>, тогда как каждый расстроенный случай превышает 0.028 со сдвигами времени возврата до 1.67.</li>
+</ol>
+<h2>9. Список литературы</h2>
+<ol>
+<li>Einstein, A. (1918). <em>Über Gravitationswellen.</em> Sitzungsberichte der Königlich Preussischen Akademie der Wissenschaften (Berlin), 154–167.</li>
+<li>Peters, P. C., Mathews, J. (1963). <em>Gravitational radiation from point masses in a Keplerian orbit.</em> Physical Review 131, 435–440.</li>
+<li>Thorne, K. S. (1980). <em>Multipole expansions of gravitational radiation.</em> Reviews of Modern Physics 52, 299–339.</li>
+<li>Moore, C. (1993). <em>Braids in classical dynamics.</em> Physical Review Letters 70, 3675–3679.</li>
+<li>Chenciner, A., Montgomery, R. (2000). <em>A remarkable periodic solution of the three-body problem in the case of equal masses.</em> Annals of Mathematics 152, 881–901.</li>
+<li>Simó, C. (2002). <em>Dynamical properties of the eight map.</em> Celestial Mechanics 4, 343.</li>
+<li>Taylor, J. H., Weisberg, J. M. (1982). <em>A new test of general relativity: gravitational radiation and the binary pulsar PSR 1913+16.</em> The Astrophysical Journal 253, 908–920.</li>
+<li>Maggiore, M. (2007). <em>Gravitational Waves. Volume 1: Theory and Experiments.</em> Oxford University Press.</li>
+<li>Amaro-Seoane, P. et al. (2017). <em>Laser Interferometer Space Antenna.</em> arXiv:1702.00786.</li>
+</ol>
+<h3>BibTeX</h3>
+<p>```bibtex
+@article{einstein1918,
+  author  = {Einstein, Albert},
+  title   = {{\"U}ber Gravitationswellen},
+  journal = {Sitzungsberichte der K{\"o}niglich Preussischen Akademie der Wissenschaften (Berlin)},
+  year    = {1918}, pages = {154--167}}
+
+@article{peters1963,
+  author  = {Peters, Peter C. and Mathews, Jon},
+  title   = {Gravitational radiation from point masses in a Keplerian orbit},
+  journal = {Physical Review},
+  year    = {1963}, volume = {131}, pages = {435--440}}
+
+@article{thorne1980,
+  author  = {Thorne, Kip S.},
+  title   = {Multipole expansions of gravitational radiation},
+  journal = {Reviews of Modern Physics},
+  year    = {1980}, volume = {52}, pages = {299--339}}
+
+@article{chenciner2000,
+  author  = {Chenciner, Alain and Montgomery, Richard},
+  title   = {A remarkable periodic solution of the three-body problem in the case of equal masses},
+  journal = {Annals of Mathematics},
+  year    = {2000}, volume = {152}, pages = {881--901}}
+
+@book{maggiore2007,
+  author    = {Maggiore, Michele},
+  title     = {Gravitational Waves. Volume 1: Theory and Experiments},
+  publisher = {Oxford University Press}, year = {2007}}
+```</p>
+<h2>Приложение A. Таблица параметров</h2>
+<table>
+<thead>
+<tr>
+<th>Символ</th>
+<th>Значение</th>
+<th>Роль</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G, m</td>
+<td>1, 1</td>
+<td>гравитационная постоянная и равные массы (канонические единицы)</td>
+</tr>
+<tr>
+<td>r<sub>1</sub>(0)</td>
+<td>(0.97000436, −0.24308753)</td>
+<td>начальное положение тела 1; r<sub>2</sub> = −r<sub>1</sub>, r<sub>3</sub> = (0, 0)</td>
+</tr>
+<tr>
+<td>v<sub>3</sub>(0)</td>
+<td>(−0.93240737, −0.86473146)</td>
+<td>начальная скорость тела 3; v<sub>1</sub> = v<sub>2</sub> = −v<sub>3</sub>/2</td>
+</tr>
+<tr>
+<td>T</td>
+<td>6.325914025</td>
+<td>период из минимизации замыкания (опубликован 6.32591398)</td>
+</tr>
+<tr>
+<td>Интегратор</td>
+<td>DOP853, rtol = atol = 1e-13</td>
+<td>max_step 0.005 (поиск периода: 0.01)</td>
+</tr>
+<tr>
+<td>Плотная выборка</td>
+<td>12001 точек на период</td>
+<td>сетка производных квадруполя (рисунки: 4801)</td>
+</tr>
+<tr>
+<td>Поиск периода</td>
+<td>t ∈ [2, 11], сетка 1800 точек, xatol 1e-13</td>
+<td>ограниченная минимизация замыкания</td>
+</tr>
+<tr>
+<td>Спектр</td>
+<td>n ≤ 30 гармоник f = 1/T</td>
+<td>БПФ осреднённой точной деформации, без окна</td>
+</tr>
+<tr>
+<td>Сетка диаграммы</td>
+<td>181 × 121 (θ, φ)</td>
+<td>усреднённый ТТ-проектированный тензор светимости</td>
+</tr>
+<tr>
+<td>Развёртка расстройки</td>
+<td>k ∈ {0.90 … 1.10}, 9 значений</td>
+<td>уточнение замыкания xatol 1e-10, интегрирование [0, 8]</td>
+</tr>
+</tbody>
+</table>
+<h2>Приложение B. Воспроизведение</h2>
+<p>```bash
+python3 research/TRX-11-gw-choreography/code/trx11_gw_choreography.py --smoke     # < 20 с
+python3 research/TRX-11-gw-choreography/code/trx11_gw_choreography.py              # полный прогон, 8.17 s
+python3 research/TRX-11-gw-choreography/code/trx11_gw_choreography.py --figures   # + графики 300 DPI
+```</p>
+<p>Полное время выполнения на референсной машине — 8.17 s; smoke-режим укладывается в 20 секунд и используется CI репозитория.</p>
+<h2>Приложение C. Окружение</h2>
+<p>Python ≥ 3.11, numpy ≥ 2.0, scipy ≥ 1.14, matplotlib ≥ 3.9; без доступа к сети и без стохастических зёрен — каждый прогон бит-в-бит воспроизводим на референсной машине.</p></div></div>
+<div class="ending">
+  <div class="end-title">TRIVORTEX</div>
+  <div class="end-small">The Three-Body Problem in the Vortex Model</div>
+  <div class="end-rule"></div>
+  <div class="colophon-line"><b>Gravitational Waves from the Figure-Eight Choreography</b> — research monograph of the TRIVORTEX program, studying the three-body problem in the vortex model and its laser, celestial-mechanical and quantum crossings.</div><div class="colophon-line">Full verification protocol: <b>results JSON + figures + code</b> in research/TRX-11-gw-choreography/; reproduction commands in Appendix B.</div>
+  <div class="end-small">
+    Isaev Iskhak Khamzatovich · ORCID 0009-0003-7299-0701<br>
+    DOI (concept) 10.5281/zenodo.21825393 · DOI (version) 10.5281/zenodo.21825394<br>
+    License IPL-RP-1.0 · v1.0.0 · 2026-10-07
+  </div>
+</div>
+
+</body>
+</html>

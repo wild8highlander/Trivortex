@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520">
+<rect width="900" height="520" fill="#0A1230"/>
+<text x="24" y="34" fill="#FFFFFF" font-family="Arial" font-size="19" font-weight="bold">TRX-07 &#8212; Efimov geometric ladder (energy, log scale)</text>
+<line x1="80.0" y1="440.0" x2="860.0" y2="440.0" stroke="#3A4A6B"/>
+<line x1="120.0" y1="366.0" x2="820.0" y2="366.0" stroke="#6FB7FF" stroke-width="2"/>
+<text x="530.0" y="360.0" fill="#6FB7FF" font-family="Arial" font-size="12">E0 = -4.5181e+01</text>
+<line x1="120.0" y1="292.0" x2="820.0" y2="292.0" stroke="#6FB7FF" stroke-width="2"/>
+<text x="530.0" y="286.0" fill="#6FB7FF" font-family="Arial" font-size="12">E1 = -8.7649e-02</text>
+<line x1="120.0" y1="218.0" x2="820.0" y2="218.0" stroke="#6FB7FF" stroke-width="2"/>
+<text x="530.0" y="212.0" fill="#6FB7FF" font-family="Arial" font-size="12">E2 = -1.7022e-04</text>
+<line x1="120.0" y1="144.0" x2="820.0" y2="144.0" stroke="#6FB7FF" stroke-width="2"/>
+<text x="530.0" y="138.0" fill="#6FB7FF" font-family="Arial" font-size="12">E3 = -3.3051e-07</text>
+<text x="120.0" y="428.0" fill="#9FB3D9" font-family="Arial" font-size="13">ratio E0/E1 = 515.5 vs exp(2*pi/s0) = 515.0</text>
+<text x="24" y="500" fill="#9FB3D9" font-family="Arial" font-size="12">the -1/R^2 hyperradial attraction binds infinitely many trimers with the universal 515x ladder</text>
+</svg>

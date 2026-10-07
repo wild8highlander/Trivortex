@@ -1,0 +1,43 @@
+# CODEOWNERS — Define code ownership for PR reviews
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner for everything
+* @wild8highlander
+
+# The document — all three mirrors move together, owner review mandatory
+/code/                 @wild8highlander
+
+# Verification framework — the ladder and the pytest guard
+/verification/trivortex/   @wild8highlander
+/verification/tests/       @wild8highlander
+/verification/common/      @wild8highlander
+
+# Formal-language roadmap directories — require domain expertise to review
+/verification/lean4/    @wild8highlander
+/verification/coq/      @wild8highlander
+/verification/isabelle/ @wild8highlander
+/verification/agda/     @wild8highlander
+/verification/rust/     @wild8highlander
+/verification/cpp/      @wild8highlander
+/verification/haskell/  @wild8highlander
+/verification/docker/   @wild8highlander
+
+# CI/CD and infrastructure — require review for any changes
+/.github/workflows/    @wild8highlander
+/Makefile              @wild8highlander
+/pyproject.toml        @wild8highlander
+/environment.yml       @wild8highlander
+
+# Security-related files — always require owner review
+/SECURITY.md           @wild8highlander
+/.pre-commit-config.yaml @wild8highlander
+/.github/dependabot.yml  @wild8highlander
+
+# Documentation and site
+/docs/                 @wild8highlander
+/README.md             @wild8highlander
+
+# Citation and metadata
+/CITATION.cff          @wild8highlander
+/.zenodo.json          @wild8highlander
+/AUTHORS.md            @wild8highlander

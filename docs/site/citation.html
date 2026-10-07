@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Citation — TRIVORTEX</title>
+<meta name="description" content="Cite TRIVORTEX: DOI 10.5281/zenodo.21825394, concept DOI 21825393, CITATION.cff and BibTeX.">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<header class="site"><div class="wrap">
+  <a class="brand" href="index.html">TRIVORTEX</a>
+  <nav class="main"><a href="index.html">Overview</a><a href="vortex-model.html">Vortex Model</a><a href="theorem-3-1.html">Theorem 3.1</a><a href="code.html">Code</a><a href="system-presets.html">System Presets</a><a href="verification.html">Verification</a><a href="research.html">Research Lab</a><a href="publications.html">Publications</a><a href="citation.html" class="active">Citation</a><a href="license.html">License</a></nav>
+</div></header>
+<main class="wrap">
+
+<h1 style="letter-spacing:2px;font-size:36px">Citation</h1>
+<p class="muted">How to cite the document and the repository — CFF, BibTeX, DOI.</p>
+
+<h2 id="doi">DOI infrastructure</h2>
+<table>
+<tr><th>Identifier</th><th>Value</th><th>Meaning</th></tr>
+<tr><td>Version DOI</td><td class="mono">10.5281/zenodo.21825394</td>
+<td>this specific release (Zenodo record 21825394)</td></tr>
+<tr><td>Concept DOI</td><td class="mono">10.5281/zenodo.21825393</td>
+<td>all versions of the study (Zenodo record 21825393)</td></tr>
+</table>
+<p class="small muted">The DOI numbers are preserved from the repository's
+pre-restructure releases; the metadata (title, keywords, abstract) travels with
+the repository files (<span class="mono">CITATION.cff</span>,
+<span class="mono">.zenodo.json</span>) and is updated for the TRIVORTEX
+edition. New Zenodo versions are minted automatically on GitHub releases by
+<span class="mono">zenodo.yml</span>.</p>
+
+<h2 id="cff">CITATION.cff (canonical)</h2>
+<pre><code>cff-version: 1.2.0
+title: "TRIVORTEX: The Three-Body (and N-Body) Problem in the
+        Vortex Model with the Chaplygin Topological Integral"
+authors:
+  - family-names: Isaev
+    given-names: Iskhak Khamzatovich
+    orcid: "https://orcid.org/0009-0003-7299-0701"
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.21825394
+  - type: doi
+    value: 10.5281/zenodo.21825393
+version: "2.0.0"
+date-released: 2026-10-06</code></pre>
+
+<h2 id="bibtex">BibTeX</h2>
+<pre><code>@misc{trivortex2026isaev,
+  author       = {Isaev, Iskhak Khamzatovich},
+  title        = {TRIVORTEX: The Three-Body (and N-Body) Problem in the
+                  Vortex Model with the Chaplygin Topological Integral},
+  year         = {2026},
+  howpublished = {Zenodo},
+  doi          = {10.5281/zenodo.21825394},
+  orcid        = {0009-0003-7299-0701},
+  url          = {https://github.com/wild8highlander/research-papers}
+}</code></pre>
+
+<h2 id="citation-soft">Citation software</h2>
+<p>The repository carries a valid <span class="mono">CITATION.cff</span>, so
+GitHub's "Cite this repository" button works out of the box; Zenodo mints a
+record per release. If you cite the verification ladder rather than the
+document itself, please point at
+<span class="mono">verification/trivortex/python/verify.py</span> and name the
+preset (<span class="mono">quick</span> / <span class="mono">default</span> /
+<span class="mono">full</span>) you reproduced — the JSON protocol in
+<span class="mono">verification/outputs/</span> of your run is the appendix a
+reviewer will ask for.</p>
+
+</main>
+<footer class="site"><div class="wrap"><div class="cols">
+  <div>
+    <div style="color:var(--gold-l);letter-spacing:2px;font-size:18px">TRIVORTEX</div>
+    <p class="small">The Three-Body Problem in the Vortex Model — a research
+    document with a verification ladder, by Isaev Iskhak Khamzatovich.</p>
+    <p class="small mono">DOI 10.5281/zenodo.21825394</p>
+  </div>
+  <div class="small">
+    <strong style="color:var(--ink)">Repository</strong><br>
+    <a href="https://github.com/wild8highlander/research-papers">GitHub source</a><br>
+    <a href="https://github.com/wild8highlander/research-papers/blob/main/LICENSE.md">License IPL-RP-1.0</a><br>
+    <a href="https://zenodo.org/records/21825394">Zenodo record</a><br>
+    <a href="https://orcid.org/0009-0003-7299-0701">ORCID profile</a>
+  </div>
+  <div class="small">
+    <strong style="color:var(--ink)">Document</strong><br>
+    <a href="vortex-model.html">Vortex model</a><br>
+    <a href="theorem-3-1.html">Theorem 3.1</a><br>
+    <a href="code.html">Code — 22 sections</a><br>
+    <a href="verification.html">Verification V1–V4</a>
+  </div>
+</div>
+<p class="small" style="text-align:center;margin-top:26px">© 2026 Isaev Iskhak Khamzatovich ·
+Proprietary license · Concept DOI 10.5281/zenodo.21825393</p>
+</div></footer>
+</body>
+</html>

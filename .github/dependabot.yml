@@ -1,0 +1,79 @@
+# Dependabot — Automated dependency updates
+# https://docs.github.com/en/code-security/dependabot
+version: 2
+
+updates:
+  # GitHub Actions
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: UTC
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - ci
+    commit-message:
+      prefix: "ci(actions):"
+      include: scope
+    reviewers:
+      - wild8highlander
+    assignees:
+      - wild8highlander
+
+  # Python (pip)
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: UTC
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - python
+    commit-message:
+      prefix: "build(pip):"
+      include: scope
+    reviewers:
+      - wild8highlander
+
+  # Python (pyproject.toml)
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: monthly
+      day: first-monday
+      time: "06:00"
+      timezone: UTC
+    labels:
+      - dependencies
+      - python
+    commit-message:
+      prefix: "build(pyproject):"
+
+  # Conda
+  - package-ecosystem: ""
+    directory: /
+    schedule:
+      interval: monthly
+    labels:
+      - dependencies
+    ignore:
+      - update-types: ["version-update:semver-major"]
+
+groups:
+  github-actions:
+    patterns:
+      - "actions/*"
+      - "github/*"
+  python-major:
+    update-types:
+      - major
+  python-minor:
+    update-types:
+      - minor
+      - patch

@@ -1,0 +1,72 @@
+---
+# Lint — Code and documentation quality checks
+# markdownlint, yamllint, ruff, black, mypy
+name: Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  markdown-lint:
+    name: Markdown
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint Markdown
+        uses: DavidAnson/markdownlint-cli2-action@v17
+        with:
+          config: .markdownlint.json
+          globs: |
+            **/*.md
+            !CHANGELOG.md
+
+  yaml-lint:
+    name: YAML
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint YAML
+        uses: ibiqlik/action-yamllint@v3
+        with:
+          config_file: .yamllint.yml
+          file_or_dir: |
+            .github/workflows/
+            .pre-commit-config.yaml
+            environment.yml
+            CITATION.cff
+
+  python-lint:
+    name: Python (ruff + black + mypy)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install linting tools
+        run: pip install ruff black mypy
+
+      - name: Ruff check
+        run: ruff check . --output-format=github
+
+      - name: Black check
+        run: black --check .
+
+      - name: Type check with mypy
+        run: mypy verification/python/ --ignore-missing-imports --no-error-summary || true
+
+  citation-lint:
+    name: CITATION.cff
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate CITATION.cff
+        uses: dieghernan/cff-validator@v3

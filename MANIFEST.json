@@ -1,0 +1,1615 @@
+{
+  "manifest_version": "1.0.0",
+  "generated_utc": "2026-10-07T08:04:39.555706+00:00",
+  "description": "TRIVORTEX v1.0.0 — SHA-256 provenance manifest of every repository file (core document, verification ladder, extended research program TRX-01..12, the PDF/DOCX library, site, metadata).",
+  "doi_version": "10.5281/zenodo.21825394",
+  "doi_concept": "10.5281/zenodo.21825393",
+  "license": "LicenseRef-Proprietary-Wild8Highlander-1.0",
+  "file_count": 401,
+  "files": {
+    ".all-contributorsrc": {
+      "sha256": "be66516260849d7eb21e8d08524e5c950c53c11a3d3033fa5f9e18b4d6dcbbb8",
+      "bytes": 1663
+    },
+    ".commitlintrc.json": {
+      "sha256": "07e572c52116d008e01fc8b857108eb12436dd2d9ac4a58b62a0948bf38f8e63",
+      "bytes": 768
+    },
+    ".devcontainer/devcontainer.json": {
+      "sha256": "0d06a06d87088e7bb563c5f5a83a441b63552b34d5698a4dcefff6e985ccdaa5",
+      "bytes": 1009
+    },
+    ".editorconfig": {
+      "sha256": "d10c48f2b1872d86d4453d1bdc760518f109fb4a076ddaf2cd2c6654fb7fe89a",
+      "bytes": 793
+    },
+    ".gitattributes": {
+      "sha256": "4a35b51c474dc4fe6813f932d2083814f08cc9f32a16c8c0426fe0a325aebe14",
+      "bytes": 1349
+    },
+    ".github/CODEOWNERS": {
+      "sha256": "a610ddeda47f1aa0a4cfccabaceaf0e1eb899e1ee30e9a82009df77b33724a43",
+      "bytes": 1613
+    },
+    ".github/FUNDING.yml": {
+      "sha256": "a2abe02d44466f412e1d2cf07fbc5113f7a3b076b9f04dc5ed6c616b44b5c429",
+      "bytes": 293
+    },
+    ".github/ISSUE_TEMPLATE/README.md": {
+      "sha256": "c0eb0f1844e2042a1f869c17dc5b8319280aebc44597ec6c6edc23a8a7d7d0b0",
+      "bytes": 1845
+    },
+    ".github/ISSUE_TEMPLATE/bug_report.yml": {
+      "sha256": "abdd486617204e81282219d2add9524f92025cc281f643b956aa0c25a5e5495c",
+      "bytes": 2120
+    },
+    ".github/ISSUE_TEMPLATE/config.yml": {
+      "sha256": "f4eb968154f88d825e50adb553f7911ed16b65594e9525f2ed6e142487b3c503",
+      "bytes": 559
+    },
+    ".github/ISSUE_TEMPLATE/feature_request.yml": {
+      "sha256": "8a3611a697b75250a28cbdf92682bb88efbc37b5373499a43c99b5836d72a008",
+      "bytes": 1856
+    },
+    ".github/PULL_REQUEST_TEMPLATE.md": {
+      "sha256": "36d35d1ce4888c555506eaeb4c1ebf343c79b7a8ef86def342c4d43e866cc7d5",
+      "bytes": 2223
+    },
+    ".github/badges/README.md": {
+      "sha256": "b28e34c8f12bf948838dc08625f86a5c9832ed044d85f311150ea8b11e143dbd",
+      "bytes": 1614
+    },
+    ".github/badges/scorecard-badge.json": {
+      "sha256": "70331ee42f7c754a86dcc4bb8ba7463bfd3b58910f466b38d9d2e5ddf782ce48",
+      "bytes": 93
+    },
+    ".github/dependabot.yml": {
+      "sha256": "3b004e8c0a20185e380ecdca411365619b3f3f57581310cf4ae874b9efd0045d",
+      "bytes": 1519
+    },
+    ".github/labeler.yml": {
+      "sha256": "08604e793b245ffa547004e50b94d235e985e3d2f99842d52cf97f9f44cfb35b",
+      "bytes": 1703
+    },
+    ".github/release-drafter.yml": {
+      "sha256": "0460219eafc6e9d35e8781cc56fbcb65bce1dc2edc8ed148a94d17b2faaacb83",
+      "bytes": 1490
+    },
+    ".github/workflows/README.md": {
+      "sha256": "77afd85c2118efb17d8fdc66dde352977bc3918df6739d84f971444f04142258",
+      "bytes": 4339
+    },
+    ".github/workflows/ci.yml": {
+      "sha256": "a63968e69cbe637b19bb849e8eb934d517104dabc97a76cc4ba08abb1912a22b",
+      "bytes": 3010
+    },
+    ".github/workflows/codeql.yml": {
+      "sha256": "0ab0ea3d884d9ac341b22fb478f25ed8253aca1fda90367469f359222da1a535",
+      "bytes": 1854
+    },
+    ".github/workflows/dependency-review.yml": {
+      "sha256": "fe176cfeb167bb60de6e30450a25bfa9cf07db3e916c1bce63ea58fd981f89d2",
+      "bytes": 627
+    },
+    ".github/workflows/deploy-docs.yml": {
+      "sha256": "bcc6d1b6d7ddec144501eba61f5d1ccc1b03761a562ec74ce35f3b125157d3a3",
+      "bytes": 1192
+    },
+    ".github/workflows/docker.yml": {
+      "sha256": "a424cf7aa896b7b8189067a50a792f50767bb7fb0736313f120a12094a7d6fa4",
+      "bytes": 524
+    },
+    ".github/workflows/labeler.yml": {
+      "sha256": "4e0cf05d1292d3f5e189e25e7f31879ffa6b41c45e0be490e18576aea410e9d1",
+      "bytes": 471
+    },
+    ".github/workflows/link-checker.yml": {
+      "sha256": "43bed45647de9e225992dec99239d006fcf574edc8f74abb6eb6da88e6d5be39",
+      "bytes": 1498
+    },
+    ".github/workflows/lint.yml": {
+      "sha256": "de8e4d08835375b166964f36ae0302619cf03a90de186b711bf6c8bfe8838ba7",
+      "bytes": 1641
+    },
+    ".github/workflows/release-drafter.yml": {
+      "sha256": "55bfab381caa6df0f600ef2d8e94c6697cbe77c2920b10a6b82a6cf9cd5e1a6a",
+      "bytes": 537
+    },
+    ".github/workflows/scorecard.yml": {
+      "sha256": "f224fcf715a72514b5ba4fd6a75671db176822301051d9d99f2569f970fd97ea",
+      "bytes": 1732
+    },
+    ".github/workflows/stale.yml": {
+      "sha256": "caf33ed45e75ab8ffb78dc048a04624700378a6a739b34ab9d4d1122dedea05e",
+      "bytes": 1772
+    },
+    ".github/workflows/zenodo.yml": {
+      "sha256": "23a99f0ec0ba47166c7fc3cc8dd7fa2bcf4396f9d73c17df6a192b79e13ec08c",
+      "bytes": 9393
+    },
+    ".gitignore": {
+      "sha256": "d09486340eb02642e91bf2a16bae55b6552cbd9deb6c7c0b085255a3641add82",
+      "bytes": 3068
+    },
+    ".markdownlint.json": {
+      "sha256": "539a42bc338b1c33d1cda4103dcb17b2165c0cd69d24fdc17503a499dbe339e6",
+      "bytes": 1364
+    },
+    ".pre-commit-config.yaml": {
+      "sha256": "0425d30283d0554944e4038bfbff8b9d205f370fa9059d40d0490cce343d60bb",
+      "bytes": 2933
+    },
+    ".yamllint.yml": {
+      "sha256": "b81b4f1d070233bd96d4f4001256108dcb0494a9fb0b13c0b129177189eb77b0",
+      "bytes": 1226
+    },
+    ".zenodo.json": {
+      "sha256": "92faa2e46d5dda513837c7c5dea67f19a584e6bd969587ffa8c4541374a6bb9d",
+      "bytes": 4474
+    },
+    "AUTHORS.md": {
+      "sha256": "faf71e082a3014a711218c8a074c2d81715fe057359d9ae6046647a652c1ef0e",
+      "bytes": 2505
+    },
+    "CHANGELOG.md": {
+      "sha256": "609db3192b4cf6cb740882c9b9ffd9c25b51db1453ad6586c7fb825a51389cf6",
+      "bytes": 5494
+    },
+    "CITATION.cff": {
+      "sha256": "5d27087189d948942de03a4536bb192873e03bf111b580ec74172a16934d3b63",
+      "bytes": 3951
+    },
+    "CODE_OF_CONDUCT.md": {
+      "sha256": "b6545b4054e34865757156dde319c417cdaaa00f71a8f685d1221195a61e6a98",
+      "bytes": 3598
+    },
+    "CONTRIBUTING.md": {
+      "sha256": "b4b721c55ea50141b3660cc321fada250fe63ace66327a31404f36eb36993934",
+      "bytes": 7808
+    },
+    "LICENSE.md": {
+      "sha256": "84d0440703dc4df665e55e2d339969fe1916a5a10bd4212ee0f5b590c95eeac7",
+      "bytes": 48861
+    },
+    "LICENSE.ru.md": {
+      "sha256": "978a79dc11ca257fd613e0b6b9b315f91e4e44e9e6434d5e823f8ad10935a13e",
+      "bytes": 84556
+    },
+    "LICENSE.zh.md": {
+      "sha256": "fe888ada5f44b7ccb8d709fd1a6ac988baa4bf9667b47e05c8f21ed0753c3cd6",
+      "bytes": 42958
+    },
+    "Makefile": {
+      "sha256": "59cbce4e002f053efbc688c084dad81bb81601414e2f7f201d12c5e0a08d970d",
+      "bytes": 2584
+    },
+    "NOTICE.md": {
+      "sha256": "b81062907053dc645f18947ce79ba9abded3a1634bf59da9ec2453d4ff6e3ad3",
+      "bytes": 7856
+    },
+    "README.md": {
+      "sha256": "f2e9a68047870c5da3b11345be98b2afb4d04e97e2529038aee3d772702fdb48",
+      "bytes": 65591
+    },
+    "RELEASING.md": {
+      "sha256": "bd4d656299c669961f58ab9b43945c4f2b648435b8e7e7eb27c90d677b3598d2",
+      "bytes": 5065
+    },
+    "REUSE.toml": {
+      "sha256": "e9a185bc9e4d0dafe6822ac7dfeb3c9d0d7df0452ee15520576dcb2da1be9f1b",
+      "bytes": 834
+    },
+    "SECURITY.md": {
+      "sha256": "8401ca278e3f9adc5bfdf18d152aad06f09659b97aba7f5ffa2c5e3059de16ea",
+      "bytes": 3921
+    },
+    "code/README.md": {
+      "sha256": "408933f5116a1f4dd5f70c8a783057e079ff7d8dd9606ac2069bac775233056c",
+      "bytes": 18752
+    },
+    "code/trivortex_core.py": {
+      "sha256": "ba886f5ad742ae9b9cabdd37d46591b0cc3e27f70842d11cb6b1ae03e6dc1921",
+      "bytes": 88494
+    },
+    "code/trivortex_core_en.py": {
+      "sha256": "ba886f5ad742ae9b9cabdd37d46591b0cc3e27f70842d11cb6b1ae03e6dc1921",
+      "bytes": 88494
+    },
+    "code/trivortex_core_ru.py": {
+      "sha256": "e801b7b6be5d04028260c832abac252b29e15f7c8f1c6c8e86a6edde51fa02f8",
+      "bytes": 93552
+    },
+    "codecov.yml": {
+      "sha256": "d52ea8e724e908b598a5b7e94e06a05c82971739375c4baacc6bf07436b62742",
+      "bytes": 1440
+    },
+    "docs/README.md": {
+      "sha256": "8c33d14214db8f77f5e1d7f3141f1ceeccbe01b3ed8136df543114f28caca45e",
+      "bytes": 6619
+    },
+    "docs/animations/README.md": {
+      "sha256": "eab35a6ce263394891b37b228fb315d613cd4cdcce4a9e0f8c89639ccb702496",
+      "bytes": 6107
+    },
+    "docs/animations/anim01_trivortex_ring.gif": {
+      "sha256": "cd7733df82a968451b722d97f47535d938651917a5b3975ed4325a4fcd523fe2",
+      "bytes": 618170
+    },
+    "docs/animations/anim01_trivortex_ring.mp4": {
+      "sha256": "4b6ad87114979efe89b4591153d777347a0af681a65326a3d55bbc9fc1d1a93e",
+      "bytes": 215265
+    },
+    "docs/animations/anim02_figure_eight.gif": {
+      "sha256": "e3eb2887c6aa8b1468bf444a3b7eb745ffd9f4526c2521ed47687a4d2baba997",
+      "bytes": 738313
+    },
+    "docs/animations/anim02_figure_eight.mp4": {
+      "sha256": "79271c099319355deb8b9b7384762561a053c62d3a7ba32bfb6a914be1b00f2b",
+      "bytes": 378564
+    },
+    "docs/animations/anim03_lagrange_triangle.gif": {
+      "sha256": "4c76e862d21613d4287f4fa57dbdd4b1f9bb042d37c19de45bc35dfd2ebba067",
+      "bytes": 1033049
+    },
+    "docs/animations/anim03_lagrange_triangle.mp4": {
+      "sha256": "54235f4f18c70c4d89fa223ba5a963ccf6824e35b111180406e08afcd9cda347",
+      "bytes": 821045
+    },
+    "docs/animations/anim04_laser_stationkeeping.gif": {
+      "sha256": "f78f81ce496c9a554f4cee40cbf39b915798b2c2d4e91b62a50e7278288ef2be",
+      "bytes": 665170
+    },
+    "docs/animations/anim04_laser_stationkeeping.mp4": {
+      "sha256": "8cf903fc4f6fcb3bcebd4e78c3b7b5e3269ec302c2d1e1360d1208ed94dd6703",
+      "bytes": 217251
+    },
+    "docs/animations/make_animations.py": {
+      "sha256": "36fe3e100317d796cdcb374f4467fa02bc7eeb7032913e189b5dd96299654795",
+      "bytes": 20541
+    },
+    "docs/assets/banner-hero.svg": {
+      "sha256": "50c9a02dfb5c95d7114cf7f6a09472b1db579d00214e08d45fbf4fc7f00798d9",
+      "bytes": 23010
+    },
+    "docs/assets/divider-gold.svg": {
+      "sha256": "6979409bda321747138311008ef0a2f1315c6a1c04c75beb1a220216f9b142df",
+      "bytes": 608
+    },
+    "docs/assets/ladder-accuracy.png": {
+      "sha256": "cc67ea8dc6e1b02695e9c5bbfe568758715ddad9da8d88561d34adcdc8aab81e",
+      "bytes": 451911
+    },
+    "docs/assets/orbits-showcase.svg": {
+      "sha256": "a7b92288ab5becf46ebc877aa7f2727363d80543f9688f5b745e60839abe05eb",
+      "bytes": 23478
+    },
+    "docs/assets/program-checks-dashboard.png": {
+      "sha256": "f4f244ac477917b66799b5861e4986aef5796ddce1a76e194f32f688b8683d0d",
+      "bytes": 554204
+    },
+    "docs/assets/title-page.svg": {
+      "sha256": "844c98d2a6ae5c519866a7dbf0f75281e3af980e0f065e0548ca36bdef29fac0",
+      "bytes": 20
+    },
+    "docs/site/.nojekyll": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "docs/site/404.html": {
+      "sha256": "b1ad88fe01169289d47f17a7dd3aee086f60b2018e201480fdcb2910dd24f021",
+      "bytes": 1687
+    },
+    "docs/site/assets/banner-hero.svg": {
+      "sha256": "50c9a02dfb5c95d7114cf7f6a09472b1db579d00214e08d45fbf4fc7f00798d9",
+      "bytes": 23010
+    },
+    "docs/site/assets/css/style.css": {
+      "sha256": "2dfc6406debdd0663c14adb36b35ea777ed2812f331058f3aef55f50ff9c4f8b",
+      "bytes": 4486
+    },
+    "docs/site/assets/divider-gold.svg": {
+      "sha256": "6979409bda321747138311008ef0a2f1315c6a1c04c75beb1a220216f9b142df",
+      "bytes": 608
+    },
+    "docs/site/assets/ladder-accuracy.png": {
+      "sha256": "cc67ea8dc6e1b02695e9c5bbfe568758715ddad9da8d88561d34adcdc8aab81e",
+      "bytes": 451911
+    },
+    "docs/site/assets/orbits-showcase.svg": {
+      "sha256": "a7b92288ab5becf46ebc877aa7f2727363d80543f9688f5b745e60839abe05eb",
+      "bytes": 23478
+    },
+    "docs/site/assets/program-checks-dashboard.png": {
+      "sha256": "f4f244ac477917b66799b5861e4986aef5796ddce1a76e194f32f688b8683d0d",
+      "bytes": 554204
+    },
+    "docs/site/assets/title-page.svg": {
+      "sha256": "844c98d2a6ae5c519866a7dbf0f75281e3af980e0f065e0548ca36bdef29fac0",
+      "bytes": 20
+    },
+    "docs/site/citation.html": {
+      "sha256": "dcdee28bf1786e8b6bd745b0d086f334bcd8df76380f4b4db9f88206983a6b9b",
+      "bytes": 4785
+    },
+    "docs/site/code.html": {
+      "sha256": "42392a74f7644724016c8279f3e13c69d819677073e35b9883b571cbfd9f4e66",
+      "bytes": 9487
+    },
+    "docs/site/index.html": {
+      "sha256": "8ef2532c470e7aabdfe6f13f2ea289a898aacea3f3556f6cec58299c84427685",
+      "bytes": 10116
+    },
+    "docs/site/license.html": {
+      "sha256": "84c44c532d39cf93b0d170a89a52a5544dfb4f355540ad9566310b9537bd4001",
+      "bytes": 4562
+    },
+    "docs/site/publications.html": {
+      "sha256": "d9fb6cb6f1fe495ada3333783de49f8b6cec091f3252f77b242c01d319b2be54",
+      "bytes": 13282
+    },
+    "docs/site/research.html": {
+      "sha256": "85a7c8db91b5eb0be795fa30a18f231a32ae434dcdea79cd34d877f7aac26b7b",
+      "bytes": 16009
+    },
+    "docs/site/system-presets.html": {
+      "sha256": "0864125a81caf416c4d24df8a7f233ce149f4cd63984aac2dd7a4d579b9561b6",
+      "bytes": 5072
+    },
+    "docs/site/theorem-3-1.html": {
+      "sha256": "e3f46dd8c9f33e12cfce8edb9b5a30c8a74efd3cc07fb4eea2a396a9774bdd15",
+      "bytes": 7139
+    },
+    "docs/site/verification.html": {
+      "sha256": "653d6f0ddc09b5e6bf645d675d6f9633a013e25cc80b1e2b85a4582a8b37ee01",
+      "bytes": 6204
+    },
+    "docs/site/vortex-model.html": {
+      "sha256": "d6fad5a162846c405b424d7b4e1e7e16c125ead4502a6d2990f8162a44163553",
+      "bytes": 7088
+    },
+    "environment.yml": {
+      "sha256": "ee3b1d9abd53f64d380c6e3baa4df800c4245ceccb9a0a43642d06546c6f4b44",
+      "bytes": 293
+    },
+    "publications/README.md": {
+      "sha256": "fadf94fcb8670e9f2ae5c73c125998f497678fe9b26db832aced19d28a4713bd",
+      "bytes": 6785
+    },
+    "publications/build/build_pdf_library.py": {
+      "sha256": "60cdc33a69ad1b7c23ac9437a2e058f2859a1ad86f6b30f7ac21f066eed63275",
+      "bytes": 8470
+    },
+    "publications/build/build_special_pdfs.py": {
+      "sha256": "29288a2cfc1ecf47dedddd322e130b59ae52883a8e01fb7e5f633d6920c10cf3",
+      "bytes": 17024
+    },
+    "publications/build/finalize_pdf.py": {
+      "sha256": "c0a379f437ac4cd794eeb19801c1e6750f65786da1a5b81ca16604bec2f2ad48",
+      "bytes": 7456
+    },
+    "publications/build/md2html_lib.py": {
+      "sha256": "8ebe8104c1789f530fd2643b60129995874ec371d68a40d44db6560b39246ccb",
+      "bytes": 12632
+    },
+    "publications/docx/TRIVORTEX-Core-Monograph_EN.docx": {
+      "sha256": "1b02f46c86980127c0dedfa2c64a2fd0d3990918d0aecdc5405fc4fafa88e9be",
+      "bytes": 18416
+    },
+    "publications/docx/TRIVORTEX-Core-Monograph_RU.docx": {
+      "sha256": "fc9f48b8aea38b61a29a54ec5c167c66f89700e20dc5d68a9916c7207a5bcd89",
+      "bytes": 20185
+    },
+    "publications/docx/TRIVORTEX-Research-Compendium_EN.docx": {
+      "sha256": "3636014c90ced441269ef89ab6fb34fd939fa68b4957c0fe01ba02e917957929",
+      "bytes": 22462
+    },
+    "publications/docx/TRIVORTEX-Research-Compendium_RU.docx": {
+      "sha256": "c2618ecbd3a046b0682afc0ec8518330ec547e6b449be1031b6bf357a5a9a389",
+      "bytes": 26411
+    },
+    "publications/docx/TRX-01-laser-radiation-pressure_EN.docx": {
+      "sha256": "f2cbca5f2b039c4b2cff94a4091f13b47b111df867fbedb0d27d925e016a9a7c",
+      "bytes": 1235633
+    },
+    "publications/docx/TRX-01-laser-radiation-pressure_RU.docx": {
+      "sha256": "d180450e54206d9e08a479f078c8ca1b37f1ff1a8438fe44b95b8167c5665314",
+      "bytes": 1238160
+    },
+    "publications/docx/TRX-02-three-wave-mixing_EN.docx": {
+      "sha256": "29b91bda1d5cac67e314b48a062fe6ee474f275f0775e0a55586a4d546369287",
+      "bytes": 1732872
+    },
+    "publications/docx/TRX-02-three-wave-mixing_RU.docx": {
+      "sha256": "01ac83cab36a06d2f22551e541a0141f9f3382468eb89af826366a8bccf220cd",
+      "bytes": 1735937
+    },
+    "publications/docx/TRX-03-soliton-molecule_EN.docx": {
+      "sha256": "82fd2f40ce0fb75ac77fbd72ee55bb0ce5a6012a4806ff0e55e22b71c94d33ce",
+      "bytes": 1530415
+    },
+    "publications/docx/TRX-03-soliton-molecule_RU.docx": {
+      "sha256": "64546c085e5600e52538c0c1604eb4829cdc267d4e45414a9982a130550bccb9",
+      "bytes": 1533688
+    },
+    "publications/docx/TRX-04-photon-fluid_EN.docx": {
+      "sha256": "9b993a109acc6ec2133b4079469fcbba35297417b8efc6a1dfb57eb12cf62670",
+      "bytes": 1763852
+    },
+    "publications/docx/TRX-04-photon-fluid_RU.docx": {
+      "sha256": "4e06d5d2b09212418a742420753cf158391820ef6bc715d0eb7e78127685b170",
+      "bytes": 1767760
+    },
+    "publications/docx/TRX-05-optical-vortices_EN.docx": {
+      "sha256": "f4c09b81804a316a50f5e2628c7286b1a60d5e10f68525a84136734d0c6b8f05",
+      "bytes": 1648006
+    },
+    "publications/docx/TRX-05-optical-vortices_RU.docx": {
+      "sha256": "424b194e42db212fe1328f9e5d85e3b3226f918ede14e562727799e2b95ad264",
+      "bytes": 1650811
+    },
+    "publications/docx/TRX-06-helium-three-body_EN.docx": {
+      "sha256": "3c57be6c9625023b76800423bdcb9d496cf36107e859b46e81456b30fa1a952a",
+      "bytes": 1336810
+    },
+    "publications/docx/TRX-06-helium-three-body_RU.docx": {
+      "sha256": "d6f098e2acf2ea831751ab4ea18614c5286fd15004ce7beb9335537b125f5198",
+      "bytes": 1340343
+    },
+    "publications/docx/TRX-07-efimov_EN.docx": {
+      "sha256": "fe419cff6e607e0bda663140d5f3d4644bcd2768473f8d9683632431cb52a085",
+      "bytes": 1300874
+    },
+    "publications/docx/TRX-07-efimov_RU.docx": {
+      "sha256": "d2066c5142f6b07a4a4492ad19808eccdb84c7c38f5b42f8d69bd535e006cca2",
+      "bytes": 1303950
+    },
+    "publications/docx/TRX-08-ion-trap_EN.docx": {
+      "sha256": "b946b889ecc68160e39576a1f1204c3aefdb20075ec3b62d1164213056077d1c",
+      "bytes": 1567589
+    },
+    "publications/docx/TRX-08-ion-trap_RU.docx": {
+      "sha256": "2c9ccb79dc4f6298eeeb2f759506eee1a3955ae2bc8ca847ad722c61d15280dc",
+      "bytes": 1571191
+    },
+    "publications/docx/TRX-09-vortex-trio_EN.docx": {
+      "sha256": "75d24634a4374b986485030e4454c6fa2199d1c9ae1b9b3f8e28a73b45825e86",
+      "bytes": 1697063
+    },
+    "publications/docx/TRX-09-vortex-trio_RU.docx": {
+      "sha256": "aa3be6492f4ac69f66995f63b04335d3ebe66eed2899d122d41885f90d107e82",
+      "bytes": 1700197
+    },
+    "publications/docx/TRX-10-kozai-lidov_EN.docx": {
+      "sha256": "622a772a46ccb17419d088d3ec2f634c0e1205364505df213307bb32884d5cc3",
+      "bytes": 1729296
+    },
+    "publications/docx/TRX-10-kozai-lidov_RU.docx": {
+      "sha256": "75f3233bb14c0519b121e342092e3c4273dbefa4babef48c8c936a6378c160f5",
+      "bytes": 1732376
+    },
+    "publications/docx/TRX-11-gw-choreography_EN.docx": {
+      "sha256": "9e0da37f1479d529cfd60ff8f71aa77039bc96ba8e638457046e0f0f429e2560",
+      "bytes": 2186226
+    },
+    "publications/docx/TRX-11-gw-choreography_RU.docx": {
+      "sha256": "d71bb03315c513d882880340aab515ffdca64e0eb5751068b286c802c0e1e33b",
+      "bytes": 2189694
+    },
+    "publications/docx/TRX-12-laser-light-sail_EN.docx": {
+      "sha256": "98a8c2e7d73881b9cf279ac32da869baa2b47406775201aa84037ce1b6331f41",
+      "bytes": 1341043
+    },
+    "publications/docx/TRX-12-laser-light-sail_RU.docx": {
+      "sha256": "4ff05de15ad2b531adc067ef111eb45790fdcef367df7a318a619c550249069e",
+      "bytes": 1344478
+    },
+    "publications/html/TRIVORTEX-Core-Monograph-RU-EN.html": {
+      "sha256": "1b9d60718d53992bffc24981218f7a00d43d43d996b507be088c278683ddd84a",
+      "bytes": 121106
+    },
+    "publications/html/TRIVORTEX-Research-Compendium-v2.3.0.html": {
+      "sha256": "516a0afe78225b79533e7d1411620521aba2494bbf57318b1acbb3b478bec519",
+      "bytes": 40154
+    },
+    "publications/html/TRX-01-laser-radiation-pressure.html": {
+      "sha256": "8ae7910cc8c82297cf5e7118dc30eefbc6b81c940f152bb07572faa1e18d333c",
+      "bytes": 69084
+    },
+    "publications/html/TRX-02-three-wave-mixing.html": {
+      "sha256": "f6e2f4cdbb95bae72156b36ba121f17654d5f12a509d34628ada80f2cd375d33",
+      "bytes": 80107
+    },
+    "publications/html/TRX-03-soliton-molecule.html": {
+      "sha256": "e3271ad11a36863975aff20afc503a974174a970af6518af38fb1a089bc7de48",
+      "bytes": 86235
+    },
+    "publications/html/TRX-04-photon-fluid.html": {
+      "sha256": "e4ca1de8a031aa254ef359f7a372345597580e3d885a1f7128263e9868af420c",
+      "bytes": 100096
+    },
+    "publications/html/TRX-05-optical-vortices.html": {
+      "sha256": "19606f37d7a50a1ac48a721cc6ff7f38d6febb651d58c75b4963cd19f7f7b9a8",
+      "bytes": 80069
+    },
+    "publications/html/TRX-06-helium-three-body.html": {
+      "sha256": "6c0b27109396d62789859edbf1f097aa6e70efdf4d2337a3f3702f21320229ed",
+      "bytes": 94107
+    },
+    "publications/html/TRX-07-efimov.html": {
+      "sha256": "502a4ab9fa597023cd26c5031889f78e7ea1dc16c59a3bb1e7a928a207788d28",
+      "bytes": 87669
+    },
+    "publications/html/TRX-08-ion-trap.html": {
+      "sha256": "f81b9c3031f53e7762d30b80f0719ed75eaf02d9c5a0756bbfb8fe08d11449a7",
+      "bytes": 92357
+    },
+    "publications/html/TRX-09-vortex-trio.html": {
+      "sha256": "260b5f33d6f5db44d7061a7af223d2da9f1884cc2ddeacd1271a92b1d6df61a7",
+      "bytes": 83407
+    },
+    "publications/html/TRX-10-kozai-lidov.html": {
+      "sha256": "919a5471915fca8f199aa573d8be1e9da5857195e00e0ab81052830feb71084b",
+      "bytes": 89510
+    },
+    "publications/html/TRX-11-gw-choreography.html": {
+      "sha256": "8f690246a1fff130dd0fd7174c7754ede23492b03447f4372c23098005cb327a",
+      "bytes": 91526
+    },
+    "publications/html/TRX-12-laser-light-sail.html": {
+      "sha256": "230005d14195aed52e2a7944e96c09e571745a68d20622e3f8cecbee106e1d03",
+      "bytes": 89871
+    },
+    "publications/pdf/TRIVORTEX-Core-Monograph_EN.pdf": {
+      "sha256": "df80772b084b2c1a0859520e459b3d0b508374ad915fcf484965a0585f765d00",
+      "bytes": 219372
+    },
+    "publications/pdf/TRIVORTEX-Core-Monograph_RU.pdf": {
+      "sha256": "0ae1c737970e5f86ca57d7f6e43a05eba4409fa0cb8c8604dcaac6e9f238d61b",
+      "bytes": 240363
+    },
+    "publications/pdf/TRIVORTEX-Research-Compendium_EN.pdf": {
+      "sha256": "fa7eb57d8bf9705b4c0a5886c85396121d1d2aaa923bea68217fe3b324ddcbd6",
+      "bytes": 268069
+    },
+    "publications/pdf/TRIVORTEX-Research-Compendium_RU.pdf": {
+      "sha256": "7b29456a6e2d515570e106ff544e9f13864a33744813b5c0a15a9b7c4d891595",
+      "bytes": 398890
+    },
+    "publications/pdf/TRX-01-laser-radiation-pressure_EN.pdf": {
+      "sha256": "9169e2c987dbae4167f6d066cd5e4efdf8419e82c3216591a4956df4f0d2d2e0",
+      "bytes": 1506925
+    },
+    "publications/pdf/TRX-01-laser-radiation-pressure_RU.pdf": {
+      "sha256": "e415c6b1ae841e2976a3e1e80f5f2573f6528c3a14693352d7bbf5799a5d0cf1",
+      "bytes": 1538303
+    },
+    "publications/pdf/TRX-02-three-wave-mixing_EN.pdf": {
+      "sha256": "fed600231bb9089b9db3a5a50e1e817a31d0bef9eb066647f804e2b32581e9c4",
+      "bytes": 2340587
+    },
+    "publications/pdf/TRX-02-three-wave-mixing_RU.pdf": {
+      "sha256": "0d07e090c476f3a35813c9e7f5aebd9ea37947b028f0866be1eafa77ee779726",
+      "bytes": 2373736
+    },
+    "publications/pdf/TRX-03-soliton-molecule_EN.pdf": {
+      "sha256": "fc99aaee2c4844c644f0369ba6b713812f1b937a23eecaa69b01d617b54c7ae3",
+      "bytes": 1805993
+    },
+    "publications/pdf/TRX-03-soliton-molecule_RU.pdf": {
+      "sha256": "43a84240b6519a0161a3790650a8418ff04162ab1ee6ff575706adbe9d22f6b6",
+      "bytes": 1837467
+    },
+    "publications/pdf/TRX-04-photon-fluid_EN.pdf": {
+      "sha256": "d4ae65fda59bd84a2fd2f5579e39617a641bcab108657941b88f5fd9a8ddf5c6",
+      "bytes": 1969590
+    },
+    "publications/pdf/TRX-04-photon-fluid_RU.pdf": {
+      "sha256": "515f52048850c907ecdfbec4a5d54e93aa4de5fdd31a3b7069a01501794d34b9",
+      "bytes": 2009452
+    },
+    "publications/pdf/TRX-05-optical-vortices_EN.pdf": {
+      "sha256": "2881f4e371000f58fe23afd188ae68b0f2587178b60376277b8c11ff0eba1560",
+      "bytes": 2006038
+    },
+    "publications/pdf/TRX-05-optical-vortices_RU.pdf": {
+      "sha256": "9cba8e3f714bc070678f06243a79fefb5f2493ffd93c7484d30d2bac86cecb94",
+      "bytes": 2035697
+    },
+    "publications/pdf/TRX-06-helium-three-body_EN.pdf": {
+      "sha256": "5ae7996e6ae81179d01103aadd4fb37f17c00175490a9e05dad066f3a6f7c3c6",
+      "bytes": 1720102
+    },
+    "publications/pdf/TRX-06-helium-three-body_RU.pdf": {
+      "sha256": "4b52f758a538c01f97293d1c78c04b2dc5392c1a60e9b94ad517338248d2cb4c",
+      "bytes": 1754724
+    },
+    "publications/pdf/TRX-07-efimov_EN.pdf": {
+      "sha256": "8b403950b8111ee31f078b1b86d565f7002ee574c063a3d36bee53c9879c7f68",
+      "bytes": 1632305
+    },
+    "publications/pdf/TRX-07-efimov_RU.pdf": {
+      "sha256": "cabf36b213f3d6e8453832dccef07308eb51b9413241d5de23aafb93daf52445",
+      "bytes": 1667610
+    },
+    "publications/pdf/TRX-08-ion-trap_EN.pdf": {
+      "sha256": "261d56efd53852e4bfaa4fa9c697294cb4c4c4bf63bcd60a3c8182e8d95fb087",
+      "bytes": 1757158
+    },
+    "publications/pdf/TRX-08-ion-trap_RU.pdf": {
+      "sha256": "81a22c8727dc516bec2b8a942dab7a0ae22f88f668d75c749be4a55a7de8b2bb",
+      "bytes": 1792837
+    },
+    "publications/pdf/TRX-09-vortex-trio_EN.pdf": {
+      "sha256": "f46cbdf85efe10a5a8fcf6fefec5706edca4bcd65cb5e08c9820a9934b9909b3",
+      "bytes": 2072035
+    },
+    "publications/pdf/TRX-09-vortex-trio_RU.pdf": {
+      "sha256": "c7399997466958d65a7a196a0edeccd8f9205bb4193187b7eee3992af6ab1970",
+      "bytes": 2107021
+    },
+    "publications/pdf/TRX-10-kozai-lidov_EN.pdf": {
+      "sha256": "f0c0316e491c44e5fcaba25b9b9d2ae14156c9b830e4e67758137f34ac74291e",
+      "bytes": 2439068
+    },
+    "publications/pdf/TRX-10-kozai-lidov_RU.pdf": {
+      "sha256": "4bc2583f99ff318249e98d99cc888dd52f11bde4f681bb1275ed3bddb77761a9",
+      "bytes": 2473678
+    },
+    "publications/pdf/TRX-11-gw-choreography_EN.pdf": {
+      "sha256": "f4b76786f205029124c79a6587549649a2a0aadda12340f9f171830458c63db5",
+      "bytes": 2678818
+    },
+    "publications/pdf/TRX-11-gw-choreography_RU.pdf": {
+      "sha256": "9bce85600cf80b948e1abbca80c7b185ef55ebb8fb448829e4b4a18fb5968b6b",
+      "bytes": 2710809
+    },
+    "publications/pdf/TRX-12-laser-light-sail_EN.pdf": {
+      "sha256": "a202abd9dc22f0913ee3fa5240f08527162847eb14cc029394ccd390979c8fbf",
+      "bytes": 1698654
+    },
+    "publications/pdf/TRX-12-laser-light-sail_RU.pdf": {
+      "sha256": "2e1f0e75b42a35ea8d6a4eb86afe2d430d73e484e6b2481d0dd16725125c9751",
+      "bytes": 1735683
+    },
+    "publications/src/compendium_EN.md": {
+      "sha256": "ce0d520736f11fca1a1d06964e2d3c7d697988c0cfee287bea62e2b7015d8e42",
+      "bytes": 22458
+    },
+    "publications/src/compendium_RU.md": {
+      "sha256": "9849efb72469e4e8749ef91f7b7e7cfe8073046541924c08d14bf9f3b02b1690",
+      "bytes": 50000
+    },
+    "publications/src/core_monograph_EN.md": {
+      "sha256": "c4eb37f2957c4c34e7abadba68f48b7eee0de0cfacbe57ea21bd6c7f59a1edd6",
+      "bytes": 11672
+    },
+    "publications/src/core_monograph_RU.md": {
+      "sha256": "cce62cc07748f5faf73d0b47e4520995683b8d2adc93681802b78e81133353b4",
+      "bytes": 18600
+    },
+    "pyproject.toml": {
+      "sha256": "fc3a402b4ec4096ab0af524def287b84e3cff85719e4a64a8a3ce1399b917db7",
+      "bytes": 3331
+    },
+    "research/README.md": {
+      "sha256": "5026ad1406a6a9a589b152fff6cc5189b52e40a774b87faea0201ba7ae99b51f",
+      "bytes": 11804
+    },
+    "research/TRX-01-laser-radiation-pressure/README.md": {
+      "sha256": "af6b6e5dfe9837fa6bcf21bb342a7dc59c7be25caa2ad698130ceb6ef9086651",
+      "bytes": 36257
+    },
+    "research/TRX-01-laser-radiation-pressure/code/trx01_laser_radiation_pressure.py": {
+      "sha256": "6c4bd3303ebb8dac209bf58ce82a0e6ca1294c1324ad9f18a32127c939f7e4cc",
+      "bytes": 36295
+    },
+    "research/TRX-01-laser-radiation-pressure/figures/fig01_landscape.png": {
+      "sha256": "0f889627b84b18c0dcc45aad23f7405d1740fb75f009e7d4e69683913311d71b",
+      "bytes": 584385
+    },
+    "research/TRX-01-laser-radiation-pressure/figures/fig02_l4_shift.png": {
+      "sha256": "15a33feb86eaeab3e274fc468e10ef6029cc5f29c760b3ec14dc3aba25237bba",
+      "bytes": 628291
+    },
+    "research/TRX-01-laser-radiation-pressure/figures/fig03_stability_scan.png": {
+      "sha256": "cb4d4684e504c9b1f1508330e34809ea37a5bb8f3435433e074053ef1fb64c18",
+      "bytes": 416578
+    },
+    "research/TRX-01-laser-radiation-pressure/figures/fig04_jacobi_drift.png": {
+      "sha256": "d7fac9fa587e1fbc243e3bb97c228b731d059a3f32e205206a8a262da5112d0d",
+      "bytes": 509021
+    },
+    "research/TRX-01-laser-radiation-pressure/figures/scheme_trx01.svg": {
+      "sha256": "c874b0d5f8a3fe2c373ce7683de2103a06ec105919e88bc5ba88447de6fb194f",
+      "bytes": 6011
+    },
+    "research/TRX-01-laser-radiation-pressure/monograph/monograph_EN.docx": {
+      "sha256": "f2cbca5f2b039c4b2cff94a4091f13b47b111df867fbedb0d27d925e016a9a7c",
+      "bytes": 1235633
+    },
+    "research/TRX-01-laser-radiation-pressure/monograph/monograph_EN.md": {
+      "sha256": "6983099ac524ca624759496e2110e5c61b3ff5423f6ddd234cd1716c868c696c",
+      "bytes": 19657
+    },
+    "research/TRX-01-laser-radiation-pressure/monograph/monograph_EN.pdf": {
+      "sha256": "9169e2c987dbae4167f6d066cd5e4efdf8419e82c3216591a4956df4f0d2d2e0",
+      "bytes": 1506925
+    },
+    "research/TRX-01-laser-radiation-pressure/monograph/monograph_RU.docx": {
+      "sha256": "d180450e54206d9e08a479f078c8ca1b37f1ff1a8438fe44b95b8167c5665314",
+      "bytes": 1238160
+    },
+    "research/TRX-01-laser-radiation-pressure/monograph/monograph_RU.md": {
+      "sha256": "f8e968fae51d8abc0f588bd11f0b91a25721ee919aa8e429993c28e0a972a4b6",
+      "bytes": 31272
+    },
+    "research/TRX-01-laser-radiation-pressure/monograph/monograph_RU.pdf": {
+      "sha256": "e415c6b1ae841e2976a3e1e80f5f2573f6528c3a14693352d7bbf5799a5d0cf1",
+      "bytes": 1538303
+    },
+    "research/TRX-01-laser-radiation-pressure/pack.py": {
+      "sha256": "491f2924f95530649f2d38d3933ab030d714ed9231aae919ba362b0b87d22523",
+      "bytes": 63663
+    },
+    "research/TRX-01-laser-radiation-pressure/results/trx01_plot.svg": {
+      "sha256": "9566a0cc65625e7508794673c501e3604e58ce9dfc3a4695c83925d185e5ce15",
+      "bytes": 26584
+    },
+    "research/TRX-01-laser-radiation-pressure/results/trx01_results.json": {
+      "sha256": "97dc6929d509c39556d4d2f3eca05fc2bb725ee9e3cdcd15e4a761de0bb0fe93",
+      "bytes": 12802
+    },
+    "research/TRX-02-three-wave-mixing/README.md": {
+      "sha256": "f383dffe404b6f288998a8ca4ee652a3c7568f87d9d74716be5a59134239b0bb",
+      "bytes": 40987
+    },
+    "research/TRX-02-three-wave-mixing/code/trx02_three_wave_mixing.py": {
+      "sha256": "d7afd6cdebed64265681ef99fd69cddec952ef94e84a67cb44ff09ed7659f500",
+      "bytes": 39348
+    },
+    "research/TRX-02-three-wave-mixing/figures/fig01_resonance_geometry.png": {
+      "sha256": "14cfffcd3846bab3bc1f45752dbc6ce3c9371895b07487957b7092289c41013d",
+      "bytes": 419952
+    },
+    "research/TRX-02-three-wave-mixing/figures/fig02_pump_depletion.png": {
+      "sha256": "8671cd499f96b2fd4e19916f5d37fbd1178d8ca083a2410ab4486336e86ddbc2",
+      "bytes": 1234402
+    },
+    "research/TRX-02-three-wave-mixing/figures/fig03_parameter_sweep.png": {
+      "sha256": "1166a7ccd2789c9ff68b053945bcf684829c4aa443a9965bb5ef53ef49ea2d95",
+      "bytes": 626057
+    },
+    "research/TRX-02-three-wave-mixing/figures/fig04_invariants_shg.png": {
+      "sha256": "815f027c9d9bc0529d6ebb26c1d5f41b20faf80b139d6ec4f622fc63d745cfe2",
+      "bytes": 776949
+    },
+    "research/TRX-02-three-wave-mixing/figures/scheme_trx02.svg": {
+      "sha256": "f196b3263528a2b43b98bd8843f123bb07f282cfb477c49ec305a90b599dacdb",
+      "bytes": 13317
+    },
+    "research/TRX-02-three-wave-mixing/monograph/monograph_EN.docx": {
+      "sha256": "29b91bda1d5cac67e314b48a062fe6ee474f275f0775e0a55586a4d546369287",
+      "bytes": 1732872
+    },
+    "research/TRX-02-three-wave-mixing/monograph/monograph_EN.md": {
+      "sha256": "e93e72945c362f768fad0f83a358de82ed7150f50bc5a1d45136226decc14cee",
+      "bytes": 22672
+    },
+    "research/TRX-02-three-wave-mixing/monograph/monograph_EN.pdf": {
+      "sha256": "fed600231bb9089b9db3a5a50e1e817a31d0bef9eb066647f804e2b32581e9c4",
+      "bytes": 2340587
+    },
+    "research/TRX-02-three-wave-mixing/monograph/monograph_RU.docx": {
+      "sha256": "01ac83cab36a06d2f22551e541a0141f9f3382468eb89af826366a8bccf220cd",
+      "bytes": 1735937
+    },
+    "research/TRX-02-three-wave-mixing/monograph/monograph_RU.md": {
+      "sha256": "f56f97614c061dd848afcd11833b2b92374aa9201dba18b11aae55d289bb64bf",
+      "bytes": 37076
+    },
+    "research/TRX-02-three-wave-mixing/monograph/monograph_RU.pdf": {
+      "sha256": "0d07e090c476f3a35813c9e7f5aebd9ea37947b028f0866be1eafa77ee779726",
+      "bytes": 2373736
+    },
+    "research/TRX-02-three-wave-mixing/pack.py": {
+      "sha256": "252454e121bbdba06edb1f4eca6151adf2365f23800a613b0b00b267112c5e82",
+      "bytes": 77843
+    },
+    "research/TRX-02-three-wave-mixing/results/trx02_plot.svg": {
+      "sha256": "bfc7308bd8a1bf69ef1bc33a205137217384b05902b50cd41226f95d9d084328",
+      "bytes": 26372
+    },
+    "research/TRX-02-three-wave-mixing/results/trx02_results.json": {
+      "sha256": "1408cc0c04c516111eda90538aa03262849dbe66ab6955e8a44a336aa6b9891a",
+      "bytes": 48007
+    },
+    "research/TRX-03-soliton-molecule/README.md": {
+      "sha256": "dd6d995bb544267d86d0e0aa476792c8e0d044f30dcae24567edb04f5f70a5f9",
+      "bytes": 44927
+    },
+    "research/TRX-03-soliton-molecule/code/trx03_soliton_molecule.py": {
+      "sha256": "aa5fea5e3dae2f3c6eae2ddfd0a3e6f17525153fdb537edc02a33f067fb5d792",
+      "bytes": 38774
+    },
+    "research/TRX-03-soliton-molecule/figures/fig01_potential_landscape.png": {
+      "sha256": "838e378989e6a8d5cd9b67df65ed3dda808a8097ee19c97b4571d4c87ed5cff8",
+      "bytes": 777189
+    },
+    "research/TRX-03-soliton-molecule/figures/fig02_molecule_formation.png": {
+      "sha256": "b643f720eb8a8c7a6a32d5e8b5c641a379c866d82b2c6043553b3435a9b5d69d",
+      "bytes": 531688
+    },
+    "research/TRX-03-soliton-molecule/figures/fig03_phase_sweep.png": {
+      "sha256": "cea0a97bd9e019d427876f6c673a85d1ab01b57648257bc4b6e92a366b1d7a75",
+      "bytes": 659954
+    },
+    "research/TRX-03-soliton-molecule/figures/fig04_breathing_dynamics.png": {
+      "sha256": "bfae7402612001ed2a91cd634c03789491583891a876a314bbe44234e1528c76",
+      "bytes": 607171
+    },
+    "research/TRX-03-soliton-molecule/figures/scheme_trx03.svg": {
+      "sha256": "ac5625b579afa9be19e896d686884f659ed5eb715852c07738b81dba6654ae9d",
+      "bytes": 7246
+    },
+    "research/TRX-03-soliton-molecule/monograph/monograph_EN.docx": {
+      "sha256": "82fd2f40ce0fb75ac77fbd72ee55bb0ce5a6012a4806ff0e55e22b71c94d33ce",
+      "bytes": 1530415
+    },
+    "research/TRX-03-soliton-molecule/monograph/monograph_EN.md": {
+      "sha256": "ef52b2813efab10aafa48c8535a8a7565023f0b89f619c3f5d0fb265b7087d69",
+      "bytes": 25534
+    },
+    "research/TRX-03-soliton-molecule/monograph/monograph_EN.pdf": {
+      "sha256": "fc99aaee2c4844c644f0369ba6b713812f1b937a23eecaa69b01d617b54c7ae3",
+      "bytes": 1805993
+    },
+    "research/TRX-03-soliton-molecule/monograph/monograph_RU.docx": {
+      "sha256": "64546c085e5600e52538c0c1604eb4829cdc267d4e45414a9982a130550bccb9",
+      "bytes": 1533688
+    },
+    "research/TRX-03-soliton-molecule/monograph/monograph_RU.md": {
+      "sha256": "75fae9e406a2a3aaae317131c06f192b2b3c5630749f3770e1a0a02be82dcd60",
+      "bytes": 41911
+    },
+    "research/TRX-03-soliton-molecule/monograph/monograph_RU.pdf": {
+      "sha256": "43a84240b6519a0161a3790650a8418ff04162ab1ee6ff575706adbe9d22f6b6",
+      "bytes": 1837467
+    },
+    "research/TRX-03-soliton-molecule/pack.py": {
+      "sha256": "619aa587cd03a5a1a6a1cc63d38b08202c1e4e5809d722e4553c69ef86766d35",
+      "bytes": 84923
+    },
+    "research/TRX-03-soliton-molecule/results/trx03_plot.svg": {
+      "sha256": "0f9885b67d8ff612fdbc71d4373802ac50da6c7244ca21de25ac6e985e8132dd",
+      "bytes": 31142
+    },
+    "research/TRX-03-soliton-molecule/results/trx03_results.json": {
+      "sha256": "c12dd2fc1ed0e7bd19808137130de3575d3b5481a9f82a7c983978053821b924",
+      "bytes": 3846
+    },
+    "research/TRX-04-photon-fluid/README.md": {
+      "sha256": "ae4192f6c79a9ad1a6612e04a4b8165975901e950c36a0a372d6e6dadffb55bd",
+      "bytes": 54974
+    },
+    "research/TRX-04-photon-fluid/code/trx04_photon_fluid.py": {
+      "sha256": "ee81349dfc308bd840e2c7b88a874ebc40ee87a32a863446790e29a10bc6ddf2",
+      "bytes": 42440
+    },
+    "research/TRX-04-photon-fluid/figures/fig01_photon_fluid_landscape.png": {
+      "sha256": "be18dbea023929f268e334bc3644683182eecead5cd67a8637d640412c80f267",
+      "bytes": 632523
+    },
+    "research/TRX-04-photon-fluid/figures/fig02_triangle_rotation.png": {
+      "sha256": "8e831a4f6c0c751519e9bbfbe2ecd1183bb51e3cc062f36580c132eb6a1b555a",
+      "bytes": 656439
+    },
+    "research/TRX-04-photon-fluid/figures/fig03_parameter_sweeps.png": {
+      "sha256": "9343360834f769e013fb34feec3ae5b7042d518a955caac0a01fdeabee8fb337",
+      "bytes": 623065
+    },
+    "research/TRX-04-photon-fluid/figures/fig04_binary_dynamics_invariants.png": {
+      "sha256": "a51706ae2ece2c33cc85b80d0c83cc199256811fd8a1336d7fb2790db900af00",
+      "bytes": 1018220
+    },
+    "research/TRX-04-photon-fluid/figures/scheme_trx04.svg": {
+      "sha256": "d7d9a6571fa85fc11999eee1f071ae69afa75007652bdf6aba907fe165fe10d1",
+      "bytes": 8493
+    },
+    "research/TRX-04-photon-fluid/monograph/monograph_EN.docx": {
+      "sha256": "9b993a109acc6ec2133b4079469fcbba35297417b8efc6a1dfb57eb12cf62670",
+      "bytes": 1763852
+    },
+    "research/TRX-04-photon-fluid/monograph/monograph_EN.md": {
+      "sha256": "c70ab4bb8104011338c912783bcb664f93da0e18e0195b2e3692a34280ae0e34",
+      "bytes": 30160
+    },
+    "research/TRX-04-photon-fluid/monograph/monograph_EN.pdf": {
+      "sha256": "d4ae65fda59bd84a2fd2f5579e39617a641bcab108657941b88f5fd9a8ddf5c6",
+      "bytes": 1969590
+    },
+    "research/TRX-04-photon-fluid/monograph/monograph_RU.docx": {
+      "sha256": "4e06d5d2b09212418a742420753cf158391820ef6bc715d0eb7e78127685b170",
+      "bytes": 1767760
+    },
+    "research/TRX-04-photon-fluid/monograph/monograph_RU.md": {
+      "sha256": "687b814dcdcf72a3a984d982adda5463c952961bc4140949c33468b4262f53e2",
+      "bytes": 50769
+    },
+    "research/TRX-04-photon-fluid/monograph/monograph_RU.pdf": {
+      "sha256": "515f52048850c907ecdfbec4a5d54e93aa4de5fdd31a3b7069a01501794d34b9",
+      "bytes": 2009452
+    },
+    "research/TRX-04-photon-fluid/pack.py": {
+      "sha256": "f67eb95f5d24422092ed79c09c2cdd68e0d5d162010bacc7f89eac8681cf59a9",
+      "bytes": 104043
+    },
+    "research/TRX-04-photon-fluid/results/trx04_plot.svg": {
+      "sha256": "ea97e4df5aca523c1df02a86d6621fe2eaaf5284948b5bd60d1bf44d6cfbe587",
+      "bytes": 38964
+    },
+    "research/TRX-04-photon-fluid/results/trx04_results.json": {
+      "sha256": "ab277565d57ef2e309d7e4e4da18b3a062398d3ba211f470bee7d900a739b7a3",
+      "bytes": 77615
+    },
+    "research/TRX-05-optical-vortices/README.md": {
+      "sha256": "b39ac71cb2a76ea79d4ce804e04a06f57c5e526b3866159c008d774831745fbd",
+      "bytes": 43344
+    },
+    "research/TRX-05-optical-vortices/code/trx05_optical_vortices.py": {
+      "sha256": "e94f160d88d7946866eca9e8c780dcb5a240126b5219098c5b596b25acbb0d02",
+      "bytes": 39463
+    },
+    "research/TRX-05-optical-vortices/figures/fig01_field_landscape.png": {
+      "sha256": "9b470dd10ed5a406ce20be2e344eb89bc2cc8a938c27b478e4447c5162489364",
+      "bytes": 623308
+    },
+    "research/TRX-05-optical-vortices/figures/fig02_rigid_rotation.png": {
+      "sha256": "fa689397d629d7fd36901ed61db30f8aa33f5b6c1c9a5eac5de6cfab2bcde3c6",
+      "bytes": 613367
+    },
+    "research/TRX-05-optical-vortices/figures/fig03_parameter_sweeps.png": {
+      "sha256": "2d397d33d6fecb2d452b8e84e36a550109d1e8387899a804f03daf4dc351dcc1",
+      "bytes": 625269
+    },
+    "research/TRX-05-optical-vortices/figures/fig04_invariants_rigidity.png": {
+      "sha256": "abb27c08688314e38281da668477c59b434525ae6b9e7f32f921932d946ac400",
+      "bytes": 851106
+    },
+    "research/TRX-05-optical-vortices/figures/scheme_trx05.svg": {
+      "sha256": "0570a66ef7067c0da8af54c002d41e253dcf7b5b8dc7c4c4f5217007e929c388",
+      "bytes": 9138
+    },
+    "research/TRX-05-optical-vortices/monograph/monograph_EN.docx": {
+      "sha256": "f4c09b81804a316a50f5e2628c7286b1a60d5e10f68525a84136734d0c6b8f05",
+      "bytes": 1648006
+    },
+    "research/TRX-05-optical-vortices/monograph/monograph_EN.md": {
+      "sha256": "77135652721dc51d652431d556eccb885463751deacceb9e87082e7f65a8c43f",
+      "bytes": 23844
+    },
+    "research/TRX-05-optical-vortices/monograph/monograph_EN.pdf": {
+      "sha256": "2881f4e371000f58fe23afd188ae68b0f2587178b60376277b8c11ff0eba1560",
+      "bytes": 2006038
+    },
+    "research/TRX-05-optical-vortices/monograph/monograph_RU.docx": {
+      "sha256": "424b194e42db212fe1328f9e5d85e3b3226f918ede14e562727799e2b95ad264",
+      "bytes": 1650811
+    },
+    "research/TRX-05-optical-vortices/monograph/monograph_RU.md": {
+      "sha256": "14372ed6759679fd00c3258dfe4287d1edeffac917eaddf8bee3e40cccb52908",
+      "bytes": 38047
+    },
+    "research/TRX-05-optical-vortices/monograph/monograph_RU.pdf": {
+      "sha256": "9cba8e3f714bc070678f06243a79fefb5f2493ffd93c7484d30d2bac86cecb94",
+      "bytes": 2035697
+    },
+    "research/TRX-05-optical-vortices/pack.py": {
+      "sha256": "c7619ec96e97aff5b6b25198ae10f05e206e083d810217553c9bcdebb0a93331",
+      "bytes": 78486
+    },
+    "research/TRX-05-optical-vortices/results/trx05_plot.svg": {
+      "sha256": "0b0174d1a934f0336e5c0aa4355077479de9801c3d46d5083d3439590f6105c7",
+      "bytes": 1055170
+    },
+    "research/TRX-05-optical-vortices/results/trx05_results.json": {
+      "sha256": "8d986f5e84d658f514bfa467563f1298d648a53b09a569ad7d0645fcc5c46013",
+      "bytes": 51649
+    },
+    "research/TRX-06-helium-three-body/README.md": {
+      "sha256": "a97565076f45120a4490c02d9875e7fc95b7175d7549eacc845778ca61f8ce9e",
+      "bytes": 50704
+    },
+    "research/TRX-06-helium-three-body/code/trx06_helium_three_body.py": {
+      "sha256": "be0117c68705b46a8ed20f552565df90e8bd44bd7133ff58ba99b53b5e063cff",
+      "bytes": 55238
+    },
+    "research/TRX-06-helium-three-body/figures/fig01_model_landscape.png": {
+      "sha256": "a9e1082581a510137f4c632e94f9a583d40f11539651fa4139f474085700bb18",
+      "bytes": 571565
+    },
+    "research/TRX-06-helium-three-body/figures/fig02_energy_sharing.png": {
+      "sha256": "ea9fad2122c7be7eb5d2b2d4c24d5156fafe68eb06bbd129dd78f06c350de00d",
+      "bytes": 621327
+    },
+    "research/TRX-06-helium-three-body/figures/fig03_parameter_sweeps.png": {
+      "sha256": "06f02814f6c34f829b3c5a5c4dfe5778e46d081744264b7edc27ccf02aae716c",
+      "bytes": 514296
+    },
+    "research/TRX-06-helium-three-body/figures/fig04_autoionization_dynamics.png": {
+      "sha256": "1324e5ce633cf24ee62e90f683ab00d039cbf73e4939f79350179e73abdba91b",
+      "bytes": 566913
+    },
+    "research/TRX-06-helium-three-body/figures/scheme_trx06.svg": {
+      "sha256": "1fcbbeeb8506fd7c7e51502fa7364f5ff3075f027650a032d5157559974490b4",
+      "bytes": 8589
+    },
+    "research/TRX-06-helium-three-body/monograph/monograph_EN.docx": {
+      "sha256": "3c57be6c9625023b76800423bdcb9d496cf36107e859b46e81456b30fa1a952a",
+      "bytes": 1336810
+    },
+    "research/TRX-06-helium-three-body/monograph/monograph_EN.md": {
+      "sha256": "ec4683438b9340951f79a8e82c20cbb323cc3cf186e4a8efbc28a75291b9e661",
+      "bytes": 28221
+    },
+    "research/TRX-06-helium-three-body/monograph/monograph_EN.pdf": {
+      "sha256": "5ae7996e6ae81179d01103aadd4fb37f17c00175490a9e05dad066f3a6f7c3c6",
+      "bytes": 1720102
+    },
+    "research/TRX-06-helium-three-body/monograph/monograph_RU.docx": {
+      "sha256": "d6f098e2acf2ea831751ab4ea18614c5286fd15004ce7beb9335537b125f5198",
+      "bytes": 1340343
+    },
+    "research/TRX-06-helium-three-body/monograph/monograph_RU.md": {
+      "sha256": "970a3956e35963303ae6e4e3ed2bbb592ae68a57cfadadebe83b0eab7b3bf429",
+      "bytes": 46269
+    },
+    "research/TRX-06-helium-three-body/monograph/monograph_RU.pdf": {
+      "sha256": "4b52f758a538c01f97293d1c78c04b2dc5392c1a60e9b94ad517338248d2cb4c",
+      "bytes": 1754724
+    },
+    "research/TRX-06-helium-three-body/pack.py": {
+      "sha256": "ad82517784989ce0896840485f5b252823ed45ffdc6c29cf03f38b76011a2fe4",
+      "bytes": 92576
+    },
+    "research/TRX-06-helium-three-body/results/trx06_plot.svg": {
+      "sha256": "05816dde83922eb62764f291589d5751692ed3f8a7fbcff3d445a38f2379e271",
+      "bytes": 1250
+    },
+    "research/TRX-06-helium-three-body/results/trx06_results.json": {
+      "sha256": "9c14319010646b3dfb9528e03f5e7d2edba54a19280ffa1433e38ff9f0fc7385",
+      "bytes": 2150
+    },
+    "research/TRX-07-efimov/README.md": {
+      "sha256": "2f260e736618b29acea44d06e31bc2e641a9438bd326cc5c4d1ca73ac04da103",
+      "bytes": 47374
+    },
+    "research/TRX-07-efimov/code/trx07_efimov.py": {
+      "sha256": "d17a59c94914964cea0f6efa93768a8ffffd56aa739631c92c5a0af599710213",
+      "bytes": 37182
+    },
+    "research/TRX-07-efimov/figures/fig01_efimov_landscape.png": {
+      "sha256": "131d44526f87dc3960de07d3de97689b215ecb49fe358ff19a5aa8b25430cc69",
+      "bytes": 548066
+    },
+    "research/TRX-07-efimov/figures/fig02_universal_numbers.png": {
+      "sha256": "4860a256ea1cf5f2beaf9ceac642f0b69324dbf6e2f64e0777f68effeed09b79",
+      "bytes": 516272
+    },
+    "research/TRX-07-efimov/figures/fig03_ladder_stability.png": {
+      "sha256": "a3eaa93bb24ba2ab8c7d1d47f8440d000285d2c7240211cd3713004f8b92fcd7",
+      "bytes": 535099
+    },
+    "research/TRX-07-efimov/figures/fig04_scaling_laws.png": {
+      "sha256": "d798caba075b5ea8b537e242d2c6efd3628ded6046c1db8c27fb84db312e6ee5",
+      "bytes": 664308
+    },
+    "research/TRX-07-efimov/figures/scheme_trx07.svg": {
+      "sha256": "3638afcf267856d946fc84e081a67b189e9e9b6eaf7d64b494a0e3119f492306",
+      "bytes": 7179
+    },
+    "research/TRX-07-efimov/monograph/monograph_EN.docx": {
+      "sha256": "fe419cff6e607e0bda663140d5f3d4644bcd2768473f8d9683632431cb52a085",
+      "bytes": 1300874
+    },
+    "research/TRX-07-efimov/monograph/monograph_EN.md": {
+      "sha256": "03fc731a2689141b0af164fd9b970d2a05ed9b4b0c43fddf3b6a5cf6f59864fb",
+      "bytes": 26254
+    },
+    "research/TRX-07-efimov/monograph/monograph_EN.pdf": {
+      "sha256": "8b403950b8111ee31f078b1b86d565f7002ee574c063a3d36bee53c9879c7f68",
+      "bytes": 1632305
+    },
+    "research/TRX-07-efimov/monograph/monograph_RU.docx": {
+      "sha256": "d2066c5142f6b07a4a4492ad19808eccdb84c7c38f5b42f8d69bd535e006cca2",
+      "bytes": 1303950
+    },
+    "research/TRX-07-efimov/monograph/monograph_RU.md": {
+      "sha256": "5df4356d41ebdeb96414e09fcce0d0527034af92994c9fb4bcc9b7442f95472b",
+      "bytes": 42776
+    },
+    "research/TRX-07-efimov/monograph/monograph_RU.pdf": {
+      "sha256": "cabf36b213f3d6e8453832dccef07308eb51b9413241d5de23aafb93daf52445",
+      "bytes": 1667610
+    },
+    "research/TRX-07-efimov/pack.py": {
+      "sha256": "6047620ab9cf0febb96a943b5a95628f089833a9d429a90b31f81a9f8655f826",
+      "bytes": 88823
+    },
+    "research/TRX-07-efimov/results/trx07_plot.svg": {
+      "sha256": "37683eb3ceee34853996638bd0cbf0688a6023433db03e01d8503864f258d65a",
+      "bytes": 1409
+    },
+    "research/TRX-07-efimov/results/trx07_results.json": {
+      "sha256": "049cf2d13ee04a3b67fb7fef911c871ab5bdc0980c115908893cace6e6dd71b8",
+      "bytes": 2212
+    },
+    "research/TRX-08-ion-trap/README.md": {
+      "sha256": "24eee8aa1d4fb0a20dc241b0adaae31864b89ec270caab49b9e424b9035b7b9d",
+      "bytes": 48329
+    },
+    "research/TRX-08-ion-trap/code/trx08_ion_trap.py": {
+      "sha256": "20f0ff5c33c174ded60edf0d1d3134b8b11f13a4b2db53a17d874f09821afd82",
+      "bytes": 46908
+    },
+    "research/TRX-08-ion-trap/figures/fig01_crystal_landscape.png": {
+      "sha256": "2fd186006bdcd896d871d0806b0cbf95a7462c686fe3a646634b12437e1a7a0d",
+      "bytes": 842083
+    },
+    "research/TRX-08-ion-trap/figures/fig02_crystal_and_modes.png": {
+      "sha256": "cc39a0f9f035b181aa1cc671f35a26b1e8cd41591cc4eddd1f1bab7d10ab172b",
+      "bytes": 616419
+    },
+    "research/TRX-08-ion-trap/figures/fig03_scaling_sweeps.png": {
+      "sha256": "61ee40637bb9bdc60230e4977689f2a6e3b5b278868009ad7b0546cf22392cf3",
+      "bytes": 530769
+    },
+    "research/TRX-08-ion-trap/figures/fig04_crystallization_dynamics.png": {
+      "sha256": "d080af8abda64af96b12d688b2a6c4906a51ab959a47373b5eb24f8339b868b2",
+      "bytes": 678172
+    },
+    "research/TRX-08-ion-trap/figures/scheme_trx08.svg": {
+      "sha256": "960ca271b8cfdb0a141f7495c778fd18b99c18607fd2cdc39808761d6e96a5b2",
+      "bytes": 8940
+    },
+    "research/TRX-08-ion-trap/monograph/monograph_EN.docx": {
+      "sha256": "b946b889ecc68160e39576a1f1204c3aefdb20075ec3b62d1164213056077d1c",
+      "bytes": 1567589
+    },
+    "research/TRX-08-ion-trap/monograph/monograph_EN.md": {
+      "sha256": "af8c48612b19bfa519d02d78836abc1e6ae8b3bf0d768e47ffb2b3aa80a9aa37",
+      "bytes": 26873
+    },
+    "research/TRX-08-ion-trap/monograph/monograph_EN.pdf": {
+      "sha256": "261d56efd53852e4bfaa4fa9c697294cb4c4c4bf63bcd60a3c8182e8d95fb087",
+      "bytes": 1757158
+    },
+    "research/TRX-08-ion-trap/monograph/monograph_RU.docx": {
+      "sha256": "2c9ccb79dc4f6298eeeb2f759506eee1a3955ae2bc8ca847ad722c61d15280dc",
+      "bytes": 1571191
+    },
+    "research/TRX-08-ion-trap/monograph/monograph_RU.md": {
+      "sha256": "02f24ff050524b850d145f01fe188bfd5cc0f9b202c1da9e5d91fa36a615cd0e",
+      "bytes": 45339
+    },
+    "research/TRX-08-ion-trap/monograph/monograph_RU.pdf": {
+      "sha256": "81a22c8727dc516bec2b8a942dab7a0ae22f88f668d75c749be4a55a7de8b2bb",
+      "bytes": 1792837
+    },
+    "research/TRX-08-ion-trap/pack.py": {
+      "sha256": "ec2cdffae72e460f824195c0dafd1766e60f3141c6dd2ef160b880fcbc0ddeba",
+      "bytes": 92316
+    },
+    "research/TRX-08-ion-trap/results/trx08_plot.svg": {
+      "sha256": "129ecfe15b4943ec433bacdc7c3736fec265a9b93427e169e8a091347279761b",
+      "bytes": 1257
+    },
+    "research/TRX-08-ion-trap/results/trx08_results.json": {
+      "sha256": "94be69d062e824b5807040e8f3be006cd1269ee4397e7a9cc9cb81e4b62f692f",
+      "bytes": 3612
+    },
+    "research/TRX-09-vortex-trio/README.md": {
+      "sha256": "bb5339088781aebd18410ecb0fbc8046ac5ff2d33a661469efec807735b242a9",
+      "bytes": 46040
+    },
+    "research/TRX-09-vortex-trio/code/trx09_classical_anchor.py": {
+      "sha256": "ed926ffd6602a9cbb7487195b5c9c5db430ed2a8ffd2b40fe06339cf64eb1002",
+      "bytes": 44547
+    },
+    "research/TRX-09-vortex-trio/figures/fig01_regime_landscape.png": {
+      "sha256": "e1e0c44c4aed360b004dd75a1976927123fe7ac2ed97e4178275e839e7eb309c",
+      "bytes": 528445
+    },
+    "research/TRX-09-vortex-trio/figures/fig02_headline_results.png": {
+      "sha256": "04621285d7b338d8a27759f31042cb25ebe35f961d8fd7044aa75cd9cb4de454",
+      "bytes": 889693
+    },
+    "research/TRX-09-vortex-trio/figures/fig03_parameter_sweeps.png": {
+      "sha256": "cc49dcfdcdca77f00f014584d6f1f847f0d17c83e519bf28e1c5fc35f74e8a33",
+      "bytes": 508226
+    },
+    "research/TRX-09-vortex-trio/figures/fig04_dynamics_invariants.png": {
+      "sha256": "25b33cd68a5b18a75e454bdf87e42e634bf2ac0a27d6d0cc8a97e451bc3e0412",
+      "bytes": 932891
+    },
+    "research/TRX-09-vortex-trio/figures/scheme_trx09.svg": {
+      "sha256": "a197cff1a12fff30381709dc066134061227b6191d47b830748c779aac622308",
+      "bytes": 9759
+    },
+    "research/TRX-09-vortex-trio/monograph/monograph_EN.docx": {
+      "sha256": "75d24634a4374b986485030e4454c6fa2199d1c9ae1b9b3f8e28a73b45825e86",
+      "bytes": 1697063
+    },
+    "research/TRX-09-vortex-trio/monograph/monograph_EN.md": {
+      "sha256": "e4c4afb944b1141e5cbac4d19be20ce6200af485fc0b46f0137eabf93e4b2837",
+      "bytes": 24667
+    },
+    "research/TRX-09-vortex-trio/monograph/monograph_EN.pdf": {
+      "sha256": "f46cbdf85efe10a5a8fcf6fefec5706edca4bcd65cb5e08c9820a9934b9909b3",
+      "bytes": 2072035
+    },
+    "research/TRX-09-vortex-trio/monograph/monograph_RU.docx": {
+      "sha256": "aa3be6492f4ac69f66995f63b04335d3ebe66eed2899d122d41885f90d107e82",
+      "bytes": 1700197
+    },
+    "research/TRX-09-vortex-trio/monograph/monograph_RU.md": {
+      "sha256": "db65c5b15848ecad357b0d89e02f69e6641e4471724b74abfc89222afea6be84",
+      "bytes": 39822
+    },
+    "research/TRX-09-vortex-trio/monograph/monograph_RU.pdf": {
+      "sha256": "c7399997466958d65a7a196a0edeccd8f9205bb4193187b7eee3992af6ab1970",
+      "bytes": 2107021
+    },
+    "research/TRX-09-vortex-trio/pack.py": {
+      "sha256": "ce90f1f8e2794c7ab0009755b369147bbb2a95801126d9c3d3815f49a00c5f97",
+      "bytes": 85873
+    },
+    "research/TRX-09-vortex-trio/results/trx09_plot.svg": {
+      "sha256": "54277b9226754a94d24e0397f5527bf9162d6f34615870ca920f9877a0112f87",
+      "bytes": 17549
+    },
+    "research/TRX-09-vortex-trio/results/trx09_results.json": {
+      "sha256": "ad5e83b3e7ecdd19fd17a47ae5b11982bd1224011dffe7ba5e8a9305dd140d66",
+      "bytes": 39862
+    },
+    "research/TRX-10-kozai-lidov/README.md": {
+      "sha256": "9662e7d8a555b411993b27f5d95719c100e1c4184ac7c9ad681179e7c5c61c58",
+      "bytes": 46200
+    },
+    "research/TRX-10-kozai-lidov/code/trx10_kozai_lidov.py": {
+      "sha256": "b69d542be784926cbf1b7934fc77452a3ebf641bfa3aec9ba4fcb4fa57fbda6d",
+      "bytes": 39886
+    },
+    "research/TRX-10-kozai-lidov/figures/fig01_kl_landscape.png": {
+      "sha256": "4d086dc2c1c3d1b11f661fa2fb3c57be96ace313de6d473a330958cb881c61c0",
+      "bytes": 604726
+    },
+    "research/TRX-10-kozai-lidov/figures/fig02_kl_exchange.png": {
+      "sha256": "b0c25a52cdbb36b1b09154e3473be48b4db91522bd8076e1bcf72287ebec420a",
+      "bytes": 1319544
+    },
+    "research/TRX-10-kozai-lidov/figures/fig03_kl_sweeps.png": {
+      "sha256": "4174162e47aeba5e5ae473f1b77f423c83c6f9c615ea04b5b5ea9376ced8a494",
+      "bytes": 573424
+    },
+    "research/TRX-10-kozai-lidov/figures/fig04_kl_dynamics.png": {
+      "sha256": "9c1818fc5a436bf06bc9b2f627964366ecc2f4c2a743c4e729895e0ecf27d2dc",
+      "bytes": 427877
+    },
+    "research/TRX-10-kozai-lidov/figures/scheme_trx10.svg": {
+      "sha256": "71f97b323643fa2eec35a5a0b8385bff85404f44a62f00ed244794bedfe9d612",
+      "bytes": 6762
+    },
+    "research/TRX-10-kozai-lidov/monograph/monograph_EN.docx": {
+      "sha256": "622a772a46ccb17419d088d3ec2f634c0e1205364505df213307bb32884d5cc3",
+      "bytes": 1729296
+    },
+    "research/TRX-10-kozai-lidov/monograph/monograph_EN.md": {
+      "sha256": "3ea85172331278b8d75d12039e329da47859a2deab27599b972f4571423404a1",
+      "bytes": 26692
+    },
+    "research/TRX-10-kozai-lidov/monograph/monograph_EN.pdf": {
+      "sha256": "f0c0316e491c44e5fcaba25b9b9d2ae14156c9b830e4e67758137f34ac74291e",
+      "bytes": 2439068
+    },
+    "research/TRX-10-kozai-lidov/monograph/monograph_RU.docx": {
+      "sha256": "75f3233bb14c0519b121e342092e3c4273dbefa4babef48c8c936a6378c160f5",
+      "bytes": 1732376
+    },
+    "research/TRX-10-kozai-lidov/monograph/monograph_RU.md": {
+      "sha256": "ef89c53a8dda3b533999253341867d624bc3b4a93f86a3a1caade45afa9ac79c",
+      "bytes": 42823
+    },
+    "research/TRX-10-kozai-lidov/monograph/monograph_RU.pdf": {
+      "sha256": "4bc2583f99ff318249e98d99cc888dd52f11bde4f681bb1275ed3bddb77761a9",
+      "bytes": 2473678
+    },
+    "research/TRX-10-kozai-lidov/pack.py": {
+      "sha256": "4e64b002841eb03c0e485c7460fd8e94117c1ded5d35e22ec9e5e20aa9e28a5b",
+      "bytes": 88939
+    },
+    "research/TRX-10-kozai-lidov/results/trx10_plot.svg": {
+      "sha256": "6cb53c170f44947a548408f8dc434e726b35059e80a7ec2744a0808bd3103415",
+      "bytes": 9240
+    },
+    "research/TRX-10-kozai-lidov/results/trx10_results.json": {
+      "sha256": "133413c2ef55542894789fbf5b20de3870c7d56e4051019bdbd13b8ef724a697",
+      "bytes": 19709
+    },
+    "research/TRX-11-gw-choreography/README.md": {
+      "sha256": "38dfbbb512ffdc16d97163f2a1e047bc5a6fe73f035a2ec89f8965b0f3b2c2cb",
+      "bytes": 46949
+    },
+    "research/TRX-11-gw-choreography/code/trx11_gw_choreography.py": {
+      "sha256": "eeb1f5478731bd029421e26c3651993fb55cdd49ab17270968c9226983126f47",
+      "bytes": 43465
+    },
+    "research/TRX-11-gw-choreography/figures/fig01_orbit_overview.png": {
+      "sha256": "7976525b833e6ca33b0dc7421f3abcbcb9a990d84cd3bb8e0f991446241f57b0",
+      "bytes": 871785
+    },
+    "research/TRX-11-gw-choreography/figures/fig02_waveform_comb.png": {
+      "sha256": "ed9ba73357b61da15f1dc46391eda0b64a2a2ca9a142a5cef7b0ee46d9033483",
+      "bytes": 760698
+    },
+    "research/TRX-11-gw-choreography/figures/fig03_pattern_sweep.png": {
+      "sha256": "4d0736ed1a8fb7c694e980e816e05f2f9fa48a5400f6c1d20dd31b0524c6ad03",
+      "bytes": 806526
+    },
+    "research/TRX-11-gw-choreography/figures/fig04_quadrupole_dynamics.png": {
+      "sha256": "df25b5fa9bd21fe6096c7a03000702f9decf2df7d79f28092a7d9ff32bb7c3ce",
+      "bytes": 1148244
+    },
+    "research/TRX-11-gw-choreography/figures/scheme_trx11.svg": {
+      "sha256": "db4a7d8964157294355b7279a53810d6351fa4ec2fda7b5fbab28d09d0c9807f",
+      "bytes": 15153
+    },
+    "research/TRX-11-gw-choreography/monograph/monograph_EN.docx": {
+      "sha256": "9e0da37f1479d529cfd60ff8f71aa77039bc96ba8e638457046e0f0f429e2560",
+      "bytes": 2186226
+    },
+    "research/TRX-11-gw-choreography/monograph/monograph_EN.md": {
+      "sha256": "5ba4f51a3080c7c3bd198b70f222b7e0ee2173b9a63aa7e83c36aca79df0ebc3",
+      "bytes": 27751
+    },
+    "research/TRX-11-gw-choreography/monograph/monograph_EN.pdf": {
+      "sha256": "f4b76786f205029124c79a6587549649a2a0aadda12340f9f171830458c63db5",
+      "bytes": 2678818
+    },
+    "research/TRX-11-gw-choreography/monograph/monograph_RU.docx": {
+      "sha256": "d71bb03315c513d882880340aab515ffdca64e0eb5751068b286c802c0e1e33b",
+      "bytes": 2189694
+    },
+    "research/TRX-11-gw-choreography/monograph/monograph_RU.md": {
+      "sha256": "8f44fb03099d7d1f2319309e01efbec8f24b4d156f53fc8127e7257c30155659",
+      "bytes": 45122
+    },
+    "research/TRX-11-gw-choreography/monograph/monograph_RU.pdf": {
+      "sha256": "9bce85600cf80b948e1abbca80c7b185ef55ebb8fb448829e4b4a18fb5968b6b",
+      "bytes": 2710809
+    },
+    "research/TRX-11-gw-choreography/pack.py": {
+      "sha256": "67162a6281a18498538893249e49cd658a3fc9575e571627fdcb5362a0e73998",
+      "bytes": 94262
+    },
+    "research/TRX-11-gw-choreography/results/trx11_plot.svg": {
+      "sha256": "1f2939323adbfbb1d6c9f4ae557c5e692a07775a07647d2c7f01b9653fb1c9d3",
+      "bytes": 10601
+    },
+    "research/TRX-11-gw-choreography/results/trx11_results.json": {
+      "sha256": "604f791fca2c59eda3ea5c28e2c823867f92a1902c4be00a42b61cc4b2972c2b",
+      "bytes": 25952
+    },
+    "research/TRX-12-laser-light-sail/README.md": {
+      "sha256": "f089139610f859184c9f012e37c6956625d013bfd363253164766c919c630f9d",
+      "bytes": 49563
+    },
+    "research/TRX-12-laser-light-sail/code/trx12_laser_light_sail.py": {
+      "sha256": "9459b874af351a771c3637cfc70060d4778e8d5f5394528f6e08d0f29afdf796",
+      "bytes": 38129
+    },
+    "research/TRX-12-laser-light-sail/figures/fig01_landscape.png": {
+      "sha256": "1bd6d4b87a6bead4522fed265a594ce38b1994502914e2af0c787d142d680937",
+      "bytes": 781831
+    },
+    "research/TRX-12-laser-light-sail/figures/fig02_stationkeep.png": {
+      "sha256": "142b3bf8ef06e1cdc4e41efa2a36f937ddf2b4c61f69abffef5f21e5d66e44ef",
+      "bytes": 519258
+    },
+    "research/TRX-12-laser-light-sail/figures/fig03_control_map.png": {
+      "sha256": "081c27189e0f774562d8d9f4ef8b951c8c84d155eee47d5ed94abfb3b55074dd",
+      "bytes": 439652
+    },
+    "research/TRX-12-laser-light-sail/figures/fig04_dynamics.png": {
+      "sha256": "79478b426a8b052cf7a541830d6bf8e07bbdffcca52eab62fe40dc11d08a0899",
+      "bytes": 556214
+    },
+    "research/TRX-12-laser-light-sail/figures/scheme_trx12.svg": {
+      "sha256": "dd10eff752ecfa416cfe002a85a9f430256413889654f4ca1864e5af033f87aa",
+      "bytes": 6266
+    },
+    "research/TRX-12-laser-light-sail/monograph/monograph_EN.docx": {
+      "sha256": "98a8c2e7d73881b9cf279ac32da869baa2b47406775201aa84037ce1b6331f41",
+      "bytes": 1341043
+    },
+    "research/TRX-12-laser-light-sail/monograph/monograph_EN.md": {
+      "sha256": "bf2a25fac506af4b3975732f8dd5f13fa7eaba5d68324e626422aaca3b8b3f92",
+      "bytes": 27030
+    },
+    "research/TRX-12-laser-light-sail/monograph/monograph_EN.pdf": {
+      "sha256": "a202abd9dc22f0913ee3fa5240f08527162847eb14cc029394ccd390979c8fbf",
+      "bytes": 1698654
+    },
+    "research/TRX-12-laser-light-sail/monograph/monograph_RU.docx": {
+      "sha256": "4ff05de15ad2b531adc067ef111eb45790fdcef367df7a318a619c550249069e",
+      "bytes": 1344478
+    },
+    "research/TRX-12-laser-light-sail/monograph/monograph_RU.md": {
+      "sha256": "61cab863ff57812e66f19169c9b2f9daf010f6e7967eda5f39806ec22d12cbc4",
+      "bytes": 44155
+    },
+    "research/TRX-12-laser-light-sail/monograph/monograph_RU.pdf": {
+      "sha256": "2e1f0e75b42a35ea8d6a4eb86afe2d430d73e484e6b2481d0dd16725125c9751",
+      "bytes": 1735683
+    },
+    "research/TRX-12-laser-light-sail/pack.py": {
+      "sha256": "eccd231fb0300b0a1919e60c9f32f91e60d617c3a10d399c2eb70fd48c132ad6",
+      "bytes": 86072
+    },
+    "research/TRX-12-laser-light-sail/results/trx12_plot.svg": {
+      "sha256": "88b5b1b9110e51e7ef1c03a5136b742c002423f5605e5f7abc0b031b12d312e2",
+      "bytes": 8869
+    },
+    "research/TRX-12-laser-light-sail/results/trx12_results.json": {
+      "sha256": "fe373d8a3adc66c827f5f753c68efcad0643a0dec190bd7753bdd612db7bb658",
+      "bytes": 38106
+    },
+    "research/_FORMAT_SPEC.md": {
+      "sha256": "d74ec6bd4e89f8055c89af0ae759d5b246ef38f2e8325ac0d34d118309f9e41f",
+      "bytes": 8183
+    },
+    "verification/CODEOWNERS": {
+      "sha256": "1396163da52e76d8027921270c417f2e2e44c366acd13b1d6217ecb8d4dd2ad1",
+      "bytes": 469
+    },
+    "verification/Makefile": {
+      "sha256": "2fb45ed1d29a16f2fc70867cb9fc880ad39eff04293aa7d66e57c3b8c27ece7d",
+      "bytes": 1188
+    },
+    "verification/README.md": {
+      "sha256": "4cbdeaf9fd87ef0da871ce0700473bcda674c131c1839a4eb4506e7b266d2c10",
+      "bytes": 19176
+    },
+    "verification/agda/README.md": {
+      "sha256": "de476970756cc1656dcaf887cdf2f0516282e72be622a9ab0636951ec2018c0e",
+      "bytes": 3950
+    },
+    "verification/common/README.md": {
+      "sha256": "7e999b41e629763079a75d9fa9eff599af2d923883efb8e8e4229d627a78e7ca",
+      "bytes": 2549
+    },
+    "verification/common/python/README.md": {
+      "sha256": "9e8900b751459e2ef8ebea497a7ddb6a958184673976f0735548c3c6d71c8682",
+      "bytes": 1901
+    },
+    "verification/common/python/__init__.py": {
+      "sha256": "2af308db70baf2582d2e575f8e75f7944478f87a52a0d3517f0d4a64821bf33d",
+      "bytes": 48
+    },
+    "verification/common/python/config.py": {
+      "sha256": "dd17f4848d219c8ecede2a7f06a2173008869e0a540d5eefe096603fed94a2a9",
+      "bytes": 752
+    },
+    "verification/common/python/main.py": {
+      "sha256": "6b3cb180ff12f52b7bc8cce072ea8dfcd430aa13107f13f53ade0cc7d4c951be",
+      "bytes": 617
+    },
+    "verification/common/python/verifier_base.py": {
+      "sha256": "22d6fca1148d56aee895a663298af23f342e53184eb7f599360a6b31fdf2a07c",
+      "bytes": 714
+    },
+    "verification/coq/README.md": {
+      "sha256": "6b702f0ba91293accf897f6674b50023f7ca3431c177e6ea4f5bab5b50bf4a5b",
+      "bytes": 4010
+    },
+    "verification/cpp/README.md": {
+      "sha256": "ff07c25039e9ff3d38b2cffbe98a96934d072808cd9d364e3fad8f9b16e672fc",
+      "bytes": 3961
+    },
+    "verification/docker/README.md": {
+      "sha256": "b32887e4229e1df5363618b9af50ac94c3b3824ce5bc440ddffe1d9d35b88409",
+      "bytes": 3629
+    },
+    "verification/docker/agda/Dockerfile": {
+      "sha256": "95ba650ce6bc98f19c98ffd36bf90940b9bde70721b09a8fafe5629fbccd1cb8",
+      "bytes": 135
+    },
+    "verification/docker/agda/README.md": {
+      "sha256": "aa4d4c4aa5b976f6b7cce159cf7295859bc898181e334c3884700f616b580acb",
+      "bytes": 2740
+    },
+    "verification/docker/coq/Dockerfile": {
+      "sha256": "e0187bf9bb8e33d13d1cb5acfa149d90decb486e490070e02834dfab2d2acd03",
+      "bytes": 179
+    },
+    "verification/docker/coq/README.md": {
+      "sha256": "7c9f7d0d3e2402a0fb5d07ca172e464d3fdca9e842214fab48e0e77a820a18e3",
+      "bytes": 2783
+    },
+    "verification/docker/cpp/Dockerfile": {
+      "sha256": "96a41ca1e3b0da20e57c1239c4ab48fce2d8c916f571448b1f5c6ef1e8e7b261",
+      "bytes": 396
+    },
+    "verification/docker/cpp/README.md": {
+      "sha256": "eb269ec98c7d2ae5829731638546a289cfa5ea7f104c6417aa0ccba2da76e6a5",
+      "bytes": 2743
+    },
+    "verification/docker/haskell/Dockerfile": {
+      "sha256": "4aa96af3f1743d8056f9044e0d79992a6ae2cc74c0aaaac154d50137290e6582",
+      "bytes": 304
+    },
+    "verification/docker/haskell/README.md": {
+      "sha256": "3dfaa27560d81f645053be05f448b10132b6f1a8b9b4d0c104bb4b07fc6428d5",
+      "bytes": 2783
+    },
+    "verification/docker/isabelle/Dockerfile": {
+      "sha256": "e1ef85f3d372219de13b0b7d0ed1ca3df9f7793cb1dcaef9293ba27bb6eb9e65",
+      "bytes": 169
+    },
+    "verification/docker/isabelle/README.md": {
+      "sha256": "545b41135b8a963c146c1308e5bedc1dbcead5f51eda893b300f4f3dc0bd9724",
+      "bytes": 2847
+    },
+    "verification/docker/lean4/Dockerfile": {
+      "sha256": "aa75a2ca28abc5bcdca47f5d6d853914d310394b81c6671452aa6fa5912d234b",
+      "bytes": 147
+    },
+    "verification/docker/lean4/README.md": {
+      "sha256": "57e9ec3c60418de9705d5ac0dd1e40680486ffdb729d5ee88830372c53461c05",
+      "bytes": 2771
+    },
+    "verification/docker/rust/Dockerfile": {
+      "sha256": "9928327601c2b74c4560781ec83f12aa8a690f2c2e1e29f706e999d9709bd615",
+      "bytes": 286
+    },
+    "verification/docker/rust/README.md": {
+      "sha256": "3a4b03a29dcac0280eb8e63e913a892960a48936958c60ee7452e709600551cf",
+      "bytes": 2735
+    },
+    "verification/haskell/README.md": {
+      "sha256": "9afac2115e13e481602307d56cd8d4f89e7ab3020d2072de49af0d627008790d",
+      "bytes": 4014
+    },
+    "verification/isabelle/README.md": {
+      "sha256": "3026343993dd5bb11dcbbdfe35a2eca21667897beafe75a4f0d6d5417a719e60",
+      "bytes": 3971
+    },
+    "verification/lean4/README.md": {
+      "sha256": "b9386226ff15871886627cc0c8c410613b0257f498c8b9446ab464be3efe6aca",
+      "bytes": 3894
+    },
+    "verification/rust/README.md": {
+      "sha256": "d99b4f61b9bcbcb1c4696457ff356dab04946d2ec26b2fb7643d6b7acd225db0",
+      "bytes": 3932
+    },
+    "verification/tests/README.md": {
+      "sha256": "b714b157abdddc56af0986fc66495cde2157dfd47f1666d606a1556078d8a7e2",
+      "bytes": 5933
+    },
+    "verification/tests/test_research_smoke.py": {
+      "sha256": "75c6df3608e7fb8b774425218b13787bfbe14c5d23369be9dfd56848586a45eb",
+      "bytes": 6024
+    },
+    "verification/tests/test_trivortex.py": {
+      "sha256": "2d04188776c92afaa02bb48051a2d3e0afd3d643b065092ce2425d117fe9e965",
+      "bytes": 5411
+    },
+    "verification/trivortex/README.md": {
+      "sha256": "6212f281d8f01de1a5ae143067b8e7316e708f9df989883e15e4fedb99c9d3d8",
+      "bytes": 2059
+    },
+    "verification/trivortex/python/verify.py": {
+      "sha256": "83e75c81741ec1319e08086f0f12fc08b9e680bee2593178812f8041ef820a37",
+      "bytes": 17914
+    }
+  }
+}

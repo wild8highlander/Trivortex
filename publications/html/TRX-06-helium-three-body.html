@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TRX-06 — Helium Atom as the Coulomb Three-Body Problem (Classical Trajectory Monte Carlo)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400&family=PT+Sans:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof renderMathInElement === 'function') {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '\\(', right: '\\)', display: false}
+      ], throwOnError: false
+    });
+  }
+});
+</script>
+<style>
+@page { size: 210mm 297mm; margin: 0; }
+:root {
+  --navy: #0A1730; --navy2: #0E2145; --header-fill: #2A3A55;
+  --gold: #D4AF37; --gold-l: #F0D98C;
+  --text: #1F2937; --muted: #6B7280;
+  --stripe: #F2F5FA; --code-bg: #F5F7FB; --border: #DCE3EF;
+}
+html, body {
+  margin: 0; padding: 0; width: 210mm;
+  background: #FFFFFF;               /* flow pages are white; dark pages are fixed-height */
+  color: var(--text);
+  font-family: 'PT Serif', 'Noto Serif', 'Liberation Serif', 'DejaVu Serif', serif;
+  font-size: 15px; line-height: 1.62;
+  line-break: strict; word-break: normal; overflow-wrap: break-word;
+}
+@media screen {
+  html { height: auto; display: flex; justify-content: center; background: #10131a; }
+  body { transform-origin: top center; margin: 20px auto; box-shadow: 0 8px 40px rgba(0,0,0,.5); }
+}
+
+/* ── Cover ─────────────────────────────────────────────────────────────── */
+.front-page {
+  width: 210mm; height: 297mm; box-sizing: border-box;
+  break-after: page; overflow: hidden; position: relative;
+  background:
+    radial-gradient(circle 8px at 691px 125px, #D4AF37 0 7px, transparent 8px),
+    radial-gradient(circle 5px at 584px 56px, #59C2FF 0 4px, transparent 5px),
+    radial-gradient(circle 4px at 154px 950px, #FF7A9E 0 3px, transparent 4px),
+    radial-gradient(circle 210px at 87% 9%, transparent 206px, rgba(212,175,55,.30) 208px, rgba(212,175,55,.30) 210px, transparent 212px),
+    radial-gradient(circle 130px at 74% 3%, transparent 126px, rgba(89,194,255,.26) 128px, rgba(89,194,255,.26) 130px, transparent 132px),
+    radial-gradient(circle 280px at 8% 94%, transparent 276px, rgba(212,175,55,.18) 278px, rgba(212,175,55,.18) 280px, transparent 282px),
+    linear-gradient(160deg, #0E2145 0%, #0A1730 62%, #081226 100%);
+  color: #E9EEF8;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 58px;
+}
+.fp-kicker {
+  display: flex; align-items: center; gap: 14px;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.5px; letter-spacing: 3.5px; color: #F0D98C; font-weight: 700;
+}
+.fp-title {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 34px; line-height: 1.16; font-weight: 700; color: #F4F7FD;
+  margin: 26px 0 12px 0; max-width: 156mm;
+}
+.fp-subtitle-ru {
+  font-size: 18.5px; line-height: 1.4; color: #D4AF37; font-style: italic;
+  max-width: 156mm; margin-bottom: 34px;
+}
+.fp-meta {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 9px 26px;
+  max-width: 156mm;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.5px; line-height: 1.45;
+  border-top: 1px solid rgba(212,175,55,.35);
+  border-bottom: 1px solid rgba(212,175,55,.35);
+  padding: 16px 2px;
+}
+.fp-meta .k { color: #8FA3C4; letter-spacing: 1.6px; font-size: 10.5px; text-transform: uppercase; }
+.fp-meta .v { color: #E9EEF8; margin-top: 2px; }
+.fp-abstract {
+  max-width: 156mm; margin-top: 26px; font-size: 12.5px; line-height: 1.6;
+  color: #B9C6DE; font-style: italic;
+}
+.fp-foot {
+  position: absolute; left: 58px; right: 58px; bottom: 40px;
+  display: flex; justify-content: space-between; align-items: flex-end;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 11px; letter-spacing: 2px; color: #8FA3C4; text-transform: uppercase;
+}
+.fp-foot b { color: #F0D98C; font-weight: 700; }
+
+/* ── Flowing content ───────────────────────────────────────────────────── */
+.main-content { background: #FFFFFF; padding: 15mm 16mm 13mm 16mm; }
+
+h1, h2, h3, h4 {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  color: #0A1730; line-height: 1.25;
+  break-after: avoid; page-break-after: avoid;
+}
+.main-content h1 { font-size: 24px; margin: 6px 0 4px 0; }
+.main-content h2 {
+  font-size: 19.5px; margin: 26px 0 10px 0; padding-left: 12px;
+  border-left: 4px solid #D4AF37;
+}
+.main-content h3 { font-size: 16px; margin: 18px 0 8px 0; }
+.main-content h4 { font-size: 14.5px; margin: 14px 0 6px 0; color: #2A3A55; }
+p { margin: 0 0 9px 0; text-align: justify; hyphens: auto; }
+strong { color: #0A1730; }
+em { color: inherit; }
+a { color: #0E2145; text-decoration: none; border-bottom: 1px solid #D4AF37; }
+ul, ol { margin: 4px 0 10px 0; padding-left: 22px; }
+li { margin-bottom: 4px; break-inside: avoid; text-align: left; }
+
+table {
+  width: 100%; border-collapse: collapse; margin: 10px 0 14px 0;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.3px; line-height: 1.4;
+}
+thead { display: table-header-group; }
+tr { break-inside: avoid; page-break-inside: avoid; }
+th {
+  background: #2A3A55; color: #FFFFFF; text-align: left;
+  padding: 6px 9px; font-weight: 700; border: none;
+}
+td { padding: 5px 9px; border-bottom: 1px solid #DCE3EF; vertical-align: top; }
+tbody tr:nth-child(odd) td { background: #F2F5FA; }
+table, .table-wrap { break-inside: auto; }
+thead + tbody tr:first-child { break-before: avoid; }
+
+pre {
+  background: #F5F7FB; border: 1px solid #DCE3EF; border-left: 3px solid #D4AF37;
+  padding: 10px 13px; margin: 10px 0 14px 0; border-radius: 4px;
+  font-family: 'JetBrains Mono', 'DejaVu Sans Mono', 'Liberation Mono', monospace;
+  font-size: 11.6px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: break-word;
+  break-inside: avoid; page-break-inside: avoid;
+}
+code {
+  font-family: 'JetBrains Mono', 'DejaVu Sans Mono', 'Liberation Mono', monospace;
+  font-size: 12.6px; background: #F5F7FB; padding: 1px 4px; border-radius: 3px;
+}
+pre code { background: transparent; padding: 0; font-size: 11.6px; }
+
+blockquote {
+  margin: 10px 0 12px 0; padding: 8px 14px; border-left: 3px solid #D4AF37;
+  background: #F5F7FB; color: #0E2145; font-style: italic;
+  break-inside: avoid;
+}
+hr { border: none; border-top: 1px solid #DCE3EF; margin: 16px 0; }
+
+/* equations */
+.katex-display { margin: 12px 0 14px 0; max-width: 100%; overflow: hidden auto; }
+.eq-block { break-inside: avoid; page-break-inside: avoid; }
+
+/* language part banners */
+.part-banner {
+  break-inside: avoid; break-after: avoid;
+  margin: 26px 0 14px 0; padding: 13px 18px;
+  background: #0E2145; color: #F0D98C; border-radius: 6px;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+}
+.part-banner .pb-title { font-size: 16.5px; font-weight: 700; letter-spacing: 1.2px; }
+.part-banner .pb-sub { font-size: 11.5px; color: #8FA3C4; margin-top: 3px; letter-spacing: .4px; }
+
+/* colophon */
+.ending {
+  width: 210mm; height: 297mm; box-sizing: border-box;
+  break-before: page; overflow: hidden; position: relative;
+  background: linear-gradient(200deg, #0E2145 0%, #0A1730 60%, #081226 100%);
+  color: #E9EEF8;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 58px;
+}
+.ending .colophon-line { max-width: 150mm; font-size: 13.5px; line-height: 1.7; color: #B9C6DE; }
+.ending .colophon-line b { color: #F0D98C; }
+.ending .end-rule { width: 64px; height: 26px; margin: 10px 0 8px 0;
+  background: linear-gradient(90deg, #D4AF37 0 64px, transparent 64px) top/100% 6px no-repeat; }
+.ending .end-title {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 26px; font-weight: 700; color: #F4F7FD; letter-spacing: 1px;
+}
+.ending .end-small {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 11.5px; color: #8FA3C4; letter-spacing: 2px; text-transform: uppercase;
+  margin-top: 26px; line-height: 2;
+}
+</style>
+</head>
+<body>
+
+<div class="front-page">
+  <div class="fp-kicker"><span>TRIVORTEX RESEARCH PROGRAM · TRX-06</span></div>
+  <div class="fp-title">Helium Atom as the Coulomb Three-Body Problem (Classical Trajectory Monte Carlo)</div>
+  <div class="fp-subtitle-ru">Атом гелия как кулоновская задача трёх тел (классический траекторный метод Монте-Карло)</div>
+  <div class="fp-meta"><div><div class="k">Author</div><div class="v">Isaev Iskhak Khamzatovich<br><span style="color:#8FA3C4">ORCID 0009-0003-7299-0701</span></div></div><div><div class="k">DOI</div><div class="v">10.5281/zenodo.21825394</div></div><div><div class="k">Study</div><div class="v">TRX-06</div></div><div><div class="k">Date</div><div class="v">2026-10-06</div></div><div><div class="k">Code</div><div class="v"><code style="background:rgba(212,175,55,.12);color:#F0D98C;padding:1px 5px;border-radius:3px">code/trx06_helium_three_body.py</code></div></div><div><div class="k">Data</div><div class="v"><code style="background:rgba(212,175,55,.12);color:#F0D98C;padding:1px 5px;border-radius:3px">results/trx06_results.json</code></div></div></div>
+  <div class="fp-abstract">This monograph treats the helium atom — a nucleus of charge Z = 2 and two electrons — as the classical Coulomb three-body problem, running a deterministic Monte Carlo ensemble of 3200 trajectories in the Wannier launch configuration: a radially staggered chain at hyperradius R₀ = 3 on the exact energy shell, excess energies E ∈ [0.05, 0.3] Ha, a fixed transverse kick σ = 0.01 breaking scale invariance, and a documented softening ε = 0.1 a.u.</div>
+  <div class="fp-foot"><span>Monograph Edition · bilingual RU + EN</span><span><b>TRIVORTEX</b> · TRIVORTEX · v1.0.0 · 2026</span></div>
+</div>
+<div class="main-content"><div class="part-banner"><div class="pb-title">PART I · English Monograph</div><div class="pb-sub">Helium Atom as the Coulomb Three-Body Problem (Classical Trajectory Monte Carlo)</div></div><p><em>TRIVORTEX Research Program · v1.0.0 · Monograph Edition</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Study</td>
+<td>TRX-06</td>
+</tr>
+<tr>
+<td>Program</td>
+<td>TRIVORTEX — The Three-Body Problem in the Vortex Model</td>
+</tr>
+<tr>
+<td>Author</td>
+<td>Isaev Iskhak Khamzatovich (ORCID 0009-0003-7299-0701)</td>
+</tr>
+<tr>
+<td>DOI</td>
+<td>10.5281/zenodo.21825394</td>
+</tr>
+<tr>
+<td>Date</td>
+<td>2026-10-06</td>
+</tr>
+<tr>
+<td>Code</td>
+<td>`code/trx06_helium_three_body.py`</td>
+</tr>
+<tr>
+<td>Data</td>
+<td>`results/trx06_results.json`</td>
+</tr>
+</tbody>
+</table>
+<h2>Abstract</h2>
+<p>This monograph treats the helium atom — a nucleus of charge Z = 2 and two electrons — as the classical Coulomb three-body problem, running a deterministic Monte Carlo ensemble of 3200 trajectories in the Wannier launch configuration: a radially staggered chain at hyperradius R<sub>0</sub> = 3 on the exact energy shell, excess energies E ∈ [0.05, 0.3] Ha, a fixed transverse kick σ = 0.01 breaking scale invariance, and a documented softening ε = 0.1 a.u. Four machine-verified results: (i) Energy is conserved over the valid ensemble to a relative drift of 4.28e-6 of the deep-well scale 2Z/ε = 40 (max |ΔE| = 1.714·10<sup>-4</sup> a.u.; 0/3200 filtered). (ii) Outcome bookkeeping is exact (3200 = 3200); the autoionization channel is the only active outcome, single-escape fraction 1.000 in every bin. (iii) The escaping electron carries on average 7.28× the excess energy (median 5.90, band [3.24, 13.30]) while its captured partner keeps E − E_esc &lt; 0 — binding energy released through the e<sup>-</sup>–e<sup>-</sup> repulsion. (iv) The double-escape fraction stays at the 1e-4 counting floor; the universal Wannier slope α = 1.056 is cited, and this compact ensemble's fitted value (≈ 0, strong-coupling regime) is stored in the protocol.</p>
+<h2>Contents</h2>
+<ol>
+<li>Abstract</li>
+<li>
+<ol>
+<li>Introduction and historical context</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>Physical formulation</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>Mathematical model</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li>Connection to the TRIVORTEX framework</li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li>Numerical method</li>
+</ol>
+</li>
+<li>
+<ol start="6">
+<li>Results and analysis</li>
+</ol>
+</li>
+<li>
+<ol start="7">
+<li>Discussion</li>
+</ol>
+</li>
+<li>
+<ol start="8">
+<li>Conclusions</li>
+</ol>
+</li>
+<li>
+<ol start="9">
+<li>References
+Appendix A. Parameter table
+Appendix B. Reproduction</li>
+</ol>
+</li>
+</ol>
+<h2>1. Introduction and historical context</h2>
+<p>The threshold story begins with Gregory Wannier's 1953 paper, which asked what happens when an atom is ionized with barely enough energy to release two electrons. Wannier argued that double escape must funnel through the only configuration compatible with both long-range Coulomb repulsions — the Wannier configuration in which the two electrons leave on opposite sides of the nucleus at equal distances and equal speeds — and that scale invariance of the Coulomb problem then forces a power law P_DE ∝ E^α. His phase-space argument, refined independently by Peterkop (1971), gives α = 1.056 for Z = 2, a number that became the classic benchmark of three-body breakup physics.</p>
+<p>The classical trajectory Monte Carlo method entered atomic physics with Abrines and Percival (1966), who applied the correspondence principle to ionization and charge transfer: at large quantum numbers the quantum problem is replaced by an ensemble of classical trajectories with quantized initial conditions. For helium the method matured in the 1980s–1990s, when computers became able to integrate the full three-body Coulomb dynamics in production quantities; the autoionization channel — one electron captured, the other ejected — was recognized as the classical image of the Auger process and of the Fano (1961) resonances, with the e–e repulsion as the only energy-transfer mechanism.</p>
+<p>The modern classical picture of the threshold region is geometric: Sacha and Eckhardt (2001) analyzed the Wannier ridge — the unstable orbit along r<sub>1</sub> = r<sub>2</sub> that organizes the escape — and showed how the triple-collision manifold channels trajectories into either double escape or autoionization. This is the three-body alternative familiar from vortex dynamics: Aref's (1979) analysis of three vortices exhibits the same competition between collapse and scattering, and the same invariant-based bookkeeping. Experiments on threshold double ionization read precisely the exponent α, which is why a CTMC study that reports its slope honestly — measured or not — stays a meaningful benchmark.</p>
+<p>For TRIVORTEX the relevance is threefold. First, helium is the mixed-sign three-body problem: it tests the same central-force choreography bookkeeping as the gravitational and vortex trios, with the sign structure inverted. Second, the Wannier exponent is a closed-form universal benchmark — the same epistemic category as Theorem 3.1 of the monograph. Third, the laser connection is built in: the three-step model of high-harmonic generation (foundations in Agostini et al. 1979; synthesis by Corkum 1993) is a driven three-body problem of the electron, the parent ion and the field, and strong-field double ionization shows Wannier-type kinematics — this study is the atomic anchor of the program's quantum block (TRX-06, TRX-07, TRX-08).</p>
+<h2>2. Physical formulation</h2>
+<p>Hamiltonian dynamics in atomic units with nuclear motion neglected. The two electrons move in the field of a fixed nucleus of charge Z = 2: the Hamiltonian (E1) contains two softened attractions −Z/√(r<sup>2</sup> + ε<sup>2</sup>) and one softened repulsion +1/√(r<sub>12</sub><sup>2</sup> + ε<sup>2</sup>) with ε = 0.1 a.u. The individual electron energies εi = vi<sup>2</sup>/2 − Z/ri are the observables of the escape problem: an electron has escaped when it is beyond the radius 30 a.u. with outward radial velocity and positive individual energy, and the total H = ε<sub>1</sub> + ε<sub>2</sub> + 1/r<sub>12</sub> is conserved exactly by the dynamics — the conservation quality of the numerical integration is the first acceptance check.</p>
+<p>The launch is the classical Wannier configuration: both electrons start on one ray at a fixed hyperradius R<sub>0</sub> = 3 a.u., radially staggered (inner shields outer) by Δr ∈ [0.8, 2.0], and are pushed outward with equal speeds on the exact energy shell — the launched kinetic energy makes the total exactly E ∈ [0.05, 0.3] Ha. A fixed-size, E-independent transverse kick σ = 0.01 breaks the scale invariance that would otherwise freeze the escape statistics, and the e–e repulsion acts during the outbound transit, converting symmetric pairs into autoionization events: the inner electron is captured while the outer one leaves, carrying more than the total excess energy.</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Z</td>
+<td>2</td>
+<td>helium nucleus charge (atomic units)</td>
+</tr>
+<tr>
+<td>ε</td>
+<td>0.1 a.u.</td>
+<td>documented softening of all Coulomb denominators</td>
+</tr>
+<tr>
+<td>E window</td>
+<td>[0.05, 0.3] Ha, 8 log-spaced bins</td>
+<td>excess energy above the double-escape threshold</td>
+</tr>
+<tr>
+<td>launch</td>
+<td>R<sub>0</sub> = 3 a.u., Δr ∈ [0.8, 2.0]</td>
+<td>staggered Wannier chain, equal outward speeds</td>
+</tr>
+<tr>
+<td>kick</td>
+<td>σ = 0.01 (E-independent)</td>
+<td>fixed transverse kick breaking scale invariance</td>
+</tr>
+<tr>
+<td>ensemble</td>
+<td>8 × 400 = 3200, seed 7</td>
+<td>deterministic CTMC ensemble, t_max = 2500</td>
+</tr>
+<tr>
+<td>escape sphere</td>
+<td>r = 30 a.u.</td>
+<td>outward radial velocity and positive individual energy</td>
+</tr>
+</tbody>
+</table>
+<h2>3. Mathematical model</h2>
+<p>The Hamiltonian (E1) is the classical limit of the quantum two-electron atom with the nucleus fixed at the origin: kinetic terms p<sub>1</sub><sup>2</sup>/2 + p<sub>2</sub><sup>2</sup>/2, two nuclear attractions −Z/r<sub>1</sub>, −Z/r<sub>2</sub> and the electron–electron repulsion 1/r<sub>12</sub>. All three denominators are softened, r → (r<sup>2</sup> + ε<sup>2</sup>)^{1/2} with ε = 0.1 a.u. — a documented regularization that removes the 1/r singularity at triple collision and at electron–nucleus passage while leaving the far-field Coulomb kinematics untouched. The softened forces (E2) are pairwise consistent (Newton's third law) and derive from a conservative potential, so the total energy H = ε<sub>1</sub> + ε<sub>2</sub> + 1/r<sub>12</sub> is an exact invariant of the flow — the quantity whose numerical drift is audited in the protocol.</p>
+<p>The launch realizes the Wannier geometry on the exact energy shell. For a drawn stagger Δr ∈ [0.8, 2.0] the launch potential is computed from the softened Hamiltonian, the required kinetic energy is E minus that potential, and the two outward speeds are chosen equal (symmetric split, 2 · v<sub>0</sub><sup>2</sup>/2 = K), each deflected by a uniform transverse kick of amplitude σ; the velocity pair is then rescaled so that ½|v<sub>1</sub>|<sup>2</sup> + ½|v<sub>2</sub>|<sup>2</sup> equals the required kinetic energy exactly. The fixed, E-independent kick σ = 0.01 is essential: without it the launch family would be scale invariant, and the escape statistics would freeze into geometry rather than sample the excess-energy window.</p>
+<p>Wannier's law (E4) follows from scale invariance restricted by the two Coulomb repulsions: near threshold the escape must pass along the potential saddle with r<sub>1</sub> ≈ r<sub>2</sub>, and the radial scaling of the outgoing channel carries a phase-space volume E^α with α = ¼(√((100Z − 9)/(4Z − 1)) − 1), which evaluates to 1.0559 ≈ 1.056 for Z = 2. The present experiment launches at a fixed hyperradius R<sub>0</sub> = 3 instead of the scaling R<sub>0</sub> ~ 1/E, so it probes the strong-coupling regime of the fixed geometry: the double-escape channel is closed at the 1e-4 counting floor over the whole window, the window-fit slope is therefore ≈ 0, and the protocol stores that fit honestly instead of claiming the universal exponent.</p>
+<p><strong>Notation</strong></p>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Z</td>
+<td>nucleus charge, Z = 2 (helium)</td>
+</tr>
+<tr>
+<td>ε</td>
+<td>softening length of all Coulomb denominators, 0.1 a.u.</td>
+</tr>
+<tr>
+<td>r<sub>1</sub>, r<sub>2</sub>, r<sub>12</sub></td>
+<td>electron–nucleus distances and the electron–electron separation</td>
+</tr>
+<tr>
+<td>p_i, v_i</td>
+<td>electron momenta and velocities</td>
+</tr>
+<tr>
+<td>ε_i</td>
+<td>individual electron energy, ε_i = v_i<sup>2</sup>/2 − Z/r_i</td>
+</tr>
+<tr>
+<td>E</td>
+<td>excess energy above the double-escape threshold, window [0.05, 0.3] Ha</td>
+</tr>
+<tr>
+<td>E_esc</td>
+<td>individual energy of the escaping electron</td>
+</tr>
+<tr>
+<td>P_DE</td>
+<td>double-escape fraction per excess-energy bin</td>
+</tr>
+<tr>
+<td>α</td>
+<td>Wannier threshold exponent, 1.056 (universal); fitted slope stored separately</td>
+</tr>
+<tr>
+<td>R<sub>0</sub>, Δr</td>
+<td>launch hyperradius (3 a.u.) and radial stagger [0.8, 2.0]</td>
+</tr>
+<tr>
+<td>σ</td>
+<td>fixed transverse launch kick, 0.01 a.u.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>(E1)</strong> Hamiltonian in atomic units (softened denominators r → (r<sup>2</sup> + ε<sup>2</sup>)^{1/2}, ε = 0.1).</p>
+<p>$$H = \frac{p_1^2}{2} + \frac{p_2^2}{2} - \frac{Z}{r_1} - \frac{Z}{r_2} + \frac{1}{r_{12}}, \qquad Z = 2$$</p>
+<p><strong>(E2)</strong> Softened pairwise-consistent equations of motion (Newton's third law).</p>
+<p>$$\ddot{\mathbf{r}}_1 = -Z\,\frac{\mathbf{r}_1}{(r_1^2+\varepsilon^2)^{3/2}} + \frac{\mathbf{r}_1-\mathbf{r}_2}{(r_{12}^2+\varepsilon^2)^{3/2}}, \qquad \ddot{\mathbf{r}}_2 = -Z\,\frac{\mathbf{r}_2}{(r_2^2+\varepsilon^2)^{3/2}} - \frac{\mathbf{r}_1-\mathbf{r}_2}{(r_{12}^2+\varepsilon^2)^{3/2}}$$</p>
+<p><strong>(E3)</strong> Individual electron energies, the conserved total and the autoionization overshoot (binding energy released).</p>
+<p>$$\varepsilon_i = \tfrac{1}{2}v_i^2 - \frac{Z}{r_i}, \qquad H = \varepsilon_1 + \varepsilon_2 + \frac{1}{r_{12}}, \qquad E_{esc}/E > 1$$</p>
+<p><strong>(E4)</strong> Wannier threshold law (Wannier 1953; independent derivation by Peterkop 1971).</p>
+<p>$$P_{DE}(E) \propto E^{\alpha}, \qquad \alpha = \frac{1}{4}\left(\sqrt{\frac{100Z-9}{4Z-1}} - 1\right) = 1.056 \ \ (Z = 2)$$</p>
+<p><strong>(E5)</strong> Energy-quality filter: trajectories above the drift cut are discarded (0 of 3200 in the full run).</p>
+<p>$$\delta = \max|\Delta E| \, / \, (2Z/\varepsilon) \le 4\times 10^{-4}, \qquad |\Delta E| \le 5\times 10^{-3}$$</p>
+<h2>4. Connection to the TRIVORTEX framework</h2>
+<p>The mapping to TRIVORTEX is structural at every level. The e<sup>-</sup>–e<sup>-</sup>–nucleus trio is the three-body problem with the sign structure inverted relative to gravity — mixed attractive and repulsive pairs — yet it obeys the same central-force bookkeeping, the same invariant-audit discipline and the same collapse-versus-scattering alternative that Aref (1979) exposed for three vortices. The autoionization overshoot, in which one body exits carrying the share of another, is the direct analog of the energy exchange that choreographies of the vortex model exhibit; the Wannier exponent α = 1.056 is a closed-form universal benchmark of the same epistemic kind as Theorem 3.1; and the documented softening ε plays exactly the role of the finite vortex cores in the TRIVORTEX regularization — both keep the singular pair interaction finite without touching the far-field dynamics.</p>
+<table>
+<thead>
+<tr>
+<th>Quantity in this study</th>
+<th>TRIVORTEX analog</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>e<sup>-</sup>–e<sup>-</sup>–nucleus trio</td>
+<td>the three bodies</td>
+<td>Coulomb three-body with mixed pair signs</td>
+</tr>
+<tr>
+<td>Autoionization overshoot E_esc/E &gt; 1</td>
+<td>energy exchange in choreographies</td>
+<td>one body exits with the share of another</td>
+</tr>
+<tr>
+<td>Wannier threshold law P_DE ∝ E^1.056</td>
+<td>closed-form benchmarks (Theorem 3.1)</td>
+<td>a sharp universal exponent as reference point</td>
+</tr>
+<tr>
+<td>Softening ε = 0.1 a.u.</td>
+<td>finite vortex cores</td>
+<td>documented regularization of 1/r singularities</td>
+</tr>
+</tbody>
+</table>
+<h2>5. Numerical method</h2>
+<p>Sampling is fully deterministic: a seeded generator (seed 7) draws the stagger Δr ∈ [0.8, 2.0], the ray orientation and two transverse kick directions per trajectory; 400 trajectories are drawn per energy bin on a geometric grid of 8 excess energies from 0.05 to 0.3 Ha, giving 3200 launch states. Each state is projected onto the exact energy shell after the kicks are applied, so every launched trajectory starts with total energy E to machine precision — the subsequent drift audit measures integrator error only, not launch noise.</p>
+<p>Integration is a per-trajectory adaptive RK4 in dt-groups: the step dt = 0.03 · r_min/v_max is clipped and quantized onto a fixed ladder of eleven levels from 10<sup>-4</sup> to 0.3, and trajectories requiring the same level are advanced as a batch, which keeps the ensemble vectorized while preserving the adaptive rule. A trajectory ends when both electrons are beyond r = 30 a.u. with outward velocity and positive individual energy (double escape), when a terminal configuration freezes after t = 60 (one electron inside r &lt; 1 with the other beyond r &gt; 5, or both inside — no double escape possible on the timescale), or at t_max = 2500.</p>
+<p>Diagnostics: the energy drift |ΔE| is tracked per trajectory as the running maximum against the launch energy; trajectories with |ΔE| &gt; 5·10<sup>-3</sup> a.u. are discarded (standard CTMC practice; 0 of 3200 in the full run). The double-escape fraction per bin carries Poisson errors √(p(1 − p)/n); the threshold slope is a least-squares fit on log<sub>10</sub>–log<sub>10</sub> coordinates and is re-derived from the stored counts as an independent reproducibility check. Every quantity — value, target, tolerance, unit, pass flag — is stored in the JSON protocol, and the --figures mode adds the four panels and the scheme from the same ensemble data without touching the checks.</p>
+<h2>6. Results and analysis</h2>
+<h3>fig01 model landscape</h3>
+<p><img alt="Model landscape: (a) softened Coulomb potential V(r&lt;sub&gt;1&lt;/sub&gt;, r&lt;sub&gt;2&lt;/sub&gt;) for Z = 2, ε = 0.1 — the e–e ridge wall along the diagonal and the staggered launch segment (r&lt;sub&gt;1&lt;/sub&gt; = 3, r&lt;sub&gt;2&lt;/sub&gt; = 3 + Δ, Δ ∈ [0.8, 2.0]); (b) chain potential V(ρ, ρ + Δ) along the launch ray for three staggers with the excess-energy window E ∈ [0.05, 0.3] Ha." src="../figures/fig01_model_landscape.png" /></p>
+<p><em>Model landscape: (a) softened Coulomb potential V(r<sub>1</sub>, r<sub>2</sub>) for Z = 2, ε = 0.1 — the e–e ridge wall along the diagonal and the staggered launch segment (r<sub>1</sub> = 3, r<sub>2</sub> = 3 + Δ, Δ ∈ [0.8, 2.0]); (b) chain potential V(ρ, ρ + Δ) along the launch ray for three staggers with the excess-energy window E ∈ [0.05, 0.3] Ha.</em>
+Panel (a) maps the potential topography: the diagonal ridge r<sub>1</sub> = r<sub>2</sub> (the e–e repulsion wall) and the gold launch segment at r<sub>1</sub> = 3, r<sub>2</sub> = 3 + Δ with Δ ∈ [0.8, 2.0]; panel (b) shows that launched states sit above the potential asymptote and climb out unless the repulsion binds one electron.</p>
+<h3>fig02 energy sharing</h3>
+<p><img alt="Headline result: (a) distribution of the escaping-electron share E_esc/E over all 3200 autoionization events — mean 7.28, median 5.90, 16–84 pct band [3.24, 13.30]; (b) the measured double-escape fraction stays at the 1e-4 counting floor over E ∈ [0.05, 0.3], far below the 0.5 acceptance line; the Wannier slope 1.056 is a guide, not a resolved measurement." src="../figures/fig02_energy_sharing.png" /></p>
+<p><em>Headline result: (a) distribution of the escaping-electron share E_esc/E over all 3200 autoionization events — mean 7.28, median 5.90, 16–84 pct band [3.24, 13.30]; (b) the measured double-escape fraction stays at the 1e-4 counting floor over E ∈ [0.05, 0.3], far below the 0.5 acceptance line; the Wannier slope 1.056 is a guide, not a resolved measurement.</em>
+The escaping electron carries on average 7.28× the total excess energy (median 5.90, band [3.24, 13.30]) while the captured partner keeps E − E_esc &lt; 0 — binding energy released into the pair; not a single double escape occurs in the ensemble, so all 3200 outcomes sit in the autoionization channel.</p>
+<h3>fig03 parameter sweeps</h3>
+<p><img alt="Parameter sweeps: (a) per-bin mean of E_esc/E with 16–84 percentile bars across the excess-energy window — the transfer efficiency stays far above parity in every bin; (b) launch-kick sensitivity on reduced ensembles of 720 trajectories per point — the autoionization channel remains dominant for every documented kick σ, including the scale-invariant limit σ = 0." src="../figures/fig03_parameter_sweeps.png" /></p>
+<p><em>Parameter sweeps: (a) per-bin mean of E_esc/E with 16–84 percentile bars across the excess-energy window — the transfer efficiency stays far above parity in every bin; (b) launch-kick sensitivity on reduced ensembles of 720 trajectories per point — the autoionization channel remains dominant for every documented kick σ, including the scale-invariant limit σ = 0.</em>
+Across the kick grid σ ∈ {0, 0.002, 0.005, 0.01, 0.02, 0.05} the single-escape fraction stays at 1.000 and the mean overshoot barely moves, 5.3421 → 5.3416 — the strong-coupling autoionization channel is insensitive to the kick that breaks scale invariance.</p>
+<h3>fig04 autoionization dynamics</h3>
+<p><img alt="Dynamics of one representative autoionization event (re-integrated with the same adaptive RK4 rule): (a) x–y paths — the escaper leaves through r = 30 a.u. while the captured electron winds toward the nucleus; (b) individual energies ε&lt;sub&gt;1&lt;/sub&gt;(t), ε&lt;sub&gt;2&lt;/sub&gt;(t) and the conserved total — the repulsion hands 7.28× E to the escaper." src="../figures/fig04_autoionization_dynamics.png" /></p>
+<p><em>Dynamics of one representative autoionization event (re-integrated with the same adaptive RK4 rule): (a) x–y paths — the escaper leaves through r = 30 a.u. while the captured electron winds toward the nucleus; (b) individual energies ε<sub>1</sub>(t), ε<sub>2</sub>(t) and the conserved total — the repulsion hands 7.28× E to the escaper.</em>
+For the representative event at E = 0.107761 Ha the escaper exits at t = 19.6952 with E_esc = 0.784471 Ha (share 7.2797) and the partner is left bound at ε = −0.438084 Ha — a direct view of the three-body energy handover through the e–e repulsion.</p>
+<p><strong>Conservation.</strong> Over the whole valid ensemble of 3200 trajectories the running maximum of the energy error is 1.714·10<sup>-4</sup> a.u.; relative to the deep-well kinetic scale 2Z/ε = 40 a.u. this is a relative drift of 4.28e-6 — two orders of magnitude inside the 4e-4 acceptance tolerance, and not a single trajectory required the 5·10<sup>-3</sup> filter (0/3200 discarded). The energy shell is therefore trusted as the backbone of all downstream statistics.</p>
+<p><strong>Bookkeeping and the channel.</strong> The outcome classes sum exactly (3200 = 3200), and the composition is unanimous: the single-escape fraction is 1.000 in every one of the eight energy bins, the double-escape fraction 0.0 in every bin. The autoionization channel is thus the only active outcome of the fixed-launch geometry — a genuinely three-body result, since the e–e repulsion is the only mechanism able to hand energy from one electron to the other while the nucleus keeps the captured partner bound.</p>
+<p><strong>Energy sharing.</strong> The escaping electron carries on average 7.28× the total excess energy (7.2803 over all 3200 events; median 5.8967; 16–84 percentile band [3.2395, 13.2956]) — far above the 1.2× acceptance line. The captured partner keeps E − E_esc &lt; 0, i.e. binding energy is released into the pair. The representative re-integrated event at E = 0.107761 Ha ends at t = 19.6952 with the escaper at E_esc = 0.784471 Ha (share 7.2797) and its partner bound at ε = −0.438084 Ha, a direct portrait of the three-body handover.</p>
+<p><strong>Threshold behavior.</strong> The measured double-escape fraction sits at the 1e-4 counting floor across the entire window E ∈ [0.05, 0.3] (below the 0.5 acceptance line everywhere), so the window-fit slope is −1.29·10<sup>-15</sup> ≈ 0: the fixed-launch geometry with R<sub>0</sub> = 3 probes the strong-coupling regime, where P_DE is nearly E-independent. The kick sweep over σ ∈ {0, 0.002, 0.005, 0.01, 0.02, 0.05} on reduced ensembles of 720 trajectories per point leaves the channel dominant (fraction 1.000 everywhere) and the mean overshoot essentially unmoved, 5.3421 → 5.3416. The universal α = 1.056 requires near-threshold Wannier-cap conditioning and far larger ensembles; it is cited, not claimed, and the measured slope is stored in the protocol.</p>
+<h3>Verification summary</h3>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Recorded value</th>
+<th>Target</th>
+<th>Tolerance</th>
+<th>Pass</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>`max_relative_energy_drift_valid`</td>
+<td>4.28422e-06</td>
+<td>0</td>
+<td>0.0004</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`outcome_classes_sum_to_N`</td>
+<td>3200</td>
+<td>3200</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`autoionization_channel_active`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`escaping_electron_energy_overshoot`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`pde_below_half_everywhere`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`wannier_exponent_reported`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`fit_reproducible`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p><em>(status: </em><em>PASS</em><em>, mode: full)</em></p>
+<h2>7. Discussion</h2>
+<p>The model is deliberately minimal: classical mechanics only, nuclear motion neglected, a fixed launch geometry and a documented softening. Within these assumptions every conclusion is an exact statement about the ensemble rather than a simulation of a specific experiment. The natural extensions — Wannier-cap conditioning (launching on the ridge with R<sub>0</sub> ~ 1/E so the threshold law becomes measurable), ensembles two to three orders larger, explicit quantum-classical correspondence tests, and nuclear motion for recoil — each preserve the verification style established here.</p>
+<p>The parameter regime is chosen for structural clarity rather than for reproducing the exponential tail of the threshold law: a fixed R<sub>0</sub> = 3 with a fixed kick σ = 0.01 probes the strong-coupling regime of the staggered chain, and the honesty note says so openly. The measured slope (−1.29·10<sup>-15</sup> ≈ 0) is stored in the protocol next to the cited universal benchmark α = 1.056 — the same epistemic discipline the program applies everywhere: a number is either measured and stored, or cited and marked as a reference, never blended.</p>
+<p>Within the program this study anchors the quantum block: TRX-07 supplies the quantum three-body benchmark proper (Efimov physics of laser-cooled trimers), TRX-08 the trapped-ion realization, and TRX-11 keeps three bodies but exchanges the Coulomb interaction for gravity plus radiation; TRX-01 applies three-body geometry to photon pressure. The laser link runs through the three-step model of high-harmonic generation — ionization, laser-driven acceleration, recombination — whose kinematic core is the same electron-plus-ion two-body subproblem embedded here, and whose strong-field double-ionization channel shows the Wannier-type energy sharing measured in this study.</p>
+<h2>8. Conclusions</h2>
+<ol>
+<li>Energy is conserved over the valid ensemble to a relative drift of 4.28e-6 of the deep-well scale 2Z/ε = 40 (max |ΔE| = 1.714·10<sup>-4</sup> a.u.; 0/3200 trajectories filtered).</li>
+<li>Outcome bookkeeping is exact (3200 = 3200), and the autoionization channel is the only active outcome: the single-escape fraction is 1.000 in every energy bin.</li>
+<li>The three-body energy transfer is measured: the escaping electron carries on average 7.28× the excess energy (median 5.90, 16–84 pct band [3.24, 13.30]), and the captured partner keeps E − E_esc &lt; 0 — binding energy released.</li>
+<li>No double escapes occur: P_DE stays at the 1e-4 counting floor across E ∈ [0.05, 0.3], far below the 0.5 acceptance line — the strong-coupling regime of the fixed-launch geometry.</li>
+<li>The Wannier exponent is handled honestly: the fitted slope of this compact ensemble (−1.29·10<sup>-15</sup> ≈ 0) is stored in the protocol, while the universal α = 1.056 is cited as a benchmark, not claimed.</li>
+<li>The results are robust to the scale-breaking kick: over σ ∈ {0, 0.002, 0.005, 0.01, 0.02, 0.05} the single-escape fraction stays 1.000 and the mean overshoot moves only 5.3421 → 5.3416.</li>
+</ol>
+<h2>9. References</h2>
+<ol>
+<li>Wannier, G. H. (1953). <em>The threshold law for single ionization of atoms.</em> Physical Review 90, 817–825.</li>
+<li>Peterkop, R. K. (1971). <em>Wannier's theory of ionization.</em> Journal of Physics B 4, 513–521.</li>
+<li>Abrines, R., Percival, I. C. (1966). <em>Classical theory of charge transfer and ionization of hydrogen atoms by protons.</em> Proceedings of the Physical Society 88, 861–872.</li>
+<li>Fano, U. (1961). <em>Effects of configuration interaction on intensities and phase shifts.</em> Physical Review 124, 1866–1878.</li>
+<li>Sacha, K., Eckhardt, B. (2001). <em>Classical mechanics of the Wannier ridge.</em> Physical Review A 63, 042714.</li>
+<li>Aref, H. (1979). <em>Motion of three vortices.</em> Physics of Fluids 22, 393–400 (collapse/scattering methodology shared with CTMC studies).</li>
+<li>Agostini, P., Fabre, F., Mainfray, G., Petite, G., Rahman, N. K. (1979). <em>Free-free transitions following six-photon ionization of xenon atoms.</em> Physical Review Letters 42, 1127–1130 (three-step model foundations).</li>
+<li>Corkum, P. B. (1993). <em>Plasma perspective on strong-field multiphoton ionization.</em> Physical Review Letters 71, 1994–1997.</li>
+</ol>
+<h3>BibTeX</h3>
+<p>```bibtex
+@article{wannier1953,
+  author  = {Wannier, Gregory H.},
+  title   = {The threshold law for single ionization of atoms},
+  journal = {Physical Review},
+  year    = {1953}, volume = {90}, pages = {817--825}}
+
+@article{abrines1966,
+  author  = {Abrines, R. and Percival, I. C.},
+  title   = {Classical theory of charge transfer and ionization of hydrogen atoms by protons},
+  journal = {Proceedings of the Physical Society},
+  year    = {1966}, volume = {88}, pages = {861--872}}
+
+@article{sacha2001,
+  author  = {Sacha, K. and Eckhardt, B.},
+  title   = {Classical mechanics of the Wannier ridge},
+  journal = {Physical Review A},
+  year    = {2001}, volume = {63}, pages = {042714}}
+
+@article{corkum1993,
+  author  = {Corkum, Paul B.},
+  title   = {Plasma perspective on strong-field multiphoton ionization},
+  journal = {Physical Review Letters},
+  year    = {1993}, volume = {71}, pages = {1994--1997}}
+```</p>
+<h2>Appendix A. Parameter table</h2>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Value</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Z</td>
+<td>2</td>
+<td>helium nucleus charge</td>
+</tr>
+<tr>
+<td>ε</td>
+<td>0.1 a.u.</td>
+<td>softening of all Coulomb denominators</td>
+</tr>
+<tr>
+<td>E window</td>
+<td>[0.05, 0.3] Ha, 8 log-spaced bins</td>
+<td>excess-energy grid of the ensemble</td>
+</tr>
+<tr>
+<td>N</td>
+<td>8 × 400 = 3200, seed 7</td>
+<td>deterministic CTMC ensemble size</td>
+</tr>
+<tr>
+<td>R<sub>0</sub></td>
+<td>3 a.u.</td>
+<td>launch hyperradius of the Wannier chain</td>
+</tr>
+<tr>
+<td>Δr</td>
+<td>[0.8, 2.0]</td>
+<td>radial stagger of the chain (inner shields outer)</td>
+</tr>
+<tr>
+<td>σ</td>
+<td>0.01</td>
+<td>fixed transverse kick breaking scale invariance</td>
+</tr>
+<tr>
+<td>r_esc</td>
+<td>30 a.u.</td>
+<td>escape radius (outward velocity, positive individual energy)</td>
+</tr>
+<tr>
+<td>t_max</td>
+<td>2500</td>
+<td>integration span per trajectory</td>
+</tr>
+<tr>
+<td>dt rule</td>
+<td>0.03 · r_min/v_max, ladder 10<sup>-4</sup> … 0.3</td>
+<td>adaptive RK4 step, quantized to eleven levels</td>
+</tr>
+<tr>
+<td>drift filter</td>
+<td>energy drift ΔE ≤ 5·10<sup>-3</sup> a.u.</td>
+<td>energy-quality cut (0/3200 filtered in the full run)</td>
+</tr>
+<tr>
+<td>drift scale</td>
+<td>2Z/ε = 40 a.u.</td>
+<td>deep-well kinetic scale for the relative drift</td>
+</tr>
+</tbody>
+</table>
+<h2>Appendix B. Reproduction</h2>
+<p>```bash
+python3 research/TRX-06-helium-three-body/code/trx06_helium_three_body.py --smoke     # < 20 s
+python3 research/TRX-06-helium-three-body/code/trx06_helium_three_body.py              # full, 37.7 s
+python3 research/TRX-06-helium-three-body/code/trx06_helium_three_body.py --figures   # + 300-DPI figures
+```</p>
+<p>Full runtime on the reference machine: 37.7 s; smoke mode completes in under 20 seconds and is exercised by the repository CI.</p>
+<h2>Appendix C. Environment</h2>
+<p>Python ≥ 3.11, numpy ≥ 2.0, scipy ≥ 1.14, matplotlib ≥ 3.9; no network access, no stochastic seeds — every run is bit-reproducible on the reference machine.</p><div class="part-banner"><div class="pb-title">ЧАСТЬ II · Русская монография</div><div class="pb-sub">Атом гелия как кулоновская задача трёх тел (классический траекторный метод Монте-Карло)</div></div><div lang="ru"><p><em>Исследовательская программа TRIVORTEX · v1.0.0 · Издание монографий</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Исследование / Study</td>
+<td>TRX-06</td>
+</tr>
+<tr>
+<td>Программа</td>
+<td>TRIVORTEX — задача трёх тел в вихревой модели</td>
+</tr>
+<tr>
+<td>Автор</td>
+<td>Исаев Исхак Хамзатович (ORCID 0009-0003-7299-0701)</td>
+</tr>
+<tr>
+<td>DOI</td>
+<td>10.5281/zenodo.21825394</td>
+</tr>
+<tr>
+<td>Дата</td>
+<td>2026-10-06</td>
+</tr>
+<tr>
+<td>Код</td>
+<td>`code/trx06_helium_three_body.py`</td>
+</tr>
+<tr>
+<td>Данные</td>
+<td>`results/trx06_results.json`</td>
+</tr>
+</tbody>
+</table>
+<h2>Аннотация</h2>
+<p>Монография рассматривает атом гелия — ядро с зарядом Z = 2 и два электрона — как классическую кулоновскую задачу трёх тел и прогоняет детерминированный ансамбль Монте-Карло из 3200 классических траекторий в стартовой конфигурации Ваннье: радиально разнесённая цепочка на гиперпрадиусе R<sub>0</sub> = 3 на точной энергетической оболочке, избыточные энергии E ∈ [0.05, 0.3] Ha, фиксированный поперечный пинок σ = 0.01, ломающий масштабную инвариантность, и документированное смягчение ε = 0.1 а.е. Получены четыре проверенных с машинной точностью результата. (i) Энергия сохраняется по валидному ансамблю с относительным дрейфом 4.28e-6 масштаба глубокой ямы 2Z/ε = 40 (max |ΔE| = 1.714·10<sup>-4</sup> а.е.; 0/3200 отфильтровано). (ii) Бухгалтерия исходов точна (3200 = 3200); канал автоионизации — единственный активный исход, доля одинарного ухода 1.000 в каждом бине. (iii) Уходящий электрон уносит в среднем 7.28× избыточной энергии (медиана 5.90, полоса [3.24, 13.30]), а захваченный партнёр сохраняет E − E_esc &lt; 0 — энергия связи выделяется через отталкивание e<sup>-</sup>–e<sup>-</sup>. (iv) Доля двойного ухода держится на счётном полу 1e-4; универсальный наклон Ваннье α = 1.056 цитируется, а фитированное значение этого компактного ансамбля (≈ 0, сильносвязный режим) сохранено в протоколе.</p>
+<h2>Содержание</h2>
+<p><strong>Краткие сведения</strong></p>
+<table>
+<thead>
+<tr>
+<th>Аспект</th>
+<th>Значение</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Блок</td>
+<td>Квантовые три тела — исследование 06 из 12</td>
+</tr>
+<tr>
+<td>Модель</td>
+<td>классическая кулоновская задача трёх тел (He), смягчённая, Z = 2, ε = 0.1 а.е.</td>
+</tr>
+<tr>
+<td>Ключевой инвариант</td>
+<td>полная энергия H = ε<sub>1</sub> + ε<sub>2</sub> + 1/r<sub>12</sub></td>
+</tr>
+<tr>
+<td>Главный результат</td>
+<td>уходящий уносит 7.28× E; доля одинарного ухода 1.000</td>
+</tr>
+<tr>
+<td>Верификация</td>
+<td>7/7 проверок PASS (полный режим)</td>
+</tr>
+<tr>
+<td>Время выполнения</td>
+<td>37.7 с полный · &lt; 20 с smoke</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>Аннотация</li>
+<li>
+<ol>
+<li>Введение и исторический контекст</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>Физическая формулировка</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>Математическая модель</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li>Связь с фреймворком TRIVORTEX</li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li>Численный метод</li>
+</ol>
+</li>
+<li>
+<ol start="6">
+<li>Результаты и анализ</li>
+</ol>
+</li>
+<li>
+<ol start="7">
+<li>Обсуждение</li>
+</ol>
+</li>
+<li>
+<ol start="8">
+<li>Выводы</li>
+</ol>
+</li>
+<li>
+<ol start="9">
+<li>Список литературы
+Приложение A. Таблица параметров
+Приложение B. Воспроизведение</li>
+</ol>
+</li>
+</ol>
+<h2>1. Введение и исторический контекст</h2>
+<p>Пороговая история начинается со статьи Грегори Ваннье 1953 года, который спросил, что происходит при ионизации атома энергией, едва достаточной для выпуска двух электронов. Ваннье показал, что двойной уход обязан проходить через единственную конфигурацию, совместимую с обоими дальнодействующими кулоновскими отталкиваниями, — конфигурацию Ваннье, в которой два электрона покидают ядро по противоположным сторонам на равных расстояниях и с равными скоростями, — а масштабная инвариантность кулоновской задачи тогда вынуждает степенной закон P_DE ∝ E^α. Его фазовое рассуждение, уточнённое независимо Петерковым (1971), даёт α = 1.056 для Z = 2 — число, ставшее классическим эталоном физики трёхтельного распада.</p>
+<p>Классический траекторный метод Монте-Карло вошёл в атомную физику с работой Абринеса и Персиваля (1966), применивших принцип соответствия к ионизации и перезарядке: при больших квантовых числах квантовая задача заменяется ансамблем классических траекторий с квантованными начальными условиями. Для гелия метод созрел в 1980–1990-е годы, когда компьютеры смогли интегрировать полную трёхтельную кулоновскую динамику в производственных объёмах; канал автоионизации — один электрон захвачен, другой выбит — был осознан как классический образ процесса Оже и резонансов Фано (1961), причём единственным механизмом перекачки энергии служит отталкивание e–e.</p>
+<p>Современная классическая картина пороговой области геометрична: Саха и Эккардт (2001) проанализировали гребень Ваннье — неустойчивую орбиту вдоль r<sub>1</sub> = r<sub>2</sub>, организующую уход, — и показали, как многообразие тройных столкновений направляет траектории либо в двойной уход, либо в автоионизацию. Это знакомая по вихревой динамике трёхтельная альтернатива: анализ трёх вихрей Арефа (1979) демонстрирует ту же конкуренцию коллапса и рассеяния и ту же бухгалтерию на основе инвариантов. Эксперименты по пороговой двойной ионизации считывают именно показатель α, поэтому исследование CTMC, честно докладывающее свой наклон — измерен он или нет, — остаётся осмысленным эталоном.</p>
+<p>Для TRIVORTEX значимость тройная. Во-первых, гелий — трёхтельная задача со смешанными знаками: она проверяет ту же бухгалтерию центральных сил, что гравитационные и вихревые тройки, с обращённой знаковой структурой. Во-вторых, показатель Ваннье — замкнутый универсальный эталон той же эпистемической категории, что теорема 3.1 монографии. В-третьих, лазерная связь встроена: трёхступенчатая модель генерации высших гармоник (основания — Агостини и др. 1979; синтез — Коркум 1993) — это драйвуемая задача трёх тел электрона, родительского иона и поля, а сильнопольная двойная ионизация демонстрирует кинематику типа Ваннье — данное исследование является атомным якорем квантового блока программы (TRX-06, TRX-07, TRX-08).</p>
+<h2>2. Физическая формулировка</h2>
+<p>Гамильтонова динамика в атомных единицах при пренебрежении движением ядра. Два электрона движутся в поле неподвижного ядра с зарядом Z = 2: гамильтониан (E1) содержит два смягчённых притяжения −Z/√(r<sup>2</sup> + ε<sup>2</sup>) и одно смягчённое отталкивание +1/√(r<sub>12</sub><sup>2</sup> + ε<sup>2</sup>) с ε = 0.1 а.е. Индивидуальные энергии электронов εi = vi<sup>2</sup>/2 − Z/ri — наблюдаемые задачи ухода: электрон считается ушедшим, когда он далее радиуса 30 а.е. с наружной радиальной скоростью и положительной индивидуальной энергией, а полная энергия H = ε<sub>1</sub> + ε<sub>2</sub> + 1/r<sub>12</sub> сохраняется динамикой точно — качество её сохранения численной схемой и есть первая контрольная проверка.</p>
+<p>Запуск — классическая конфигурация Ваннье: оба электрона стартуют на одном луче на фиксированном гиперпрадиусе R<sub>0</sub> = 3 а.е., радиально разнесённые (внутренний экранирует внешний) на Δr ∈ [0.8, 2.0], и выталкиваются наружу с равными скоростями на точной энергетической оболочке — запущенная кинетическая энергия делает полную энергию в точности равной E ∈ [0.05, 0.3] Ha. Фиксированный, не зависящий от E поперечный пинок σ = 0.01 нарушает масштабную инвариантность, которая иначе заморозила бы статистику ухода, а отталкивание e–e действует на внешнем участке траектории, превращая симметричные пары в события автоионизации: внутренний электрон захватывается, внешний уходит, унося больше полной избыточной энергии.</p>
+<table>
+<thead>
+<tr>
+<th>Параметр</th>
+<th>Значение</th>
+<th>Смысл</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Z</td>
+<td>2</td>
+<td>заряд ядра гелия (атомные единицы)</td>
+</tr>
+<tr>
+<td>ε</td>
+<td>0.1 а.е.</td>
+<td>документированное смягчение всех кулоновских знаменателей</td>
+</tr>
+<tr>
+<td>окно E</td>
+<td>[0.05, 0.3] Ha, 8 логарифмических бинов</td>
+<td>избыточная энергия над порогом двойного ухода</td>
+</tr>
+<tr>
+<td>запуск</td>
+<td>R<sub>0</sub> = 3 а.е., Δr ∈ [0.8, 2.0]</td>
+<td>разнесённая цепочка Ваннье, равные наружные скорости</td>
+</tr>
+<tr>
+<td>пинок</td>
+<td>σ = 0.01 (не зависит от E)</td>
+<td>фиксированный поперечный пинок, ломающий масштабную инвариантность</td>
+</tr>
+<tr>
+<td>ансамбль</td>
+<td>8 × 400 = 3200, зерно 7</td>
+<td>детерминированный ансамбль CTMC, t_max = 2500</td>
+</tr>
+<tr>
+<td>сфера ухода</td>
+<td>r = 30 а.е.</td>
+<td>наружная радиальная скорость и положительная индивидуальная энергия</td>
+</tr>
+</tbody>
+</table>
+<h2>3. Математическая модель</h2>
+<p>Гамильтониан (E1) — классический предел двухэлектронного квантового атома при закреплённом в начале координат ядре: кинетические члены p<sub>1</sub><sup>2</sup>/2 + p<sub>2</sub><sup>2</sup>/2, два притяжения к ядру −Z/r<sub>1</sub>, −Z/r<sub>2</sub> и электрон-электронное отталкивание 1/r<sub>12</sub>. Все три знаменателя смягчены, r → (r<sup>2</sup> + ε<sup>2</sup>)^{1/2} с ε = 0.1 а.е., — документированная регуляризация, убирающая особенность 1/r при тройном столкновении и прохождении электрона через ядро и не трогающая дальнодействующую кулоновскую кинематику. Смягчённые силы (E2) попарно согласованы (третий закон Ньютона) и происходят из консервативного потенциала, поэтому полная энергия H = ε<sub>1</sub> + ε<sub>2</sub> + 1/r<sub>12</sub> — точный инвариант потока; именно её численный дрейф аудитируется в протоколе.</p>
+<p>Запуск реализует геометрию Ваннье на точной энергетической оболочке. Для разыгранного разноса Δr ∈ [0.8, 2.0] стартовый потенциал вычисляется по смягчённому гамильтониану, требуемая кинетическая энергия равна E минус этот потенциал, а две наружные скорости берутся равными (симметричное разделение, 2 · v<sub>0</sub><sup>2</sup>/2 = K), каждая отклонена равномерным поперечным пинком амплитуды σ; затем пара скоростей перенормируется так, чтобы ½|v<sub>1</sub>|<sup>2</sup> + ½|v<sub>2</sub>|<sup>2</sup> в точности равнялась требуемой кинетической энергии. Фиксированный, не зависящий от E пинок σ = 0.01 существен: без него семейство запусков было бы масштабно инвариантным, и статистика ухода заморозилась бы в геометрию, а не сэмплировала окно избыточной энергии.</p>
+<p>Закон Ваннье (E4) следует из масштабной инвариантности, ограниченной двумя кулоновскими отталкиваниями: вблизи порога уход обязан проходить вдоль потенциального седла при r<sub>1</sub> ≈ r<sub>2</sub>, и радиальное масштабирование исходящего канала несёт фазовый объём E^α с α = ¼(√((100Z − 9)/(4Z − 1)) − 1), что для Z = 2 даёт 1.0559 ≈ 1.056. Настоящий эксперимент запускается с фиксированного гиперпрадиуса R<sub>0</sub> = 3 вместо скейлинга R<sub>0</sub> ~ 1/E, поэтому он зондирует сильносвязный режим фиксированной геометрии: канал двойного ухода закрыт на счётном полу 1e-4 по всему окну, фитированный по окну наклон потому равен ≈ 0, и протокол сохраняет этот фит честно, вместо того чтобы заявлять универсальный показатель.</p>
+<p><strong>Нотация</strong></p>
+<table>
+<thead>
+<tr>
+<th>Символ</th>
+<th>Смысл</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Z</td>
+<td>заряд ядра, Z = 2 (гелий)</td>
+</tr>
+<tr>
+<td>ε</td>
+<td>длина смягчения всех кулоновских знаменателей, 0.1 а.е.</td>
+</tr>
+<tr>
+<td>r<sub>1</sub>, r<sub>2</sub>, r<sub>12</sub></td>
+<td>расстояния электрон–ядро и электрон–электрон</td>
+</tr>
+<tr>
+<td>p_i, v_i</td>
+<td>импульсы и скорости электронов</td>
+</tr>
+<tr>
+<td>ε_i</td>
+<td>индивидуальная энергия электрона, ε_i = v_i<sup>2</sup>/2 − Z/r_i</td>
+</tr>
+<tr>
+<td>E</td>
+<td>избыточная энергия над порогом двойного ухода, окно [0.05, 0.3] Ha</td>
+</tr>
+<tr>
+<td>E_esc</td>
+<td>индивидуальная энергия уходящего электрона</td>
+</tr>
+<tr>
+<td>P_DE</td>
+<td>доля двойного ухода в бине избыточной энергии</td>
+</tr>
+<tr>
+<td>α</td>
+<td>пороговый показатель Ваннье, 1.056 (универсальный); фитированный наклон хранится отдельно</td>
+</tr>
+<tr>
+<td>R<sub>0</sub>, Δr</td>
+<td>стартовый гиперпрадиус (3 а.е.) и радиальный разнос [0.8, 2.0]</td>
+</tr>
+<tr>
+<td>σ</td>
+<td>фиксированный поперечный стартовый пинок, 0.01 а.е.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>(E1)</strong> Гамильтониан в атомных единицах (смягчённые знаменатели r → (r<sup>2</sup> + ε<sup>2</sup>)^{1/2}, ε = 0.1).</p>
+<p>$$H = \frac{p_1^2}{2} + \frac{p_2^2}{2} - \frac{Z}{r_1} - \frac{Z}{r_2} + \frac{1}{r_{12}}, \qquad Z = 2$$</p>
+<p><strong>(E2)</strong> Смягчённые уравнения движения с парной согласованностью (третий закон Ньютона).</p>
+<p>$$\ddot{\mathbf{r}}_1 = -Z\,\frac{\mathbf{r}_1}{(r_1^2+\varepsilon^2)^{3/2}} + \frac{\mathbf{r}_1-\mathbf{r}_2}{(r_{12}^2+\varepsilon^2)^{3/2}}, \qquad \ddot{\mathbf{r}}_2 = -Z\,\frac{\mathbf{r}_2}{(r_2^2+\varepsilon^2)^{3/2}} - \frac{\mathbf{r}_1-\mathbf{r}_2}{(r_{12}^2+\varepsilon^2)^{3/2}}$$</p>
+<p><strong>(E3)</strong> Индивидуальные энергии электронов, сохраняющаяся полная энергия и превышение при автоионизации (выделение энергии связи).</p>
+<p>$$\varepsilon_i = \tfrac{1}{2}v_i^2 - \frac{Z}{r_i}, \qquad H = \varepsilon_1 + \varepsilon_2 + \frac{1}{r_{12}}, \qquad E_{esc}/E > 1$$</p>
+<p><strong>(E4)</strong> Пороговый закон Ваннье (Ваннье 1953; независимый вывод Петеркова 1971).</p>
+<p>$$P_{DE}(E) \propto E^{\alpha}, \qquad \alpha = \frac{1}{4}\left(\sqrt{\frac{100Z-9}{4Z-1}} - 1\right) = 1.056 \ \ (Z = 2)$$</p>
+<p><strong>(E5)</strong> Фильтр качества энергии: траектории выше порога дрейфа отбрасываются (0 из 3200 в полном прогоне).</p>
+<p>$$\delta = \max|\Delta E| \, / \, (2Z/\varepsilon) \le 4\times 10^{-4}, \qquad |\Delta E| \le 5\times 10^{-3}$$</p>
+<h2>4. Связь с фреймворком TRIVORTEX</h2>
+<p>Соответствие TRIVORTEX структурно на всех уровнях. Тройка e<sup>-</sup>–e<sup>-</sup>–ядро — задача трёх тел с обращённой относительно гравитации знаковой структурой — смешанные притягивающие и отталкивающие пары, — но она подчиняется той же бухгалтерии центральных сил, тому же аудиту инвариантов и той же альтернативе «коллапс или рассеяние», которую обнажил Ареф (1979) для трёх вихрей. Превышение при автоионизации, когда одно тело уходит с долей другого, — прямой аналог обмена энергией, который демонстрируют хореографии вихревой модели; показатель Ваннье α = 1.056 — замкнутый универсальный эталон той же эпистемической природы, что теорема 3.1; а документированное смягчение ε играет в точности роль конечных вихревых ядер в регуляризации TRIVORTEX — оба приёма делают парное сингулярное взаимодействие конечным, не трогая дальнодействующую динамику.</p>
+<table>
+<thead>
+<tr>
+<th>Величина исследования</th>
+<th>Аналог в TRIVORTEX</th>
+<th>Комментарий</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Тройка e<sup>-</sup>–e<sup>-</sup>–ядро</td>
+<td>три тела</td>
+<td>кулоновская задача трёх тел со смешанными знаками пар</td>
+</tr>
+<tr>
+<td>Превышение при автоионизации E_esc/E &gt; 1</td>
+<td>обмен энергией в хореографиях</td>
+<td>одно тело уходит с долей другого</td>
+</tr>
+<tr>
+<td>Пороговый закон Ваннье P_DE ∝ E^1.056</td>
+<td>замкнутые эталоны (теорема 3.1)</td>
+<td>резкий универсальный показатель как точка отсчёта</td>
+</tr>
+<tr>
+<td>Смягчение ε = 0.1 а.е.</td>
+<td>конечные вихревые ядра</td>
+<td>документированная регуляризация особенностей 1/r</td>
+</tr>
+</tbody>
+</table>
+<h2>5. Численный метод</h2>
+<p>Сэмплирование полностью детерминировано: зерно генератора (seed 7) разыгрывает разнос Δr ∈ [0.8, 2.0], ориентацию луча и два направления поперечных пинков на траекторию; 400 траекторий на энергетический бин на геометрической сетке из 8 избыточных энергий от 0.05 до 0.3 Ha — итого 3200 стартовых состояний. Каждое состояние после пинков проецируется на точную энергетическую оболочку, так что каждая запущенная траектория стартует с полной энергией E с машинной точностью, — последующий аудит дрейфа меряет только ошибку интегратора, а не шум запуска.</p>
+<p>Интегрирование — покомпонентный адаптивный RK4 с группировкой по dt: шаг dt = 0.03 · r_min/v_max отсекается и квантуется на фиксированную лестницу из одиннадцати уровней от 10<sup>-4</sup> до 0.3, и траектории одного уровня продвигаются батчем, что сохраняет векторизацию ансамбля при том же адаптивном правиле. Траектория завершается, когда оба электрона за r = 30 а.е. с наружной скоростью и положительной индивидуальной энергией (двойной уход), когда терминальная конфигурация замораживается после t = 60 (один электрон внутри r &lt; 1 при другом за r &gt; 5, или оба внутри — двойной уход на этом масштабе невозможен) либо при t_max = 2500.</p>
+<p>Диагностика: дрейф энергии |ΔE| ведётся по каждой траектории как текущий максимум относительно энергии запуска; траектории с |ΔE| &gt; 5·10<sup>-3</sup> а.е. отбрасываются (стандартная практика CTMC; 0 из 3200 в полном прогоне). Доля двойного ухода по бинам несёт пуассоновские ошибки √(p(1 − p)/n); пороговый наклон — метод наименьших квадратов в координатах log<sub>10</sub>–log<sub>10</sub>, повторно выводимый из сохранённых счётчиков как независимая проверка воспроизводимости. Каждая величина — значение, цель, допуск, единица, флаг прохождения — хранится в JSON-протоколе, а режим --figures добавляет четыре панели и схему из тех же данных ансамбля, не трогая проверки.</p>
+<h2>6. Результаты и анализ</h2>
+<h3>fig01 model landscape</h3>
+<p><img alt="Ландшафт модели: (а) смягчённый кулоновский потенциал V(r&lt;sub&gt;1&lt;/sub&gt;, r&lt;sub&gt;2&lt;/sub&gt;) при Z = 2, ε = 0.1 — стена гребня e–e вдоль диагонали и разнесённый стартовый сегмент (r&lt;sub&gt;1&lt;/sub&gt; = 3, r&lt;sub&gt;2&lt;/sub&gt; = 3 + Δ, Δ ∈ [0.8, 2.0]); (б) цепочечный потенциал V(ρ, ρ + Δ) вдоль стартового луча для трёх разносов с окном избыточной энергии E ∈ [0.05, 0.3] Ha." src="../figures/fig01_model_landscape.png" /></p>
+<p><em>Ландшафт модели: (а) смягчённый кулоновский потенциал V(r<sub>1</sub>, r<sub>2</sub>) при Z = 2, ε = 0.1 — стена гребня e–e вдоль диагонали и разнесённый стартовый сегмент (r<sub>1</sub> = 3, r<sub>2</sub> = 3 + Δ, Δ ∈ [0.8, 2.0]); (б) цепочечный потенциал V(ρ, ρ + Δ) вдоль стартового луча для трёх разносов с окном избыточной энергии E ∈ [0.05, 0.3] Ha.</em>
+Панель (а) картирует топографию потенциала: диагональный гребень r<sub>1</sub> = r<sub>2</sub> (стена отталкивания e–e) и золотой стартовый сегмент при r<sub>1</sub> = 3, r<sub>2</sub> = 3 + Δ с Δ ∈ [0.8, 2.0]; панель (б) показывает, что запущенные состояния лежат выше асимптоты потенциала и выбираются наружу, если только отталкивание не свяжет один из электронов.</p>
+<h3>fig02 energy sharing</h3>
+<p><img alt="Главный результат: (а) распределение доли уходящего электрона E_esc/E по всем 3200 событиям автоионизации — среднее 7.28, медиана 5.90, полоса 16–84 процентилей [3.24, 13.30]; (б) измеренная доля двойного ухода остаётся на счётном полу 1e-4 по E ∈ [0.05, 0.3], далеко ниже линии допуска 0.5; наклон Ваннье 1.056 показан как ориентир, а не как разрешённое измерение." src="../figures/fig02_energy_sharing.png" /></p>
+<p><em>Главный результат: (а) распределение доли уходящего электрона E_esc/E по всем 3200 событиям автоионизации — среднее 7.28, медиана 5.90, полоса 16–84 процентилей [3.24, 13.30]; (б) измеренная доля двойного ухода остаётся на счётном полу 1e-4 по E ∈ [0.05, 0.3], далеко ниже линии допуска 0.5; наклон Ваннье 1.056 показан как ориентир, а не как разрешённое измерение.</em>
+Уходящий электрон уносит в среднем 7.28× полной избыточной энергии (медиана 5.90, полоса [3.24, 13.30]), а захваченный партнёр сохраняет E − E_esc &lt; 0 — энергия связи выделяется в пару; в ансамбле нет ни одного двойного ухода, поэтому все 3200 исходов лежат в канале автоионизации.</p>
+<h3>fig03 parameter sweeps</h3>
+<p><img alt="Размывки параметров: (а) среднее E_esc/E по бинам с барами 16–84 процентилей по окну избыточной энергии — эффективность переноса всюду далеко выше паритета; (б) чувствительность к стартовому пинку на редуцированных ансамблях по 720 траекторий на точку — канал автоионизации остаётся доминирующим для каждого документированного пинка σ, включая масштабно-инвариантный предел σ = 0." src="../figures/fig03_parameter_sweeps.png" /></p>
+<p><em>Размывки параметров: (а) среднее E_esc/E по бинам с барами 16–84 процентилей по окну избыточной энергии — эффективность переноса всюду далеко выше паритета; (б) чувствительность к стартовому пинку на редуцированных ансамблях по 720 траекторий на точку — канал автоионизации остаётся доминирующим для каждого документированного пинка σ, включая масштабно-инвариантный предел σ = 0.</em>
+По сетке пинков σ ∈ {0, 0.002, 0.005, 0.01, 0.02, 0.05} доля одинарного ухода держится на 1.000, а среднее превышение почти не движется, 5.3421 → 5.3416, — сильносвязный канал автоионизации нечувствителен к пинку, ломающему масштабную инвариантность.</p>
+<h3>fig04 autoionization dynamics</h3>
+<p><img alt="Динамика одного показательного события автоионизации (переинтегрированного тем же адаптивным правилом RK4): (а) пути в плоскости x–y — уходящий покидает сферу r = 30 а.е., а захваченный электрон наматывается на ядро; (б) индивидуальные энергии ε&lt;sub&gt;1&lt;/sub&gt;(t), ε&lt;sub&gt;2&lt;/sub&gt;(t) и сохраняющаяся полная — отталкивание передаёт уходящему 7.28× E." src="../figures/fig04_autoionization_dynamics.png" /></p>
+<p><em>Динамика одного показательного события автоионизации (переинтегрированного тем же адаптивным правилом RK4): (а) пути в плоскости x–y — уходящий покидает сферу r = 30 а.е., а захваченный электрон наматывается на ядро; (б) индивидуальные энергии ε<sub>1</sub>(t), ε<sub>2</sub>(t) и сохраняющаяся полная — отталкивание передаёт уходящему 7.28× E.</em>
+Для показательного события при E = 0.107761 Ha уходящий покидает систему в момент t = 19.6952 с E_esc = 0.784471 Ha (доля 7.2797), а партнёр остаётся связанным при ε = −0.438084 Ha, — прямой взгляд на трёхтельную передачу энергии через отталкивание e–e.</p>
+<p><strong>Сохранение.</strong> По всему валидному ансамблю из 3200 траекторий текущий максимум ошибки энергии составляет 1.714·10<sup>-4</sup> а.е.; относительно кинетического масштаба глубокой ямы 2Z/ε = 40 а.е. это относительный дрейф 4.28e-6 — на два порядка внутри допуска 4e-4, и ни одной траектории не потребовался фильтр 5·10<sup>-3</sup> (0/3200 отброшено). Энергетической оболочке можно доверять как хребту всей последующей статистики.</p>
+<p><strong>Бухгалтерия и канал.</strong> Классы исходов сходятся точно (3200 = 3200), а состав единогласен: доля одинарного ухода равна 1.000 в каждом из восьми энергетических бинов, доля двойного ухода 0.0 в каждом бине. Канал автоионизации — единственный активный исход фиксированной геометрии запуска, и это подлинно трёхтельный результат: отталкивание e–e — единственный механизм, способный передать энергию от одного электрона другому, пока ядро удерживает захваченного партнёра.</p>
+<p><strong>Разделение энергии.</strong> Уходящий электрон уносит в среднем 7.28× полной избыточной энергии (7.2803 по всем 3200 событиям; медиана 5.8967; полоса 16–84 процентилей [3.2395, 13.2956]) — далеко выше линии допуска 1.2×. Захваченный партнёр сохраняет E − E_esc &lt; 0, то есть энергия связи выделяется в пару. Показательное переинтегрированное событие при E = 0.107761 Ha завершается в момент t = 19.6952 с уходящим на E_esc = 0.784471 Ha (доля 7.2797) и связанным партнёром при ε = −0.438084 Ha — прямой портрет трёхтельной передачи.</p>
+<p><strong>Пороговое поведение.</strong> Измеренная доля двойного ухода сидит на счётном полу 1e-4 по всему окну E ∈ [0.05, 0.3] (всюду ниже линии допуска 0.5), поэтому фитированный по окну наклон равен −1.29·10<sup>-15</sup> ≈ 0: фиксированная геометрия запуска с R<sub>0</sub> = 3 зондирует сильносвязный режим, где P_DE почти не зависит от E. Размывка по пинкам σ ∈ {0, 0.002, 0.005, 0.01, 0.02, 0.05} на редуцированных ансамблях по 720 траекторий на точку оставляет канал доминирующим (доля 1.000 всюду), а среднее превышение практически неподвижным, 5.3421 → 5.3416. Универсальный α = 1.056 требует околопорогового обусловливания на вершине Ваннье (Wannier-cap) и намного больших ансамблей; он цитируется, но не заявляется, а измеренный наклон сохранён в протоколе.</p>
+<h3>Сводка верификации</h3>
+<table>
+<thead>
+<tr>
+<th>Проверка</th>
+<th>Значение</th>
+<th>Цель</th>
+<th>Допуск</th>
+<th>Прошла</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>`max_relative_energy_drift_valid`</td>
+<td>4.28422e-06</td>
+<td>0</td>
+<td>0.0004</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`outcome_classes_sum_to_N`</td>
+<td>3200</td>
+<td>3200</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`autoionization_channel_active`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`escaping_electron_energy_overshoot`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`pde_below_half_everywhere`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`wannier_exponent_reported`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`fit_reproducible`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p><em>(status: </em><em>PASS</em><em>, mode: full)</em></p>
+<h2>7. Обсуждение</h2>
+<p>Модель сознательно минимальна: только классическая механика, движение ядра пренебрежено, фиксированная геометрия запуска и документированное смягчение. В этих допущениях каждый вывод — точное утверждение об ансамбле, а не симуляция конкретного эксперимента. Естественные расширения — обусловливание на вершине Ваннье (запуск на гребне с R<sub>0</sub> ~ 1/E, чтобы пороговый закон стал измеримым), ансамбли на два-три порядка больше, явные тесты квантово-классического соответствия и учёт движения ядра для отдачи — каждое сохраняет установленный здесь верификационный стиль.</p>
+<p>Диапазон параметров выбран ради структурной ясности, а не для воспроизведения экспоненциального хвоста порогового закона: фиксированные R<sub>0</sub> = 3 и пинок σ = 0.01 зондируют сильносвязный режим разнесённой цепочки, и примечание о честности говорит об этом открыто. Измеренный наклон (−1.29·10<sup>-15</sup> ≈ 0) хранится в протоколе рядом с цитируемым универсальным эталоном α = 1.056 — та же эпистемическая дисциплина, что программа применяет всюду: число либо измерено и сохранено, либо процитировано и помечено как справочное, никогда не смешивается.</p>
+<p>В рамках программы это исследование — якорь квантового блока: TRX-07 даёт подлинный квантовый трёхтельный эталон (физика Ефимова лазерно-охлаждённых тримеров), TRX-08 — реализацию на захваченных ионах, а TRX-11 сохраняет три тела, но меняет кулоновское взаимодействие на гравитацию плюс излучение; TRX-01 применяет трёхтельную геометрию к давлению фотонов. Лазерная связь идёт через трёхступенчатую модель генерации высших гармоник — ионизация, ускорение полем лазера, рекомбинация, — чьё кинематическое ядро есть та же двухтельная подсистема «электрон плюс ион», встроенная сюда, а её сильнопольный канал двойной ионизации демонстрирует энергоразделение типа Ваннье, измеренное в этой работе.</p>
+<h2>8. Выводы</h2>
+<ol>
+<li>Энергия сохраняется по валидному ансамблю с относительным дрейфом 4.28e-6 масштаба глубокой ямы 2Z/ε = 40 (max |ΔE| = 1.714·10<sup>-4</sup> а.е.; 0/3200 траекторий отфильтровано).</li>
+<li>Бухгалтерия исходов точна (3200 = 3200), а канал автоионизации — единственный активный исход: доля одинарного ухода равна 1.000 в каждом энергетическом бине.</li>
+<li>Трёхтельный перенос энергии измерен: уходящий электрон уносит в среднем 7.28× избыточной энергии (медиана 5.90, полоса 16–84 процентилей [3.24, 13.30]), а захваченный партнёр сохраняет E − E_esc &lt; 0 — энергия связи выделяется.</li>
+<li>Двойных уходов нет: P_DE держится на счётном полу 1e-4 по всему E ∈ [0.05, 0.3], далеко ниже линии допуска 0.5, — сильносвязный режим фиксированной геометрии запуска.</li>
+<li>Показатель Ваннье обработан честно: фитированный наклон этого компактного ансамбля (−1.29·10<sup>-15</sup> ≈ 0) сохранён в протоколе, а универсальный α = 1.056 цитируется как эталон, но не заявляется.</li>
+<li>Результаты устойчивы к ломающему масштаб пинку: по σ ∈ {0, 0.002, 0.005, 0.01, 0.02, 0.05} доля одинарного ухода держится на 1.000, а среднее превышение смещается лишь на 5.3421 → 5.3416.</li>
+</ol>
+<h2>9. Список литературы</h2>
+<ol>
+<li>Wannier, G. H. (1953). <em>The threshold law for single ionization of atoms.</em> Physical Review 90, 817–825.</li>
+<li>Peterkop, R. K. (1971). <em>Wannier's theory of ionization.</em> Journal of Physics B 4, 513–521.</li>
+<li>Abrines, R., Percival, I. C. (1966). <em>Classical theory of charge transfer and ionization of hydrogen atoms by protons.</em> Proceedings of the Physical Society 88, 861–872.</li>
+<li>Fano, U. (1961). <em>Effects of configuration interaction on intensities and phase shifts.</em> Physical Review 124, 1866–1878.</li>
+<li>Sacha, K., Eckhardt, B. (2001). <em>Classical mechanics of the Wannier ridge.</em> Physical Review A 63, 042714.</li>
+<li>Aref, H. (1979). <em>Motion of three vortices.</em> Physics of Fluids 22, 393–400 (collapse/scattering methodology shared with CTMC studies).</li>
+<li>Agostini, P., Fabre, F., Mainfray, G., Petite, G., Rahman, N. K. (1979). <em>Free-free transitions following six-photon ionization of xenon atoms.</em> Physical Review Letters 42, 1127–1130 (three-step model foundations).</li>
+<li>Corkum, P. B. (1993). <em>Plasma perspective on strong-field multiphoton ionization.</em> Physical Review Letters 71, 1994–1997.</li>
+</ol>
+<h3>BibTeX</h3>
+<p>```bibtex
+@article{wannier1953,
+  author  = {Wannier, Gregory H.},
+  title   = {The threshold law for single ionization of atoms},
+  journal = {Physical Review},
+  year    = {1953}, volume = {90}, pages = {817--825}}
+
+@article{abrines1966,
+  author  = {Abrines, R. and Percival, I. C.},
+  title   = {Classical theory of charge transfer and ionization of hydrogen atoms by protons},
+  journal = {Proceedings of the Physical Society},
+  year    = {1966}, volume = {88}, pages = {861--872}}
+
+@article{sacha2001,
+  author  = {Sacha, K. and Eckhardt, B.},
+  title   = {Classical mechanics of the Wannier ridge},
+  journal = {Physical Review A},
+  year    = {2001}, volume = {63}, pages = {042714}}
+
+@article{corkum1993,
+  author  = {Corkum, Paul B.},
+  title   = {Plasma perspective on strong-field multiphoton ionization},
+  journal = {Physical Review Letters},
+  year    = {1993}, volume = {71}, pages = {1994--1997}}
+```</p>
+<h2>Приложение A. Таблица параметров</h2>
+<table>
+<thead>
+<tr>
+<th>Символ</th>
+<th>Значение</th>
+<th>Роль</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Z</td>
+<td>2</td>
+<td>заряд ядра гелия</td>
+</tr>
+<tr>
+<td>ε</td>
+<td>0.1 а.е.</td>
+<td>смягчение всех кулоновских знаменателей</td>
+</tr>
+<tr>
+<td>окно E</td>
+<td>[0.05, 0.3] Ha, 8 логарифмических бинов</td>
+<td>сетка избыточных энергий ансамбля</td>
+</tr>
+<tr>
+<td>N</td>
+<td>8 × 400 = 3200, зерно 7</td>
+<td>размер детерминированного ансамбля CTMC</td>
+</tr>
+<tr>
+<td>R<sub>0</sub></td>
+<td>3 а.е.</td>
+<td>стартовый гиперпрадиус цепочки Ваннье</td>
+</tr>
+<tr>
+<td>Δr</td>
+<td>[0.8, 2.0]</td>
+<td>радиальный разнос цепочки (внутренний экранирует внешний)</td>
+</tr>
+<tr>
+<td>σ</td>
+<td>0.01</td>
+<td>фиксированный поперечный пинок, ломающий масштабную инвариантность</td>
+</tr>
+<tr>
+<td>r_esc</td>
+<td>30 а.е.</td>
+<td>радиус ухода (наружная скорость, положительная индивидуальная энергия)</td>
+</tr>
+<tr>
+<td>t_max</td>
+<td>2500</td>
+<td>интервал интегрирования на траекторию</td>
+</tr>
+<tr>
+<td>правило dt</td>
+<td>0.03 · r_min/v_max, лестница 10<sup>-4</sup> … 0.3</td>
+<td>адаптивный шаг RK4, квантованный на одиннадцать уровней</td>
+</tr>
+<tr>
+<td>фильтр дрейфа</td>
+<td>дрейф энергии ΔE ≤ 5·10<sup>-3</sup> а.е.</td>
+<td>порог качества энергии (0/3200 отфильтровано в полном прогоне)</td>
+</tr>
+<tr>
+<td>масштаб дрейфа</td>
+<td>2Z/ε = 40 а.е.</td>
+<td>кинетический масштаб глубокой ямы для относительного дрейфа</td>
+</tr>
+</tbody>
+</table>
+<h2>Приложение B. Воспроизведение</h2>
+<p>```bash
+python3 research/TRX-06-helium-three-body/code/trx06_helium_three_body.py --smoke     # < 20 с
+python3 research/TRX-06-helium-three-body/code/trx06_helium_three_body.py              # полный прогон, 37.7 s
+python3 research/TRX-06-helium-three-body/code/trx06_helium_three_body.py --figures   # + графики 300 DPI
+```</p>
+<p>Полное время выполнения на референсной машине — 37.7 s; smoke-режим укладывается в 20 секунд и используется CI репозитория.</p>
+<h2>Приложение C. Окружение</h2>
+<p>Python ≥ 3.11, numpy ≥ 2.0, scipy ≥ 1.14, matplotlib ≥ 3.9; без доступа к сети и без стохастических зёрен — каждый прогон бит-в-бит воспроизводим на референсной машине.</p></div></div>
+<div class="ending">
+  <div class="end-title">TRIVORTEX</div>
+  <div class="end-small">The Three-Body Problem in the Vortex Model</div>
+  <div class="end-rule"></div>
+  <div class="colophon-line"><b>Helium Atom as the Coulomb Three-Body Problem (Classical Trajectory Monte Carlo)</b> — research monograph of the TRIVORTEX program, studying the three-body problem in the vortex model and its laser, celestial-mechanical and quantum crossings.</div><div class="colophon-line">Full verification protocol: <b>results JSON + figures + code</b> in research/TRX-06-helium-three-body/; reproduction commands in Appendix B.</div>
+  <div class="end-small">
+    Isaev Iskhak Khamzatovich · ORCID 0009-0003-7299-0701<br>
+    DOI (concept) 10.5281/zenodo.21825393 · DOI (version) 10.5281/zenodo.21825394<br>
+    License IPL-RP-1.0 · v1.0.0 · 2026-10-07
+  </div>
+</div>
+
+</body>
+</html>

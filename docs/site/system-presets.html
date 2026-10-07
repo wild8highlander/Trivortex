@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>System Presets — TRIVORTEX</title>
+<meta name="description" content="Sun-Earth-Moon, Alpha Centauri, Pluto-Charon-Nix: how real astronomical triples map into the vortex model.">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<header class="site"><div class="wrap">
+  <a class="brand" href="index.html">TRIVORTEX</a>
+  <nav class="main"><a href="index.html">Overview</a><a href="vortex-model.html">Vortex Model</a><a href="theorem-3-1.html">Theorem 3.1</a><a href="code.html">Code</a><a href="system-presets.html" class="active">System Presets</a><a href="verification.html">Verification</a><a href="research.html">Research Lab</a><a href="publications.html">Publications</a><a href="citation.html">Citation</a><a href="license.html">License</a></nav>
+</div></header>
+<main class="wrap">
+
+<h1 style="letter-spacing:2px;font-size:36px">Real System Presets</h1>
+<p class="muted">Section 10 of the document maps three real astronomical triples
+into the model — masses, distances and periods included.</p>
+
+<table>
+<tr><th>System</th><th>Bodies</th><th>Masses (kg)</th><th>Distances (m)</th><th>Periods (s)</th></tr>
+<tr>
+  <td>Sun–Earth–Moon</td>
+  <td>Sun · Earth · Moon</td>
+  <td class="mono small">1.989e30 · 5.972e24 · 7.342e22</td>
+  <td class="mono small">1.496e11 (1 AU) · 3.844e8</td>
+  <td class="mono small">3.156e7 (year) · 2.361e6 (month)</td>
+</tr>
+<tr>
+  <td>α Centauri</td>
+  <td>α Cen A · α Cen B · Proxima</td>
+  <td class="mono small">1.078e30 · 0.907e30 · 2.446e29</td>
+  <td class="mono small">2.345e11 · 1.3e13</td>
+  <td class="mono small">2.234e8 · 3.154e9</td>
+</tr>
+<tr>
+  <td>Pluto–Charon–Nix</td>
+  <td>Pluto · Charon · Nix</td>
+  <td class="mono small">1.303e22 · 1.586e21 · ~2e15</td>
+  <td class="mono small">1.959e7 · 4.98e7</td>
+  <td class="mono small">5.53e5 · 2.42e6</td>
+</tr>
+</table>
+
+<h2 id="how">How the presets are used</h2>
+<p>Each preset is a <span class="mono">RealSystem</span> record — name, body list,
+masses, characteristic distances, characteristic periods. Menu mode&nbsp;6 prints
+and analyses the presets: they serve as (i) parameter scales for the vortex
+simulation (which length, time and mass units the dimensionless model maps to) and
+(ii) the "reality anchor" for the narrative of the document. The vortex model does
+not claim to reproduce ephemerides; it uses the astronomical triples to fix
+dimensionless ratios and to keep the discussion of the three-body problem concrete.</p>
+
+<div class="note blue">
+<strong>Why these three?</strong> Sun–Earth–Moon is the canonical hierarchical
+triple everyone can picture; α Centauri is the closest real three-star system and a
+long-standing laboratory of three-body stability discussions (Proxima's orbit is
+measured in hundreds of thousands of years); Pluto–Charon–Nix is a genuinely
+dynamically rich small triple whose satellites' mutual perturbations are observable.
+Together they span six orders of magnitude in scale — a compact illustration of why
+the three-body problem admits no universal closed form.
+</div>
+
+<h2 id="caution">A note on honesty</h2>
+<p>The presets enter the document as configuration data, not as simulation results.
+No claim in the repository depends on the accuracy of the third body's mass in the
+Pluto system (Nix's mass is known only to order-of-magnitude precision) — the
+presets are labelled with their source uncertainties in the code comments, and the
+verification ladder does not use them: V1–V4 operate on the exact model objects.
+This separation keeps the verified core clean of astronomical parameter noise.</p>
+
+</main>
+<footer class="site"><div class="wrap"><div class="cols">
+  <div>
+    <div style="color:var(--gold-l);letter-spacing:2px;font-size:18px">TRIVORTEX</div>
+    <p class="small">The Three-Body Problem in the Vortex Model — a research
+    document with a verification ladder, by Isaev Iskhak Khamzatovich.</p>
+    <p class="small mono">DOI 10.5281/zenodo.21825394</p>
+  </div>
+  <div class="small">
+    <strong style="color:var(--ink)">Repository</strong><br>
+    <a href="https://github.com/wild8highlander/research-papers">GitHub source</a><br>
+    <a href="https://github.com/wild8highlander/research-papers/blob/main/LICENSE.md">License IPL-RP-1.0</a><br>
+    <a href="https://zenodo.org/records/21825394">Zenodo record</a><br>
+    <a href="https://orcid.org/0009-0003-7299-0701">ORCID profile</a>
+  </div>
+  <div class="small">
+    <strong style="color:var(--ink)">Document</strong><br>
+    <a href="vortex-model.html">Vortex model</a><br>
+    <a href="theorem-3-1.html">Theorem 3.1</a><br>
+    <a href="code.html">Code — 22 sections</a><br>
+    <a href="verification.html">Verification V1–V4</a>
+  </div>
+</div>
+<p class="small" style="text-align:center;margin-top:26px">© 2026 Isaev Iskhak Khamzatovich ·
+Proprietary license · Concept DOI 10.5281/zenodo.21825393</p>
+</div></footer>
+</body>
+</html>

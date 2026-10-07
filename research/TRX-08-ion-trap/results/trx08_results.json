@@ -1,0 +1,150 @@
+{
+  "study": "TRX-08",
+  "title": "Three laser-cooled ions in a linear Paul trap",
+  "status": "PASS",
+  "smoke": true,
+  "runtime_s": 0.376,
+  "checks": [
+    {
+      "name": "global_minimum_reached",
+      "value": 0.0,
+      "target": 0.0,
+      "tol": 1e-09,
+      "unit": "energy",
+      "pass": true,
+      "note": "U_final = 3.120125734578 vs analytic triangle U = 3.120125734578"
+    },
+    {
+      "name": "crystallization_energy_released",
+      "value": 1.0,
+      "target": 1.0,
+      "tol": 1e-12,
+      "unit": "bool",
+      "pass": true,
+      "note": "binding energy released during cooling: 1.7609"
+    },
+    {
+      "name": "crystal_side_equals_analytic",
+      "value": 1.442249570307408,
+      "target": 1.4422495703074083,
+      "tol": 1e-08,
+      "unit": "length",
+      "pass": true,
+      "note": "sides = [1.44224957 1.44224957 1.44224957], a = (3k/w0^2)^(1/3) = 1.442249570"
+    },
+    {
+      "name": "crystal_equilateral",
+      "value": 0.0,
+      "target": 0.0,
+      "tol": 1e-08,
+      "unit": "length",
+      "pass": true,
+      "note": "max side - min side"
+    },
+    {
+      "name": "crystal_angles_120deg",
+      "value": 4.440892098500626e-16,
+      "target": 0.0,
+      "tol": 1e-06,
+      "unit": "rad",
+      "pass": true,
+      "note": "central angles = [2.0943951 2.0943951 2.0943951] (2*pi/3 each)"
+    },
+    {
+      "name": "zero_rotation_mode",
+      "value": 1.0,
+      "target": 1.0,
+      "tol": 1e-12,
+      "unit": "bool",
+      "pass": true,
+      "note": "eigenvalues = [-2.00000000e-08  9.99999990e-01  1.00000003e+00  1.49999999e+00\n  1.50000003e+00  3.00000001e+00]"
+    },
+    {
+      "name": "two_com_modes_at_omega0",
+      "value": 1.0,
+      "target": 1.0,
+      "tol": 1e-12,
+      "unit": "bool",
+      "pass": true,
+      "note": "COM translational modes at exactly omega0"
+    },
+    {
+      "name": "breathing_mode_sqrt3",
+      "value": 1.0,
+      "target": 1.0,
+      "tol": 1e-12,
+      "unit": "bool",
+      "pass": true,
+      "note": "breathing = sqrt(3)*omega0 = 1.732051"
+    },
+    {
+      "name": "static_equilibrium_holds",
+      "value": 1.3877787807814457e-15,
+      "target": 0.0,
+      "tol": 1e-09,
+      "unit": "length",
+      "pass": true,
+      "note": "positions unchanged after t=50 with zero initial velocity"
+    },
+    {
+      "name": "conservative_energy_conserved",
+      "value": 8.881784197001252e-16,
+      "target": 0.0,
+      "tol": 1e-10,
+      "unit": "energy",
+      "pass": true,
+      "note": "damping-free crystal, t=50"
+    }
+  ],
+  "series": {
+    "t": [
+      0.0,
+      1.0
+    ],
+    "x1": [
+      -0.82870167,
+      -0.37791169
+    ],
+    "y1": [
+      -0.52637899,
+      -0.74198654
+    ],
+    "x2": [
+      0.60254893,
+      0.83153504
+    ],
+    "y2": [
+      0.16432407,
+      0.04371215
+    ],
+    "x3": [
+      -0.81174272,
+      -0.45362335
+    ],
+    "y3": [
+      -0.13374612,
+      0.6982744
+    ]
+  },
+  "meta": {
+    "equations": [
+      "m x_k'' = -m omega0^2 x_k - gamma_d x_k' + kappa sum (x_k-x_l)/r^3",
+      "a = (3 kappa/omega0^2)^(1/3) ;  modes: 0, omega0 (x2), sqrt(3) omega0, ..."
+    ],
+    "a_analytic": 1.4422495703074083,
+    "mode_frequencies": [
+      0.0,
+      0.9999999969612642,
+      1.0000000136146097,
+      1.2247448672197627,
+      1.2247448824186384,
+      1.732050809523816
+    ],
+    "Ca_params": {
+      "m_amu": 40,
+      "trap_MHz": 1.0,
+      "note": "kappa = q^2/(4 pi eps0) / (m omega0^2 a0^3) sets the length scale"
+    },
+    "laser_link": "Doppler cooling modelled by gamma_d; three-ion crystals are the smallest ion-crystal quantum simulator"
+  }
+}

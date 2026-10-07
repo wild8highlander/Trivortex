@@ -1,0 +1,73 @@
+{
+  "files": [
+    "AUTHORS.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributorsPerLine": 7,
+  "contributorsSortAlphabetically": true,
+  "badges": true,
+  "badgeTemplate": "[![All Contributors](https://img.shields.io/badge/all_contributors-<%= contributors.length %>-orange.svg?style=flat-square)](#contributors)",
+  "contributorTemplate": "<%= contributor.name %>",
+  "types": {
+    "code": {
+      "symbol": "💻",
+      "description": "Code"
+    },
+    "doc": {
+      "symbol": "📖",
+      "description": "Documentation"
+    },
+    "math": {
+      "symbol": "🧮",
+      "description": "Mathematics"
+    },
+    "proof": {
+      "symbol": "✅",
+      "description": "Formal Proofs"
+    },
+    "test": {
+      "symbol": "⚠️",
+      "description": "Tests"
+    },
+    "review": {
+      "symbol": "👀",
+      "description": "Reviewed Pull Requests"
+    },
+    "infra": {
+      "symbol": "🚇",
+      "description": "Infrastructure"
+    },
+    "mentor": {
+      "symbol": "🧑‍🏫",
+      "description": "Mentoring"
+    },
+    "ideas": {
+      "symbol": "🤔",
+      "description": "Ideas, Planning, & Feedback"
+    },
+    "data": {
+      "symbol": "📋",
+      "description": "Data & Numerical Results"
+    }
+  },
+  "contributors": [
+    {
+      "login": "wild8highlander",
+      "name": "Isaev Iskhak Khamzatovich",
+      "avatar_url": "https://avatars.githubusercontent.com/u/0?v=4",
+      "profile": "https://orcid.org/0009-0003-7299-0701",
+      "contributions": [
+        "code",
+        "doc",
+        "math",
+        "proof",
+        "test",
+        "review",
+        "infra",
+        "ideas",
+        "data"
+      ]
+    }
+  ]
+}

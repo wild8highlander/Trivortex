@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
+  <defs>
+    <marker id="arrN" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#0A1730"/>
+    </marker>
+    <marker id="arrG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#D4AF37"/>
+    </marker>
+  </defs>
+  <rect width="960" height="540" fill="#FFFFFF"/>
+  <text x="30" y="40" font-family="Helvetica, Arial, sans-serif" font-size="21" font-weight="bold" fill="#0A1730">TRX-01 &#8212; Scheme: laser-dressed CR3BP</text>
+  <text x="30" y="63" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#3A4A66">Photon pressure from a laser aimed at primary 1 renormalizes its pull on a massless particle: F_grav &#8594; (1 &#8722; &#946;)&#183;F_grav</text>
+  <line x1="330" y1="390" x2="620" y2="390" stroke="#0A1730" stroke-width="1.4" stroke-dasharray="6 4" opacity="0.55"/>
+  <line x1="330" y1="390" x2="475" y2="139" stroke="#0A1730" stroke-width="1.4" stroke-dasharray="6 4" opacity="0.55"/>
+  <line x1="620" y1="390" x2="475" y2="139" stroke="#0A1730" stroke-width="1.4" stroke-dasharray="6 4" opacity="0.55"/>
+  <text x="475" y="412" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#3A4A66" text-anchor="middle">equilateral configuration, side = 1 (canonical unit)</text>
+  <circle cx="330" cy="390" r="30" fill="#D4AF37" stroke="#0A1730" stroke-width="2"/>
+  <circle cx="620" cy="390" r="11" fill="#0A1730" stroke="#0A1730" stroke-width="2"/>
+  <text x="330" y="444" font-family="Helvetica, Arial, sans-serif" font-size="13" font-weight="bold" fill="#0A1730" text-anchor="middle">Primary 1 &#183; m&#8321; = 1 &#8722; &#956;</text>
+  <text x="330" y="461" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#3A4A66" text-anchor="middle">radiating: gravity &#215; (1 &#8722; &#946;)</text>
+  <text x="620" y="444" font-family="Helvetica, Arial, sans-serif" font-size="13" font-weight="bold" fill="#0A1730" text-anchor="middle">Primary 2 &#183; m&#8322; = &#956;</text>
+  <text x="620" y="461" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#3A4A66" text-anchor="middle">unperturbed gravity</text>
+  <rect x="96" y="118" width="64" height="30" rx="4" fill="#FFFFFF" stroke="#0A1730" stroke-width="2"/>
+  <text x="128" y="138" font-family="Helvetica, Arial, sans-serif" font-size="12" font-weight="bold" fill="#0A1730" text-anchor="middle">laser</text>
+  <polygon points="160,126 306,356 306,368 160,140" fill="#D4AF37" opacity="0.22"/>
+  <line x1="162" y1="133" x2="303" y2="361" stroke="#D4AF37" stroke-width="2.2" marker-end="url(#arrG)"/>
+  <text x="176" y="116" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0A1730">laser beam (power P, &#955; = 1 &#956;m at &#916; = 1 AU)</text>
+  <circle cx="475" cy="139" r="8" fill="#FFFFFF" stroke="#0A1730" stroke-width="1.8"/>
+  <text x="492" y="130" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0A1730">classical L&#8324; (&#946; = 0)</text>
+  <circle cx="458" cy="168" r="8" fill="#D4AF37" stroke="#0A1730" stroke-width="2"/>
+  <line x1="471" y1="149" x2="461" y2="163" stroke="#0A1730" stroke-width="2" marker-end="url(#arrN)"/>
+  <text x="404" y="150" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0A1730" text-anchor="end">displaced L&#8324; (&#946; &gt; 0)</text>
+  <text x="404" y="168" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0A1730" text-anchor="end">L&#8324; shift grows with &#946;</text>
+  <circle cx="458" cy="168" r="48" fill="none" stroke="#D4AF37" stroke-width="1.6" stroke-dasharray="5 5" opacity="0.9"/>
+  <circle cx="487" cy="206" r="4.5" fill="#0A1730"/>
+  <line x1="492" y1="210" x2="536" y2="228" stroke="#0A1730" stroke-width="0.8" opacity="0.6"/>
+  <text x="540" y="232" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0A1730">massless particle (dust, m &#8594; 0) on a tadpole libration</text>
+  <line x1="330" y1="386.5" x2="337" y2="393.5" stroke="#0A1730" stroke-width="1.4"/>
+  <line x1="337" y1="386.5" x2="330" y2="393.5" stroke="#0A1730" stroke-width="1.4"/>
+  <line x1="337" y1="386" x2="362" y2="350" stroke="#0A1730" stroke-width="0.8" opacity="0.6"/>
+  <text x="365" y="348" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#3A4A66">barycentre (origin of the rotating frame)</text>
+  <path d="M 775 205 A 45 45 0 0 1 820 160" fill="none" stroke="#0A1730" stroke-width="1.8" marker-end="url(#arrN)"/>
+  <text x="838" y="178" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0A1730">rotating frame</text>
+  <text x="838" y="194" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#3A4A66">angular rate n = 1</text>
+  <rect x="56" y="434" width="200" height="74" rx="6" fill="#FFFFFF" stroke="#0A1730" stroke-width="1.4"/>
+  <text x="68" y="458" font-family="Helvetica, Arial, sans-serif" font-size="13.5" font-weight="bold" fill="#0A1730">&#946; = F_rad / F_grav</text>
+  <text x="68" y="477" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0A1730">&#946; = 0 &#8594; classical CR3BP</text>
+  <text x="68" y="496" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0A1730">&#946; &gt; 0 &#8594; L&#8324; moves toward primary 1</text>
+  <text x="620" y="492" font-family="Helvetica, Arial, sans-serif" font-size="12.5" fill="#0A1730">Jacobi invariant: C_J = 2&#937; &#8722; (&#789;&#178; + &#7899;&#178;)</text>
+  <text x="620" y="508" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#3A4A66">with &#937; containing the (1 &#8722; &#946;)(1 &#8722; &#956;)/r&#8321; term</text>
+  <text x="30" y="524" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#6B7A94">TRIVORTEX Research Program &#183; study TRX-01 &#183; laser-dressed circular restricted three-body problem</text>
+</svg>

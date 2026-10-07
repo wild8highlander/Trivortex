@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520">
+<rect width="900" height="520" fill="#0A1230"/>
+<text x="24" y="34" fill="#FFFFFF" font-family="Arial" font-size="19" font-weight="bold">TRX-06 &#8212; Wannier threshold law P_DE ~ E^1.056 (CTMC)</text>
+<line x1="90.0" y1="440.0" x2="850.0" y2="440.0" stroke="#3A4A6B"/>
+<line x1="90.0" y1="80.0" x2="90.0" y2="440.0" stroke="#3A4A6B"/>
+<polyline fill="none" stroke="#F2C14E" stroke-width="2" points="239.88,705.81 496.75,705.81 765.59,705.81"/>
+<circle cx="239.88" cy="705.81" r="4" fill="#F2C14E"/>
+<circle cx="496.75" cy="705.81" r="4" fill="#F2C14E"/>
+<circle cx="765.59" cy="705.81" r="4" fill="#F2C14E"/>
+<line x1="239.88" y1="705.81" x2="765.59" y2="705.81" stroke="#6FB7FF" stroke-width="2" stroke-dasharray="7,5"/>
+<text x="600" y="120" fill="#6FB7FF" font-family="Arial" font-size="14">fit: alpha = 0.0000</text>
+<text x="600" y="142" fill="#9FB3D9" font-family="Arial" font-size="13">Wannier 1953: 1.056</text>
+<text x="430" y="478" fill="#9FB3D9" font-family="Arial" font-size="13">excess energy E (a.u., log)</text>
+<text x="24" y="500" fill="#9FB3D9" font-family="Arial" font-size="12">double-escape fraction vs excess energy, log-log</text>
+</svg>

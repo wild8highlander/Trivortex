@@ -1,0 +1,97 @@
+---
+name: TRIVORTEX CI
+
+# The repository pipeline for the TRIVORTEX document:
+#   1. syntax-check every Python file (code/ + verification/ + research/);
+#   2. run the independent verification ladder V1-V4 (quick preset);
+#   3. run the pytest guard (13 core tests + 12 research smoke tests).
+# A green run is what the CI badge in the root README reflects.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: trivortex-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  syntax-check:
+    name: Syntax check (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Compile every Python file
+        run: |
+          python - <<'PY'
+          import py_compile, os, sys
+          roots = ["code", "verification", "research"]
+          errors = []
+          for root in roots:
+              for dirpath, _dirs, files in os.walk(root):
+                  if "outputs" in dirpath.split(os.sep):
+                      continue
+                  for f in files:
+                      if f.endswith(".py"):
+                          path = os.path.join(dirpath, f)
+                          try:
+                              py_compile.compile(path, doraise=True)
+                          except py_compile.PyCompileError as e:
+                              errors.append(str(e))
+          if errors:
+              for e in errors:
+                  print(e)
+              sys.exit(1)
+          print("All Python files passed syntax check")
+          PY
+
+  verification-ladder:
+    name: Verification ladder V1–V4 (quick)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install numpy
+        run: pip install numpy
+      - name: Run the ladder
+        run: |
+          python3 verification/trivortex/python/verify.py --preset quick \
+            --out-dir verification/outputs/trivortex
+      - name: Upload JSON protocol
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivortex-verify-protocol
+          path: verification/outputs/trivortex/*.json
+          if-no-files-found: error
+          retention-days: 30
+
+  pytest-guard:
+    name: Pytest guard (reference values)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install test dependencies
+        run: pip install numpy pytest
+      - name: Run the suite
+        run: python -m pytest verification/tests/ -v --tb=short

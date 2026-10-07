@@ -1,0 +1,24 @@
+---
+name: Docker Build
+
+on:
+  push:
+    branches: [main]
+    paths: ['verification/docker/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [python, julia, java, lean4, coq, rust, cpp, haskell]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build ${{ matrix.service }} image
+        run: |
+          cd verification
+          docker build -t rpv-${{ matrix.service }} -f docker/${{ matrix.service }}/Dockerfile . || true

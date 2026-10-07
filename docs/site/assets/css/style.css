@@ -1,0 +1,75 @@
+
+:root{
+  --navy:#0A1730; --navy2:#0E2145; --panel:#11234A; --line:#223A66;
+  --gold:#D4AF37; --gold-l:#F0D98C; --ink:#E9EEF8; --muted:#8FA3C4;
+  --cyan:#59C2FF; --rose:#FF7A9E; --green:#3FB950; --violet:#9D7BFF;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:linear-gradient(180deg,var(--navy2),var(--navy) 420px);
+  color:var(--ink);font:16px/1.72 Georgia,'Times New Roman',serif;}
+code,pre,.mono{font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace}
+a{color:var(--cyan);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:1060px;margin:0 auto;padding:0 22px}
+header.site{position:sticky;top:0;z-index:9;background:rgba(10,23,48,.92);
+  backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+header.site .wrap{display:flex;align-items:center;gap:18px;height:58px}
+.brand{font-family:Georgia,serif;font-weight:bold;font-size:22px;letter-spacing:3px;
+  color:var(--gold-l);text-decoration:none}
+.brand:hover{text-decoration:none}
+nav.main{display:flex;flex-wrap:wrap;gap:2px;margin-left:auto}
+nav.main a{color:var(--muted);font-size:14.5px;padding:6px 11px;border-radius:8px;
+  font-family:Georgia,serif}
+nav.main a:hover{color:var(--ink);background:var(--panel);text-decoration:none}
+nav.main a.active{color:var(--gold-l);background:var(--panel)}
+.hero{padding:44px 0 26px;text-align:center}
+.hero img{max-width:100%;border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,.45)}
+.badges{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin:18px 0 6px}
+.badges img{height:22px}
+h1{font-size:44px;letter-spacing:6px;color:var(--gold-l);margin:.4em 0 .2em}
+h2{color:var(--gold-l);font-size:27px;margin-top:1.9em;border-bottom:1px solid var(--line);
+  padding-bottom:8px}
+h3{color:var(--cyan);font-size:20px;margin-top:1.5em}
+p{margin:.85em 0}
+.lead{font-size:19px;color:var(--ink);max-width:820px;margin:0 auto}
+.muted{color:var(--muted)}
+.small{font-size:13.5px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin:22px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.card h3{margin-top:0;color:var(--gold-l)}
+.card p{color:var(--ink);font-size:15px}
+.card .kpi{font-size:30px;font-weight:bold;color:var(--cyan);font-family:Georgia,serif}
+table{border-collapse:collapse;width:100%;margin:16px 0;font-size:15px}
+th{color:var(--gold-l);text-align:left;border-bottom:2px solid var(--gold);padding:9px 12px}
+td{border-bottom:1px solid var(--line);padding:9px 12px;vertical-align:top}
+tr:hover td{background:rgba(212,175,55,.05)}
+pre{background:#081222;border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+  overflow-x:auto;font-size:14px;line-height:1.6}
+code{background:#081222;border:1px solid var(--line);border-radius:6px;padding:1px 7px;font-size:13.5px}
+pre code{border:none;padding:0;background:none}
+.pass{color:var(--green);font-weight:bold}
+.warn{color:var(--gold);font-weight:bold}
+.note{background:rgba(212,175,55,.08);border-left:3px solid var(--gold);
+  padding:12px 18px;border-radius:0 10px 10px 0;margin:18px 0;font-size:15px}
+.note.blue{background:rgba(89,194,255,.07);border-left-color:var(--cyan)}
+.toc{columns:2;column-gap:40px;font-size:15.5px;margin:14px 0}
+.toc li{margin:6px 0}
+.divider{display:block;margin:34px auto;width:420px;max-width:80%}
+figure{margin:26px 0;text-align:center}
+figure img{max-width:100%;border-radius:14px;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+figcaption{color:var(--muted);font-size:13.5px;margin-top:10px;font-style:italic}
+footer.site{border-top:1px solid var(--line);margin-top:70px;padding:30px 0 44px;
+  color:var(--muted);font-size:14px}
+footer.site .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px}
+footer.site a{color:var(--cyan)}
+.pill{display:inline-block;background:var(--panel);border:1px solid var(--line);
+  border-radius:999px;padding:2px 12px;font-size:13px;color:var(--muted);margin:2px}
+.formula{font-family:Georgia,serif;font-size:19px;background:#081222;border:1px solid var(--line);
+  border-radius:12px;padding:14px 20px;margin:14px 0;color:var(--gold-l);text-align:center}
+@media(max-width:760px){nav.main{display:none}.toc{columns:1}h1{font-size:34px}}
+
+.btn{display:inline-block;padding:6px 14px;border:1px solid var(--line);
+  border-radius:999px;color:var(--gold-l);background:var(--panel);
+  font-family:Georgia,serif}
+.btn:hover{border-color:var(--gold);text-decoration:none}

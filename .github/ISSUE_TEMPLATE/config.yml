@@ -1,0 +1,11 @@
+blank_name: true
+contact_links:
+  - name: 📖 Documentation
+    url: https://wild8highlander.github.io/research-papers
+    about: Browse the full documentation site before opening an issue
+  - name: 💬 Discussion
+    url: https://github.com/wild8highlander/research-papers/discussions
+    about: Ask questions, share ideas, or discuss research results
+  - name: 🔒 Security Vulnerability
+    url: https://github.com/wild8highlander/research-papers/security/advisories/new
+    about: Report security vulnerabilities privately — do NOT use public issues

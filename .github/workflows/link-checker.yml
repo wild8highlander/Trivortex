@@ -1,0 +1,64 @@
+---
+# Link Checker — Validate all links in documentation and markdown files
+# https://github.com/lycheeverse/lychee
+name: Link Checker
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**/*.md'
+      - '**/*.rst'
+      - '**/*.html'
+  pull_request:
+    branches: [main]
+    paths:
+      - '**/*.md'
+      - '**/*.rst'
+  schedule:
+    - cron: '0 3 * * 1'  # Weekly on Monday at 03:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  link-checker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Restore lychee cache
+        uses: actions/cache@v4
+        with:
+          path: .lycheecache
+          key: lychee-${{ github.sha }}
+          restore-keys: lychee-
+
+      - name: Link Checker (lychee)
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >
+            --cache
+            --max-cache-age 2d
+            --no-progress
+            --verbose
+            --timeout 30
+            --max-retries 3
+            --retry-wait-time 10
+            --exclude-loopback
+            --remap "https://doi.org/10.5281/zenodo.0000000 https://zenodo.org"
+            './**/*.md'
+            './**/*.rst'
+          output: lychee-report.md
+          fail: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload link check report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lychee-report
+          path: lychee-report.md

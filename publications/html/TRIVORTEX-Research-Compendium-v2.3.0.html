@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TRIVORTEX Research Compendium v1.0.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400&family=PT+Sans:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof renderMathInElement === 'function') {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '\\(', right: '\\)', display: false}
+      ], throwOnError: false
+    });
+  }
+});
+</script>
+<style>
+@page { size: 210mm 297mm; margin: 0; }
+:root {
+  --navy: #0A1730; --navy2: #0E2145; --header-fill: #2A3A55;
+  --gold: #D4AF37; --gold-l: #F0D98C;
+  --text: #1F2937; --muted: #6B7280;
+  --stripe: #F2F5FA; --code-bg: #F5F7FB; --border: #DCE3EF;
+}
+html, body {
+  margin: 0; padding: 0; width: 210mm;
+  background: #FFFFFF;               /* flow pages are white; dark pages are fixed-height */
+  color: var(--text);
+  font-family: 'PT Serif', 'Noto Serif', 'Liberation Serif', 'DejaVu Serif', serif;
+  font-size: 15px; line-height: 1.62;
+  line-break: strict; word-break: normal; overflow-wrap: break-word;
+}
+@media screen {
+  html { height: auto; display: flex; justify-content: center; background: #10131a; }
+  body { transform-origin: top center; margin: 20px auto; box-shadow: 0 8px 40px rgba(0,0,0,.5); }
+}
+
+/* ── Cover ─────────────────────────────────────────────────────────────── */
+.front-page {
+  width: 210mm; height: 297mm; box-sizing: border-box;
+  break-after: page; overflow: hidden; position: relative;
+  background:
+    radial-gradient(circle 8px at 691px 125px, #D4AF37 0 7px, transparent 8px),
+    radial-gradient(circle 5px at 584px 56px, #59C2FF 0 4px, transparent 5px),
+    radial-gradient(circle 4px at 154px 950px, #FF7A9E 0 3px, transparent 4px),
+    radial-gradient(circle 210px at 87% 9%, transparent 206px, rgba(212,175,55,.30) 208px, rgba(212,175,55,.30) 210px, transparent 212px),
+    radial-gradient(circle 130px at 74% 3%, transparent 126px, rgba(89,194,255,.26) 128px, rgba(89,194,255,.26) 130px, transparent 132px),
+    radial-gradient(circle 280px at 8% 94%, transparent 276px, rgba(212,175,55,.18) 278px, rgba(212,175,55,.18) 280px, transparent 282px),
+    linear-gradient(160deg, #0E2145 0%, #0A1730 62%, #081226 100%);
+  color: #E9EEF8;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 58px;
+}
+.fp-kicker {
+  display: flex; align-items: center; gap: 14px;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.5px; letter-spacing: 3.5px; color: #F0D98C; font-weight: 700;
+}
+.fp-title {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 34px; line-height: 1.16; font-weight: 700; color: #F4F7FD;
+  margin: 26px 0 12px 0; max-width: 156mm;
+}
+.fp-subtitle-ru {
+  font-size: 18.5px; line-height: 1.4; color: #D4AF37; font-style: italic;
+  max-width: 156mm; margin-bottom: 34px;
+}
+.fp-meta {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 9px 26px;
+  max-width: 156mm;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.5px; line-height: 1.45;
+  border-top: 1px solid rgba(212,175,55,.35);
+  border-bottom: 1px solid rgba(212,175,55,.35);
+  padding: 16px 2px;
+}
+.fp-meta .k { color: #8FA3C4; letter-spacing: 1.6px; font-size: 10.5px; text-transform: uppercase; }
+.fp-meta .v { color: #E9EEF8; margin-top: 2px; }
+.fp-abstract {
+  max-width: 156mm; margin-top: 26px; font-size: 12.5px; line-height: 1.6;
+  color: #B9C6DE; font-style: italic;
+}
+.fp-foot {
+  position: absolute; left: 58px; right: 58px; bottom: 40px;
+  display: flex; justify-content: space-between; align-items: flex-end;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 11px; letter-spacing: 2px; color: #8FA3C4; text-transform: uppercase;
+}
+.fp-foot b { color: #F0D98C; font-weight: 700; }
+
+/* ── Flowing content ───────────────────────────────────────────────────── */
+.main-content { background: #FFFFFF; padding: 15mm 16mm 13mm 16mm; }
+
+h1, h2, h3, h4 {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  color: #0A1730; line-height: 1.25;
+  break-after: avoid; page-break-after: avoid;
+}
+.main-content h1 { font-size: 24px; margin: 6px 0 4px 0; }
+.main-content h2 {
+  font-size: 19.5px; margin: 26px 0 10px 0; padding-left: 12px;
+  border-left: 4px solid #D4AF37;
+}
+.main-content h3 { font-size: 16px; margin: 18px 0 8px 0; }
+.main-content h4 { font-size: 14.5px; margin: 14px 0 6px 0; color: #2A3A55; }
+p { margin: 0 0 9px 0; text-align: justify; hyphens: auto; }
+strong { color: #0A1730; }
+em { color: inherit; }
+a { color: #0E2145; text-decoration: none; border-bottom: 1px solid #D4AF37; }
+ul, ol { margin: 4px 0 10px 0; padding-left: 22px; }
+li { margin-bottom: 4px; break-inside: avoid; text-align: left; }
+
+table {
+  width: 100%; border-collapse: collapse; margin: 10px 0 14px 0;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.3px; line-height: 1.4;
+}
+thead { display: table-header-group; }
+tr { break-inside: avoid; page-break-inside: avoid; }
+th {
+  background: #2A3A55; color: #FFFFFF; text-align: left;
+  padding: 6px 9px; font-weight: 700; border: none;
+}
+td { padding: 5px 9px; border-bottom: 1px solid #DCE3EF; vertical-align: top; }
+tbody tr:nth-child(odd) td { background: #F2F5FA; }
+table, .table-wrap { break-inside: auto; }
+thead + tbody tr:first-child { break-before: avoid; }
+
+pre {
+  background: #F5F7FB; border: 1px solid #DCE3EF; border-left: 3px solid #D4AF37;
+  padding: 10px 13px; margin: 10px 0 14px 0; border-radius: 4px;
+  font-family: 'JetBrains Mono', 'DejaVu Sans Mono', 'Liberation Mono', monospace;
+  font-size: 11.6px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: break-word;
+  break-inside: avoid; page-break-inside: avoid;
+}
+code {
+  font-family: 'JetBrains Mono', 'DejaVu Sans Mono', 'Liberation Mono', monospace;
+  font-size: 12.6px; background: #F5F7FB; padding: 1px 4px; border-radius: 3px;
+}
+pre code { background: transparent; padding: 0; font-size: 11.6px; }
+
+blockquote {
+  margin: 10px 0 12px 0; padding: 8px 14px; border-left: 3px solid #D4AF37;
+  background: #F5F7FB; color: #0E2145; font-style: italic;
+  break-inside: avoid;
+}
+hr { border: none; border-top: 1px solid #DCE3EF; margin: 16px 0; }
+
+/* equations */
+.katex-display { margin: 12px 0 14px 0; max-width: 100%; overflow: hidden auto; }
+.eq-block { break-inside: avoid; page-break-inside: avoid; }
+
+/* language part banners */
+.part-banner {
+  break-inside: avoid; break-after: avoid;
+  margin: 26px 0 14px 0; padding: 13px 18px;
+  background: #0E2145; color: #F0D98C; border-radius: 6px;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+}
+.part-banner .pb-title { font-size: 16.5px; font-weight: 700; letter-spacing: 1.2px; }
+.part-banner .pb-sub { font-size: 11.5px; color: #8FA3C4; margin-top: 3px; letter-spacing: .4px; }
+
+/* colophon */
+.ending {
+  width: 210mm; height: 297mm; box-sizing: border-box;
+  break-before: page; overflow: hidden; position: relative;
+  background: linear-gradient(200deg, #0E2145 0%, #0A1730 60%, #081226 100%);
+  color: #E9EEF8;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 58px;
+}
+.ending .colophon-line { max-width: 150mm; font-size: 13.5px; line-height: 1.7; color: #B9C6DE; }
+.ending .colophon-line b { color: #F0D98C; }
+.ending .end-rule { width: 64px; height: 26px; margin: 10px 0 8px 0;
+  background: linear-gradient(90deg, #D4AF37 0 64px, transparent 64px) top/100% 6px no-repeat; }
+.ending .end-title {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 26px; font-weight: 700; color: #F4F7FD; letter-spacing: 1px;
+}
+.ending .end-small {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 11.5px; color: #8FA3C4; letter-spacing: 2px; text-transform: uppercase;
+  margin-top: 26px; line-height: 2;
+}
+</style>
+</head>
+<body>
+
+<div class="front-page">
+  <div class="fp-kicker"><span>TRIVORTEX RESEARCH PROGRAM</span></div>
+  <div class="fp-title">TRIVORTEX Research Compendium</div>
+  <div class="fp-subtitle-ru">Компендиум исследований: двенадцать монографий задачи трёх тел в вихревой модели</div>
+  <div class="fp-meta"><div><div class="k">Author</div><div class="v">Isaev Iskhak Khamzatovich<br><span style="color:#8FA3C4">ORCID 0009-0003-7299-0701</span></div></div><div><div class="k">DOI</div><div class="v">10.5281/zenodo.21825394</div></div><div><div class="k">Studies</div><div class="v">TRX-01 … TRX-12</div></div><div><div class="k">Verification</div><div class="v">12/12 studies PASS (full mode)</div></div><div><div class="k">License</div><div class="v">IPL-RP-1.0</div></div><div><div class="k">Repository</div><div class="v">github.com/wild8highlander/research-papers</div></div></div>
+  <div class="fp-abstract">Program-level compendium of the twelve TRX studies: abstracts and verification protocols, bilingual.</div>
+  <div class="fp-foot"><span>Monograph Edition · bilingual RU + EN</span><span><b>TRIVORTEX</b> · TRIVORTEX · v1.0.0 · 2026</span></div>
+</div>
+
+<div class="main-content">
+<div class="part-banner"><div class="pb-title">PART I · English Overview</div><div class="pb-sub">TRIVORTEX Research Compendium</div></div>
+<p>The TRIVORTEX research program studies the three-body problem in the vortex model and its crossings with laser physics, celestial mechanics, atomic physics and quantum topology. Every study is a self-contained executable monograph: a Python source with a full-mode JSON verification protocol, four 300-DPI figures, a hand-authored scheme, and bilingual README and monograph documents. This compendium is the program-level map: it gathers the abstract and the verification protocol of each of the twelve studies in one volume.</p>
+<h2>The twelve studies at a glance</h2><table><thead><tr><th>Study</th><th>Title (EN)</th><th>Название (RU)</th><th>Checks</th><th>Status</th></tr></thead><tbody><tr><td><b>TRX-01</b></td><td>Radiation-Pressure Restricted Three-Body Problem (Laser on Dust)</td><td>Фотогравитационная ограниченная задача трёх тел (лазер на пылевую частицу)</td><td style="text-align:center">6/6</td><td style="text-align:center">PASS (full)</td></tr><tr><td><b>TRX-02</b></td><td>Resonant Three-Wave Interaction (Manley–Rowe, χ⁽²⁾ Optics)</td><td>Резонансное трёхволновое взаимодействие (Мэнли–Роу, χ⁽²⁾-оптика)</td><td style="text-align:center">7/7</td><td style="text-align:center">PASS (full)</td></tr><tr><td><b>TRX-03</b></td><td>Three-Soliton Molecule in a Mode-Locked Fiber Laser</td><td>Молекула из трёх солитонов в волоконном лазере с синхронизацией мод</td><td style="text-align:center">6/6</td><td style="text-align:center">PASS (full)</td></tr><tr><td><b>TRX-04</b></td><td>Photon Fluid: Three Kerr Solitons (Spatial, 2-D)</td><td>Фотонная жидкость: три керровских солитона (пространственные, 2-D)</td><td style="text-align:center">9/9</td><td style="text-align:center">PASS (full)</td></tr><tr><td><b>TRX-05</b></td><td>Optical Vortices of Laser Beams and the Point-Vortex Analogy</td><td>Оптические вихри лазерных пучков и аналогия с точечными вихрями</td><td style="text-align:center">5/5</td><td style="text-align:center">PASS (full)</td></tr><tr><td><b>TRX-06</b></td><td>Helium Atom as the Coulomb Three-Body Problem (Classical Trajectory Monte Carlo)</td><td>Атом гелия как кулоновская задача трёх тел (классический траекторный метод Монте-Карло)</td><td style="text-align:center">7/7</td><td style="text-align:center">PASS (full)</td></tr><tr><td><b>TRX-07</b></td><td>The Efimov Effect: Universal Quantum Three-Body Physics</td><td>Эффект Ефимова: универсальная квантовая физика трёх тел</td><td style="text-align:center">6/6</td><td style="text-align:center">PASS (full)</td></tr><tr><td><b>TRX-08</b></td><td>Three Laser-Cooled Ions in a Linear Paul Trap: the Table-Top Lagrange Triangle</td><td>Три лазерно-охлаждённых иона в линейной ловушке Пауля: настольный треугольник Лагранжа</td><td style="text-align:center">10/10</td><td style="text-align:center">PASS (full)</td></tr><tr><td><b>TRX-09</b></td><td>The Kirchhoff–Chaplygin Three-Vortex Problem (Classical Anchor)</td><td>Проблема трёх вихрей Кирхгофа–Чаплыгина (классический якорь)</td><td style="text-align:center">8/8</td><td style="text-align:center">PASS (full)</td></tr><tr><td><b>TRX-10</b></td><td>Kozai–Lidov Oscillations in Hierarchical Triples</td><td>Колебания Козаи–Лидова в иерархических тройных системах</td><td style="text-align:center">4/4</td><td style="text-align:center">PASS (full)</td></tr><tr><td><b>TRX-11</b></td><td>Gravitational Waves from the Figure-Eight Choreography</td><td>Гравитационные волны от хореографии «восьмёрки»</td><td style="text-align:center">7/7</td><td style="text-align:center">PASS (full)</td></tr><tr><td><b>TRX-12</b></td><td>Laser Highway: Light-Sail Stationkeeping at L4/L5</td><td>Лазерная трасса: удержание светового паруса у точек L4/L5</td><td style="text-align:center">5/5</td><td style="text-align:center">PASS (full)</td></tr></tbody></table>
+<div class="part-banner"><div class="pb-title">ЧАСТЬ II · Русский обзор</div><div class="pb-sub">Компендиум исследований TRIVORTEX</div></div>
+<div lang="ru"><p>Исследовательская программа TRIVORTEX изучает задачу трёх тел в вихревой модели и её пересечения с лазерной физикой, небесной механикой, атомной физикой и квантовой топологией. Каждое исследование — самодостаточная исполняемая монография: Python-код с полным JSON-протоколом верификации, четыре рисунка в 300 DPI, авторская схема и двуязычные README и монография. Этот компендиум — карта программы: он собирает аннотацию и протокол верификации каждого из двенадцати исследований в одном томе.</p></div>
+<h2>TRX-01 · Radiation-Pressure Restricted Three-Body Problem (Laser on Dust)</h2><p lang="ru"><em>Фотогравитационная ограниченная задача трёх тел (лазер на пылевую частицу)</em></p><p>This monograph treats the circular restricted three-body problem in which the primary of mass 1 − μ is continuously illuminated by a laser, so that a massless particle feels the renormalized attraction (1 − β)·G(1 − μ)/r² with β the photon-to-gravity force ratio. The study establishes the machine-precision baseline of the laser-dressed problem for the Earth–Moon mass parameter μ = 0.0121505856: (i) at β = 0 the computed L1 abscissa 0.836915126 reproduces the published reference 0.8369151 within 5e-6; (ii) the triangular point L4 migrates monotonically toward the radiating primary, reaching a displacement of ≈ 4.1e-2 at β = 0.1, with the direction confirmed by projection onto the primary line; (iii) the displaced L4 remains linearly marginally stable over the scanned range, the β = 0 spectral radius being 1.86e-16; (iv) the Jacobi integral is conserved along an orbit near the displaced point to 8.88e-16 over T = 20 at integrator tolerance 1e-12.</p><p style="font-size:12.5px;color:#6B7280">Status: <b>PASS</b> · mode full · runtime 3.566 s · code <code>research/TRX-01-laser-radiation-pressure/code/</code></p><table><thead><tr><th>Check</th><th>Value</th><th>Target</th><th>Tolerance</th><th>Pass</th></tr></thead><tbody><tr><td>L1_abscissa_beta0</td><td>0.836915</td><td>0.836915</td><td>5e-06</td><td style="text-align:center">PASS</td></tr><tr><td>L4_shift_monotone_in_beta</td><td>1</td><td>1</td><td>1e-12</td><td style="text-align:center">PASS</td></tr><tr><td>L4_shift_toward_radiating_primary</td><td>1</td><td>1</td><td>1e-12</td><td style="text-align:center">PASS</td></tr><tr><td>L4_max_Re_eigenvalue_beta0</td><td>1.8567e-16</td><td>0</td><td>1e-08</td><td style="text-align:center">PASS</td></tr><tr><td>L1_shifts_toward_radiating_primary</td><td>1</td><td>1</td><td>1e-12</td><td style="text-align:center">PASS</td></tr><tr><td>Jacobi_drift_L4_orbit_beta0.05</td><td>8.88178e-16</td><td>0</td><td>1e-10</td><td style="text-align:center">PASS</td></tr></tbody></table>
+<h2>TRX-02 · Resonant Three-Wave Interaction (Manley–Rowe, χ⁽²⁾ Optics)</h2><p lang="ru"><em>Резонансное трёхволновое взаимодействие (Мэнли–Роу, χ⁽²⁾-оптика)</em></p><p>This monograph treats the resonant three-wave interaction in a lossless, perfectly phase-matched χ⁽²⁾ crystal — the canonical three-body problem of nonlinear optics. Three complex amplitudes (pump, signal, idler) obey the equal-coupling amplitude equations, a Hamiltonian system canonically equivalent to the Euler top and hence to the Kirchhoff three-vortex problem at the core of TRIVORTEX. The study verifies the integrable structure to machine precision: over T = 50 — roughly 8.8 full exchange cycles — the Manley–Rowe invariants drift by at most 5.329071e-15, more than four orders below the 1e-10 acceptance tolerance; the exchange is exactly periodic with T_ex = 5.650961242, consecutive periods agreeing to 8.7e-8; the pump undergoes genuine full depletion, collapsing to |a₃|² = 6.3e-5 (99.994% of its peak 1.04 removed) and reviving with error 2.4e-15; and the degenerate channel reproduces the closed-form conversion law η(t) = tanh²(At) to 2.220446e-16 — one unit in the last place of double precision.</p><p style="font-size:12.5px;color:#6B7280">Status: <b>PASS</b> · mode full · runtime 5.832 s · code <code>research/TRX-02-three-wave-mixing/code/</code></p><table><thead><tr><th>Check</th><th>Value</th><th>Target</th><th>Tolerance</th><th>Pass</th></tr></thead><tbody><tr><td>ManleyRowe_I13_drift</td><td>5.32907e-15</td><td>0</td><td>1e-10</td><td style="text-align:center">PASS</td></tr><tr><td>ManleyRowe_I23_drift</td><td>4.21885e-15</td><td>0</td><td>1e-10</td><td style="text-align:center">PASS</td></tr><tr><td>ManleyRowe_I12diff_drift</td><td>4.4964e-15</td><td>0</td><td>1e-10</td><td style="text-align:center">PASS</td></tr><tr><td>Pump_period_repeatability</td><td>8.74372e-08</td><td>0</td><td>1e-06</td><td style="text-align:center">PASS</td></tr><tr><td>Pump_revival_error</td><td>2.44249e-15</td><td>0</td><td>1e-08</td><td style="text-align:center">PASS</td></tr><tr><td>Pump_full_depletion_occurs</td><td>1</td><td>1</td><td>1e-12</td><td style="text-align:center">PASS</td></tr><tr><td>SHG_tanh2_conversion_error</td><td>2.22045e-16</td><td>0</td><td>1e-08</td><td style="text-align:center">PASS</td></tr></tbody></table>
+<h2>TRX-03 · Three-Soliton Molecule in a Mode-Locked Fiber Laser</h2><p lang="ru"><em>Молекула из трёх солитонов в волоконном лазере с синхронизацией мод</em></p><p>This monograph treats a phase-locked triplet of ultrashort pulses in a passively mode-locked fiber laser as an optical three-body system. Each pulse is a body with the conservative pair interaction V(r, Δφ) = C₁e^(−2r/L) − C₂e^(−r/L)cos 2Δφ, whose in-phase well has the analytic minimum r₀ = L·ln(2C₁/C₂) = ln(4/3) ≈ 0.287682, reproduced numerically to 5.6e-17, while the anti-phase lock Δφ = π/2 is proved purely repulsive.</p><p style="font-size:12.5px;color:#6B7280">Status: <b>PASS</b> · mode full · runtime 4.779 s · code <code>research/TRX-03-soliton-molecule/code/</code></p><table><thead><tr><th>Check</th><th>Value</th><th>Target</th><th>Tolerance</th><th>Pass</th></tr></thead><tbody><tr><td>pair_equilibrium_numeric_vs_analytic</td><td>5.55112e-17</td><td>0</td><td>1e-10</td><td style="text-align:center">PASS</td></tr><tr><td>antiphase_pi2_purely_repulsive</td><td>1</td><td>1</td><td>1e-12</td><td style="text-align:center">PASS</td></tr><tr><td>molecule_final_spacings_equal</td><td>2.22045e-16</td><td>0</td><td>1e-08</td><td style="text-align:center">PASS</td></tr><tr><td>molecule_final_spacing_equals_s_star</td><td>2.77556e-17</td><td>0</td><td>1e-06</td><td style="text-align:center">PASS</td></tr><tr><td>conservative_energy_drift</td><td>1.77636e-15</td><td>0</td><td>1e-10</td><td style="text-align:center">PASS</td></tr><tr><td>breathing_mode_frequency</td><td>0.469765</td><td>0.468766</td><td>0.00468766</td><td style="text-align:center">PASS</td></tr></tbody></table>
+<h2>TRX-04 · Photon Fluid: Three Kerr Solitons (Spatial, 2-D)</h2><p lang="ru"><em>Фотонная жидкость: три керровских солитона (пространственные, 2-D)</em></p><p>This monograph treats three laser beams propagating through a focusing Kerr medium as a photon fluid whose members — spatial solitons of the nonlinear Schrödinger equation — interact through phase-dependent two-body forces: in-phase beams attract with V = −Ue^(−r/w), anti-phase beams repel with V = +Ue^(−r/w). In the particle approximation the in-phase triplet forms a Lagrange central configuration: an equilateral beam triangle of side a = 3 rotating rigidly at ω = 0.223130160, fixed by the force balance ω² = 3Ue^(−a/w)/(maw) — the optical sibling of Newton&#x27;s Lagrange solution.</p><p style="font-size:12.5px;color:#6B7280">Status: <b>PASS</b> · mode full · runtime 9.813 s · code <code>research/TRX-04-photon-fluid/code/</code></p><table><thead><tr><th>Check</th><th>Value</th><th>Target</th><th>Tolerance</th><th>Pass</th></tr></thead><tbody><tr><td>triangle_equilateral_deviation</td><td>1.79409e-08</td><td>0</td><td>1e-06</td><td style="text-align:center">PASS</td></tr><tr><td>measured_rotation_rate</td><td>0.22313</td><td>0.22313</td><td>1e-08</td><td style="text-align:center">PASS</td></tr><tr><td>energy_conservation_rotation</td><td>4.71845e-16</td><td>0</td><td>1e-10</td><td style="text-align:center">PASS</td></tr><tr><td>angular_momentum_conservation</td><td>2.22045e-15</td><td>0</td><td>1e-10</td><td style="text-align:center">PASS</td></tr><tr><td>antiphase_no_collapse</td><td>1</td><td>1</td><td>1e-12</td><td style="text-align:center">PASS</td></tr><tr><td>antiphase_expands</td><td>1</td><td>1</td><td>1e-12</td><td style="text-align:center">PASS</td></tr><tr><td>energy_conservation_repulsion</td><td>3.60822e-16</td><td>0</td><td>1e-10</td><td style="text-align:center">PASS</td></tr><tr><td>binary_stays_bound</td><td>1</td><td>1</td><td>1e-12</td><td style="text-align:center">PASS</td></tr><tr><td>binary_energy_conservation</td><td>3.02496e-12</td><td>0</td><td>1e-10</td><td style="text-align:center">PASS</td></tr></tbody></table>
+<h2>TRX-05 · Optical Vortices of Laser Beams and the Point-Vortex Analogy</h2><p lang="ru"><em>Оптические вихри лазерных пучков и аналогия с точечными вихрями</em></p><p>This monograph treats phase singularities — optical vortices — of a paraxial laser field and makes the classical analogy with Kirchhoff point vortices quantitative in both directions. Three same-sign singularities of the field ψ(z) = exp(−r²/w²)·Π(z − z_k) are placed on an equilateral triangle of side a = 1 and integrated over three rotations (T = 39.4784) with a DOP853 scheme at rtol = atol = 1e-13.</p><p style="font-size:12.5px;color:#6B7280">Status: <b>PASS</b> · mode full · runtime 4.969 s · code <code>research/TRX-05-optical-vortices/code/</code></p><table><thead><tr><th>Check</th><th>Value</th><th>Target</th><th>Tolerance</th><th>Pass</th></tr></thead><tbody><tr><td>rotation_rate_vs_analytic</td><td>0.477465</td><td>0.477465</td><td>1e-08</td><td style="text-align:center">PASS</td></tr><tr><td>angular_impulse_I_conserved</td><td>1.77636e-15</td><td>0</td><td>1e-12</td><td style="text-align:center">PASS</td></tr><tr><td>kirchhoff_hamiltonian_conserved</td><td>4.59413e-16</td><td>0</td><td>1e-12</td><td style="text-align:center">PASS</td></tr><tr><td>field_minima_track_vortices</td><td>0.0117821</td><td>0</td><td>0.036</td><td style="text-align:center">PASS</td></tr><tr><td>total_winding_number_is_3</td><td>3</td><td>3</td><td>1e-12</td><td style="text-align:center">PASS</td></tr></tbody></table>
+<h2>TRX-06 · Helium Atom as the Coulomb Three-Body Problem (Classical Trajectory Monte Carlo)</h2><p lang="ru"><em>Атом гелия как кулоновская задача трёх тел (классический траекторный метод Монте-Карло)</em></p><p>This monograph treats the helium atom — a nucleus of charge Z = 2 and two electrons — as the classical Coulomb three-body problem, running a deterministic Monte Carlo ensemble of 3200 trajectories in the Wannier launch configuration: a radially staggered chain at hyperradius R₀ = 3 on the exact energy shell, excess energies E ∈ [0.05, 0.3] Ha, a fixed transverse kick σ = 0.01 breaking scale invariance, and a documented softening ε = 0.1 a.u.</p><p style="font-size:12.5px;color:#6B7280">Status: <b>PASS</b> · mode full · runtime 37.095 s · code <code>research/TRX-06-helium-three-body/code/</code></p><table><thead><tr><th>Check</th><th>Value</th><th>Target</th><th>Tolerance</th><th>Pass</th></tr></thead><tbody><tr><td>max_relative_energy_drift_valid</td><td>4.28422e-06</td><td>0</td><td>0.0004</td><td style="text-align:center">PASS</td></tr><tr><td>outcome_classes_sum_to_N</td><td>3200</td><td>3200</td><td>1e-12</td><td style="text-align:center">PASS</td></tr><tr><td>autoionization_channel_active</td><td>1</td><td>1</td><td>1e-12</td><td style="text-align:center">PASS</td></tr><tr><td>escaping_electron_energy_overshoot</td><td>1</td><td>1</td><td>1e-12</td><td style="text-align:center">PASS</td></tr><tr><td>pde_below_half_everywhere</td><td>1</td><td>1</td><td>1e-12</td><td style="text-align:center">PASS</td></tr><tr><td>wannier_exponent_reported</td><td>1</td><td>1</td><td>1e-12</td><td style="text-align:center">PASS</td></tr><tr><td>fit_reproducible</td><td>1</td><td>1</td><td>1e-12</td><td style="text-align:center">PASS</td></tr></tbody></table>
+<h2>TRX-07 · The Efimov Effect: Universal Quantum Three-Body Physics</h2><p lang="ru"><em>Эффект Ефимова: универсальная квантовая физика трёх тел</em></p><p>This monograph treats the Efimov effect: three identical bosons with resonant two-body interactions form an infinite Rydberg-like series of bound three-body states even though the pair potential binds no dimer. The spectrum is universal, governed by a single transcendental exponent s0 defined by s0·cosh(πs0/2) = (8/√3)·sinh(πs0/6). The study verifies the universal numbers in two independent layers.</p><p style="font-size:12.5px;color:#6B7280">Status: <b>PASS</b> · mode full · runtime 5.944 s · code <code>research/TRX-07-efimov/code/</code></p><table><thead><tr><th>Check</th><th>Value</th><th>Target</th><th>Tolerance</th><th>Pass</th></tr></thead><tbody><tr><td>s0_transcendental_root</td><td>1.00624</td><td>1.00625</td><td>1e-05</td><td style="text-align:center">PASS</td></tr><tr><td>efimov_length_ratio</td><td>22.6944</td><td>22.7</td><td>0.05</td><td style="text-align:center">PASS</td></tr><tr><td>efimov_energy_ratio</td><td>515.035</td><td>515.03</td><td>0.05</td><td style="text-align:center">PASS</td></tr><tr><td>spectrum_all_negative</td><td>1</td><td>1</td><td>1e-12</td><td style="text-align:center">PASS</td></tr><tr><td>ladder_ratio_E0_over_E1</td><td>515.509</td><td>515.035</td><td>180.262</td><td style="text-align:center">PASS</td></tr><tr><td>ladder_ratio_E1_over_E2</td><td>514.964</td><td>515.035</td><td>180.262</td><td style="text-align:center">PASS</td></tr></tbody></table>
+<h2>TRX-08 · Three Laser-Cooled Ions in a Linear Paul Trap: the Table-Top Lagrange Triangle</h2><p lang="ru"><em>Три лазерно-охлаждённых иона в линейной ловушке Пауля: настольный треугольник Лагранжа</em></p><p>This monograph treats three laser-cooled ions in the transverse plane of a linear Paul trap as a table-top three-body problem: a two-dimensional harmonic rf pseudopotential confines the ions, their mutual Coulomb repulsion pushes them apart, and Doppler cooling — modelled as a linear drag −γ_d·v — dissipates energy until the ions crystallize. The study establishes, end to end and to machine precision, that the attractor of the cooled dynamics is the equilateral Lagrange triangle of side a = (3κ/ω₀²)^(1/3) = 3^(1/3) = 1.4422495703: a seeded relaxation with a documented wavepacket softening ε = 0.05, Newton-polished on the strict force balance, reproduces the analytic crystal energy U* = 3.120125734578 exactly, with all three sides equal to 4.4e-16 and central angles 2π/3 to 4.4e-16.</p><p style="font-size:12.5px;color:#6B7280">Status: <b>PASS</b> · mode full · runtime 6.812 s · code <code>research/TRX-08-ion-trap/code/</code></p><table><thead><tr><th>Check</th><th>Value</th><th>Target</th><th>Tolerance</th><th>Pass</th></tr></thead><tbody><tr><td>global_minimum_reached</td><td>0</td><td>0</td><td>1e-09</td><td style="text-align:center">PASS</td></tr><tr><td>crystallization_energy_released</td><td>1</td><td>1</td><td>1e-12</td><td style="text-align:center">PASS</td></tr><tr><td>crystal_side_equals_analytic</td><td>1.44225</td><td>1.44225</td><td>1e-08</td><td style="text-align:center">PASS</td></tr><tr><td>crystal_equilateral</td><td>4.44089e-16</td><td>0</td><td>1e-08</td><td style="text-align:center">PASS</td></tr><tr><td>crystal_angles_120deg</td><td>4.44089e-16</td><td>0</td><td>1e-06</td><td style="text-align:center">PASS</td></tr><tr><td>zero_rotation_mode</td><td>1</td><td>1</td><td>1e-12</td><td style="text-align:center">PASS</td></tr><tr><td>two_com_modes_at_omega0</td><td>1</td><td>1</td><td>1e-12</td><td style="text-align:center">PASS</td></tr><tr><td>breathing_mode_sqrt3</td><td>1</td><td>1</td><td>1e-12</td><td style="text-align:center">PASS</td></tr><tr><td>static_equilibrium_holds</td><td>3.94475e-15</td><td>0</td><td>1e-09</td><td style="text-align:center">PASS</td></tr><tr><td>conservative_energy_conserved</td><td>8.88178e-16</td><td>0</td><td>1e-10</td><td style="text-align:center">PASS</td></tr></tbody></table>
+<h2>TRX-09 · The Kirchhoff–Chaplygin Three-Vortex Problem (Classical Anchor)</h2><p lang="ru"><em>Проблема трёх вихрей Кирхгофа–Чаплыгина (классический якорь)</em></p><p>This study pins the classical anchor of the TRIVORTEX program: three Kirchhoff point vortices with the angular impulse I = ΣΓ|r|², the prototype of the Chaplygin topological integral C_Ch. Two canonical regimes are verified with an adaptive DOP853 integrator. First, three same-sign vortices on an equilateral triangle of side a = 1 rotate rigidly at the Lagrange rate ω = 3Γ/(2πa²) = 0.477464829: the fitted rotation rate matches the analytic value inside the 1e-8 tolerance, the sides deviate from a by at most 2.0·10⁻¹⁵, and the invariants I, H, P, Q drift by 1.8·10⁻¹⁵, 4.6·10⁻¹⁶ and 1.1·10⁻¹⁵ over three rotations (T = 39.4784).</p><p style="font-size:12.5px;color:#6B7280">Status: <b>PASS</b> · mode full · runtime 7.512 s · code <code>research/TRX-09-vortex-trio/code/</code></p><table><thead><tr><th>Check</th><th>Value</th><th>Target</th><th>Tolerance</th><th>Pass</th></tr></thead><tbody><tr><td>rotation_rate_3G_over_2pi_a2</td><td>0.477465</td><td>0.477465</td><td>1e-08</td><td style="text-align:center">PASS</td></tr><tr><td>triangle_stays_equilateral</td><td>1.9984e-15</td><td>0</td><td>1e-08</td><td style="text-align:center">PASS</td></tr><tr><td>angular_impulse_I_conserved</td><td>1.77636e-15</td><td>0</td><td>1e-12</td><td style="text-align:center">PASS</td></tr><tr><td>hamiltonian_conserved</td><td>4.59413e-16</td><td>0</td><td>1e-12</td><td style="text-align:center">PASS</td></tr><tr><td>linear_impulse_conserved</td><td>1.11022e-15</td><td>0</td><td>1e-12</td><td style="text-align:center">PASS</td></tr><tr><td>aref_collapse_conditions_hold</td><td>1.38778e-17</td><td>0</td><td>1e-12</td><td style="text-align:center">PASS</td></tr><tr><td>mixed_sign_invariants_conserved</td><td>2.75335e-13</td><td>0</td><td>1e-11</td><td style="text-align:center">PASS</td></tr><tr><td>mixed_sign_shape_evolves</td><td>1</td><td>1</td><td>1e-12</td><td style="text-align:center">PASS</td></tr></tbody></table>
+<h2>TRX-10 · Kozai–Lidov Oscillations in Hierarchical Triples</h2><p lang="ru"><em>Колебания Козаи–Лидова в иерархических тройных системах</em></p><p>This monograph treats the Kozai–Lidov mechanism — the secular exchange of eccentricity and inclination that a distant inclined companion drives in a hierarchical triple — in the full verification style of the TRIVORTEX program. Instead of coding the memorized analytic result, the study builds the doubly-averaged quadrupole Hamiltonian numerically: the instantaneous quadrupole disturbing potential is averaged over the inner orbit by a 240-point quadrature, tabulated on a 160 × 180 (e, ω) grid at the conserved j_z, and converted into a cubic spline whose derivatives drive the canonical flow.</p><p style="font-size:12.5px;color:#6B7280">Status: <b>PASS</b> · mode full · runtime 64.433 s · code <code>research/TRX-10-kozai-lidov/code/</code></p><table><thead><tr><th>Check</th><th>Value</th><th>Target</th><th>Tolerance</th><th>Pass</th></tr></thead><tbody><tr><td>e_max_i0_60</td><td>0.763733</td><td>0.763763</td><td>0.002</td><td style="text-align:center">PASS</td></tr><tr><td>e_max_i0_70</td><td>0.897238</td><td>0.897239</td><td>0.002</td><td style="text-align:center">PASS</td></tr><tr><td>kl_period_halves_with_m3</td><td>0.481021</td><td>0.5</td><td>0.03</td><td style="text-align:center">PASS</td></tr><tr><td>direct_3d_emax_validation</td><td>1</td><td>1</td><td>1e-12</td><td style="text-align:center">PASS</td></tr></tbody></table>
+<h2>TRX-11 · Gravitational Waves from the Figure-Eight Choreography</h2><p lang="ru"><em>Гравитационные волны от хореографии «восьмёрки»</em></p><p>This monograph turns the figure-eight choreography of Chenciner and Montgomery — three equal masses chasing each other along a single closed curve with zero angular momentum — into a quantified gravitational-wave source. The period is found by global minimisation of the configuration closure over one revolution: T = 6.325914025, matching the published 6.32591398 to 1.2e-08, with energy conserved to 3.6e-15 and the angular momentum zero to 1.4e-15 throughout.</p><p style="font-size:12.5px;color:#6B7280">Status: <b>PASS</b> · mode full · runtime 8.111 s · code <code>research/TRX-11-gw-choreography/code/</code></p><table><thead><tr><th>Check</th><th>Value</th><th>Target</th><th>Tolerance</th><th>Pass</th></tr></thead><tbody><tr><td>period_closure_error</td><td>1.23174e-08</td><td>0</td><td>5e-08</td><td style="text-align:center">PASS</td></tr><tr><td>period_in_expected_range</td><td>1</td><td>1</td><td>1e-12</td><td style="text-align:center">PASS</td></tr><tr><td>energy_conserved</td><td>3.55271e-15</td><td>0</td><td>1e-12</td><td style="text-align:center">PASS</td></tr><tr><td>angular_momentum_is_zero</td><td>1.44329e-15</td><td>0</td><td>1e-09</td><td style="text-align:center">PASS</td></tr><tr><td>luminosity_finite_positive</td><td>1</td><td>1</td><td>1e-12</td><td style="text-align:center">PASS</td></tr><tr><td>quadrupole_choreography_symmetry</td><td>1</td><td>1</td><td>1e-12</td><td style="text-align:center">PASS</td></tr><tr><td>dominant_harmonic_on_comb</td><td>0.000499958</td><td>0</td><td>0.05</td><td style="text-align:center">PASS</td></tr></tbody></table>
+<h2>TRX-12 · Laser Highway: Light-Sail Stationkeeping at L4/L5</h2><p lang="ru"><em>Лазерная трасса: удержание светового паруса у точек L4/L5</em></p><p>This monograph treats a photon light sail in the Earth–Moon circular restricted three-body problem as an actuated libration-point system: a 1 MW laser pushes a 10 kg sail with photon thrust a_L = 2P/(cm), capped at the dimensionless ceiling a_max = 0.2443, and a proportional-derivative beam-steering law points the thrust. Two operations of the laser highway are verified. Stationkeeping: starting 1.1·10⁻³ away from the linearly stable L4 point, the controlled sail converges to |r − L4| ≤ 7.5e-07 for all t &gt; T/4 (T = 100, ≈ 434 days) while using the photon ceiling 0% of the time (peak demand 0.0051, headroom 48×); the same initial state without control never comes closer than 0.0041 — a contrast of ≈ 5500×.</p><p style="font-size:12.5px;color:#6B7280">Status: <b>PASS</b> · mode full · runtime 40.149 s · code <code>research/TRX-12-laser-light-sail/code/</code></p><table><thead><tr><th>Check</th><th>Value</th><th>Target</th><th>Tolerance</th><th>Pass</th></tr></thead><tbody><tr><td>controlled_l4_bound</td><td>7.47949e-07</td><td>0</td><td>0.0002</td><td style="text-align:center">PASS</td></tr><tr><td>control_saturation_fraction</td><td>0</td><td>0</td><td>0.05</td><td style="text-align:center">PASS</td></tr><tr><td>free_drift_never_converges</td><td>1</td><td>1</td><td>1e-12</td><td style="text-align:center">PASS</td></tr><tr><td>jacobi_pumped_monotonically</td><td>1</td><td>1</td><td>1e-12</td><td style="text-align:center">PASS</td></tr><tr><td>power_table_consistent</td><td>1</td><td>1</td><td>1e-12</td><td style="text-align:center">PASS</td></tr></tbody></table>
+</div>
+
+<div class="ending">
+  <div class="end-title">TRIVORTEX</div>
+  <div class="end-small">The Three-Body Problem in the Vortex Model</div>
+  <div class="end-rule"></div>
+  <div class="colophon-line"><b>TRIVORTEX Research Compendium</b> — the program-level map of twelve executable monographs on the three-body problem in the vortex model.</div><div class="colophon-line">Every dossier quotes the machine-readable verification protocol of its study; full monographs live in <code>publications/pdf/</code>.</div>
+  <div class="end-small">
+    Isaev Iskhak Khamzatovich · ORCID 0009-0003-7299-0701<br>
+    DOI (concept) 10.5281/zenodo.21825393 · DOI (version) 10.5281/zenodo.21825394<br>
+    License IPL-RP-1.0 · v1.0.0 · 2026-10-07
+  </div>
+</div>
+
+</body>
+</html>

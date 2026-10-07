@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
+  <defs>
+    <marker id="arrN" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#0A1730"/>
+    </marker>
+    <marker id="arrG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#D4AF37"/>
+    </marker>
+  </defs>
+  <rect width="960" height="540" fill="#FFFFFF"/>
+  <text x="30" y="38" font-family="Helvetica, Arial, sans-serif" font-size="20" font-weight="bold" fill="#0A1730">TRX-08 &#8212; Scheme: three laser-cooled ions crystallize into the Lagrange triangle</text>
+  <text x="30" y="61" font-family="Helvetica, Arial, sans-serif" font-size="13" fill="#3A4A66">Harmonic rf pseudopotential + Coulomb repulsion + Doppler cooling &#8212; a table-top three-body problem</text>
+  <rect x="60" y="92" width="380" height="330" rx="10" fill="#FBF6E8" stroke="#0A1730" stroke-width="2"/>
+  <text x="250" y="86" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0A1730" text-anchor="middle">linear Paul trap &#8212; transverse (x, y) plane</text>
+  <circle cx="95" cy="127" r="14" fill="#0A1730" stroke="none"/>
+  <text x="95" y="131" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#F0D98C" text-anchor="middle">rf</text>
+  <circle cx="405" cy="127" r="14" fill="#0A1730" stroke="none"/>
+  <text x="405" y="131" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#F0D98C" text-anchor="middle">rf</text>
+  <circle cx="95" cy="403" r="14" fill="#0A1730" stroke="none"/>
+  <text x="95" y="407" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#F0D98C" text-anchor="middle">rf</text>
+  <circle cx="405" cy="403" r="14" fill="#0A1730" stroke="none"/>
+  <text x="405" y="407" font-family="Helvetica, Arial, sans-serif" font-size="10" fill="#F0D98C" text-anchor="middle">rf</text>
+  <circle cx="250" cy="265" r="142" fill="none" stroke="#0A1730" stroke-width="1" stroke-dasharray="4 5" opacity="0.3"/>
+  <circle cx="250" cy="265" r="100" fill="none" stroke="#0A1730" stroke-width="1" stroke-dasharray="4 5" opacity="0.25"/>
+  <text x="240" y="415" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#3A4A66" text-anchor="middle">harmonic pseudopotential U =</text>
+  <text x="352" y="415" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#3A4A66" text-anchor="middle">m&#969;&#8320;&#178;r&#178;/2</text>
+  <line x1="250" y1="177" x2="176.4" y2="309" stroke="#0A1730" stroke-width="1.7"/>
+  <line x1="176.4" y1="309" x2="323.6" y2="309" stroke="#0A1730" stroke-width="1.7"/>
+  <line x1="323.6" y1="309" x2="250" y2="177" stroke="#0A1730" stroke-width="1.7"/>
+  <text x="296" y="244" font-family="Helvetica, Arial, sans-serif" font-size="12.5" font-weight="bold" fill="#0A1730">a</text>
+  <line x1="334" y1="309" x2="390" y2="309" stroke="#D4AF37" stroke-width="1.8" marker-end="url(#arrG)"/>
+  <line x1="332" y1="318" x2="358" y2="341" stroke="#D4AF37" stroke-width="1.4" marker-end="url(#arrG)"/>
+  <line x1="315" y1="304" x2="281" y2="284" stroke="#0A1730" stroke-width="1.8" marker-end="url(#arrN)"/>
+  <text x="392" y="296" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#B08A18" text-anchor="end">Coulomb push</text>
+  <text x="276" y="278" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0A1730" text-anchor="end">trap pull</text>
+  <circle cx="250" cy="177" r="9" fill="#D4AF37" stroke="#0A1730" stroke-width="1.6"/>
+  <line x1="245.5" y1="177" x2="254.5" y2="177" stroke="#0A1730" stroke-width="1.4"/>
+  <line x1="250" y1="172.5" x2="250" y2="181.5" stroke="#0A1730" stroke-width="1.4"/>
+  <circle cx="176.4" cy="309" r="9" fill="#D4AF37" stroke="#0A1730" stroke-width="1.6"/>
+  <line x1="171.9" y1="309" x2="180.9" y2="309" stroke="#0A1730" stroke-width="1.4"/>
+  <line x1="176.4" y1="304.5" x2="176.4" y2="313.5" stroke="#0A1730" stroke-width="1.4"/>
+  <circle cx="323.6" cy="309" r="9" fill="#D4AF37" stroke="#0A1730" stroke-width="1.6"/>
+  <line x1="319.1" y1="309" x2="328.1" y2="309" stroke="#0A1730" stroke-width="1.4"/>
+  <line x1="323.6" y1="304.5" x2="323.6" y2="313.5" stroke="#0A1730" stroke-width="1.4"/>
+  <line x1="84" y1="352" x2="152" y2="318" stroke="#D4AF37" stroke-width="1.8" marker-end="url(#arrG)"/>
+  <line x1="84" y1="336" x2="140" y2="308" stroke="#D4AF37" stroke-width="1.2" marker-end="url(#arrG)"/>
+  <text x="118" y="396" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#B08A18">Doppler cooling (&#8722;&#947;v)</text>
+  <rect x="520" y="92" width="380" height="208" rx="10" fill="#FFFFFF" stroke="#0A1730" stroke-width="2"/>
+  <text x="710" y="86" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0A1730" text-anchor="middle">normal modes of the 3-ion crystal (&#969;&#8320; = 1)</text>
+  <line x1="560" y1="112" x2="560" y2="286" stroke="#0A1730" stroke-width="1.5" marker-end="url(#arrN)"/>
+  <line x1="560" y1="126.6" x2="618" y2="126.6" stroke="#0A1730" stroke-width="1.7"/>
+  <circle cx="596" cy="126.6" r="4" fill="#D4AF37" stroke="#0A1730" stroke-width="1"/>
+  <text x="640" y="130.6" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0A1730">&#8730;3&#183;&#969;&#8320; = 1.732051 &#8212; breathing</text>
+  <line x1="560" y1="173.3" x2="618" y2="173.3" stroke="#0A1730" stroke-width="1.7"/>
+  <circle cx="612" cy="173.3" r="4" fill="#D4AF37" stroke="#0A1730" stroke-width="1"/>
+  <circle cx="626" cy="173.3" r="4" fill="#D4AF37" stroke="#0A1730" stroke-width="1"/>
+  <text x="640" y="177.3" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0A1730">&#8730;(3/2)&#183;&#969;&#8320; = 1.224745 (&#215;2) &#8212; quadrupole</text>
+  <line x1="560" y1="194.0" x2="618" y2="194.0" stroke="#0A1730" stroke-width="1.7"/>
+  <circle cx="612" cy="194.0" r="4" fill="#D4AF37" stroke="#0A1730" stroke-width="1"/>
+  <circle cx="626" cy="194.0" r="4" fill="#D4AF37" stroke="#0A1730" stroke-width="1"/>
+  <text x="640" y="198.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0A1730">&#969;&#8320; = 1 (&#215;2) &#8212; centre of mass</text>
+  <line x1="560" y1="286.0" x2="618" y2="286.0" stroke="#0A1730" stroke-width="1.7"/>
+  <circle cx="596" cy="286.0" r="4" fill="#D4AF37" stroke="#0A1730" stroke-width="1"/>
+  <text x="640" y="290.0" font-family="Helvetica, Arial, sans-serif" font-size="11" fill="#0A1730">0 &#8212; rigid rotation (zero mode)</text>
+  <text x="554" y="122" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#0A1730" text-anchor="end">&#969;/&#969;&#8320;</text>
+  <rect x="520" y="310" width="380" height="112" rx="10" fill="#FBF6E8" stroke="#0A1730" stroke-width="2"/>
+  <text x="536" y="330" font-family="Helvetica, Arial, sans-serif" font-size="11.5" font-weight="bold" fill="#0A1730">ion crystal &#8594; TRIVORTEX vortex model</text>
+  <text x="536" y="352" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#0A1730">equilateral 3-ion crystal</text>
+  <line x1="688" y1="348" x2="706" y2="348" stroke="#D4AF37" stroke-width="1.6" marker-end="url(#arrG)"/>
+  <text x="714" y="352" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#0A1730">Lagrange relative equilibrium</text>
+  <text x="536" y="371" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#0A1730">Coulomb + harmonic trap</text>
+  <line x1="688" y1="367" x2="706" y2="367" stroke="#D4AF37" stroke-width="1.6" marker-end="url(#arrG)"/>
+  <text x="714" y="371" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#0A1730">competing scales fix the size</text>
+  <text x="536" y="390" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#0A1730">breathing &#8730;3&#183;&#969;&#8320;</text>
+  <line x1="688" y1="386" x2="706" y2="386" stroke="#D4AF37" stroke-width="1.6" marker-end="url(#arrG)"/>
+  <text x="714" y="390" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#0A1730">radial modulation of Theorem 3.1</text>
+  <text x="536" y="409" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#0A1730">zero rotation mode</text>
+  <line x1="688" y1="405" x2="706" y2="405" stroke="#D4AF37" stroke-width="1.6" marker-end="url(#arrG)"/>
+  <text x="714" y="409" font-family="Helvetica, Arial, sans-serif" font-size="10.5" fill="#0A1730">continuous choreography family</text>
+  <text x="60" y="466" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="#0A1730">a = 3&#185;&#8260;&#179; = 1.442249570 (trap length units); crystal energy U* = (3/2)&#183;3&#178;&#8260;&#179; = 3.120125734578</text>
+  <text x="60" y="488" font-family="Helvetica, Arial, sans-serif" font-size="11.5" fill="#3A4A66">measured: sides equal to 4.4e-16; angles 2&#960;/3 to 4.4e-16; static hold 3.9e-15 over t = 50; energy drift 8.9e-16</text>
+</svg>

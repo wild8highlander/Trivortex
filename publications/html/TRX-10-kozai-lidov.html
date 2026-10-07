@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TRX-10 — Kozai–Lidov Oscillations in Hierarchical Triples</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400&family=PT+Sans:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof renderMathInElement === 'function') {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '\\(', right: '\\)', display: false}
+      ], throwOnError: false
+    });
+  }
+});
+</script>
+<style>
+@page { size: 210mm 297mm; margin: 0; }
+:root {
+  --navy: #0A1730; --navy2: #0E2145; --header-fill: #2A3A55;
+  --gold: #D4AF37; --gold-l: #F0D98C;
+  --text: #1F2937; --muted: #6B7280;
+  --stripe: #F2F5FA; --code-bg: #F5F7FB; --border: #DCE3EF;
+}
+html, body {
+  margin: 0; padding: 0; width: 210mm;
+  background: #FFFFFF;               /* flow pages are white; dark pages are fixed-height */
+  color: var(--text);
+  font-family: 'PT Serif', 'Noto Serif', 'Liberation Serif', 'DejaVu Serif', serif;
+  font-size: 15px; line-height: 1.62;
+  line-break: strict; word-break: normal; overflow-wrap: break-word;
+}
+@media screen {
+  html { height: auto; display: flex; justify-content: center; background: #10131a; }
+  body { transform-origin: top center; margin: 20px auto; box-shadow: 0 8px 40px rgba(0,0,0,.5); }
+}
+
+/* ── Cover ─────────────────────────────────────────────────────────────── */
+.front-page {
+  width: 210mm; height: 297mm; box-sizing: border-box;
+  break-after: page; overflow: hidden; position: relative;
+  background:
+    radial-gradient(circle 8px at 691px 125px, #D4AF37 0 7px, transparent 8px),
+    radial-gradient(circle 5px at 584px 56px, #59C2FF 0 4px, transparent 5px),
+    radial-gradient(circle 4px at 154px 950px, #FF7A9E 0 3px, transparent 4px),
+    radial-gradient(circle 210px at 87% 9%, transparent 206px, rgba(212,175,55,.30) 208px, rgba(212,175,55,.30) 210px, transparent 212px),
+    radial-gradient(circle 130px at 74% 3%, transparent 126px, rgba(89,194,255,.26) 128px, rgba(89,194,255,.26) 130px, transparent 132px),
+    radial-gradient(circle 280px at 8% 94%, transparent 276px, rgba(212,175,55,.18) 278px, rgba(212,175,55,.18) 280px, transparent 282px),
+    linear-gradient(160deg, #0E2145 0%, #0A1730 62%, #081226 100%);
+  color: #E9EEF8;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 58px;
+}
+.fp-kicker {
+  display: flex; align-items: center; gap: 14px;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.5px; letter-spacing: 3.5px; color: #F0D98C; font-weight: 700;
+}
+.fp-title {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 34px; line-height: 1.16; font-weight: 700; color: #F4F7FD;
+  margin: 26px 0 12px 0; max-width: 156mm;
+}
+.fp-subtitle-ru {
+  font-size: 18.5px; line-height: 1.4; color: #D4AF37; font-style: italic;
+  max-width: 156mm; margin-bottom: 34px;
+}
+.fp-meta {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 9px 26px;
+  max-width: 156mm;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.5px; line-height: 1.45;
+  border-top: 1px solid rgba(212,175,55,.35);
+  border-bottom: 1px solid rgba(212,175,55,.35);
+  padding: 16px 2px;
+}
+.fp-meta .k { color: #8FA3C4; letter-spacing: 1.6px; font-size: 10.5px; text-transform: uppercase; }
+.fp-meta .v { color: #E9EEF8; margin-top: 2px; }
+.fp-abstract {
+  max-width: 156mm; margin-top: 26px; font-size: 12.5px; line-height: 1.6;
+  color: #B9C6DE; font-style: italic;
+}
+.fp-foot {
+  position: absolute; left: 58px; right: 58px; bottom: 40px;
+  display: flex; justify-content: space-between; align-items: flex-end;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 11px; letter-spacing: 2px; color: #8FA3C4; text-transform: uppercase;
+}
+.fp-foot b { color: #F0D98C; font-weight: 700; }
+
+/* ── Flowing content ───────────────────────────────────────────────────── */
+.main-content { background: #FFFFFF; padding: 15mm 16mm 13mm 16mm; }
+
+h1, h2, h3, h4 {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  color: #0A1730; line-height: 1.25;
+  break-after: avoid; page-break-after: avoid;
+}
+.main-content h1 { font-size: 24px; margin: 6px 0 4px 0; }
+.main-content h2 {
+  font-size: 19.5px; margin: 26px 0 10px 0; padding-left: 12px;
+  border-left: 4px solid #D4AF37;
+}
+.main-content h3 { font-size: 16px; margin: 18px 0 8px 0; }
+.main-content h4 { font-size: 14.5px; margin: 14px 0 6px 0; color: #2A3A55; }
+p { margin: 0 0 9px 0; text-align: justify; hyphens: auto; }
+strong { color: #0A1730; }
+em { color: inherit; }
+a { color: #0E2145; text-decoration: none; border-bottom: 1px solid #D4AF37; }
+ul, ol { margin: 4px 0 10px 0; padding-left: 22px; }
+li { margin-bottom: 4px; break-inside: avoid; text-align: left; }
+
+table {
+  width: 100%; border-collapse: collapse; margin: 10px 0 14px 0;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.3px; line-height: 1.4;
+}
+thead { display: table-header-group; }
+tr { break-inside: avoid; page-break-inside: avoid; }
+th {
+  background: #2A3A55; color: #FFFFFF; text-align: left;
+  padding: 6px 9px; font-weight: 700; border: none;
+}
+td { padding: 5px 9px; border-bottom: 1px solid #DCE3EF; vertical-align: top; }
+tbody tr:nth-child(odd) td { background: #F2F5FA; }
+table, .table-wrap { break-inside: auto; }
+thead + tbody tr:first-child { break-before: avoid; }
+
+pre {
+  background: #F5F7FB; border: 1px solid #DCE3EF; border-left: 3px solid #D4AF37;
+  padding: 10px 13px; margin: 10px 0 14px 0; border-radius: 4px;
+  font-family: 'JetBrains Mono', 'DejaVu Sans Mono', 'Liberation Mono', monospace;
+  font-size: 11.6px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: break-word;
+  break-inside: avoid; page-break-inside: avoid;
+}
+code {
+  font-family: 'JetBrains Mono', 'DejaVu Sans Mono', 'Liberation Mono', monospace;
+  font-size: 12.6px; background: #F5F7FB; padding: 1px 4px; border-radius: 3px;
+}
+pre code { background: transparent; padding: 0; font-size: 11.6px; }
+
+blockquote {
+  margin: 10px 0 12px 0; padding: 8px 14px; border-left: 3px solid #D4AF37;
+  background: #F5F7FB; color: #0E2145; font-style: italic;
+  break-inside: avoid;
+}
+hr { border: none; border-top: 1px solid #DCE3EF; margin: 16px 0; }
+
+/* equations */
+.katex-display { margin: 12px 0 14px 0; max-width: 100%; overflow: hidden auto; }
+.eq-block { break-inside: avoid; page-break-inside: avoid; }
+
+/* language part banners */
+.part-banner {
+  break-inside: avoid; break-after: avoid;
+  margin: 26px 0 14px 0; padding: 13px 18px;
+  background: #0E2145; color: #F0D98C; border-radius: 6px;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+}
+.part-banner .pb-title { font-size: 16.5px; font-weight: 700; letter-spacing: 1.2px; }
+.part-banner .pb-sub { font-size: 11.5px; color: #8FA3C4; margin-top: 3px; letter-spacing: .4px; }
+
+/* colophon */
+.ending {
+  width: 210mm; height: 297mm; box-sizing: border-box;
+  break-before: page; overflow: hidden; position: relative;
+  background: linear-gradient(200deg, #0E2145 0%, #0A1730 60%, #081226 100%);
+  color: #E9EEF8;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 58px;
+}
+.ending .colophon-line { max-width: 150mm; font-size: 13.5px; line-height: 1.7; color: #B9C6DE; }
+.ending .colophon-line b { color: #F0D98C; }
+.ending .end-rule { width: 64px; height: 26px; margin: 10px 0 8px 0;
+  background: linear-gradient(90deg, #D4AF37 0 64px, transparent 64px) top/100% 6px no-repeat; }
+.ending .end-title {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 26px; font-weight: 700; color: #F4F7FD; letter-spacing: 1px;
+}
+.ending .end-small {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 11.5px; color: #8FA3C4; letter-spacing: 2px; text-transform: uppercase;
+  margin-top: 26px; line-height: 2;
+}
+</style>
+</head>
+<body>
+
+<div class="front-page">
+  <div class="fp-kicker"><span>TRIVORTEX RESEARCH PROGRAM · TRX-10</span></div>
+  <div class="fp-title">Kozai–Lidov Oscillations in Hierarchical Triples</div>
+  <div class="fp-subtitle-ru">Колебания Козаи–Лидова в иерархических тройных системах</div>
+  <div class="fp-meta"><div><div class="k">Author</div><div class="v">Isaev Iskhak Khamzatovich<br><span style="color:#8FA3C4">ORCID 0009-0003-7299-0701</span></div></div><div><div class="k">DOI</div><div class="v">10.5281/zenodo.21825394</div></div><div><div class="k">Study</div><div class="v">TRX-10</div></div><div><div class="k">Date</div><div class="v">2026-10-06</div></div><div><div class="k">Code</div><div class="v"><code style="background:rgba(212,175,55,.12);color:#F0D98C;padding:1px 5px;border-radius:3px">code/trx10_kozai_lidov.py</code></div></div><div><div class="k">Data</div><div class="v"><code style="background:rgba(212,175,55,.12);color:#F0D98C;padding:1px 5px;border-radius:3px">results/trx10_results.json</code></div></div></div>
+  <div class="fp-abstract">This monograph treats the Kozai–Lidov mechanism — the secular exchange of eccentricity and inclination that a distant inclined companion drives in a hierarchical triple — in the full verification style of the TRIVORTEX program. Instead of coding the memorized analytic result, the study builds the doubly-averaged quadrupole Hamiltonian numerically: the instantaneous quadrupole disturbing potential is averaged over the inner orbit by a 240-point quadrature, tabulated on a 160 × 180 (e, ω) grid at the conserved j_z, and converted into a cubic spline whose derivatives drive the canonical flow.</div>
+  <div class="fp-foot"><span>Monograph Edition · bilingual RU + EN</span><span><b>TRIVORTEX</b> · TRIVORTEX · v1.0.0 · 2026</span></div>
+</div>
+<div class="main-content"><div class="part-banner"><div class="pb-title">PART I · English Monograph</div><div class="pb-sub">Kozai–Lidov Oscillations in Hierarchical Triples</div></div><p><em>TRIVORTEX Research Program · v1.0.0 · Monograph Edition</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Study</td>
+<td>TRX-10</td>
+</tr>
+<tr>
+<td>Program</td>
+<td>TRIVORTEX — The Three-Body Problem in the Vortex Model</td>
+</tr>
+<tr>
+<td>Author</td>
+<td>Isaev Iskhak Khamzatovich (ORCID 0009-0003-7299-0701)</td>
+</tr>
+<tr>
+<td>DOI</td>
+<td>10.5281/zenodo.21825394</td>
+</tr>
+<tr>
+<td>Date</td>
+<td>2026-10-06</td>
+</tr>
+<tr>
+<td>Code</td>
+<td>`code/trx10_kozai_lidov.py`</td>
+</tr>
+<tr>
+<td>Data</td>
+<td>`results/trx10_results.json`</td>
+</tr>
+</tbody>
+</table>
+<h2>Abstract</h2>
+<p>This monograph treats the Kozai–Lidov mechanism — the secular exchange of eccentricity and inclination that a distant inclined companion drives in a hierarchical triple — in the full verification style of the TRIVORTEX program. Instead of coding the memorized analytic result, the study builds the doubly-averaged quadrupole Hamiltonian numerically: the instantaneous quadrupole disturbing potential is averaged over the inner orbit by a 240-point quadrature, tabulated on a 160 × 180 (e, ω) grid at the conserved j_z, and converted into a cubic spline whose derivatives drive the canonical flow. The spline flow reproduces the analytic maxima e_max = 0.763763 (i<sub>0</sub> = 60°) and 0.897239 (i<sub>0</sub> = 70°) to within the 2×10<sup>-3</sup> tolerance, validates the Kozai landscape over 12 inclinations from 30° to 80° with a maximum deviation of 1.128×10<sup>-5</sup>, confirms the clock scaling P ∝ 1/m<sub>3</sub> (ratio P(2m<sub>3</sub>)/P(m<sub>3</sub>) = 0.481; P·m<sub>3</sub> spread 4.29%), and conserves the tabulated Hamiltonian to 1.33×10<sup>-5</sup>. An independent direct integration of the full three-dimensional restricted problem (m<sub>3</sub>/M = 0.5, a_out = 5 a_in, 200 outer orbits) yields a smoothed maximum eccentricity of 0.7423 against 0.7638 — a −2.8% deviation consistent with the hexadecapole truncation. All four acceptance checks pass.</p>
+<h2>Contents</h2>
+<ol>
+<li>Abstract</li>
+<li>
+<ol>
+<li>Introduction and historical context</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>Physical formulation</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>Mathematical model</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li>Connection to the TRIVORTEX framework</li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li>Numerical method</li>
+</ol>
+</li>
+<li>
+<ol start="6">
+<li>Results and analysis</li>
+</ol>
+</li>
+<li>
+<ol start="7">
+<li>Discussion</li>
+</ol>
+</li>
+<li>
+<ol start="8">
+<li>Conclusions</li>
+</ol>
+</li>
+<li>
+<ol start="9">
+<li>References
+Appendix A. Parameter table
+Appendix B. Reproduction</li>
+</ol>
+</li>
+</ol>
+<h2>1. Introduction and historical context</h2>
+<p>The history of the effect began half a century before its discovery papers. In 1910 Hugo von Zeipel derived the secular equations of the double-averaged quadrupole three-body problem, and the reduction to a single degree of freedom was already implicit in his work. The classical papers of 1962 appeared independently and almost simultaneously: Yoshihide Kozai analysed secular perturbations of asteroids with high inclinations (Astronomical Journal 67, 591), while Mikhail Lidov studied the evolution of artificial satellite orbits under the gravitational action of external bodies (Planetary and Space Science 9, 719) — in the Russian literature the effect is still often called the Lidov–Kozai mechanism. Both found the same phenomenon: above the critical inclination 39.23° the eccentricity and the inclination begin to exchange periodically, and the inclination at maximum eccentricity drops exactly to the critical value.</p>
+<p>The mechanism immediately became a working tool of celestial mechanics. It bounds the lifetimes of high-latitude artificial satellites, shapes the orbital architecture of irregular satellite systems and of asteroid families, drives the growth of cometary eccentricities, and protects — or destroys — bodies on inclined orbits in planetary systems. The timescale formula t_KL ~ (M/m<sub>3</sub>)(a_out/a_in)<sup>3</sup> P_in shows why the effect is so universal: it is a clock whose rate depends only on the hierarchy, and every hierarchical configuration with an inclined orbit carries it.</p>
+<p>The modern renaissance came with exoplanets and gravitational-wave astronomy. The eccentric generalizations of the mechanism (the octupole-order flips, comprehensively reviewed by Naoz 2016) turn inclined triples into a migration channel for hot Jupiters (Wu &amp; Murray 2003; Fabrycky &amp; Tremaine 2007) and into a merger channel for compact-object triples whose final inspirals LISA will observe (Blaes, Lee &amp; Socrates 2002). The monograph of Shevchenko (2017) collects the applications, and the historical review of Ito &amp; Ohtsuka (2019) reconstructs the naming and the priority — including von Zeipel's role and the Japanese and Soviet schools.</p>
+<p>For TRIVORTEX the relevance is structural. The conserved j_z collapses the problem to one integrable degree of freedom exactly as the Chaplygin integral reduces the vortex problem; the closed-form e_max is a Theorem-3.1-type sharp analytic benchmark that the numerics must hit; and the KL clock is the secular twin of the rotating choreography period. This study therefore anchors the secular celestial block of the program (TRX-01, TRX-10, TRX-11, TRX-12) — the same three-body stage on which the laser studies act.</p>
+<h2>2. Physical formulation</h2>
+<p>The system is a restricted hierarchical triple: the inner binary consists of a primary with GM_inner = 1 on a_in = 1 and a massless test particle; the outer companion m<sub>3</sub> moves on a circular orbit of radius a_out ≫ a_in (20 a_in in the secular model, 5 a_in in the direct validation). The instantaneous quadrupole disturbing potential is U = (G m<sub>3</sub>/2a_out<sup>3</sup>)·(3(r·r̂<sub>3</sub>)<sup>2</sup> − r<sup>2</sup>) — the l = 2 term of the expansion of the companion's potential in the small hierarchy parameter α = a_in/a_out; for a circular outer orbit the octupole (l = 3) term vanishes identically.</p>
+<p>Averaging U over both orbital periods leaves an axisymmetric function ⟨U⟩(e, ω) that depends on the orientation of the ellipse only through the argument of pericentre. The z-component of the angular momentum, j_z = √(1 − e<sup>2</sup>)·cos i, is conserved exactly, so the secular problem collapses to one Hamiltonian degree of freedom on the fixed-j_z manifold: eccentricity grows exactly when the inclination falls, the two being locked together by j_z. The rate of the clock is set by C<sub>2</sub> = (3/8)(m<sub>3</sub>/M)(a_in/a_out)<sup>3</sup>·n_in, the inverse of the KL timescale.</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Units</td>
+<td>GM_inner = 1, a_in = 1, n_in = 1</td>
+<td>the inner binary defines length and time</td>
+</tr>
+<tr>
+<td>e<sub>0</sub>, ω<sub>0</sub></td>
+<td>0.001, π/2 (90°)</td>
+<td>initially circular orbit; ω<sub>0</sub> at the libration centre</td>
+</tr>
+<tr>
+<td>i<sub>0</sub></td>
+<td>{60°, 70°}</td>
+<td>headline inclinations, both above i_crit = 39.23°</td>
+</tr>
+<tr>
+<td>m<sub>3</sub>/M</td>
+<td>1.0 (secular scan), 0.5 (direct)</td>
+<td>outer-to-inner mass ratio</td>
+</tr>
+<tr>
+<td>a_out</td>
+<td>20 a_in (secular), 5 a_in (direct)</td>
+<td>hierarchy separator α = a_in/a_out</td>
+</tr>
+<tr>
+<td>Spline grid</td>
+<td>160 × 180 (e × ω), 240-point orbit quadrature</td>
+<td>tabulation of the averaged potential ⟨U⟩</td>
+</tr>
+<tr>
+<td>Secular integrator</td>
+<td>DOP853, rtol 1e-8, atol 1e-9</td>
+<td>canonical spline flow, 3 KL cycles per run</td>
+</tr>
+<tr>
+<td>Direct integrator</td>
+<td>DOP853, rtol = atol = 1e-11</td>
+<td>full 3-D restricted problem, 200 outer periods</td>
+</tr>
+</tbody>
+</table>
+<h2>3. Mathematical model</h2>
+<p>Start from the companion's potential expanded in a Legendre series in the small hierarchy parameter α = a_in/a_out. The monopole (l = 0) term only shifts the inner orbit's energy; the quadrupole (l = 2) term, U ∝ (3(r·r̂<sub>3</sub>)<sup>2</sup> − r<sup>2</sup>)/2a_out<sup>3</sup>, is the first anisotropic contribution and the one that survives averaging; for a circular outer orbit the octupole (l = 3) term vanishes identically, and the next surviving term, the hexadecapole (l = 4), is smaller by α<sup>2</sup>. The inner-orbit average is performed in the script by a 240-point quadrature in true anomaly with weights proportional to r<sup>2</sup> — the exact Kepler time-weight dt ∝ r<sup>2</sup> df — rather than by quoting the memorized analytic average.</p>
+<p>Averaging the quadrupole term over the outer circular orbit leaves an axisymmetric potential ⟨U⟩(e, ω). Because ⟨U⟩ does not depend on the longitude of the node, the z-component of angular momentum j_z = √(1 − e<sup>2</sup>)·cos i is conserved exactly, and the dynamics collapse to one Hamiltonian degree of freedom (e, ω) on the fixed-j_z manifold. The canonical equations (E2) with the rate scale C<sub>2</sub> (E5) are then integrated numerically; since ⟨U⟩ has period π in ω, the phase is folded into [0, π), which keeps the integrator fast and the phase bounded.</p>
+<p>The maximum eccentricity follows from the geometry of the fixed points. For an initially circular inner orbit (j_z = cos i<sub>0</sub>) eccentricity growth is possible only above the critical inclination i_crit = arccos√(3/5) ≈ 39.23°, where the libration island about ω = π/2 opens. At the eccentricity maximum the condition ė = 0 forces ∂⟨U⟩/∂ω = 0, i.e. ω = π/2, and the inclination simultaneously reaches its minimum (j_z links e and i monotonically); the closed form (E4), e_max = √(1 − (5/3)cos<sup>2</sup>i<sub>0</sub>), follows. The flow thus predicts not only the amplitude but also the antiphase geometry of the exchange — the property verified in fig02.</p>
+<p><strong>Notation</strong></p>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>e</td>
+<td>eccentricity of the inner (test-particle) orbit</td>
+</tr>
+<tr>
+<td>i</td>
+<td>inclination of the inner orbit to the outer orbital plane</td>
+</tr>
+<tr>
+<td>ω</td>
+<td>argument of pericentre of the inner orbit</td>
+</tr>
+<tr>
+<td>e<sub>0</sub>, ω<sub>0</sub>, i<sub>0</sub></td>
+<td>initial values: 0.001, π/2, {60°, 70°}</td>
+</tr>
+<tr>
+<td>j = √(1 − e<sup>2</sup>)</td>
+<td>dimensionless angular momentum of the inner orbit (L = 1)</td>
+</tr>
+<tr>
+<td>j_z</td>
+<td>conserved z-component, j_z = √(1 − e<sup>2</sup>)·cos i</td>
+</tr>
+<tr>
+<td>m<sub>3</sub>/M</td>
+<td>perturber-to-inner mass ratio</td>
+</tr>
+<tr>
+<td>a_in, a_out</td>
+<td>inner and outer semi-major axes (a_in = 1)</td>
+</tr>
+<tr>
+<td>n_in</td>
+<td>inner mean motion (n_in = 1)</td>
+</tr>
+<tr>
+<td>C<sub>2</sub></td>
+<td>KL rate, C<sub>2</sub> = (3/8)(m<sub>3</sub>/M)(a_in/a_out)<sup>3</sup>·n_in</td>
+</tr>
+<tr>
+<td>⟨U⟩</td>
+<td>double-averaged quadrupole potential (spline-tabulated)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>(E1)</strong> Double-averaged quadrupole disturbing potential (built numerically by orbit quadrature; units G m<sub>3</sub>/2a_out<sup>3</sup>).</p>
+<p>$$\langle U\rangle(e,\omega) = \left\langle \frac{G m_3}{2 a_{\rm out}^3}\,\big(3(\mathbf{r}\cdot\hat{\mathbf{r}}_3)^2 - \mathbf{r}^2\big) \right\rangle_{\!\text{inner orbit}}$$</p>
+<p><strong>(E2)</strong> Canonical Hamiltonian flow on the fixed-j_z manifold (L = 1), rates scaled by C<sub>2</sub>.</p>
+<p>$$\dot{e} = C_2\,\frac{j}{e}\,\frac{\partial \langle U\rangle}{\partial \omega}, \qquad \dot{\omega} = -\,C_2\,\frac{j}{e}\,\frac{\partial \langle U\rangle}{\partial e}, \qquad j = \sqrt{1 - e^2}$$</p>
+<p><strong>(E3)</strong> Conserved z-component of the orbital angular momentum — the invariant that locks e and i.</p>
+<p>$$j_z = \sqrt{1 - e^2}\,\cos i = \mathrm{const}$$</p>
+<p><strong>(E4)</strong> Analytic maximum eccentricity for an initially circular orbit; the exchange turns on above the Kozai angle.</p>
+<p>$$e_{\max} = \sqrt{1 - \tfrac{5}{3}\cos^2 i_0}, \qquad i_{\rm crit} = \arccos\sqrt{\tfrac{3}{5}} \approx 39.23^\circ$$</p>
+<p><strong>(E5)</strong> KL timescale: the cycle period scales as 1/m<sub>3</sub> (halves when the perturber mass doubles).</p>
+<p>$$C_2 = \tfrac{3}{8}\,\frac{m_3}{M}\left(\frac{a_{\rm in}}{a_{\rm out}}\right)^{\!3} n_{\rm in}, \qquad t_{\rm KL} \sim \frac{1}{C_2}$$</p>
+<h2>4. Connection to the TRIVORTEX framework</h2>
+<p>The mapping to the TRIVORTEX vortex framework is structural. The conserved j_z pins the whole eccentricity–inclination family to a one-dimensional manifold exactly as the Chaplygin integral pins the vortex orbits; the closed-form e_max = √(1 − (5/3)cos<sup>2</sup>i<sub>0</sub>) plays the role of a Theorem-3.1-type sharp analytic benchmark that the numerics are obliged to hit; and the KL clock with period ~ 1/C<sub>2</sub> is the secular twin of the rotating choreography period. Methodologically the study is the program's flagship of the built-not-memorized philosophy: the averaged Hamiltonian is constructed numerically and the analytic law emerges as an output-level target — the same discipline the vortex studies apply to Chaplygin-reduced flows.</p>
+<table>
+<thead>
+<tr>
+<th>Quantity in this study</th>
+<th>TRIVORTEX analog</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hierarchical triple (test particle + companion)</td>
+<td>three bodies with separated scales</td>
+<td>the celestial three-body problem</td>
+</tr>
+<tr>
+<td>Conserved j_z = √(1 − e<sup>2</sup>)·cos i</td>
+<td>Chaplygin-type topological invariant</td>
+<td>an integral that pins the orbit family</td>
+</tr>
+<tr>
+<td>e_max = √(1 − (5/3)cos<sup>2</sup>i<sub>0</sub>)</td>
+<td>closed form of Theorem 3.1</td>
+<td>a sharp analytic benchmark for the numerics</td>
+</tr>
+<tr>
+<td>KL clock, t_KL ~ 1/C<sub>2</sub></td>
+<td>choreography period T</td>
+<td>secular timekeeping of the triad</td>
+</tr>
+<tr>
+<td>Spline-built averaged Hamiltonian ⟨U⟩</td>
+<td>numerically constructed vortex Hamiltonian</td>
+<td>both flows are driven by tabulated, not memorized, potentials</td>
+</tr>
+</tbody>
+</table>
+<h2>5. Numerical method</h2>
+<p>The averaged potential is tabulated on a 160 × 180 grid in (e, ω) with e ∈ [0.0001, 0.999] and ω ∈ [0, 2π]; each node is evaluated by the 240-point Kepler-time-weighted quadrature described in the derivation. A bicubic RectBivariateSpline (kx = ky = 3) then provides ⟨U⟩ and its exact spline derivatives ∂⟨U⟩/∂e and ∂⟨U⟩/∂ω — the Hamiltonian machine used everywhere downstream. No analytic KL formula is written anywhere in the secular pipeline.</p>
+<p>The canonical flow is integrated with DOP853 (rtol 1e-8, atol 1e-9, max_step T/1500) over a span covering three model KL cycles, sampled at 3000 points per run. The KL period is measured as the mean spacing of successive local maxima of e above 0.7·max(e) — a robust estimator insensitive to the small-amplitude wiggles near e ≈ 0. The mass-scaling check reruns the flow at m<sub>3</sub>/M = 2 and compares P(2m<sub>3</sub>)/P(m<sub>3</sub>) against 0.5 with a 3% band; the figure sweep extends the clock to m<sub>3</sub>/M ∈ {0.5, 1, 2, 4}.</p>
+<p>Validation is fully independent: the direct run integrates the full three-dimensional restricted problem — the test particle feels both the primary and the companion moving on its circular orbit — with DOP853 at rtol = atol = 1e-11, a 60000-step cap and 40000 dense-output samples over 200 outer periods (m<sub>3</sub>/M = 0.5, a_out = 5 a_in). The osculating eccentricity is computed pointwise from the Laplace–Runge–Lenz vector and smoothed with a moving average over one outer period; the maximum of the smoothed curve is the reported quantity. The secular and direct models share no code path beyond the integrator, so their agreement is a genuine cross-validation.</p>
+<h2>6. Results and analysis</h2>
+<h3>fig01 kl landscape</h3>
+<p><img alt="Landscape of the quadrupole Kozai–Lidov problem: (a) geometry of the hierarchical triple, (b) the analytic Kozai landscape e_max(i&lt;sub&gt;0&lt;/sub&gt;)." src="../figures/fig01_kl_landscape.png" /></p>
+<p><em>Landscape of the quadrupole Kozai–Lidov problem: (a) geometry of the hierarchical triple, (b) the analytic Kozai landscape e_max(i<sub>0</sub>).</em>
+Panel (a) shows the inner orbit at e_max = 0.7638 inclined by i<sub>0</sub> = 60° and projected on the outer-orbit plane, with the companion orbit at a_out = 20 a_in dashed and not to scale; panel (b) traces e_max(i<sub>0</sub>) = √(1 − (5/3)cos<sup>2</sup>i<sub>0</sub>), shades the sub-critical band where no exchange occurs, and marks the study points 0.7638 (60°) and 0.8972 (70°).</p>
+<h3>fig02 kl exchange</h3>
+<p><img alt="Headline result — the eccentricity–inclination exchange of the secular spline flow." src="../figures/fig02_kl_exchange.png" /></p>
+<p><em>Headline result — the eccentricity–inclination exchange of the secular spline flow.</em>
+Left: e(t) cycles to 0.763733 (i<sub>0</sub> = 60°) and 0.897238 (70°) against the dashed analytic envelopes, with j_z = 0.500000 and 0.342020 conserved; right: over two cycles at 60° eccentricity peaks exactly when the inclination dips to 39.23° = i_crit — the antiphase exchange.</p>
+<h3>fig03 kl sweeps</h3>
+<p><img alt="Parameter sweeps: validation of the Kozai landscape e_max(i&lt;sub&gt;0&lt;/sub&gt;) and scaling of the KL clock with the perturber mass." src="../figures/fig03_kl_sweeps.png" /></p>
+<p><em>Parameter sweeps: validation of the Kozai landscape e_max(i<sub>0</sub>) and scaling of the KL clock with the perturber mass.</em>
+Across 12 inclinations from 30° to 80° the spline flow matches the analytic landscape to 1.128×10<sup>-5</sup> (the 40° run needs an 8× longer span: the KL period diverges at i_crit), while below i_crit eccentricity stays at e<sub>0</sub> = 0.001; the mass sweep over m<sub>3</sub>/M ∈ {0.5, 1, 2, 4} confirms P ∝ 1/m<sub>3</sub> with a P·m<sub>3</sub> spread of 4.29%.</p>
+<h3>fig04 kl dynamics</h3>
+<p><img alt="Dynamics on the fixed-j_z manifold: phase portrait and the residual of the tabulated Hamiltonian." src="../figures/fig04_kl_dynamics.png" /></p>
+<p><em>Dynamics on the fixed-j_z manifold: phase portrait and the residual of the tabulated Hamiltonian.</em>
+The phase portrait (ω mod π, e) shows ω librating about π/2 while e cycles between 0.001 and 0.763733 (60°) / 0.897238 (70°); the Hamiltonian residual along the 60° trajectory stays below 1.33×10<sup>-5</sup> — the cubic-spline representation error on the 160 × 180 grid, not integrator error (DOP853, rtol 1e-8).</p>
+<p><strong>Analytic maxima.</strong> The headline checks compare the spline-flow maxima against the closed-form targets: e_max = 0.7637326 measured versus 0.7637626 analytic at i<sub>0</sub> = 60° (deviation 3.0×10<sup>-5</sup>) and 0.8972376 versus 0.8972386 at 70° (deviation 9.1×10<sup>-7</sup>) — both far inside the 2×10<sup>-3</sup> acceptance band. The conserved quantities j_z = 0.500000 (60°) and 0.342020 (70°) stay constant along the flow, and the recorded eccentricity series returns exactly to e<sub>0</sub> = 0.001 at every cycle minimum (series range 0.001 … 0.76372882 in the JSON protocol).</p>
+<p><strong>The exchange geometry.</strong> fig02 shows the antiphase lock predicted by the derivation: eccentricity peaks exactly when the inclination dips to 39.2316° — numerically indistinguishable from i_crit = arccos√(3/5) — and the argument of pericentre librates about π/2 (fig04). The phase portraits of the two headline runs collapse onto the fixed-j_z manifolds j_z = 0.5 and j_z = 0.342020, the eccentricity–inclination ledger of the scheme.</p>
+<p><strong>Landscape and clock.</strong> The 12-point inclination sweep from 30° to 80° reproduces the analytic landscape with a maximum deviation of 1.128×10<sup>-5</sup> over the active range; below i_crit (30°, 35°, 38°) eccentricity stays at e<sub>0</sub> = 0.001, and the 40° run needs an 8× longer span because the KL period diverges at the threshold (40°: 0.14818829 simulated versus 0.14818857 analytic; 45°: 0.40824826 versus 0.40824829; 80°: 0.97455930 versus 0.97454802). The clock scales as 1/m<sub>3</sub>: P(2m<sub>3</sub>)/P(m<sub>3</sub>) = 0.481 against the ideal 0.5 (3% band; P(m<sub>3</sub>) = 103829.39, P(2m<sub>3</sub>) = 49944.15 in units of 1/n_in), and across m<sub>3</sub>/M ∈ {0.5, 1, 2, 4} the product P·m<sub>3</sub> spreads only 4.29% (221991.0, 111355.7, 54927.46, 28661.83).</p>
+<p><strong>Direct validation and error budget.</strong> The independent 3-D run gives a smoothed maximum eccentricity 0.7423 versus 0.7638 analytic — a −2.8% deviation, inside the 8% gate and consistent with the hexadecapole truncation plus the non-test-particle mass ratio m<sub>3</sub>/M = 0.5 at α = 0.2. The tabulated Hamiltonian drifts by at most 1.33×10<sup>-5</sup> along the flow — the cubic-spline representation error on the 160 × 180 grid, deliberately separated from integrator error (DOP853, rtol 1e-8). Every number in this paragraph is stored in the JSON protocol with target, tolerance and pass flag.</p>
+<h3>Verification summary</h3>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Recorded value</th>
+<th>Target</th>
+<th>Tolerance</th>
+<th>Pass</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>`e_max_i0_60`</td>
+<td>0.763733</td>
+<td>0.763763</td>
+<td>0.002</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`e_max_i0_70`</td>
+<td>0.897238</td>
+<td>0.897239</td>
+<td>0.002</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`kl_period_halves_with_m3`</td>
+<td>0.481021</td>
+<td>0.5</td>
+<td>0.03</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`direct_3d_emax_validation`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p><em>(status: </em><em>PASS</em><em>, mode: full)</em></p>
+<h2>7. Discussion</h2>
+<p>The model is deliberately minimal: quadrupole order, test-particle inner orbit, circular outer orbit, no dissipation. Within these assumptions the conclusions are exact statements about the averaged equations, not simulations of a particular system. The natural extensions each preserve the verification style: the octupole term for eccentric companions (the eccentric Kozai–Lidov effect with orbit flips — Naoz 2016), the hexadecapole correction, comparable masses and radiation backreaction (pursued in TRX-11), and tidal friction coupling the KL cycles to orbital shrinkage in the hot-Jupiter channel.</p>
+<p>The −2.8% direct-run deviation is not a defect but a measurement of the truncation: the direct problem at m<sub>3</sub>/M = 0.5 and α = a_in/a_out = 0.2 is only moderately hierarchical, and higher-order multipoles plus the breakdown of the test-particle idealization push the true maximum eccentricity below the quadrupole formula. That a machine built from Newtonian gravity and geometry alone — with no KL formula inside — lands within 2.8% of a substantially non-idealized direct integration is the strongest statement of the study. The remaining error-budget line, the 1.33×10<sup>-5</sup> Hamiltonian residual, is a property of the spline representation and could be pushed lower by refining the 160 × 180 grid, at quadratic cost in tabulation time.</p>
+<p>Within the program this study anchors the secular celestial block: TRX-01 treats the same restricted problem at the libration points instead of secular cycles, TRX-11 integrates the comparable-mass three-body problem exactly and radiates, and TRX-12 stations a laser sailcraft at the L4 point of the same celestial stage. The laser link is direct: KL cycles are the accepted channel-forming mechanism for LISA-class compact-object mergers (Blaes, Lee &amp; Socrates 2002), and laser ranging of binary and triple asteroids reads out exactly the orbital elements this study oscillates.</p>
+<h2>8. Conclusions</h2>
+<ol>
+<li>The doubly-averaged quadrupole Hamiltonian, built numerically (240-point orbit quadrature, 160 × 180 spline grid), reproduces the analytic maxima e_max = 0.763763 (i<sub>0</sub> = 60°) and 0.897239 (70°) with deviations 3.0×10<sup>-5</sup> and 9.1×10<sup>-7</sup> — far inside the 2×10<sup>-3</sup> tolerance.</li>
+<li>The eccentricity–inclination exchange is exactly antiphase: e peaks when i dips to i_crit = arccos√(3/5) = 39.23°, with j_z = 0.500000 (60°) and 0.342020 (70°) conserved along the flow.</li>
+<li>The Kozai landscape e_max(i<sub>0</sub>) is validated over 12 inclinations from 30° to 80° with a maximum deviation of 1.128×10<sup>-5</sup> over the active range; below i_crit eccentricity stays at e<sub>0</sub> = 0.001, and the KL period diverges at the threshold (the 40° run needs an 8× longer span).</li>
+<li>The KL clock obeys P ∝ 1/m<sub>3</sub>: the measured ratio P(2m<sub>3</sub>)/P(m<sub>3</sub>) = 0.481 (ideal 0.5, 3% band) and the product P·m<sub>3</sub> spreads only 4.29% across m<sub>3</sub>/M ∈ {0.5, 1, 2, 4}.</li>
+<li>An independent direct integration of the full 3-D restricted problem (m<sub>3</sub>/M = 0.5, a_out = 5 a_in, 200 outer orbits) gives a smoothed maximum eccentricity 0.7423 versus 0.7638 — a −2.8% deviation consistent with the hexadecapole truncation and the finite mass ratio.</li>
+<li>The tabulated Hamiltonian is conserved to 1.33×10<sup>-5</sup> along the flow — the honest error budget of the spline representation, reported alongside every check in the JSON protocol.</li>
+</ol>
+<h2>9. References</h2>
+<ol>
+<li>Kozai, Y. (1962). <em>Secular perturbations of asteroids with high inclination and eccentricity.</em> Astronomical Journal 67, 591–598.</li>
+<li>Lidov, M. L. (1962). <em>The evolution of orbits of artificial satellites of planets under the action of gravitational perturbations of external bodies.</em> Planetary and Space Science 9, 719–759.</li>
+<li>von Zeipel, H. (1910). <em>Sur les perturbations séculaires des orbites astronomiques.</em> Astronomische Nachrichten 183, 345–362.</li>
+<li>Naoz, S. (2016). <em>The eccentric Kozai–Lidov effect and beyond.</em> Annual Review of Astronomy and Astrophysics 54, 341–396.</li>
+<li>Shevchenko, I. I. (2017). <em>The Lidov–Kozai Effect — Applications in Celestial Mechanics.</em> Springer, Astrophysics and Space Science Library 441.</li>
+<li>Ito, T., Ohtsuka, K. (2019). <em>The Lidov–Kozai oscillation and Hirayama families.</em> Monographic Notices of the National Astronomical Observatory of Japan 1, 1–168.</li>
+<li>Murray, C. D., Dermott, S. F. (1999). <em>Solar System Dynamics.</em> Cambridge University Press.</li>
+<li>Wu, Y., Murray, N. W. (2003). <em>Planet migration and binary companions: the case of HD 80606.</em> The Astrophysical Journal 589, 605–614.</li>
+<li>Fabrycky, D., Tremaine, S. (2007). <em>Shrinking binary and planetary orbits by the Kozai cycle with tidal friction.</em> The Astrophysical Journal 669, 1298–1315.</li>
+<li>Blaes, O., Lee, M. H., Socrates, A. (2002). <em>The Kozai mechanism and the evolution of binary supermassive black holes.</em> The Astrophysical Journal 578, 775–786.</li>
+</ol>
+<h3>BibTeX</h3>
+<p>```bibtex
+@article{kozai1962,
+  author  = {Kozai, Yoshihide},
+  title   = {Secular perturbations of asteroids with high inclination and eccentricity},
+  journal = {Astronomical Journal},
+  year    = {1962}, volume = {67}, pages = {591--598}}
+
+@article{lidov1962,
+  author  = {Lidov, Mikhail L.},
+  title   = {The evolution of orbits of artificial satellites of planets under the action of gravitational perturbations of external bodies},
+  journal = {Planetary and Space Science},
+  year    = {1962}, volume = {9}, pages = {719--759}}
+
+@article{naoz2016,
+  author  = {Naoz, Smadar},
+  title   = {The eccentric Kozai--Lidov effect and beyond},
+  journal = {Annual Review of Astronomy and Astrophysics},
+  year    = {2016}, volume = {54}, pages = {341--396}}
+
+@book{shevchenko2017,
+  author    = {Shevchenko, Ivan I.},
+  title     = {The Lidov--Kozai Effect: Applications in Celestial Mechanics},
+  publisher = {Springer}, series = {Astrophysics and Space Science Library 441}, year = {2017}}
+
+@article{ito2019,
+  author  = {Ito, Takashi and Ohtsuka, Katsuhito},
+  title   = {The Lidov--Kozai oscillation and Hirayama families},
+  journal = {Monographic Notices of the National Astronomical Observatory of Japan},
+  year    = {2019}, volume = {1}, pages = {1--168}}
+```</p>
+<h2>Appendix A. Parameter table</h2>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Value</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>e<sub>0</sub></td>
+<td>0.001</td>
+<td>initial eccentricity (near-circular)</td>
+</tr>
+<tr>
+<td>ω<sub>0</sub></td>
+<td>π/2</td>
+<td>initial argument of pericentre</td>
+</tr>
+<tr>
+<td>i<sub>0</sub></td>
+<td>{60°, 70°}</td>
+<td>initial inclinations of the headline runs</td>
+</tr>
+<tr>
+<td>m<sub>3</sub>/M (secular)</td>
+<td>1.0 headline; {0.5, 1, 2, 4} clock sweep</td>
+<td>perturber mass ratio</td>
+</tr>
+<tr>
+<td>a_out (secular)</td>
+<td>20 a_in</td>
+<td>outer orbit radius, hierarchy α = 0.05</td>
+</tr>
+<tr>
+<td>secular grid</td>
+<td>160 × 180 (e × ω)</td>
+<td>spline tabulation of ⟨U⟩</td>
+</tr>
+<tr>
+<td>orbit quadrature</td>
+<td>240 points in true anomaly, weights ∝ r<sup>2</sup></td>
+<td>inner-orbit Kepler-time average</td>
+</tr>
+<tr>
+<td>secular integrator</td>
+<td>DOP853, rtol 1e-8, atol 1e-9, max_step T/1500</td>
+<td>canonical spline flow, 3 KL cycles</td>
+</tr>
+<tr>
+<td>direct run</td>
+<td>m<sub>3</sub>/M = 0.5, a_out = 5 a_in, 200 outer periods</td>
+<td>full 3-D restricted problem</td>
+</tr>
+<tr>
+<td>direct integrator</td>
+<td>DOP853, rtol = atol = 1e-11, 60000-step cap, 40000 samples</td>
+<td>osculating e smoothed over one outer period</td>
+</tr>
+<tr>
+<td>runtime</td>
+<td>64.6 s full, &lt; 20 s smoke</td>
+<td>reference machine</td>
+</tr>
+</tbody>
+</table>
+<h2>Appendix B. Reproduction</h2>
+<p>```bash
+python3 research/TRX-10-kozai-lidov/code/trx10_kozai_lidov.py --smoke     # < 20 s
+python3 research/TRX-10-kozai-lidov/code/trx10_kozai_lidov.py              # full, 64.6 s
+python3 research/TRX-10-kozai-lidov/code/trx10_kozai_lidov.py --figures   # + 300-DPI figures
+```</p>
+<p>Full runtime on the reference machine: 64.6 s; smoke mode completes in under 20 seconds and is exercised by the repository CI.</p>
+<h2>Appendix C. Environment</h2>
+<p>Python ≥ 3.11, numpy ≥ 2.0, scipy ≥ 1.14, matplotlib ≥ 3.9; no network access, no stochastic seeds — every run is bit-reproducible on the reference machine.</p><div class="part-banner"><div class="pb-title">ЧАСТЬ II · Русская монография</div><div class="pb-sub">Колебания Козаи–Лидова в иерархических тройных системах</div></div><div lang="ru"><p><em>Исследовательская программа TRIVORTEX · v1.0.0 · Издание монографий</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Исследование / Study</td>
+<td>TRX-10</td>
+</tr>
+<tr>
+<td>Программа</td>
+<td>TRIVORTEX — задача трёх тел в вихревой модели</td>
+</tr>
+<tr>
+<td>Автор</td>
+<td>Исаев Исхак Хамзатович (ORCID 0009-0003-7299-0701)</td>
+</tr>
+<tr>
+<td>DOI</td>
+<td>10.5281/zenodo.21825394</td>
+</tr>
+<tr>
+<td>Дата</td>
+<td>2026-10-06</td>
+</tr>
+<tr>
+<td>Код</td>
+<td>`code/trx10_kozai_lidov.py`</td>
+</tr>
+<tr>
+<td>Данные</td>
+<td>`results/trx10_results.json`</td>
+</tr>
+</tbody>
+</table>
+<h2>Аннотация</h2>
+<p>Монография посвящена механизму Козаи–Лидова — секулярному обмену эксцентриситета и наклонения, который порождает далёкий наклонённый компаньон в иерархической тройной системе, — в полном верификационном стиле программы TRIVORTEX. Вместо кодирования заученного аналитического результата исследование строит двойной усреднённый квадрупольный гамильтониан численно: мгновенный квадрупольный возмущающий потенциал усредняется по внутренней орбите квадратурой из 240 узлов, табулируется на сетке 160 × 180 (e, ω) при сохраняющемся j_z и превращается в кубический сплайн, производные которого порождают канонический поток. Сплайновый поток воспроизводит аналитические максимумы e_max = 0.763763 (i<sub>0</sub> = 60°) и 0.897239 (i<sub>0</sub> = 70°) в пределах допуска 2×10<sup>-3</sup>, подтверждает ландшафт Козаи по 12 наклонениям от 30° до 80° с максимальным отклонением 1.128×10<sup>-5</sup>, проверяет масштабирование часов P ∝ 1/m<sub>3</sub> (отношение P(2m<sub>3</sub>)/P(m<sub>3</sub>) = 0.481; разброс P·m<sub>3</sub> 4.29%) и сохраняет табулированный гамильтониан с точностью 1.33×10<sup>-5</sup>. Независимое прямое интегрирование полной трёхмерной ограниченной задачи (m<sub>3</sub>/M = 0.5, a_out = 5 a_in, 200 внешних оборотов) даёт сглаженный максимальный эксцентриситет 0.7423 против 0.7638 — отклонение −2.8%, согласующееся с усечением до гексадекаполя. Все четыре контрольные проверки пройдены.</p>
+<h2>Содержание</h2>
+<p><strong>Краткие сведения</strong></p>
+<table>
+<thead>
+<tr>
+<th>Аспект</th>
+<th>Значение</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Блок</td>
+<td>Небесная механика — исследование 10 из 12</td>
+</tr>
+<tr>
+<td>Модель</td>
+<td>двойной усреднённый квадрупольный механизм Козаи–Лидова (пробная частица в иерархической тройной)</td>
+</tr>
+<tr>
+<td>Ключевой инвариант</td>
+<td>j_z = √(1 − e<sup>2</sup>)·cos i (0.500000 / 0.342020 для i<sub>0</sub> = 60°/70°)</td>
+</tr>
+<tr>
+<td>Главный результат</td>
+<td>e_max = 0.763763 (60°) и 0.897239 (70°) воспроизведены сплайновым потоком; прямая 3-D валидация −2.8%</td>
+</tr>
+<tr>
+<td>Верификация</td>
+<td>4/4 проверок PASS (полный режим)</td>
+</tr>
+<tr>
+<td>Время выполнения</td>
+<td>64.6 с полный · &lt; 20 с smoke</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>Аннотация</li>
+<li>
+<ol>
+<li>Введение и исторический контекст</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>Физическая формулировка</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>Математическая модель</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li>Связь с фреймворком TRIVORTEX</li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li>Численный метод</li>
+</ol>
+</li>
+<li>
+<ol start="6">
+<li>Результаты и анализ</li>
+</ol>
+</li>
+<li>
+<ol start="7">
+<li>Обсуждение</li>
+</ol>
+</li>
+<li>
+<ol start="8">
+<li>Выводы</li>
+</ol>
+</li>
+<li>
+<ol start="9">
+<li>Список литературы
+Приложение A. Таблица параметров
+Приложение B. Воспроизведение</li>
+</ol>
+</li>
+</ol>
+<h2>1. Введение и исторический контекст</h2>
+<p>История эффекта началась за полвека до его классических статей. В 1910 году Хуго фон Цайпель вывел секулярные уравнения двойной усреднённой квадрупольной задачи трёх тел, и редукция к одной степени свободы уже неявно присутствовала в его работе. Классические статьи 1962 года появились независимо и почти одновременно: Ёсихидэ Козаи проанализировал секулярные возмущения астероидов с большими наклонениями (Astronomical Journal 67, 591), а Михаил Лидов — эволюцию орбит искусственных спутников под гравитационным действием внешних тел (Planetary and Space Science 9, 719); в русскоязычной литературе эффект по-прежнему часто называют механизмом Лидова–Козаи. Оба обнаружили одно и то же: выше критического наклонения 39.23° эксцентриситет и наклонение начинают периодически обмениваться, причём наклонение при максимальном эксцентриситете опускается точно до критического значения.</p>
+<p>Механизм немедленно стал рабочим инструментом небесной механики. Он ограничивает время жизни высокоширотных искусственных спутников, формирует орбитальную архитектуру систем нерегулярных спутников и семейств астероидов, раскачивает эксцентриситеты комет и защищает — либо уничтожает — тела на наклонённых орбитах в планетных системах. Формула масштаба времени t_KL ~ (M/m<sub>3</sub>)(a_out/a_in)<sup>3</sup>·P_in объясняет универсальность эффекта: это часы, скорость которых зависит только от иерархии, и всякая иерархическая конфигурация с наклонённой орбитой несёт их в себе.</p>
+<p>Современный ренессанс принесли экзопланеты и гравитационно-волновая астрономия. Эксцентриковые обобщения механизма (октупольные перевороты орбит, подробно рассмотренные в обзоре Naoz (2016)) превращают наклонённые тройные в канал миграции горячих юпитеров (Wu &amp; Murray 2003; Fabrycky &amp; Tremaine 2007) и в канал слияний компактных объектов, финальные стадии которых увидит LISA (Blaes, Lee &amp; Socrates 2002). Монография Шевченко (2017) собирает приложения воедино, а исторический обзор Ito &amp; Ohtsuka (2019) восстанавливает историю названия и приоритетов — включая роль фон Цайпеля и японскую и советскую школы.</p>
+<p>Для TRIVORTEX значимость структурна. Сохраняющийся j_z схлопывает задачу в одну интегрируемую степень свободы — в точности как интеграл Чаплыгина редуцирует вихревую задачу; замкнутая форма e_max — это острый аналитический эталон типа теоремы 3.1, в который обязана попасть численная машина; а часы Козаи–Лидова — секулярный близнец периода вращающейся хореографии. Поэтому данное исследование закрепляет секулярный небесный блок программы (TRX-01, TRX-10, TRX-11, TRX-12) — ту же сцену трёх тел, на которой действуют лазерные исследования.</p>
+<h2>2. Физическая формулировка</h2>
+<p>Система — ограниченная иерархическая тройная: внутренняя двойная состоит из тела с GM_inner = 1 на орбите a_in = 1 и безмассовой пробной частицы; внешний компаньон m<sub>3</sub> движется по круговой орбите радиуса a_out ≫ a_in (20 a_in в секулярной модели, 5 a_in в прямой валидации). Мгновенный квадрупольный возмущающий потенциал есть U = (G m<sub>3</sub>/2a_out<sup>3</sup>)·(3(r·r̂<sub>3</sub>)<sup>2</sup> − r<sup>2</sup>) — член l = 2 разложения потенциала компаньона по малому параметру иерархии α = a_in/a_out; для круговой внешней орбиты октупольный член (l = 3) тождественно равен нулю.</p>
+<p>Усреднение U по обоим орбитальным периодам оставляет осесимметричную функцию ⟨U⟩(e, ω), зависящую от ориентации эллипса только через аргумент перицентра. z-компонента углового момента j_z = √(1 − e<sup>2</sup>)·cos i сохраняется точно, поэтому секулярная задача схлопывается в одну гамильтонову степень свободы на многообразии фиксированного j_z: эксцентриситет растёт ровно тогда, когда наклонение падает, — оба связаны инвариантом j_z. Скорость часов задаёт величина C<sub>2</sub> = (3/8)(m<sub>3</sub>/M)(a_in/a_out)<sup>3</sup>·n_in, обратная к масштабу времени Козаи–Лидова.</p>
+<table>
+<thead>
+<tr>
+<th>Параметр</th>
+<th>Значение</th>
+<th>Смысл</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Единицы</td>
+<td>GM_inner = 1, a_in = 1, n_in = 1</td>
+<td>внутренняя двойная задаёт длину и время</td>
+</tr>
+<tr>
+<td>e<sub>0</sub>, ω<sub>0</sub></td>
+<td>0.001, π/2 (90°)</td>
+<td>начально круговая орбита; ω<sub>0</sub> в центре либрации</td>
+</tr>
+<tr>
+<td>i<sub>0</sub></td>
+<td>{60°, 70°}</td>
+<td>главные наклонения, оба выше i_crit = 39.23°</td>
+</tr>
+<tr>
+<td>m<sub>3</sub>/M</td>
+<td>1.0 (секулярный скан), 0.5 (прямой)</td>
+<td>отношение массы внешнего тела к внутренней</td>
+</tr>
+<tr>
+<td>a_out</td>
+<td>20 a_in (секулярно), 5 a_in (прямо)</td>
+<td>разделитель иерархии α = a_in/a_out</td>
+</tr>
+<tr>
+<td>Сплайновая сетка</td>
+<td>160 × 180 (e × ω), квадратура 240 точек</td>
+<td>табуляция усреднённого потенциала ⟨U⟩</td>
+</tr>
+<tr>
+<td>Секулярный интегратор</td>
+<td>DOP853, rtol 1e-8, atol 1e-9</td>
+<td>канонический сплайновый поток, 3 цикла на прогон</td>
+</tr>
+<tr>
+<td>Прямой интегратор</td>
+<td>DOP853, rtol = atol = 1e-11</td>
+<td>полная 3-D ограниченная задача, 200 внешних периодов</td>
+</tr>
+</tbody>
+</table>
+<h2>3. Математическая модель</h2>
+<p>Отталкиваемся от разложения потенциала компаньона в ряд Лежандра по малому параметру иерархии α = a_in/a_out. Монопольный член (l = 0) лишь сдвигает энергию внутренней орбиты; квадрупольный член (l = 2), U ∝ (3(r·r̂<sub>3</sub>)<sup>2</sup> − r<sup>2</sup>)/2a_out<sup>3</sup>, — первый анизотропный вклад, именно он переживает усреднение; для круговой внешней орбиты октупольный член (l = 3) тождественно равен нулю, а следующий выживающий член — гексадекаполь (l = 4) — меньше на α<sup>2</sup>. Усреднение по внутренней орбите выполняется в коде квадратурой из 240 узлов по истинной аномалии с весами, пропорциональными r<sup>2</sup>, — это точный кеплеровский вес по времени dt ∝ r<sup>2</sup> df, а не заученное аналитическое среднее.</p>
+<p>Усреднение квадрупольного члена по внешней круговой орбите оставляет осесимметричный потенциал ⟨U⟩(e, ω). Поскольку ⟨U⟩ не зависит от долготы узла, z-компонента углового момента j_z = √(1 − e<sup>2</sup>)·cos i сохраняется точно, и динамика схлопывается в одну гамильтонову степень свободы (e, ω) на многообразии фиксированного j_z. Канонические уравнения (E2) с масштабом скоростей C<sub>2</sub> (E5) интегрируются численно; так как ⟨U⟩ имеет период π по ω, фаза складывается в [0, π), что ускоряет интегратор и удерживает фазу в ограниченной области.</p>
+<p>Максимальный эксцентриситет следует из геометрии особых точек. Для начально круговой внутренней орбиты (j_z = cos i<sub>0</sub>) рост эксцентриситета возможен только выше критического наклонения i_crit = arccos√(3/5) ≈ 39.23°, где открывается остров либрации вокруг ω = π/2. В максимуме эксцентриситета условие ė = 0 требует ∂⟨U⟩/∂ω = 0, то есть ω = π/2, а наклонение одновременно достигает минимума (j_z связывает e и i монотонно); отсюда замкнутая форма (E4): e_max = √(1 − (5/3)cos<sup>2</sup>i<sub>0</sub>). Поток предсказывает таким образом не только амплитуду, но и противофазную геометрию обмена — свойство, проверяемое на fig02.</p>
+<p><strong>Нотация</strong></p>
+<table>
+<thead>
+<tr>
+<th>Символ</th>
+<th>Смысл</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>e</td>
+<td>эксцентриситет внутренней (пробной) орбиты</td>
+</tr>
+<tr>
+<td>i</td>
+<td>наклонение внутренней орбиты к плоскости внешней орбиты</td>
+</tr>
+<tr>
+<td>ω</td>
+<td>аргумент перицентра внутренней орбиты</td>
+</tr>
+<tr>
+<td>e<sub>0</sub>, ω<sub>0</sub>, i<sub>0</sub></td>
+<td>начальные значения: 0.001, π/2, {60°, 70°}</td>
+</tr>
+<tr>
+<td>j = √(1 − e<sup>2</sup>)</td>
+<td>безразмерный угловой момент внутренней орбиты (L = 1)</td>
+</tr>
+<tr>
+<td>j_z</td>
+<td>сохраняющаяся z-компонента, j_z = √(1 − e<sup>2</sup>)·cos i</td>
+</tr>
+<tr>
+<td>m<sub>3</sub>/M</td>
+<td>отношение массы возмутителя к внутренней</td>
+</tr>
+<tr>
+<td>a_in, a_out</td>
+<td>большие полуоси внутренней и внешней орбит (a_in = 1)</td>
+</tr>
+<tr>
+<td>n_in</td>
+<td>среднее движение внутренней орбиты (n_in = 1)</td>
+</tr>
+<tr>
+<td>C<sub>2</sub></td>
+<td>скорость Козаи–Лидова, C<sub>2</sub> = (3/8)(m<sub>3</sub>/M)(a_in/a_out)<sup>3</sup>·n_in</td>
+</tr>
+<tr>
+<td>⟨U⟩</td>
+<td>двойной усреднённый квадрупольный потенциал (сплайновая табуляция)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>(E1)</strong> Двойной усреднённый квадрупольный возмущающий потенциал (строится численно квадратурой по орбите; единицы G m<sub>3</sub>/2a_out<sup>3</sup>).</p>
+<p>$$\langle U\rangle(e,\omega) = \left\langle \frac{G m_3}{2 a_{\rm out}^3}\,\big(3(\mathbf{r}\cdot\hat{\mathbf{r}}_3)^2 - \mathbf{r}^2\big) \right\rangle_{\!\text{inner orbit}}$$</p>
+<p><strong>(E2)</strong> Канонический гамильтонов поток на многообразии фиксированного j_z (L = 1), скорости в масштабе C<sub>2</sub>.</p>
+<p>$$\dot{e} = C_2\,\frac{j}{e}\,\frac{\partial \langle U\rangle}{\partial \omega}, \qquad \dot{\omega} = -\,C_2\,\frac{j}{e}\,\frac{\partial \langle U\rangle}{\partial e}, \qquad j = \sqrt{1 - e^2}$$</p>
+<p><strong>(E3)</strong> Сохраняющаяся z-компонента орбитального углового момента — инвариант, связывающий e и i.</p>
+<p>$$j_z = \sqrt{1 - e^2}\,\cos i = \mathrm{const}$$</p>
+<p><strong>(E4)</strong> Аналитический максимальный эксцентриситет для начально круговой орбиты; обмен включается выше угла Козаи.</p>
+<p>$$e_{\max} = \sqrt{1 - \tfrac{5}{3}\cos^2 i_0}, \qquad i_{\rm crit} = \arccos\sqrt{\tfrac{3}{5}} \approx 39.23^\circ$$</p>
+<p><strong>(E5)</strong> Масштаб времени Козаи–Лидова: период цикла масштабируется как 1/m<sub>3</sub> (вдвое короче при удвоении массы возмутителя).</p>
+<p>$$C_2 = \tfrac{3}{8}\,\frac{m_3}{M}\left(\frac{a_{\rm in}}{a_{\rm out}}\right)^{\!3} n_{\rm in}, \qquad t_{\rm KL} \sim \frac{1}{C_2}$$</p>
+<h2>4. Связь с фреймворком TRIVORTEX</h2>
+<p>Соответствие вихревому фреймворку TRIVORTEX структурно. Сохраняющийся j_z закрепляет всё семейство «эксцентриситет–наклонение» на одномерном многообразии — в точности как интеграл Чаплыгина закрепляет вихревые орбиты; замкнутая форма e_max = √(1 − (5/3)cos<sup>2</sup>i<sub>0</sub>) играет роль острого аналитического эталона типа теоремы 3.1, в который численная машина обязана попасть; а часы Козаи–Лидова с периодом ~ 1/C<sub>2</sub> — секулярный близнец периода вращающейся хореографии. Методологически это исследование — флагман философии «строить, а не заучивать»: усреднённый гамильтониан конструируется численно, а аналитический закон проявляется как целевая величина на выходе — та же дисциплина, которую вихревые исследования применяют к чаплыгинским редуцированным потокам.</p>
+<table>
+<thead>
+<tr>
+<th>Величина исследования</th>
+<th>Аналог в TRIVORTEX</th>
+<th>Комментарий</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Иерархическая тройная (пробная частица + компаньон)</td>
+<td>три тела с разделёнными масштабами</td>
+<td>небесная задача трёх тел</td>
+</tr>
+<tr>
+<td>Сохраняющийся j_z = √(1 − e<sup>2</sup>)·cos i</td>
+<td>топологический инвариант типа Чаплыгина</td>
+<td>интеграл, закрепляющий семейство орбит</td>
+</tr>
+<tr>
+<td>e_max = √(1 − (5/3)cos<sup>2</sup>i<sub>0</sub>)</td>
+<td>замкнутая форма теоремы 3.1</td>
+<td>острый аналитический эталон для численной машины</td>
+</tr>
+<tr>
+<td>Часы Козаи–Лидова, t_KL ~ 1/C<sub>2</sub></td>
+<td>период хореографии T</td>
+<td>секулярное хронометрирование триады</td>
+</tr>
+<tr>
+<td>Сплайновый усреднённый гамильтониан ⟨U⟩</td>
+<td>численно построенный вихревой гамильтониан</td>
+<td>оба потока порождаются табулированными, а не заученными потенциалами</td>
+</tr>
+</tbody>
+</table>
+<h2>5. Численный метод</h2>
+<p>Усреднённый потенциал табулируется на сетке 160 × 180 по (e, ω) с e ∈ [0.0001, 0.999] и ω ∈ [0, 2π]; каждый узел вычисляется описанной в выводе квадратурой из 240 узлов с кеплеровскими весами по времени. Бикубический RectBivariateSpline (kx = ky = 3) даёт ⟨U⟩ и его точные сплайновые производные ∂⟨U⟩/∂e и ∂⟨U⟩/∂ω — гамильтонову машину, используемую далее во всём конвейере. Ни одной аналитической формулы Козаи–Лидова в секулярном конвейере нет.</p>
+<p>Канонический поток интегрируется схемой DOP853 (rtol 1e-8, atol 1e-9, max_step T/1500) на интервале в три модельных цикла Козаи–Лидова с выборкой 3000 точек на прогон. Период измеряется как средний шаг между последовательными локальными максимумами e выше 0.7·max(e) — робастная оценка, нечувствительная к мелким осцилляциям возле e ≈ 0. Проверка масштабирования по массе повторяет прогон при m<sub>3</sub>/M = 2 и сравнивает P(2m<sub>3</sub>)/P(m<sub>3</sub>) с 0.5 в полосе 3%; развёртка для рисунка расширяет часы до m<sub>3</sub>/M ∈ {0.5, 1, 2, 4}.</p>
+<p>Валидация полностью независима: прямой прогон интегрирует полную трёхмерную ограниченную задачу — пробная частица чувствует и внутреннее тело, и компаньон на его круговой орбите — схемой DOP853 с rtol = atol = 1e-11, потолком в 60000 шагов и 40000 точками плотной выборки на 200 внешних периодов (m<sub>3</sub>/M = 0.5, a_out = 5 a_in). Оскулирующий эксцентриситет вычисляется поточечно из вектора Лапласа–Рунге–Ленца и сглаживается скользящим средним за один внешний период; максимум сглаженной кривой и есть отчётная величина. Секулярная и прямая модели не делят ни строчки кода, кроме интегратора, поэтому их согласие — настоящая перекрёстная валидация.</p>
+<h2>6. Результаты и анализ</h2>
+<h3>fig01 kl landscape</h3>
+<p><img alt="Ландшафт квадрупольной задачи Козаи–Лидова: (a) геометрия иерархической тройной, (b) аналитический ландшафт Козаи e_max(i&lt;sub&gt;0&lt;/sub&gt;)." src="../figures/fig01_kl_landscape.png" /></p>
+<p><em>Ландшафт квадрупольной задачи Козаи–Лидова: (a) геометрия иерархической тройной, (b) аналитический ландшафт Козаи e_max(i<sub>0</sub>).</em>
+Панель (a) показывает внутреннюю орбиту при e_max = 0.7638, наклонённую на i<sub>0</sub> = 60° и спроецированную на плоскость внешней орбиты; орбита компаньона a_out = 20 a_in дана пунктиром не в масштабе. Панель (b) воспроизводит e_max(i<sub>0</sub>) = √(1 − (5/3)cos<sup>2</sup>i<sub>0</sub>), затеняет докритическую полосу без обмена и отмечает точки исследования 0.7638 (60°) и 0.8972 (70°).</p>
+<h3>fig02 kl exchange</h3>
+<p><img alt="Главный результат — обмен «эксцентриситет–наклонение» в секулярном сплайновом потоке." src="../figures/fig02_kl_exchange.png" /></p>
+<p><em>Главный результат — обмен «эксцентриситет–наклонение» в секулярном сплайновом потоке.</em>
+Слева: e(t) циклирует до 0.763733 (i<sub>0</sub> = 60°) и 0.897238 (70°) на фоне пунктирных аналитических огибающих, j_z = 0.500000 и 0.342020 сохраняются; справа: на двух циклах при 60° эксцентриситет достигает максимума ровно в момент провала наклонения до 39.23° = i_crit — противофазный обмен.</p>
+<h3>fig03 kl sweeps</h3>
+<p><img alt="Параметрические развёртки: валидация ландшафта Козаи e_max(i&lt;sub&gt;0&lt;/sub&gt;) и масштабирование часов Козаи–Лидова по массе возмутителя." src="../figures/fig03_kl_sweeps.png" /></p>
+<p><em>Параметрические развёртки: валидация ландшафта Козаи e_max(i<sub>0</sub>) и масштабирование часов Козаи–Лидова по массе возмутителя.</em>
+По 12 наклонениям от 30° до 80° сплайновый поток совпадает с аналитикой с точностью 1.128×10<sup>-5</sup> (прогон 40° требует 8-кратного удлинения: период Козаи–Лидова расходится на i_crit), ниже i_crit эксцентриситет остаётся на e<sub>0</sub> = 0.001; развёртка по m<sub>3</sub>/M ∈ {0.5, 1, 2, 4} подтверждает P ∝ 1/m<sub>3</sub> с разбросом произведения P·m<sub>3</sub> всего 4.29%.</p>
+<h3>fig04 kl dynamics</h3>
+<p><img alt="Динамика на многообразии фиксированного j_z: фазовый портрет и остаток табулированного гамильтониана." src="../figures/fig04_kl_dynamics.png" /></p>
+<p><em>Динамика на многообразии фиксированного j_z: фазовый портрет и остаток табулированного гамильтониана.</em>
+Фазовый портрет (ω mod π, e) показывает либрацию ω около π/2 при циклировании e между 0.001 и 0.763733 (60°) / 0.897238 (70°); остаток гамильтониана вдоль траектории 60° не превышает 1.33×10<sup>-5</sup> — это ошибка кубически-сплайнового представления на сетке 160 × 180, а не ошибка интегратора (DOP853, rtol 1e-8).</p>
+<p><strong>Аналитические максимумы.</strong> Главные проверки сравнивают максимумы сплайнового потока с замкнутыми эталонами: e_max = 0.7637326 измеренный против 0.7637626 аналитического при i<sub>0</sub> = 60° (отклонение 3.0×10<sup>-5</sup>) и 0.8972376 против 0.8972386 при 70° (отклонение 9.1×10<sup>-7</sup>) — оба далеко внутри полосы допуска 2×10<sup>-3</sup>. Сохраняющиеся величины j_z = 0.500000 (60°) и 0.342020 (70°) остаются постоянными вдоль потока, а записанный ряд эксцентриситета возвращается ровно к e<sub>0</sub> = 0.001 в каждом минимуме цикла (диапазон ряда 0.001 … 0.76372882 в JSON-протоколе).</p>
+<p><strong>Геометрия обмена.</strong> fig02 демонстрирует предсказанную выводом противофазную сцепку: эксцентриситет достигает максимума ровно тогда, когда наклонение проваливается до 39.2316° — численно неотличимо от i_crit = arccos√(3/5), — а аргумент перицентра либрирует вокруг π/2 (fig04). Фазовые портреты обоих главных прогонов ложатся на многообразия фиксированного j_z = 0.5 и j_z = 0.342020 — ведомость «эксцентриситет–наклонение» со схемы.</p>
+<p><strong>Ландшафт и часы.</strong> Развёртка по 12 наклонениям от 30° до 80° воспроизводит аналитический ландшафт с максимальным отклонением 1.128×10<sup>-5</sup> по активной области; ниже i_crit (30°, 35°, 38°) эксцентриситет остаётся на e<sub>0</sub> = 0.001, а прогону 40° требуется 8-кратное удлинение интервала, поскольку период Козаи–Лидова расходится на пороге (40°: 0.14818829 расчёт против 0.14818857 аналитика; 45°: 0.40824826 против 0.40824829; 80°: 0.97455930 против 0.97454802). Часы масштабируются как 1/m<sub>3</sub>: P(2m<sub>3</sub>)/P(m<sub>3</sub>) = 0.481 против идеала 0.5 (полоса 3%; P(m<sub>3</sub>) = 103829.39, P(2m<sub>3</sub>) = 49944.15 в единицах 1/n_in), а по m<sub>3</sub>/M ∈ {0.5, 1, 2, 4} произведение P·m<sub>3</sub> разбросано лишь на 4.29% (221991.0, 111355.7, 54927.46, 28661.83).</p>
+<p><strong>Прямая валидация и бюджет ошибок.</strong> Независимый 3-D прогон даёт сглаженный максимальный эксцентриситет 0.7423 против 0.7638 аналитического — отклонение −2.8%, внутри ворот 8% и согласующееся с усечением до гексадекаполя и нетестовым отношением масс m<sub>3</sub>/M = 0.5 при α = 0.2. Табулированный гамильтониан дрейфует не более чем на 1.33×10<sup>-5</sup> вдоль потока — ошибка кубически-сплайнового представления на сетке 160 × 180, сознательно отделённая от ошибки интегратора (DOP853, rtol 1e-8). Каждое число этого абзаца хранится в JSON-протоколе с целью, допуском и флагом прохождения.</p>
+<h3>Сводка верификации</h3>
+<table>
+<thead>
+<tr>
+<th>Проверка</th>
+<th>Значение</th>
+<th>Цель</th>
+<th>Допуск</th>
+<th>Прошла</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>`e_max_i0_60`</td>
+<td>0.763733</td>
+<td>0.763763</td>
+<td>0.002</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`e_max_i0_70`</td>
+<td>0.897238</td>
+<td>0.897239</td>
+<td>0.002</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`kl_period_halves_with_m3`</td>
+<td>0.481021</td>
+<td>0.5</td>
+<td>0.03</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`direct_3d_emax_validation`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p><em>(status: </em><em>PASS</em><em>, mode: full)</em></p>
+<h2>7. Обсуждение</h2>
+<p>Модель сознательно минимальна: квадрупольный порядок, пробная внутренняя орбита, круговая внешняя орбита, отсутствие диссипации. В этих допущениях выводы — точные утверждения об усреднённых уравнениях, а не симуляция конкретной системы. Естественные расширения сохраняют верификационный стиль: октупольный член для эксцентриковых компаньонов (эксцентриковый эффект Козаи–Лидова с переворотами орбит — Naoz 2016), гексадекапольная поправка, сравнимые массы и радиационная обратная связь (это TRX-11), а также приливное трение, сцепляющее циклы Козаи–Лидова со сжатием орбиты в канале горячих юпитеров.</p>
+<p>Отклонение −2.8% прямого прогона — не дефект, а измерение усечения: прямая задача при m<sub>3</sub>/M = 0.5 и α = a_in/a_out = 0.2 лишь умеренно иерархична, и мультиполи высших порядков вместе с нарушением идеализации пробной частицы сдвигают истинный максимум эксцентриситета ниже квадрупольной формулы. То, что машина, построенная из ньютоновской гравитации и геометрии — без единой формулы Козаи–Лидова внутри, — попадает в 2.8% от существенно неидеализированного прямого интегрирования, — самое сильное утверждение исследования. Оставшаяся строка бюджета ошибок, остаток гамильтониана 1.33×10<sup>-5</sup>, — свойство сплайнового представления; его можно уменьшить сгущением сетки 160 × 180 ценой квадратичного роста времени табуляции.</p>
+<p>В рамках программы это исследование закрепляет секулярный небесный блок: TRX-01 рассматривает ту же ограниченную задачу в точках либрации вместо секулярных циклов, TRX-11 интегрирует трёхтелевую задачу со сравнимыми массами точно и с излучением, TRX-12 ставит лазерный парус в точку L4 той же небесной сцены. Лазерная связь прямая: циклы Козаи–Лидова — общепризнанный механизм формирования каналов слияний компактных объектов класса LISA (Blaes, Lee &amp; Socrates 2002), а лазерная дальнометрия двойных и тройных астероидов считывает именно те элементы орбиты, которые здесь осциллируют.</p>
+<h2>8. Выводы</h2>
+<ol>
+<li>Двойной усреднённый квадрупольный гамильтониан, построенный численно (квадратура орбиты из 240 узлов, сплайновая сетка 160 × 180), воспроизводит аналитические максимумы e_max = 0.763763 (i<sub>0</sub> = 60°) и 0.897239 (70°) с отклонениями 3.0×10<sup>-5</sup> и 9.1×10<sup>-7</sup> — далеко внутри допуска 2×10<sup>-3</sup>.</li>
+<li>Обмен «эксцентриситет–наклонение» строго противофазен: e достигает максимума, когда i проваливается до i_crit = arccos√(3/5) = 39.23°, при сохранении j_z = 0.500000 (60°) и 0.342020 (70°) вдоль потока.</li>
+<li>Ландшафт Козаи e_max(i<sub>0</sub>) подтверждён по 12 наклонениям от 30° до 80° с максимальным отклонением 1.128×10<sup>-5</sup> по активной области; ниже i_crit эксцентриситет остаётся на e<sub>0</sub> = 0.001, а период Козаи–Лидова расходится на пороге (прогону 40° нужно 8-кратное удлинение).</li>
+<li>Часы Козаи–Лидова подчиняются закону P ∝ 1/m<sub>3</sub>: измеренное отношение P(2m<sub>3</sub>)/P(m<sub>3</sub>) = 0.481 (идеал 0.5, полоса 3%), а произведение P·m<sub>3</sub> разбросано лишь на 4.29% по m<sub>3</sub>/M ∈ {0.5, 1, 2, 4}.</li>
+<li>Независимое прямое интегрирование полной 3-D ограниченной задачи (m<sub>3</sub>/M = 0.5, a_out = 5 a_in, 200 внешних оборотов) даёт сглаженный максимальный эксцентриситет 0.7423 против 0.7638 — отклонение −2.8%, согласующееся с усечением до гексадекаполя и конечным отношением масс.</li>
+<li>Табулированный гамильтониан сохраняется вдоль потока с точностью 1.33×10<sup>-5</sup> — честный бюджет ошибок сплайнового представления, приводимый рядом с каждой проверкой в JSON-протоколе.</li>
+</ol>
+<h2>9. Список литературы</h2>
+<ol>
+<li>Kozai, Y. (1962). <em>Secular perturbations of asteroids with high inclination and eccentricity.</em> Astronomical Journal 67, 591–598.</li>
+<li>Lidov, M. L. (1962). <em>The evolution of orbits of artificial satellites of planets under the action of gravitational perturbations of external bodies.</em> Planetary and Space Science 9, 719–759.</li>
+<li>von Zeipel, H. (1910). <em>Sur les perturbations séculaires des orbites astronomiques.</em> Astronomische Nachrichten 183, 345–362.</li>
+<li>Naoz, S. (2016). <em>The eccentric Kozai–Lidov effect and beyond.</em> Annual Review of Astronomy and Astrophysics 54, 341–396.</li>
+<li>Shevchenko, I. I. (2017). <em>The Lidov–Kozai Effect — Applications in Celestial Mechanics.</em> Springer, Astrophysics and Space Science Library 441.</li>
+<li>Ito, T., Ohtsuka, K. (2019). <em>The Lidov–Kozai oscillation and Hirayama families.</em> Monographic Notices of the National Astronomical Observatory of Japan 1, 1–168.</li>
+<li>Murray, C. D., Dermott, S. F. (1999). <em>Solar System Dynamics.</em> Cambridge University Press.</li>
+<li>Wu, Y., Murray, N. W. (2003). <em>Planet migration and binary companions: the case of HD 80606.</em> The Astrophysical Journal 589, 605–614.</li>
+<li>Fabrycky, D., Tremaine, S. (2007). <em>Shrinking binary and planetary orbits by the Kozai cycle with tidal friction.</em> The Astrophysical Journal 669, 1298–1315.</li>
+<li>Blaes, O., Lee, M. H., Socrates, A. (2002). <em>The Kozai mechanism and the evolution of binary supermassive black holes.</em> The Astrophysical Journal 578, 775–786.</li>
+</ol>
+<h3>BibTeX</h3>
+<p>```bibtex
+@article{kozai1962,
+  author  = {Kozai, Yoshihide},
+  title   = {Secular perturbations of asteroids with high inclination and eccentricity},
+  journal = {Astronomical Journal},
+  year    = {1962}, volume = {67}, pages = {591--598}}
+
+@article{lidov1962,
+  author  = {Lidov, Mikhail L.},
+  title   = {The evolution of orbits of artificial satellites of planets under the action of gravitational perturbations of external bodies},
+  journal = {Planetary and Space Science},
+  year    = {1962}, volume = {9}, pages = {719--759}}
+
+@article{naoz2016,
+  author  = {Naoz, Smadar},
+  title   = {The eccentric Kozai--Lidov effect and beyond},
+  journal = {Annual Review of Astronomy and Astrophysics},
+  year    = {2016}, volume = {54}, pages = {341--396}}
+
+@book{shevchenko2017,
+  author    = {Shevchenko, Ivan I.},
+  title     = {The Lidov--Kozai Effect: Applications in Celestial Mechanics},
+  publisher = {Springer}, series = {Astrophysics and Space Science Library 441}, year = {2017}}
+
+@article{ito2019,
+  author  = {Ito, Takashi and Ohtsuka, Katsuhito},
+  title   = {The Lidov--Kozai oscillation and Hirayama families},
+  journal = {Monographic Notices of the National Astronomical Observatory of Japan},
+  year    = {2019}, volume = {1}, pages = {1--168}}
+```</p>
+<h2>Приложение A. Таблица параметров</h2>
+<table>
+<thead>
+<tr>
+<th>Символ</th>
+<th>Значение</th>
+<th>Роль</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>e<sub>0</sub></td>
+<td>0.001</td>
+<td>начальный эксцентриситет (почти круг)</td>
+</tr>
+<tr>
+<td>ω<sub>0</sub></td>
+<td>π/2</td>
+<td>начальный аргумент перицентра</td>
+</tr>
+<tr>
+<td>i<sub>0</sub></td>
+<td>{60°, 70°}</td>
+<td>начальные наклонения главных прогонов</td>
+</tr>
+<tr>
+<td>m<sub>3</sub>/M (секулярно)</td>
+<td>1.0 главный; {0.5, 1, 2, 4} развёртка часов</td>
+<td>отношение массы возмутителя</td>
+</tr>
+<tr>
+<td>a_out (секулярно)</td>
+<td>20 a_in</td>
+<td>радиус внешней орбиты, иерархия α = 0.05</td>
+</tr>
+<tr>
+<td>секулярная сетка</td>
+<td>160 × 180 (e × ω)</td>
+<td>сплайновая табуляция ⟨U⟩</td>
+</tr>
+<tr>
+<td>квадратура орбиты</td>
+<td>240 узлов по истинной аномалии, веса ∝ r<sup>2</sup></td>
+<td>кеплеровское среднее по времени внутренней орбиты</td>
+</tr>
+<tr>
+<td>секулярный интегратор</td>
+<td>DOP853, rtol 1e-8, atol 1e-9, max_step T/1500</td>
+<td>канонический сплайновый поток, 3 цикла</td>
+</tr>
+<tr>
+<td>прямой прогон</td>
+<td>m<sub>3</sub>/M = 0.5, a_out = 5 a_in, 200 внешних периодов</td>
+<td>полная 3-D ограниченная задача</td>
+</tr>
+<tr>
+<td>прямой интегратор</td>
+<td>DOP853, rtol = atol = 1e-11, 60000 шагов, 40000 выборок</td>
+<td>оскулирующий e со сглаживанием за один внешний период</td>
+</tr>
+<tr>
+<td>время выполнения</td>
+<td>64.6 с полный, &lt; 20 с smoke</td>
+<td>референсная машина</td>
+</tr>
+</tbody>
+</table>
+<h2>Приложение B. Воспроизведение</h2>
+<p>```bash
+python3 research/TRX-10-kozai-lidov/code/trx10_kozai_lidov.py --smoke     # < 20 с
+python3 research/TRX-10-kozai-lidov/code/trx10_kozai_lidov.py              # полный прогон, 64.6 s
+python3 research/TRX-10-kozai-lidov/code/trx10_kozai_lidov.py --figures   # + графики 300 DPI
+```</p>
+<p>Полное время выполнения на референсной машине — 64.6 s; smoke-режим укладывается в 20 секунд и используется CI репозитория.</p>
+<h2>Приложение C. Окружение</h2>
+<p>Python ≥ 3.11, numpy ≥ 2.0, scipy ≥ 1.14, matplotlib ≥ 3.9; без доступа к сети и без стохастических зёрен — каждый прогон бит-в-бит воспроизводим на референсной машине.</p></div></div>
+<div class="ending">
+  <div class="end-title">TRIVORTEX</div>
+  <div class="end-small">The Three-Body Problem in the Vortex Model</div>
+  <div class="end-rule"></div>
+  <div class="colophon-line"><b>Kozai–Lidov Oscillations in Hierarchical Triples</b> — research monograph of the TRIVORTEX program, studying the three-body problem in the vortex model and its laser, celestial-mechanical and quantum crossings.</div><div class="colophon-line">Full verification protocol: <b>results JSON + figures + code</b> in research/TRX-10-kozai-lidov/; reproduction commands in Appendix B.</div>
+  <div class="end-small">
+    Isaev Iskhak Khamzatovich · ORCID 0009-0003-7299-0701<br>
+    DOI (concept) 10.5281/zenodo.21825393 · DOI (version) 10.5281/zenodo.21825394<br>
+    License IPL-RP-1.0 · v1.0.0 · 2026-10-07
+  </div>
+</div>
+
+</body>
+</html>

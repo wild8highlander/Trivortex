@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TRX-02 — Resonant Three-Wave Interaction (Manley–Rowe, χ⁽²⁾ Optics)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400&family=PT+Sans:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/contrib/auto-render.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof renderMathInElement === 'function') {
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '\\(', right: '\\)', display: false}
+      ], throwOnError: false
+    });
+  }
+});
+</script>
+<style>
+@page { size: 210mm 297mm; margin: 0; }
+:root {
+  --navy: #0A1730; --navy2: #0E2145; --header-fill: #2A3A55;
+  --gold: #D4AF37; --gold-l: #F0D98C;
+  --text: #1F2937; --muted: #6B7280;
+  --stripe: #F2F5FA; --code-bg: #F5F7FB; --border: #DCE3EF;
+}
+html, body {
+  margin: 0; padding: 0; width: 210mm;
+  background: #FFFFFF;               /* flow pages are white; dark pages are fixed-height */
+  color: var(--text);
+  font-family: 'PT Serif', 'Noto Serif', 'Liberation Serif', 'DejaVu Serif', serif;
+  font-size: 15px; line-height: 1.62;
+  line-break: strict; word-break: normal; overflow-wrap: break-word;
+}
+@media screen {
+  html { height: auto; display: flex; justify-content: center; background: #10131a; }
+  body { transform-origin: top center; margin: 20px auto; box-shadow: 0 8px 40px rgba(0,0,0,.5); }
+}
+
+/* ── Cover ─────────────────────────────────────────────────────────────── */
+.front-page {
+  width: 210mm; height: 297mm; box-sizing: border-box;
+  break-after: page; overflow: hidden; position: relative;
+  background:
+    radial-gradient(circle 8px at 691px 125px, #D4AF37 0 7px, transparent 8px),
+    radial-gradient(circle 5px at 584px 56px, #59C2FF 0 4px, transparent 5px),
+    radial-gradient(circle 4px at 154px 950px, #FF7A9E 0 3px, transparent 4px),
+    radial-gradient(circle 210px at 87% 9%, transparent 206px, rgba(212,175,55,.30) 208px, rgba(212,175,55,.30) 210px, transparent 212px),
+    radial-gradient(circle 130px at 74% 3%, transparent 126px, rgba(89,194,255,.26) 128px, rgba(89,194,255,.26) 130px, transparent 132px),
+    radial-gradient(circle 280px at 8% 94%, transparent 276px, rgba(212,175,55,.18) 278px, rgba(212,175,55,.18) 280px, transparent 282px),
+    linear-gradient(160deg, #0E2145 0%, #0A1730 62%, #081226 100%);
+  color: #E9EEF8;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 58px;
+}
+.fp-kicker {
+  display: flex; align-items: center; gap: 14px;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.5px; letter-spacing: 3.5px; color: #F0D98C; font-weight: 700;
+}
+.fp-title {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 34px; line-height: 1.16; font-weight: 700; color: #F4F7FD;
+  margin: 26px 0 12px 0; max-width: 156mm;
+}
+.fp-subtitle-ru {
+  font-size: 18.5px; line-height: 1.4; color: #D4AF37; font-style: italic;
+  max-width: 156mm; margin-bottom: 34px;
+}
+.fp-meta {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 9px 26px;
+  max-width: 156mm;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.5px; line-height: 1.45;
+  border-top: 1px solid rgba(212,175,55,.35);
+  border-bottom: 1px solid rgba(212,175,55,.35);
+  padding: 16px 2px;
+}
+.fp-meta .k { color: #8FA3C4; letter-spacing: 1.6px; font-size: 10.5px; text-transform: uppercase; }
+.fp-meta .v { color: #E9EEF8; margin-top: 2px; }
+.fp-abstract {
+  max-width: 156mm; margin-top: 26px; font-size: 12.5px; line-height: 1.6;
+  color: #B9C6DE; font-style: italic;
+}
+.fp-foot {
+  position: absolute; left: 58px; right: 58px; bottom: 40px;
+  display: flex; justify-content: space-between; align-items: flex-end;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 11px; letter-spacing: 2px; color: #8FA3C4; text-transform: uppercase;
+}
+.fp-foot b { color: #F0D98C; font-weight: 700; }
+
+/* ── Flowing content ───────────────────────────────────────────────────── */
+.main-content { background: #FFFFFF; padding: 15mm 16mm 13mm 16mm; }
+
+h1, h2, h3, h4 {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  color: #0A1730; line-height: 1.25;
+  break-after: avoid; page-break-after: avoid;
+}
+.main-content h1 { font-size: 24px; margin: 6px 0 4px 0; }
+.main-content h2 {
+  font-size: 19.5px; margin: 26px 0 10px 0; padding-left: 12px;
+  border-left: 4px solid #D4AF37;
+}
+.main-content h3 { font-size: 16px; margin: 18px 0 8px 0; }
+.main-content h4 { font-size: 14.5px; margin: 14px 0 6px 0; color: #2A3A55; }
+p { margin: 0 0 9px 0; text-align: justify; hyphens: auto; }
+strong { color: #0A1730; }
+em { color: inherit; }
+a { color: #0E2145; text-decoration: none; border-bottom: 1px solid #D4AF37; }
+ul, ol { margin: 4px 0 10px 0; padding-left: 22px; }
+li { margin-bottom: 4px; break-inside: avoid; text-align: left; }
+
+table {
+  width: 100%; border-collapse: collapse; margin: 10px 0 14px 0;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 12.3px; line-height: 1.4;
+}
+thead { display: table-header-group; }
+tr { break-inside: avoid; page-break-inside: avoid; }
+th {
+  background: #2A3A55; color: #FFFFFF; text-align: left;
+  padding: 6px 9px; font-weight: 700; border: none;
+}
+td { padding: 5px 9px; border-bottom: 1px solid #DCE3EF; vertical-align: top; }
+tbody tr:nth-child(odd) td { background: #F2F5FA; }
+table, .table-wrap { break-inside: auto; }
+thead + tbody tr:first-child { break-before: avoid; }
+
+pre {
+  background: #F5F7FB; border: 1px solid #DCE3EF; border-left: 3px solid #D4AF37;
+  padding: 10px 13px; margin: 10px 0 14px 0; border-radius: 4px;
+  font-family: 'JetBrains Mono', 'DejaVu Sans Mono', 'Liberation Mono', monospace;
+  font-size: 11.6px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: break-word;
+  break-inside: avoid; page-break-inside: avoid;
+}
+code {
+  font-family: 'JetBrains Mono', 'DejaVu Sans Mono', 'Liberation Mono', monospace;
+  font-size: 12.6px; background: #F5F7FB; padding: 1px 4px; border-radius: 3px;
+}
+pre code { background: transparent; padding: 0; font-size: 11.6px; }
+
+blockquote {
+  margin: 10px 0 12px 0; padding: 8px 14px; border-left: 3px solid #D4AF37;
+  background: #F5F7FB; color: #0E2145; font-style: italic;
+  break-inside: avoid;
+}
+hr { border: none; border-top: 1px solid #DCE3EF; margin: 16px 0; }
+
+/* equations */
+.katex-display { margin: 12px 0 14px 0; max-width: 100%; overflow: hidden auto; }
+.eq-block { break-inside: avoid; page-break-inside: avoid; }
+
+/* language part banners */
+.part-banner {
+  break-inside: avoid; break-after: avoid;
+  margin: 26px 0 14px 0; padding: 13px 18px;
+  background: #0E2145; color: #F0D98C; border-radius: 6px;
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+}
+.part-banner .pb-title { font-size: 16.5px; font-weight: 700; letter-spacing: 1.2px; }
+.part-banner .pb-sub { font-size: 11.5px; color: #8FA3C4; margin-top: 3px; letter-spacing: .4px; }
+
+/* colophon */
+.ending {
+  width: 210mm; height: 297mm; box-sizing: border-box;
+  break-before: page; overflow: hidden; position: relative;
+  background: linear-gradient(200deg, #0E2145 0%, #0A1730 60%, #081226 100%);
+  color: #E9EEF8;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 58px;
+}
+.ending .colophon-line { max-width: 150mm; font-size: 13.5px; line-height: 1.7; color: #B9C6DE; }
+.ending .colophon-line b { color: #F0D98C; }
+.ending .end-rule { width: 64px; height: 26px; margin: 10px 0 8px 0;
+  background: linear-gradient(90deg, #D4AF37 0 64px, transparent 64px) top/100% 6px no-repeat; }
+.ending .end-title {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 26px; font-weight: 700; color: #F4F7FD; letter-spacing: 1px;
+}
+.ending .end-small {
+  font-family: 'PT Sans', 'Liberation Sans', 'DejaVu Sans', sans-serif;
+  font-size: 11.5px; color: #8FA3C4; letter-spacing: 2px; text-transform: uppercase;
+  margin-top: 26px; line-height: 2;
+}
+</style>
+</head>
+<body>
+
+<div class="front-page">
+  <div class="fp-kicker"><span>TRIVORTEX RESEARCH PROGRAM · TRX-02</span></div>
+  <div class="fp-title">Resonant Three-Wave Interaction (Manley–Rowe, χ⁽²⁾ Optics)</div>
+  <div class="fp-subtitle-ru">Резонансное трёхволновое взаимодействие (Мэнли–Роу, χ⁽²⁾-оптика)</div>
+  <div class="fp-meta"><div><div class="k">Author</div><div class="v">Isaev Iskhak Khamzatovich<br><span style="color:#8FA3C4">ORCID 0009-0003-7299-0701</span></div></div><div><div class="k">DOI</div><div class="v">10.5281/zenodo.21825394</div></div><div><div class="k">Study</div><div class="v">TRX-02</div></div><div><div class="k">Date</div><div class="v">2026-10-06</div></div><div><div class="k">Code</div><div class="v"><code style="background:rgba(212,175,55,.12);color:#F0D98C;padding:1px 5px;border-radius:3px">code/trx02_three_wave_mixing.py</code></div></div><div><div class="k">Data</div><div class="v"><code style="background:rgba(212,175,55,.12);color:#F0D98C;padding:1px 5px;border-radius:3px">results/trx02_results.json</code></div></div></div>
+  <div class="fp-abstract">This monograph treats the resonant three-wave interaction in a lossless, perfectly phase-matched χ⁽²⁾ crystal — the canonical three-body problem of nonlinear optics. Three complex amplitudes (pump, signal, idler) obey the equal-coupling amplitude equations, a Hamiltonian system canonically equivalent to the Euler top and hence to the Kirchhoff three-vortex problem at the core of TRIVORTEX. The study verifies the integrable structure to machine precision: over T = 50 — roughly 8.8 full exchange cycles — the Manley–Rowe invariants drift by at most 5.329071e-15, more than four orders below the 1e-10 acceptance tolerance; the exchange is exactly periodic with T_ex = 5.650961242, consecutive periods agreeing to 8.7e-8; the pump undergoes genuine full depletion, collapsing to |a₃|² = 6.3e-5 (99.994% of its peak 1.04 removed) and reviving with error 2.4e-15; and the degenerate channel reproduces the closed-form conversion law η(t) = tanh²(At) to 2.220446e-16 — one unit in the last place of double precision.</div>
+  <div class="fp-foot"><span>Monograph Edition · bilingual RU + EN</span><span><b>TRIVORTEX</b> · TRIVORTEX · v1.0.0 · 2026</span></div>
+</div>
+<div class="main-content"><div class="part-banner"><div class="pb-title">PART I · English Monograph</div><div class="pb-sub">Resonant Three-Wave Interaction (Manley–Rowe, χ⁽²⁾ Optics)</div></div><p><em>TRIVORTEX Research Program · v1.0.0 · Monograph Edition</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Study</td>
+<td>TRX-02</td>
+</tr>
+<tr>
+<td>Program</td>
+<td>TRIVORTEX — The Three-Body Problem in the Vortex Model</td>
+</tr>
+<tr>
+<td>Author</td>
+<td>Isaev Iskhak Khamzatovich (ORCID 0009-0003-7299-0701)</td>
+</tr>
+<tr>
+<td>DOI</td>
+<td>10.5281/zenodo.21825394</td>
+</tr>
+<tr>
+<td>Date</td>
+<td>2026-10-06</td>
+</tr>
+<tr>
+<td>Code</td>
+<td>`code/trx02_three_wave_mixing.py`</td>
+</tr>
+<tr>
+<td>Data</td>
+<td>`results/trx02_results.json`</td>
+</tr>
+</tbody>
+</table>
+<h2>Abstract</h2>
+<p>This monograph treats the resonant three-wave interaction in a lossless, perfectly phase-matched χ<sup>(2)</sup> crystal — the canonical three-body problem of nonlinear optics. Three complex amplitudes (pump, signal, idler) obey the equal-coupling amplitude equations, a Hamiltonian system canonically equivalent to the Euler top and hence to the Kirchhoff three-vortex problem at the core of TRIVORTEX. The study verifies the integrable structure to machine precision: over T = 50 — roughly 8.8 full exchange cycles — the Manley–Rowe invariants drift by at most 5.329071e-15, more than four orders below the 1e-10 acceptance tolerance; the exchange is exactly periodic with T_ex = 5.650961242, consecutive periods agreeing to 8.7e-8; the pump undergoes genuine full depletion, collapsing to |a<sub>3</sub>|<sup>2</sup> = 6.3e-5 (99.994% of its peak 1.04 removed) and reviving with error 2.4e-15; and the degenerate channel reproduces the closed-form conversion law η(t) = tanh<sup>2</sup>(At) to 2.220446e-16 — one unit in the last place of double precision. A sweep over the initial pump amplitude shows the exchange period monotonically tunable from 9.03 to 3.56. All seven acceptance checks pass.</p>
+<h2>Contents</h2>
+<ol>
+<li>Abstract</li>
+<li>
+<ol>
+<li>Introduction and historical context</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>Physical formulation</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>Mathematical model</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li>Connection to the TRIVORTEX framework</li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li>Numerical method</li>
+</ol>
+</li>
+<li>
+<ol start="6">
+<li>Results and analysis</li>
+</ol>
+</li>
+<li>
+<ol start="7">
+<li>Discussion</li>
+</ol>
+</li>
+<li>
+<ol start="8">
+<li>Conclusions</li>
+</ol>
+</li>
+<li>
+<ol start="9">
+<li>References
+Appendix A. Parameter table
+Appendix B. Reproduction</li>
+</ol>
+</li>
+</ol>
+<h2>1. Introduction and historical context</h2>
+<p>The story begins with the laser itself: in 1961 Franken, Hill, Peters and Weinreich observed second-harmonic generation — light emerging from a quartz crystal at exactly twice the ruby laser frequency — and founded nonlinear optics. Within a year, Armstrong, Bloembergen, Ducuing and Pershan (1962) wrote down the coupled-wave equations that remain the working language of the field, and Kroll (1962) proposed parametric amplification in extended media. The first optical parametric oscillator of Giordmaine and Miller (1965) in LiNbO<sub>3</sub> turned the three-wave interaction into a practical, tunable light source, a role parametric devices still play today.</p>
+<p>The conservation laws of the field are older than the optical realization. Manley and Rowe (1956) derived their general energy relations for nonlinear elements in the microwave era, and they transfer verbatim to optics: combinations of the photon fluxes in the interacting waves stay constant. In the resonant three-wave system these Manley–Rowe relations are not merely bookkeeping — they are the exact invariants that make the dynamics integrable, the direct analogue of the circulation integrals of ideal-fluid vortex motion.</p>
+<p>The integrability itself became a classical subject. Kaup, Reiman and Bers (1979) systematized the space-time evolution of nonlinear three-wave interactions in their Reviews of Modern Physics survey, exhibiting the soliton solutions and the reduction of the system to integrable canonical forms; the equal-coupling case is canonically equivalent to the Euler top, the torque-free rigid body. Modern relevance is easy to list: optical parametric oscillators and amplifiers, squeezed-light sources for gravitational-wave detectors, terahertz generation and frequency-comb technology all run on precisely this three-wave engine.</p>
+<p>For TRIVORTEX the relevance is structural. The program's core is an integrable triad — three Kirchhoff vortices with quadratic conservation laws and a periodic choreography (Theorem 3.1, with its closed form). The resonant three-wave system is that triad's optical twin: quadratic invariants (Manley–Rowe), a periodic choreography (pump depletion and revival with period T_ex), and a closed-form anchor (the tanh<sup>2</sup> law of second-harmonic generation). Verifying this twin to machine precision is the natural second step of the program, immediately after the celestial twin of TRX-01.</p>
+<h2>2. Physical formulation</h2>
+<p>The physical system is a χ<sup>(2)</sup> nonlinear crystal (e.g. MgO:LiNbO<sub>3</sub>) supporting three collinear plane waves: the pump at ω<sub>3</sub>, the signal at ω<sub>1</sub> and the idler at ω<sub>2</sub>, with the resonance conditions ω<sub>3</sub> = ω<sub>1</sub> + ω<sub>2</sub> (energy matching) and k<sub>3</sub> = k<sub>1</sub> + k<sub>2</sub>, i.e. Δk = 0 (momentum matching). In the photon picture the nonlinear polarization converts one pump photon into a signal–idler pair and back; in the classical picture the three complex amplitudes are coupled by the second-order susceptibility and exchange flux while the medium itself stays passive and lossless.</p>
+<p>With equal normalized couplings the flux exchange becomes the exact optical image of torque-free rigid-body rotation (the Euler top): the photon fluxes |a_k|<sup>2</sup> play the role of squared angular-momentum components, the Manley–Rowe invariants fix the invariant planes, and the trajectory is a closed periodic cycle on their intersection. The pump empties into the signal–idler pair and refills again — the exchange period T_ex is the period of that choreography — and the degenerate channel a<sub>1</sub> = a<sub>2</sub> (second-harmonic generation) reduces to a one-line closed form used as the verification anchor.</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a<sub>1</sub>(0), a<sub>2</sub>(0)</td>
+<td>0.2, 0.3 (real)</td>
+<td>signal and idler seed amplitudes</td>
+</tr>
+<tr>
+<td>a<sub>3</sub>(0)</td>
+<td>1.0·i (phase π/2)</td>
+<td>pump seed; phase chosen so Im(Z) ≠ 0</td>
+</tr>
+<tr>
+<td>couplings γ<sub>1</sub>, γ<sub>2</sub>, γ<sub>3</sub></td>
+<td>1, 1, 1 (normalized)</td>
+<td>equal lossless χ<sup>(2)</sup> coupling</td>
+</tr>
+<tr>
+<td>phase matching</td>
+<td>Δk = 0</td>
+<td>perfect collinear matching, no detuning</td>
+</tr>
+<tr>
+<td>integration</td>
+<td>T = 50, DOP853, rtol = atol = 1e-13</td>
+<td>max_step 0.02, dense output</td>
+</tr>
+<tr>
+<td>SHG channel</td>
+<td>s(0) = A = 1, p(0) = 0</td>
+<td>degenerate limit for the tanh<sup>2</sup> anchor</td>
+</tr>
+</tbody>
+</table>
+<h2>3. Mathematical model</h2>
+<p>Starting from Maxwell's equations with the second-order nonlinear polarization P_NL = ε<sub>0</sub>χ<sup>(2)</sup>E<sup>2</sup>, one inserts the three monochromatic waves and applies the slowly-varying-envelope approximation. Under perfect phase matching Δk = 0 the backward and third-order terms drop, and after the standard flux normalization each wave is described by a complex amplitude a_k with |a_k|<sup>2</sup> proportional to the photon flux; the coupling strengths become equal integers that scale out to 1. The result is the resonant system (E1), which is Hamiltonian with energy H = a<sub>1</sub>a<sub>2</sub>a<sub>3</sub><em> + a<sub>1</sub></em>a<sub>2</sub>*a<sub>3</sub> — the optical image of a rigid body whose rotation axes are exchanged one photon pair at a time.</p>
+<p>The invariants (E2) follow by direct substitution: differentiating |a<sub>1</sub>|<sup>2</sup> + |a<sub>3</sub>|<sup>2</sup> with the equations (E1) gives 2Re(a<sub>1</sub><em>·ia<sub>2</sub></em>a<sub>3</sub>) + 2Re(a<sub>3</sub><em>·ia<sub>1</sub>a<sub>2</sub>), and since a<sub>3</sub></em>a<sub>1</sub>a<sub>2</sub> is the conjugate of a<sub>1</sub>a<sub>2</sub>a<sub>3</sub>* the two terms cancel identically — likewise for I<sub>2</sub> and I<sub>3</sub>. Geometrically, the trajectory is confined to the intersection of three invariant surfaces in the six real-dimensional amplitude space, which reduces the dynamics to a single periodic degree of freedom: closed orbits, exact period T_ex, and no chaos.</p>
+<p>The degenerate channel fixes a<sub>1</sub> = a<sub>2</sub> = s and a<sub>3</sub> = p. The system collapses to ds/dt = i p s*, dp/dt = i s<sup>2</sup> with the single invariant |s|<sup>2</sup> + |p|<sup>2</sup> = const, and with s(0) = A, p(0) = 0 it integrates in elementary functions to s = A sech(At), p = iA tanh(At), giving the plane-wave conversion law η = tanh<sup>2</sup>(At) of (E3). This closed form plays the role of the exact anchor: any integrator, coupling normalization or phase convention must reproduce it, and the study uses it exactly so.</p>
+<p><strong>Notation</strong></p>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a<sub>1</sub>, a<sub>2</sub>, a<sub>3</sub></td>
+<td>complex amplitudes of signal, idler and pump</td>
+</tr>
+<tr>
+<td>a*</td>
+<td>complex conjugate</td>
+</tr>
+<tr>
+<td></td>
+<td>a_k</td>
+</tr>
+<tr>
+<td>I<sub>1</sub>, I<sub>2</sub>, I<sub>3</sub></td>
+<td>Manley–Rowe invariants</td>
+</tr>
+<tr>
+<td>γ_k</td>
+<td>coupling coefficients (all 1 after normalization)</td>
+</tr>
+<tr>
+<td>Δk</td>
+<td>phase mismatch k<sub>3</sub> − k<sub>1</sub> − k<sub>2</sub></td>
+</tr>
+<tr>
+<td>T_ex</td>
+<td>exchange period between successive pump maxima</td>
+</tr>
+<tr>
+<td>η</td>
+<td>SHG conversion efficiency</td>
+</tr>
+<tr>
+<td>A</td>
+<td>initial amplitude of the SHG channel</td>
+</tr>
+<tr>
+<td>t, T</td>
+<td>time and integration span (dimensionless)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>(E1)</strong> Resonant three-wave amplitude equations (equal couplings, Δk = 0).</p>
+<p>$$\frac{da_1}{dt} = i\,a_2^{*}a_3, \qquad \frac{da_2}{dt} = i\,a_1^{*}a_3, \qquad \frac{da_3}{dt} = i\,a_1 a_2$$</p>
+<p><strong>(E2)</strong> Manley–Rowe invariants (photon-pair bookkeeping).</p>
+<p>$$I_1 = |a_1|^2 + |a_3|^2, \qquad I_2 = |a_2|^2 + |a_3|^2, \qquad I_3 = |a_1|^2 - |a_2|^2$$</p>
+<p><strong>(E3)</strong> Degenerate (SHG) channel: closed-form plane-wave conversion.</p>
+<p>$$\eta(t) = \tanh^2(At), \qquad s = A\,\mathrm{sech}(At), \qquad p = iA\,\tanh(At)$$</p>
+<h2>4. Connection to the TRIVORTEX framework</h2>
+<p>The mapping to TRIVORTEX is one-to-one at the structural level. The three complex amplitudes form an integrable triad exactly as three Kirchhoff vortices do: the Manley–Rowe relations I<sub>1</sub>, I<sub>2</sub>, I<sub>3</sub> play the role of the vortex integrals H, P, Q, I, the periodic pump depletion–revival cycle is the optical choreography that mirrors the vortex triangle's rotation, and the Euler-top equivalence of the equal-coupling case is the same integrable family that gives the Kirchhoff problem its elliptic solutions. Even the verification style is shared: the tanh<sup>2</sup> law anchors the numerics with a closed form, in the same spirit as the closed form of Theorem 3.1, and the photon-pair bookkeeping of the Manley–Rowe relations is the precise optical analogue of circulation bookkeeping in the vortex model. TRX-02 therefore serves as the optics-side twin of the program core and feeds the Kerr extension (TRX-04), the vortex verification (TRX-09) and the radiating three-body dynamics (TRX-11).</p>
+<table>
+<thead>
+<tr>
+<th>Quantity in this study</th>
+<th>TRIVORTEX analog</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Three complex amplitudes a<sub>1</sub>, a<sub>2</sub>, a<sub>3</sub></td>
+<td>three vortices Γ<sub>1</sub>, Γ<sub>2</sub>, Γ<sub>3</sub></td>
+<td>both are integrable triads with quadratic invariants</td>
+</tr>
+<tr>
+<td>Manley–Rowe invariants I<sub>1</sub>, I<sub>2</sub>, I<sub>3</sub></td>
+<td>vortex integrals H, P, Q, I</td>
+<td>quadratic conservation laws that fix the orbit</td>
+</tr>
+<tr>
+<td>Pump depletion / revival cycle T_ex</td>
+<td>choreographic exchange of the vortex triangle</td>
+<td>periodic circulation of the "energy" around the triad</td>
+</tr>
+<tr>
+<td>Euler-top equivalence</td>
+<td>Kirchhoff three-vortex equivalence</td>
+<td>the same integrable family; shared elliptic solutions</td>
+</tr>
+<tr>
+<td>SHG closed form tanh<sup>2</sup>(At)</td>
+<td>closed form of Theorem 3.1</td>
+<td>an exact solution anchoring the numerics</td>
+</tr>
+</tbody>
+</table>
+<h2>5. Numerical method</h2>
+<p>The three complex amplitudes are split into six real ODEs (real and imaginary parts) and integrated with an explicit Dormand–Prince 8(5,3) scheme at rtol = atol = 1e-13, max_step = 0.02, over t ∈ [0, 50] with dense output. The Manley–Rowe invariants are evaluated pointwise on 2500 samples along the trajectory, and their maximal excursion from the initial values (I<sub>1</sub> = 1.04, I<sub>2</sub> = 1.09, I<sub>3</sub> = −0.05) is recorded as the drift check; the same dense solution supplies the photon-flux series used by the figures.</p>
+<p>The exchange period is extracted from the pump flux |a<sub>3</sub>|<sup>2</sup>: local maxima are detected on a dense grid of 20001 samples, then refined by bounded scalar minimization with xatol = 1e-13. Two consecutive refined maxima give T_ex1 = 5.650961242 and T_ex2 = 5.650961155 — repeatability 8.7e-8 against the 1e-6 tolerance — and the flux at those maxima differs by 2.4e-15 (the revival check). Full depletion is tested against the 5% threshold: the pump minimum on the dense grid reaches 6.3e-5 of the peak flux 1.04.</p>
+<p>The degenerate channel is integrated at the same tolerance from s(0) = 1, p(0) = 0 and compared with η(t) = tanh<sup>2</sup>(At) on 60 points over t ∈ [0.05, 3]; the maximal deviation is the SHG check. The fig03 parameter sweep (17 initial pump amplitudes in [0.4, 2.0], T = 50, rtol = 1e-10) is computed only in --figures mode and stored in the figures block of the JSON protocol. Every check stores value, target, tolerance, unit and pass flag; runs are deterministic, need no network access and no random seeds.</p>
+<h2>6. Results and analysis</h2>
+<h3>fig01 resonance geometry</h3>
+<p><img alt="Overview of the model: resonance geometry of the wave triad and the initial photon-flux bookkeeping." src="../figures/fig01_resonance_geometry.png" /></p>
+<p><em>Overview of the model: resonance geometry of the wave triad and the initial photon-flux bookkeeping.</em>
+Panel (a) shows the photon-energy diagram of the resonant triad: the pump photon at ω<sub>3</sub> = ω<sub>1</sub> + ω<sub>2</sub> splits into a signal–idler pair (down-conversion) with the reverse sum-frequency channel; panel (b) stacks the initial fluxes |a<sub>1</sub>|<sup>2</sup> = 0.04, |a<sub>2</sub>|<sup>2</sup> = 0.09, |a<sub>3</sub>|<sup>2</sup> = 1.00 into the Manley–Rowe pairs I<sub>1</sub> = 1.04 and I<sub>2</sub> = 1.09.</p>
+<h3>fig02 pump depletion</h3>
+<p><img alt="Headline result: periodic pump depletion and revival over T = 50, with one exchange cycle enlarged." src="../figures/fig02_pump_depletion.png" /></p>
+<p><em>Headline result: periodic pump depletion and revival over T = 50, with one exchange cycle enlarged.</em>
+Over T = 50 the pump makes about 8.8 full cycles (T_ex = 5.650961242): it collapses to |a<sub>3</sub>|<sup>2</sup> = 6.3e-5 — 99.994% of its peak 1.04 removed — and revives with error 2.4e-15; the zoom shows the refined maxima and the exchange period arrow.</p>
+<h3>fig03 parameter sweep</h3>
+<p><img alt="Parameter sweep over the initial pump amplitude |a&lt;sub&gt;3&lt;/sub&gt;(0)| ∈ [0.4, 2.0]: exchange period and depletion depth." src="../figures/fig03_parameter_sweep.png" /></p>
+<p><em>Parameter sweep over the initial pump amplitude |a<sub>3</sub>(0)| ∈ [0.4, 2.0]: exchange period and depletion depth.</em>
+Across 17 runs (T = 50, rtol = 1e-10) the exchange period decreases monotonically from 9.028821 to 3.556606, while the depletion depth min/max of |a<sub>3</sub>|<sup>2</sup> stays below 5.2e-6 — every regime of the sweep is pumped to essentially complete conversion.</p>
+<h3>fig04 invariants shg</h3>
+<p><img alt="Dynamics diagnostics: Manley–Rowe residuals along the orbit and the SHG closed-form comparison." src="../figures/fig04_invariants_shg.png" /></p>
+<p><em>Dynamics diagnostics: Manley–Rowe residuals along the orbit and the SHG closed-form comparison.</em>
+The invariant residuals stay at the 1e-15 level (max 5.3e-15 against the 1e-10 tolerance), and the degenerate channel tracks η(t) = tanh<sup>2</sup>(At) to 2.220446e-16 — one unit in the last place of double precision.</p>
+<p><strong>Invariants.</strong> Over the full run T = 50 (about 8.8 exchange cycles) the Manley–Rowe drifts are 5.329071e-15 for I<sub>1</sub>, 4.218847e-15 for I<sub>2</sub> and 4.496403e-15 for I<sub>3</sub> — more than four orders of magnitude below the 1e-10 acceptance tolerance and at the round-off level of double precision. The orbit is therefore exactly confined to the intersection of the invariant surfaces, which is the geometric content of integrability for the three-wave triad.</p>
+<p><strong>Periodic exchange.</strong> The pump flux oscillates with the refined exchange period T_ex = 5.650961242; consecutive periods agree to 8.743724e-08, and the flux at successive maxima reproduces itself to 2.442491e-15. Between maxima the pump collapses to |a<sub>3</sub>|<sup>2</sup> = 6.32941e-05 — 99.994% of its peak value 1.04 removed — so the cycle is a genuine full-depletion–revival choreography, not a shallow modulation.</p>
+<p><strong>Parameter sweep.</strong> Sweeping the initial pump amplitude over [0.4, 2.0] in 17 runs, the exchange period decreases monotonically from 9.028821 to 3.556606: stronger pumps exchange photons faster. The depletion depth (min/max of |a<sub>3</sub>|<sup>2</sup> over each run) stays between 4.2e-10 and 5.2e-6 across the whole grid — every regime of the sweep reaches essentially complete conversion, and the sweep invariant drift (≤ 1.5e-9 at the looser sweep tolerance 1e-10) confirms that the map itself is clean.</p>
+<p><strong>Closed-form anchor.</strong> In the degenerate channel the numerical conversion efficiency follows η(t) = tanh<sup>2</sup>(At) with maximal deviation 2.220446e-16 over the 60 sample points — one unit in the last place of double precision. The exact solution validates the normalization, the phase convention and the integrator in one shot; it is the optical counterpart of anchoring the vortex choreography on the closed form of Theorem 3.1.</p>
+<h3>Verification summary</h3>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Recorded value</th>
+<th>Target</th>
+<th>Tolerance</th>
+<th>Pass</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>`ManleyRowe_I13_drift`</td>
+<td>5.32907e-15</td>
+<td>0</td>
+<td>1e-10</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`ManleyRowe_I23_drift`</td>
+<td>4.21885e-15</td>
+<td>0</td>
+<td>1e-10</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`ManleyRowe_I12diff_drift`</td>
+<td>4.4964e-15</td>
+<td>0</td>
+<td>1e-10</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`Pump_period_repeatability`</td>
+<td>8.74372e-08</td>
+<td>0</td>
+<td>1e-06</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`Pump_revival_error`</td>
+<td>2.44249e-15</td>
+<td>0</td>
+<td>1e-08</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`Pump_full_depletion_occurs`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`SHG_tanh2_conversion_error`</td>
+<td>2.22045e-16</td>
+<td>0</td>
+<td>1e-08</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p><em>(status: </em><em>PASS</em><em>, mode: full)</em></p>
+<h2>7. Discussion</h2>
+<p>The model is deliberately minimal: equal couplings, plane waves, perfect phase matching and no losses. Within these assumptions every conclusion is an exact statement about the governing equations rather than a simulation of a specific crystal. The natural extensions each preserve the verification style established here: detuning (Δk ≠ 0 adds a linear phase term and breaks the strict periodicity), group-velocity mismatch for pulses, unequal couplings (the asymmetric Euler top), cavity boundary conditions (the driven OPO), and quantum seeding by spontaneous parametric down-conversion.</p>
+<p>The numerical regime is stated honestly. The verification numbers come exclusively from rtol = atol = 1e-13 runs; the fig03 sweep uses the looser 1e-10 because the deep pump minima are sharp features that dominate integration cost, and its outputs are stored as figure data rather than acceptance checks. Physical units map back through the standard χ<sup>(2)</sup> normalization (for MgO:LiNbO<sub>3</sub>, |χ<sup>(2)</sup>| ≈ 4 pm/V at 1 µm), so T_ex can be translated into a crystal length once the input intensities are fixed.</p>
+<p>Within the program, this study anchors the integrable-triad block of the optics line: TRX-04 extends the pair interaction to spatial Kerr solitons (the soliton molecule), TRX-09 verifies the vortex twin of the same integrable family, and TRX-11 keeps the Hamiltonian three-body core but adds radiation. Together with TRX-01 and TRX-12 they close the loop between the celestial, the optical and the vortex formulations of TRIVORTEX.</p>
+<h2>8. Conclusions</h2>
+<ol>
+<li>The equal-coupling three-wave system conserves the Manley–Rowe invariants to ≤ 5.329071e-15 over T = 50 (tolerance 1e-10) — machine-level photon bookkeeping.</li>
+<li>Pump depletion and revival is exactly periodic: T_ex = 5.650961242, consecutive periods agreeing to 8.743724e-08 and the revival flux reproduced to 2.442491e-15.</li>
+<li>The pump undergoes genuine full depletion, collapsing to |a<sub>3</sub>|<sup>2</sup> = 6.32941e-05 — 99.994% of its peak flux 1.04 removed — before reviving.</li>
+<li>The exchange period is tunable by the pump amplitude: T_ex decreases monotonically from 9.028821 to 3.556606 over |a<sub>3</sub>(0)| ∈ [0.4, 2.0], with depletion depth ≤ 5.2e-6 across the sweep.</li>
+<li>The degenerate (SHG) channel reproduces the closed form η(t) = tanh<sup>2</sup>(At) to 2.220446e-16 — one unit in the last place of double precision.</li>
+<li>The system is canonically equivalent to the Euler top and hence to the Kirchhoff three-vortex problem, making TRX-02 the optical twin of the TRIVORTEX core.</li>
+</ol>
+<h2>9. References</h2>
+<ol>
+<li>Manley, J. M., Rowe, H. E. (1956). <em>Some general properties of nonlinear elements — Part I. General energy relations.</em> Proc. IRE 44, 904–913.</li>
+<li>Franken, P. A., Hill, A. E., Peters, C. W., Weinreich, G. (1961). <em>Generation of optical harmonics.</em> Phys. Rev. Lett. 7, 118–119.</li>
+<li>Armstrong, J. A., Bloembergen, N., Ducuing, J., Pershan, P. S. (1962). <em>Interactions between light waves in a nonlinear dielectric.</em> Phys. Rev. 127, 1918–1939.</li>
+<li>Kroll, N. M. (1962). <em>Parametric amplification in spatially extended media and application to the design of tunable oscillators.</em> Phys. Rev. 127, 1207–1213.</li>
+<li>Giordmaine, J. A., Miller, R. C. (1965). <em>Tunable coherent parametric oscillation in LiNbO<sub>3</sub> at optical frequencies.</em> Phys. Rev. Lett. 14, 973–976.</li>
+<li>Kaup, D. J., Reiman, A., Bers, A. (1979). <em>Space-time evolution of nonlinear three-wave interactions. I. Interactions in a homogeneous medium.</em> Rev. Mod. Phys. 51, 275–309.</li>
+<li>Boyd, R. W. (2008). <em>Nonlinear Optics</em>, 3rd ed., Academic Press.</li>
+</ol>
+<h3>BibTeX</h3>
+<p>```bibtex
+@article{manley1956,
+  author  = {Manley, J. M. and Rowe, H. E.},
+  title   = {Some general properties of nonlinear elements. Part {I}: General energy relations},
+  journal = {Proceedings of the IRE},
+  year    = {1956}, volume = {44}, number = {7}, pages = {904--913}}
+
+@article{armstrong1962,
+  author  = {Armstrong, J. A. and Bloembergen, N. and Ducuing, J. and Pershan, P. S.},
+  title   = {Interactions between light waves in a nonlinear dielectric},
+  journal = {Physical Review},
+  year    = {1962}, volume = {127}, pages = {1918--1939}}
+
+@article{kaup1979,
+  author  = {Kaup, D. J. and Reiman, A. and Bers, A.},
+  title   = {Space-time evolution of nonlinear three-wave interactions. {I}: Interactions in a homogeneous medium},
+  journal = {Reviews of Modern Physics},
+  year    = {1979}, volume = {51}, pages = {275--309}}
+
+@book{boyd2008,
+  author    = {Boyd, R. W.},
+  title     = {Nonlinear Optics},
+  edition   = {3rd},
+  publisher = {Academic Press}, year = {2008}}
+```</p>
+<h2>Appendix A. Parameter table</h2>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Value</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a<sub>1</sub>(0), a<sub>2</sub>(0)</td>
+<td>0.2, 0.3</td>
+<td>signal/idler seeds (real)</td>
+</tr>
+<tr>
+<td>a<sub>3</sub>(0)</td>
+<td>1.0·i</td>
+<td>pump seed, phase π/2</td>
+</tr>
+<tr>
+<td>γ<sub>1</sub>, γ<sub>2</sub>, γ<sub>3</sub></td>
+<td>1, 1, 1</td>
+<td>normalized couplings</td>
+</tr>
+<tr>
+<td>Δk</td>
+<td>0</td>
+<td>phase mismatch</td>
+</tr>
+<tr>
+<td>T</td>
+<td>50</td>
+<td>integration span of the main run</td>
+</tr>
+<tr>
+<td>rtol, atol</td>
+<td>1e-13</td>
+<td>DOP853 tolerances (main run)</td>
+</tr>
+<tr>
+<td>max_step</td>
+<td>0.02</td>
+<td>integrator step cap (main run)</td>
+</tr>
+<tr>
+<td>dense samples</td>
+<td>20001</td>
+<td>pump-maximum detection grid</td>
+</tr>
+<tr>
+<td>A</td>
+<td>1</td>
+<td>SHG seed amplitude</td>
+</tr>
+<tr>
+<td>sweep</td>
+<td></td>
+<td>a<sub>3</sub>(0)</td>
+</tr>
+</tbody>
+</table>
+<h2>Appendix B. Reproduction</h2>
+<p>```bash
+python3 research/TRX-02-three-wave-mixing/code/trx02_three_wave_mixing.py --smoke     # < 20 s
+python3 research/TRX-02-three-wave-mixing/code/trx02_three_wave_mixing.py              # full, 0.6 s
+python3 research/TRX-02-three-wave-mixing/code/trx02_three_wave_mixing.py --figures   # + 300-DPI figures
+```</p>
+<p>Full runtime on the reference machine: 0.6 s; smoke mode completes in under 20 seconds and is exercised by the repository CI.</p>
+<h2>Appendix C. Environment</h2>
+<p>Python ≥ 3.11, numpy ≥ 2.0, scipy ≥ 1.14, matplotlib ≥ 3.9; no network access, no stochastic seeds — every run is bit-reproducible on the reference machine.</p><div class="part-banner"><div class="pb-title">ЧАСТЬ II · Русская монография</div><div class="pb-sub">Резонансное трёхволновое взаимодействие (Мэнли–Роу, χ⁽²⁾-оптика)</div></div><div lang="ru"><p><em>Исследовательская программа TRIVORTEX · v1.0.0 · Издание монографий</em></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Исследование / Study</td>
+<td>TRX-02</td>
+</tr>
+<tr>
+<td>Программа</td>
+<td>TRIVORTEX — задача трёх тел в вихревой модели</td>
+</tr>
+<tr>
+<td>Автор</td>
+<td>Исаев Исхак Хамзатович (ORCID 0009-0003-7299-0701)</td>
+</tr>
+<tr>
+<td>DOI</td>
+<td>10.5281/zenodo.21825394</td>
+</tr>
+<tr>
+<td>Дата</td>
+<td>2026-10-06</td>
+</tr>
+<tr>
+<td>Код</td>
+<td>`code/trx02_three_wave_mixing.py`</td>
+</tr>
+<tr>
+<td>Данные</td>
+<td>`results/trx02_results.json`</td>
+</tr>
+</tbody>
+</table>
+<h2>Аннотация</h2>
+<p>Монография посвящена резонансному трёхволновому взаимодействию в кристалле χ<sup>(2)</sup> без потерь и с идеальным фазовым согласованием — канонической задаче трёх тел нелинейной оптики. Три комплексные амплитуды (накачка, сигнал, холостая волна) подчиняются уравнениям с равными связями — гамильтоновой системе, канонически эквивалентной волчку Эйлера и, следовательно, задаче Кирхгофа о трёх вихрях, составляющей ядро TRIVORTEX. Исследование верифицирует интегрируемую структуру с машинной точностью: за T = 50 — около 8.8 полных циклов обмена — инварианты Мэнли–Роу дрейфуют не более чем на 5.329071e-15, более чем на четыре порядка ниже допуска 1e-10; обмен строго периодичен с T_ex = 5.650961242, соседние периоды совпадают с точностью 8.7e-8; накачка испытывает подлинное полное истощение, проседая до |a<sub>3</sub>|<sup>2</sup> = 6.3e-5 (снято 99.994% пика 1.04) и возрождаясь с ошибкой 2.4e-15; вырожденный канал воспроизводит замкнутый закон конверсии η(t) = tanh<sup>2</sup>(At) с точностью 2.220446e-16 — одна единица последнего разряда двойной точности. Развёртка по начальной амплитуде накачки показывает монотонную перестройку периода обмена от 9.03 до 3.56. Все семь контрольных проверок проходят.</p>
+<h2>Содержание</h2>
+<p><strong>Краткие сведения</strong></p>
+<table>
+<thead>
+<tr>
+<th>Аспект</th>
+<th>Значение</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Блок</td>
+<td>Нелинейная оптика — исследование 02 из 12</td>
+</tr>
+<tr>
+<td>Модель</td>
+<td>резонансное трёхволновое взаимодействие в кристалле χ<sup>(2)</sup> (равные связи, Δk = 0)</td>
+</tr>
+<tr>
+<td>Ключевой инвариант</td>
+<td>инварианты Мэнли–Роу I<sub>1</sub>, I<sub>2</sub>, I<sub>3</sub></td>
+</tr>
+<tr>
+<td>Главный результат</td>
+<td>дрейф инвариантов ≤ 5.4e-15 за T = 50; ошибка SHG-формулы 2.2e-16</td>
+</tr>
+<tr>
+<td>Верификация</td>
+<td>7/7 проверок PASS (полный режим)</td>
+</tr>
+<tr>
+<td>Время выполнения</td>
+<td>0.6 с полный · &lt; 20 с smoke</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>Аннотация</li>
+<li>
+<ol>
+<li>Введение и исторический контекст</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>Физическая формулировка</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>Математическая модель</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li>Связь с фреймворком TRIVORTEX</li>
+</ol>
+</li>
+<li>
+<ol start="5">
+<li>Численный метод</li>
+</ol>
+</li>
+<li>
+<ol start="6">
+<li>Результаты и анализ</li>
+</ol>
+</li>
+<li>
+<ol start="7">
+<li>Обсуждение</li>
+</ol>
+</li>
+<li>
+<ol start="8">
+<li>Выводы</li>
+</ol>
+</li>
+<li>
+<ol start="9">
+<li>Список литературы
+Приложение A. Таблица параметров
+Приложение B. Воспроизведение</li>
+</ol>
+</li>
+</ol>
+<h2>1. Введение и исторический контекст</h2>
+<p>История начинается с самого лазера: в 1961 году Франкен, Хилл, Питерс и Вайнрайх наблюдали генерацию второй гармоники — свет, выходящий из кварцевого кристалла ровно на удвоенной частоте рубинового лазера, — и основали нелинейную оптику. Уже через год Армстронг, Блумберген, Дюкюэн и Першан (1962) записали уравнения связанных волн, которые до сих пор остаются рабочим языком области, а Кролл (1962) предложил параметрическое усиление в протяжённых средах. Первый оптический параметрический генератор Джордмейна и Миллера (1965) на LiNbO<sub>3</sub> превратил трёхволновое взаимодействие в практический перестраиваемый источник света — роль, которую параметрические приборы играют и сегодня.</p>
+<p>Законы сохранения этой области старше её оптической реализации. Мэнли и Роу (1956) вывели свои общие энергетические соотношения для нелинейных элементов ещё в микроволновую эпоху, и на оптику они переносятся дословно: комбинации потоков фотонов во взаимодействующих волнах остаются постоянными. В резонансной трёхволновой системе соотношения Мэнли–Роу — не просто бухгалтерия: это точные инварианты, делающие динамику интегрируемой, прямой аналог интегралов циркуляции вихревого движения идеальной жидкости.</p>
+<p>Сама интегрируемость стала классической темой. Кауп, Рейман и Берс (1979) систематизировали пространственно-временную эволюцию нелинейных трёхволновых взаимодействий в обзоре Reviews of Modern Physics, выписав солитонные решения и сведение системы к интегрируемым каноническим формам; случай равных связей канонически эквивалентен волчку Эйлера — свободному вращению твёрдого тела. Современная значимость перечисляется легко: оптические параметрические генераторы и усилители, источники сжатого света для гравитационно-волновых детекторов, генерация терагерца и технология частотных гребёнок работают ровно на этом трёхволновом двигателе.</p>
+<p>Для TRIVORTEX значимость структурна. Ядро программы — интегрируемая триада: три вихря Кирхгофа с квадратичными законами сохранения и периодической хореографией (теорема 3.1 с её замкнутой формой). Резонансная трёхволновая система — оптический близнец этой триады: квадратичные инварианты (Мэнли–Роу), периодическая хореография (истощение и возрождение накачки с периодом T_ex) и якорь в виде замкнутого решения (закон tanh<sup>2</sup> генерации второй гармоники). Верификация этого близнеца с машинной точностью — естественный второй шаг программы, сразу вслед за небесным близнецом TRX-01.</p>
+<h2>2. Физическая формулировка</h2>
+<p>Физическая система — нелинейный кристалл χ<sup>(2)</sup> (например, MgO:LiNbO<sub>3</sub>), в котором распространяются три коллинеарные плоские волны: накачка на ω<sub>3</sub>, сигнал на ω<sub>1</sub> и холостая волна на ω<sub>2</sub> с резонансными условиями ω<sub>3</sub> = ω<sub>1</sub> + ω<sub>2</sub> (согласование энергий) и k<sub>3</sub> = k<sub>1</sub> + k<sub>2</sub>, то есть Δk = 0 (согласование импульсов). На фотонном языке нелинейная поляризация превращает один фотон накачки в пару «сигнал — холостая волна» и обратно; на классическом языке три комплексные амплитуды связаны восприимчивостью второго порядка и обмениваются потоком, оставаясь в пассивной среде без потерь.</p>
+<p>При равных нормированных связях обмен потоком становится точным оптическим образом вращения свободного твёрдого тела (волчок Эйлера): потоки фотонов |a_k|<sup>2</sup> играют роль квадратов компонент момента импульса, инварианты Мэнли–Роу фиксируют инвариантные плоскости, а траектория — замкнутый периодический цикл на их пересечении. Накачка выливается в пару «сигнал — холостая волна» и вновь наполняется — период обмена T_ex и есть период этой хореографии, — а вырожденный канал a<sub>1</sub> = a<sub>2</sub> (генерация второй гармоники) сводится к однострочной замкнутой формуле, служащей верификационным якорем.</p>
+<table>
+<thead>
+<tr>
+<th>Параметр</th>
+<th>Значение</th>
+<th>Смысл</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a<sub>1</sub>(0), a<sub>2</sub>(0)</td>
+<td>0.2, 0.3 (вещественные)</td>
+<td>затравочные амплитуды сигнала и холостой волны</td>
+</tr>
+<tr>
+<td>a<sub>3</sub>(0)</td>
+<td>1.0·i (фаза π/2)</td>
+<td>затравка накачки; фаза выбрана так, что Im(Z) ≠ 0</td>
+</tr>
+<tr>
+<td>коэффициенты связи γ<sub>1</sub>, γ<sub>2</sub>, γ<sub>3</sub></td>
+<td>1, 1, 1 (нормированные)</td>
+<td>равная связь, среда без потерь</td>
+</tr>
+<tr>
+<td>фазовое согласование</td>
+<td>Δk = 0</td>
+<td>идеальное коллинеарное согласование, без расстройки</td>
+</tr>
+<tr>
+<td>интегрирование</td>
+<td>T = 50, DOP853, rtol = atol = 1e-13</td>
+<td>max_step 0.02, плотный вывод</td>
+</tr>
+<tr>
+<td>SHG-канал</td>
+<td>s(0) = A = 1, p(0) = 0</td>
+<td>вырожденный предел для эталона tanh<sup>2</sup></td>
+</tr>
+</tbody>
+</table>
+<h2>3. Математическая модель</h2>
+<p>Отправляясь от уравнений Максвелла с нелинейной поляризацией второго порядка P_NL = ε<sub>0</sub>χ<sup>(2)</sup>E<sup>2</sup>, подставляем три монохроматические волны и применяем приближение медленно меняющихся огибающих. При идеальном фазовом согласовании Δk = 0 обратные волны и члены третьего порядка выпадают, а после стандартной нормировки потоков каждая волна описывается комплексной амплитудой a_k, где |a_k|<sup>2</sup> пропорционален потоку фотонов; коэффициенты связи становятся равными целыми числами, которые масштабом сводятся к единице. Получается резонансная система (E1) — гамильтонова, с энергией H = a<sub>1</sub>a<sub>2</sub>a<sub>3</sub><em> + a<sub>1</sub></em>a<sub>2</sub>*a<sub>3</sub>: оптический образ твёрдого тела, меняющего оси вращения по одному фотонному паре за раз.</p>
+<p>Инварианты (E2) следуют прямой подстановкой: дифференцируя |a<sub>1</sub>|<sup>2</sup> + |a<sub>3</sub>|<sup>2</sup> по уравнениям (E1), получаем 2Re(a<sub>1</sub><em>·ia<sub>2</sub></em>a<sub>3</sub>) + 2Re(a<sub>3</sub><em>·ia<sub>1</sub>a<sub>2</sub>), а поскольку a<sub>3</sub></em>a<sub>1</sub>a<sub>2</sub> сопряжено к a<sub>1</sub>a<sub>2</sub>a<sub>3</sub>*, члены сокращаются тождественно — аналогично для I<sub>2</sub> и I<sub>3</sub>. Геометрически траектория удерживается на пересечении трёх инвариантных поверхностей в шестимерном вещественном пространстве амплитуд, что сводит динамику к одной периодической степени свободы: замкнутые орбиты, точный период T_ex и никакого хаоса.</p>
+<p>Вырожденный канал фиксирует a<sub>1</sub> = a<sub>2</sub> = s, a<sub>3</sub> = p. Система сворачивается к ds/dt = i p s*, dp/dt = i s<sup>2</sup> с единственным инвариантом |s|<sup>2</sup> + |p|<sup>2</sup> = const, а при s(0) = A, p(0) = 0 интегрируется в элементарных функциях: s = A sech(At), p = iA tanh(At), откуда плосковолновый закон конверсии η = tanh<sup>2</sup>(At) формулы (E3). Эта замкнутая форма играет роль точного якоря: любой интегратор, нормировка связи или фазовая конвенция обязаны её воспроизводить — исследование использует её именно так.</p>
+<p><strong>Нотация</strong></p>
+<table>
+<thead>
+<tr>
+<th>Символ</th>
+<th>Смысл</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a<sub>1</sub>, a<sub>2</sub>, a<sub>3</sub></td>
+<td>комплексные амплитуды сигнала, холостой волны и накачки</td>
+</tr>
+<tr>
+<td>a*</td>
+<td>комплексное сопряжение</td>
+</tr>
+<tr>
+<td></td>
+<td>a_k</td>
+</tr>
+<tr>
+<td>I<sub>1</sub>, I<sub>2</sub>, I<sub>3</sub></td>
+<td>инварианты Мэнли–Роу</td>
+</tr>
+<tr>
+<td>γ_k</td>
+<td>коэффициенты связи (после нормировки все равны 1)</td>
+</tr>
+<tr>
+<td>Δk</td>
+<td>фазовая расстройка k<sub>3</sub> − k<sub>1</sub> − k<sub>2</sub></td>
+</tr>
+<tr>
+<td>T_ex</td>
+<td>период обмена между соседними максимумами накачки</td>
+</tr>
+<tr>
+<td>η</td>
+<td>эффективность SHG-конверсии</td>
+</tr>
+<tr>
+<td>A</td>
+<td>начальная амплитуда SHG-канала</td>
+</tr>
+<tr>
+<td>t, T</td>
+<td>время и интервал интегрирования (безразмерные)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>(E1)</strong> Резонансные уравнения трёх волн (равные связи, Δk = 0).</p>
+<p>$$\frac{da_1}{dt} = i\,a_2^{*}a_3, \qquad \frac{da_2}{dt} = i\,a_1^{*}a_3, \qquad \frac{da_3}{dt} = i\,a_1 a_2$$</p>
+<p><strong>(E2)</strong> Инварианты Мэнли–Роу (фотонная бухгалтерия пар).</p>
+<p>$$I_1 = |a_1|^2 + |a_3|^2, \qquad I_2 = |a_2|^2 + |a_3|^2, \qquad I_3 = |a_1|^2 - |a_2|^2$$</p>
+<p><strong>(E3)</strong> Вырожденный (SHG) канал: замкнутая формула плосковолновой конверсии.</p>
+<p>$$\eta(t) = \tanh^2(At), \qquad s = A\,\mathrm{sech}(At), \qquad p = iA\,\tanh(At)$$</p>
+<h2>4. Связь с фреймворком TRIVORTEX</h2>
+<p>Соответствие TRIVORTEX взаимно-однозначно на структурном уровне. Три комплексные амплитуды образуют интегрируемую триаду в точности как три вихря Кирхгофа: соотношения Мэнли–Роу I<sub>1</sub>, I<sub>2</sub>, I<sub>3</sub> играют роль интегралов вихрей H, P, Q, I, периодический цикл «истощение — возрождение» накачки — это оптическая хореография, зеркальная вращению вихревого треугольника, а эквивалентность случая равных связей волчку Эйлера относит обе задачи к одному интегрируемому семейству, дарящему кирхгофовской задаче её эллиптические решения. Общим оказывается и стиль верификации: закон tanh<sup>2</sup> заякоривает численную схему замкнутой формой — в том же духе, что и замкнутая форма теоремы 3.1, а фотонная бухгалтерия пар в соотношениях Мэнли–Роу — точный оптический аналог бухгалтерии циркуляций в вихревой модели. Поэтому TRX-02 служит оптическим близнецом ядра программы и питает керровское расширение (TRX-04), вихревую верификацию (TRX-09) и динамику трёх тел с излучением (TRX-11).</p>
+<table>
+<thead>
+<tr>
+<th>Величина исследования</th>
+<th>Аналог в TRIVORTEX</th>
+<th>Комментарий</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Три комплексные амплитуды a<sub>1</sub>, a<sub>2</sub>, a<sub>3</sub></td>
+<td>три вихря Γ<sub>1</sub>, Γ<sub>2</sub>, Γ<sub>3</sub></td>
+<td>обе триады интегрируемы с квадратичными инвариантами</td>
+</tr>
+<tr>
+<td>Инварианты Мэнли–Роу I<sub>1</sub>, I<sub>2</sub>, I<sub>3</sub></td>
+<td>интегралы вихрей H, P, Q, I</td>
+<td>квадратичные законы сохранения, закрепляющие орбиту</td>
+</tr>
+<tr>
+<td>Цикл истощения/возрождения накачки T_ex</td>
+<td>хореографический обмен вихревого треугольника</td>
+<td>периодическая циркуляция «энергии» по триаде</td>
+</tr>
+<tr>
+<td>Эквивалентность волчку Эйлера</td>
+<td>эквивалентность Кирхгофа для трёх вихрей</td>
+<td>одно интегрируемое семейство; общие эллиптические решения</td>
+</tr>
+<tr>
+<td>Замкнутая форма SHG tanh<sup>2</sup>(At)</td>
+<td>замкнутая форма теоремы 3.1</td>
+<td>точное решение, заякоривающее численную схему</td>
+</tr>
+</tbody>
+</table>
+<h2>5. Численный метод</h2>
+<p>Три комплексные амплитуды расщепляются на шесть вещественных ОДУ (вещественные и мнимые части) и интегрируются явной схемой Дормана–Принса 8(5,3) с rtol = atol = 1e-13, max_step = 0.02 на t ∈ [0, 50] с плотным выводом. Инварианты Мэнли–Роу вычисляются поточечно на 2500 выборках вдоль траектории, а их максимальное отклонение от начальных значений (I<sub>1</sub> = 1.04, I<sub>2</sub> = 1.09, I<sub>3</sub> = −0.05) записывается как проверка дрейфа; то же плотное решение поставляет ряды потоков фотонов для рисунков.</p>
+<p>Период обмена извлекается из потока накачки |a<sub>3</sub>|<sup>2</sup>: локальные максимумы находятся на плотной сетке из 20001 выборки и уточняются ограниченной одномерной минимизацией с xatol = 1e-13. Два соседних уточнённых максимума дают T_ex1 = 5.650961242 и T_ex2 = 5.650961155 — повторяемость 8.7e-8 при допуске 1e-6, — а потоки в этих максимумах различаются на 2.4e-15 (проверка возрождения). Полное истощение проверяется против порога 5%: минимум накачки на плотной сетке достигает 6.3e-5 от пикового потока 1.04.</p>
+<p>Вырожденный канал интегрируется с тем же допуском из s(0) = 1, p(0) = 0 и сравнивается с η(t) = tanh<sup>2</sup>(At) на 60 точках по t ∈ [0.05, 3]; максимальное отклонение — SHG-проверка. Развёртка для fig03 (17 начальных амплитуд накачки в [0.4, 2.0], T = 50, rtol = 1e-10) вычисляется только в режиме --figures и сохраняется в блок figures JSON-протокола. Каждая проверка хранит значение, цель, допуск, единицу и флаг прохождения; прогоны детерминированы, без доступа к сети и без случайных зёрен.</p>
+<h2>6. Результаты и анализ</h2>
+<h3>fig01 resonance geometry</h3>
+<p><img alt="Обзор модели: резонансная геометрия триады волн и начальная фотонная бухгалтерия потоков." src="../figures/fig01_resonance_geometry.png" /></p>
+<p><em>Обзор модели: резонансная геометрия триады волн и начальная фотонная бухгалтерия потоков.</em>
+Панель (a) показывает фотонно-энергетическую диаграмму резонансной триады: фотон накачки при ω<sub>3</sub> = ω<sub>1</sub> + ω<sub>2</sub> распадается на пару «сигнал — холостая волна» (параметрическая расщепка) с обратным каналом суммарной частоты; панель (b) складывает начальные потоки |a<sub>1</sub>|<sup>2</sup> = 0.04, |a<sub>2</sub>|<sup>2</sup> = 0.09, |a<sub>3</sub>|<sup>2</sup> = 1.00 в пары Мэнли–Роу I<sub>1</sub> = 1.04 и I<sub>2</sub> = 1.09.</p>
+<h3>fig02 pump depletion</h3>
+<p><img alt="Главный результат: периодическое истощение и возрождение накачки на T = 50 с увеличенным циклом обмена." src="../figures/fig02_pump_depletion.png" /></p>
+<p><em>Главный результат: периодическое истощение и возрождение накачки на T = 50 с увеличенным циклом обмена.</em>
+За T = 50 накачка совершает около 8.8 полных циклов (T_ex = 5.650961242): она проседает до |a<sub>3</sub>|<sup>2</sup> = 6.3e-5 — снято 99.994% пика 1.04 — и возрождается с ошибкой 2.4e-15; на увеличении видны уточнённые максимумы и стрелка периода обмена.</p>
+<h3>fig03 parameter sweep</h3>
+<p><img alt="Развёртка по начальной амплитуде накачки |a&lt;sub&gt;3&lt;/sub&gt;(0)| ∈ [0.4, 2.0]: период обмена и глубина истощения." src="../figures/fig03_parameter_sweep.png" /></p>
+<p><em>Развёртка по начальной амплитуде накачки |a<sub>3</sub>(0)| ∈ [0.4, 2.0]: период обмена и глубина истощения.</em>
+По 17 прогонам (T = 50, rtol = 1e-10) период обмена монотонно убывает от 9.028821 до 3.556606, а глубина истощения min/max величины |a<sub>3</sub>|<sup>2</sup> не превышает 5.2e-6 — весь диапазон развёртки прокачан до практически полной конверсии.</p>
+<h3>fig04 invariants shg</h3>
+<p><img alt="Диагностика динамики: остатки Мэнли–Роу вдоль орбиты и сравнение с замкнутой формулой SHG." src="../figures/fig04_invariants_shg.png" /></p>
+<p><em>Диагностика динамики: остатки Мэнли–Роу вдоль орбиты и сравнение с замкнутой формулой SHG.</em>
+Остатки инвариантов держатся на уровне 1e-15 (максимум 5.3e-15 против допуска 1e-10), а вырожденный канал следует за η(t) = tanh<sup>2</sup>(At) с точностью 2.220446e-16 — одна единица последнего разряда двойной точности.</p>
+<p><strong>Инварианты.</strong> За полный прогон T = 50 (около 8.8 циклов обмена) дрейфы Мэнли–Роу составляют 5.329071e-15 для I<sub>1</sub>, 4.218847e-15 для I<sub>2</sub> и 4.496403e-15 для I<sub>3</sub> — более чем на четыре порядка ниже допуска 1e-10 и на уровне округления двойной точности. Орбита, таким образом, точно удерживается на пересечении инвариантных поверхностей — в этом геометрическое содержание интегрируемости трёхволновой триады.</p>
+<p><strong>Периодический обмен.</strong> Поток накачки колеблется с уточнённым периодом обмена T_ex = 5.650961242; соседние периоды совпадают с точностью 8.743724e-08, а поток в последовательных максимумах воспроизводится с точностью 2.442491e-15. Между максимумами накачка проседает до |a<sub>3</sub>|<sup>2</sup> = 6.32941e-05 — снято 99.994% пикового значения 1.04, — так что цикл представляет собой подлинную хореографию «полное истощение — возрождение», а не мелкую модуляцию.</p>
+<p><strong>Развёртка параметров.</strong> При развёртке начальной амплитуды накачки по [0.4, 2.0] в 17 прогонах период обмена монотонно убывает от 9.028821 до 3.556606: более сильная накачка обменивается фотонами быстрее. Глубина истощения (min/max величины |a<sub>3</sub>|<sup>2</sup> в каждом прогоне) держится между 4.2e-10 и 5.2e-6 по всей сетке — каждый режим развёртки достигает практически полной конверсии, а дрейф инвариантов развёртки (≤ 1.5e-9 при более слабом допуске прогонов 1e-10) подтверждает чистоту самой карты.</p>
+<p><strong>Якорь в виде замкнутой формы.</strong> В вырожденном канале численная эффективность конверсии следует за η(t) = tanh<sup>2</sup>(At) с максимальным отклонением 2.220446e-16 на 60 выборках — одна единица последнего разряда двойной точности. Точное решение одним выстрелом проверяет нормировку, фазовую конвенцию и интегратор; это оптический аналог заякоривания вихревой хореографии на замкнутой форме теоремы 3.1.</p>
+<h3>Сводка верификации</h3>
+<table>
+<thead>
+<tr>
+<th>Проверка</th>
+<th>Значение</th>
+<th>Цель</th>
+<th>Допуск</th>
+<th>Прошла</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>`ManleyRowe_I13_drift`</td>
+<td>5.32907e-15</td>
+<td>0</td>
+<td>1e-10</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`ManleyRowe_I23_drift`</td>
+<td>4.21885e-15</td>
+<td>0</td>
+<td>1e-10</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`ManleyRowe_I12diff_drift`</td>
+<td>4.4964e-15</td>
+<td>0</td>
+<td>1e-10</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`Pump_period_repeatability`</td>
+<td>8.74372e-08</td>
+<td>0</td>
+<td>1e-06</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`Pump_revival_error`</td>
+<td>2.44249e-15</td>
+<td>0</td>
+<td>1e-08</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`Pump_full_depletion_occurs`</td>
+<td>1</td>
+<td>1</td>
+<td>1e-12</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>`SHG_tanh2_conversion_error`</td>
+<td>2.22045e-16</td>
+<td>0</td>
+<td>1e-08</td>
+<td>yes</td>
+</tr>
+</tbody>
+</table>
+<p><em>(status: </em><em>PASS</em><em>, mode: full)</em></p>
+<h2>7. Обсуждение</h2>
+<p>Модель сознательно минимальна: равные связи, плоские волны, идеальное фазовое согласование, отсутствие потерь. В этих допущениях каждый вывод — точное утверждение об определяющих уравнениях, а не симуляция конкретного кристалла. Естественные расширения сохраняют установленный здесь верификационный стиль: расстройка (Δk ≠ 0 добавляет линейный фазовый член и ломает строгую периодичность), рассогласование групповых скоростей для импульсов, неравные связи (несимметричный волчок Эйлера), граничные условия резонатора (параметрический генератор с накачкой) и квантовое затравливание спонтанным параметрическим рассеянием.</p>
+<p>Численный режим указан честно. Верификационные числа получены исключительно при rtol = atol = 1e-13; развёртка fig03 использует более слабый допуск 1e-10, поскольку глубокие минимумы накачки — резкие особенности, доминирующие в стоимости интегрирования, и её результаты хранятся как данные рисунков, а не контрольные проверки. Физические единицы восстанавливаются стандартной нормировкой χ<sup>(2)</sup> (для MgO:LiNbO<sub>3</sub> |χ<sup>(2)</sup>| ≈ 4 пм/В на 1 мкм), так что T_ex переводится в длину кристалла при фиксированных входных интенсивностях.</p>
+<p>В рамках программы это исследование заякоривает блок интегрируемых триад оптической линии: TRX-04 расширяет парное взаимодействие на пространственные керровские солитоны («солитонная молекула»), TRX-09 проверяет вихревого близнеца того же интегрируемого семейства, а TRX-11 сохраняет гамильтоново трёхчастное ядро, добавляя излучение. Вместе с TRX-01 и TRX-12 они замыкают контур между небесной, оптической и вихревой формулировками TRIVORTEX.</p>
+<h2>8. Выводы</h2>
+<ol>
+<li>Трёхволновая система с равными связями сохраняет инварианты Мэнли–Роу на уровне ≤ 5.329071e-15 за T = 50 (допуск 1e-10) — фотонная бухгалтерия машинного уровня.</li>
+<li>Истощение и возрождение накачки строго периодичны: T_ex = 5.650961242, соседние периоды совпадают с точностью 8.743724e-08, поток возрождения воспроизводится с точностью 2.442491e-15.</li>
+<li>Накачка испытывает подлинное полное истощение, проседая до |a<sub>3</sub>|<sup>2</sup> = 6.32941e-05 — снято 99.994% пикового потока 1.04 — прежде чем возродиться.</li>
+<li>Период обмена перестраивается амплитудой накачки: T_ex монотонно убывает от 9.028821 до 3.556606 по |a<sub>3</sub>(0)| ∈ [0.4, 2.0], глубина истощения ≤ 5.2e-6 по всей развёртке.</li>
+<li>Вырожденный (SHG) канал воспроизводит замкнутую форму η(t) = tanh<sup>2</sup>(At) с точностью 2.220446e-16 — одна единица последнего разряда двойной точности.</li>
+<li>Система канонически эквивалентна волчку Эйлера и, следовательно, задаче Кирхгофа о трёх вихрях — TRX-02 является оптическим близнецом ядра TRIVORTEX.</li>
+</ol>
+<h2>9. Список литературы</h2>
+<ol>
+<li>Manley, J. M., Rowe, H. E. (1956). <em>Some general properties of nonlinear elements — Part I. General energy relations.</em> Proc. IRE 44, 904–913.</li>
+<li>Franken, P. A., Hill, A. E., Peters, C. W., Weinreich, G. (1961). <em>Generation of optical harmonics.</em> Phys. Rev. Lett. 7, 118–119.</li>
+<li>Armstrong, J. A., Bloembergen, N., Ducuing, J., Pershan, P. S. (1962). <em>Interactions between light waves in a nonlinear dielectric.</em> Phys. Rev. 127, 1918–1939.</li>
+<li>Kroll, N. M. (1962). <em>Parametric amplification in spatially extended media and application to the design of tunable oscillators.</em> Phys. Rev. 127, 1207–1213.</li>
+<li>Giordmaine, J. A., Miller, R. C. (1965). <em>Tunable coherent parametric oscillation in LiNbO<sub>3</sub> at optical frequencies.</em> Phys. Rev. Lett. 14, 973–976.</li>
+<li>Kaup, D. J., Reiman, A., Bers, A. (1979). <em>Space-time evolution of nonlinear three-wave interactions. I. Interactions in a homogeneous medium.</em> Rev. Mod. Phys. 51, 275–309.</li>
+<li>Boyd, R. W. (2008). <em>Nonlinear Optics</em>, 3rd ed., Academic Press.</li>
+</ol>
+<h3>BibTeX</h3>
+<p>```bibtex
+@article{manley1956,
+  author  = {Manley, J. M. and Rowe, H. E.},
+  title   = {Some general properties of nonlinear elements. Part {I}: General energy relations},
+  journal = {Proceedings of the IRE},
+  year    = {1956}, volume = {44}, number = {7}, pages = {904--913}}
+
+@article{armstrong1962,
+  author  = {Armstrong, J. A. and Bloembergen, N. and Ducuing, J. and Pershan, P. S.},
+  title   = {Interactions between light waves in a nonlinear dielectric},
+  journal = {Physical Review},
+  year    = {1962}, volume = {127}, pages = {1918--1939}}
+
+@article{kaup1979,
+  author  = {Kaup, D. J. and Reiman, A. and Bers, A.},
+  title   = {Space-time evolution of nonlinear three-wave interactions. {I}: Interactions in a homogeneous medium},
+  journal = {Reviews of Modern Physics},
+  year    = {1979}, volume = {51}, pages = {275--309}}
+
+@book{boyd2008,
+  author    = {Boyd, R. W.},
+  title     = {Nonlinear Optics},
+  edition   = {3rd},
+  publisher = {Academic Press}, year = {2008}}
+```</p>
+<h2>Приложение A. Таблица параметров</h2>
+<table>
+<thead>
+<tr>
+<th>Символ</th>
+<th>Значение</th>
+<th>Роль</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a<sub>1</sub>(0), a<sub>2</sub>(0)</td>
+<td>0.2, 0.3</td>
+<td>затравки сигнала и холостой волны (вещественные)</td>
+</tr>
+<tr>
+<td>a<sub>3</sub>(0)</td>
+<td>1.0·i</td>
+<td>затравка накачки, фаза π/2</td>
+</tr>
+<tr>
+<td>γ<sub>1</sub>, γ<sub>2</sub>, γ<sub>3</sub></td>
+<td>1, 1, 1</td>
+<td>нормированные коэффициенты связи</td>
+</tr>
+<tr>
+<td>Δk</td>
+<td>0</td>
+<td>фазовая расстройка</td>
+</tr>
+<tr>
+<td>T</td>
+<td>50</td>
+<td>интервал интегрирования основного прогона</td>
+</tr>
+<tr>
+<td>rtol, atol</td>
+<td>1e-13</td>
+<td>допуски DOP853 (основной прогон)</td>
+</tr>
+<tr>
+<td>max_step</td>
+<td>0.02</td>
+<td>ограничение шага интегратора (основной прогон)</td>
+</tr>
+<tr>
+<td>плотные выборки</td>
+<td>20001</td>
+<td>сетка поиска максимумов накачки</td>
+</tr>
+<tr>
+<td>A</td>
+<td>1</td>
+<td>затравочная амплитуда SHG-канала</td>
+</tr>
+<tr>
+<td>развёртка</td>
+<td></td>
+<td>a<sub>3</sub>(0)</td>
+</tr>
+</tbody>
+</table>
+<h2>Приложение B. Воспроизведение</h2>
+<p>```bash
+python3 research/TRX-02-three-wave-mixing/code/trx02_three_wave_mixing.py --smoke     # < 20 с
+python3 research/TRX-02-three-wave-mixing/code/trx02_three_wave_mixing.py              # полный прогон, 0.6 s
+python3 research/TRX-02-three-wave-mixing/code/trx02_three_wave_mixing.py --figures   # + графики 300 DPI
+```</p>
+<p>Полное время выполнения на референсной машине — 0.6 s; smoke-режим укладывается в 20 секунд и используется CI репозитория.</p>
+<h2>Приложение C. Окружение</h2>
+<p>Python ≥ 3.11, numpy ≥ 2.0, scipy ≥ 1.14, matplotlib ≥ 3.9; без доступа к сети и без стохастических зёрен — каждый прогон бит-в-бит воспроизводим на референсной машине.</p></div></div>
+<div class="ending">
+  <div class="end-title">TRIVORTEX</div>
+  <div class="end-small">The Three-Body Problem in the Vortex Model</div>
+  <div class="end-rule"></div>
+  <div class="colophon-line"><b>Resonant Three-Wave Interaction (Manley–Rowe, χ⁽²⁾ Optics)</b> — research monograph of the TRIVORTEX program, studying the three-body problem in the vortex model and its laser, celestial-mechanical and quantum crossings.</div><div class="colophon-line">Full verification protocol: <b>results JSON + figures + code</b> in research/TRX-02-three-wave-mixing/; reproduction commands in Appendix B.</div>
+  <div class="end-small">
+    Isaev Iskhak Khamzatovich · ORCID 0009-0003-7299-0701<br>
+    DOI (concept) 10.5281/zenodo.21825393 · DOI (version) 10.5281/zenodo.21825394<br>
+    License IPL-RP-1.0 · v1.0.0 · 2026-10-07
+  </div>
+</div>
+
+</body>
+</html>

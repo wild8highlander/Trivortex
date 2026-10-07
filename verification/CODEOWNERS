@@ -1,0 +1,17 @@
+# Default owner
+* @wild8highlander
+
+# The working ladder and its guard
+/trivortex/python/   @wild8highlander
+/tests/              @wild8highlander
+/common/             @wild8highlander
+
+# Verification by language (roadmap ports)
+/lean4/      @wild8highlander
+/coq/        @wild8highlander
+/rust/       @wild8highlander
+/cpp/        @wild8highlander
+/haskell/    @wild8highlander
+/isabelle/   @wild8highlander
+/agda/       @wild8highlander
+/docker/     @wild8highlander

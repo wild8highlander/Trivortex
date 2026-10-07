@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TRIVORTEX — The Three-Body Problem in the Vortex Model — TRIVORTEX</title>
+<meta name="description" content="TRIVORTEX: the three-body problem in the vortex model with the Chaplygin topological integral. Theorem 3.1, 22-section document, verification ladder V1-V4.">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<header class="site"><div class="wrap">
+  <a class="brand" href="index.html">TRIVORTEX</a>
+  <nav class="main"><a href="index.html" class="active">Overview</a><a href="vortex-model.html">Vortex Model</a><a href="theorem-3-1.html">Theorem 3.1</a><a href="code.html">Code</a><a href="system-presets.html">System Presets</a><a href="verification.html">Verification</a><a href="research.html">Research Lab</a><a href="publications.html">Publications</a><a href="citation.html">Citation</a><a href="license.html">License</a></nav>
+</div></header>
+<main class="wrap">
+
+<div class="hero">
+  <img src="assets/banner-hero.svg" alt="TRIVORTEX banner">
+  <div class="badges">
+    <img src="https://img.shields.io/badge/DOI-10.5281%2Fzenodo.21825394-blue?style=for-the-badge&logo=zenodo" alt="DOI">
+    <img src="https://img.shields.io/badge/ladder-V1%E2%80%93V4%20%E2%9C%93-2EA043?style=for-the-badge" alt="ladder">
+    <img src="https://img.shields.io/badge/pytest-28%20passed-2EA043?style=for-the-badge&logo=pytest" alt="tests">
+    <img src="https://img.shields.io/badge/version-1.0.0-gold?style=for-the-badge" alt="version">
+    <img src="https://img.shields.io/badge/License-IPL--RP--1.0-red?style=for-the-badge" alt="license">
+    <img src="https://img.shields.io/badge/ORCID-0009--0003--7299--0701-a6ce39?style=for-the-badge&logo=orcid&logoColor=white" alt="ORCID">
+  </div>
+  <p class="lead" style="margin-top:18px"><strong>TRIVORTEX</strong> is the working title of a research
+  document that studies the <strong>three-body (and N-body) problem</strong> through a vortex
+  model with a Chaplygin topological integral: a closed-form rotating solution
+  (Theorem&nbsp;3.1), an interactive 22-section implementation, real-system presets,
+  and an independent four-check verification ladder.</p>
+</div>
+
+<h2 id="in-60-seconds">The document in 60 seconds</h2>
+<p>Three gravitational or vortex bodies in mutual interaction form the oldest unsolved
+problem of celestial mechanics: after Poincaré, no general closed-form solution can
+exist in the sense of the prize problem, and the long-term behaviour of generic
+configurations is chaotic. TRIVORTEX approaches the problem from the vortex side:
+bodies are represented by vortices with topological charges, the dynamics are built
+on a Hofstadter-type Hamiltonian with <em>N</em> vortices, and the conserved quantity
+binding the gauge flux to the rotation is the <strong>Chaplygin topological
+integral</strong> <code>C_Ch = r²(θ̇ − q·A_θ)</code>. Within this model the document
+proves and verifies a Lagrange-type closed form — <strong>Theorem 3.1</strong> —
+in which three vortices keep an exact equilateral choreography while rotating with
+frequency <code>ω = (2π/T)·e^(C_Ch/π)</code>.</p>
+
+<div class="grid">
+  <div class="card"><div class="kpi">22</div><p>sections of the core document:
+  Hamiltonian, analytic solution, spectral statistics, quantum version, report
+  engine — <a href="code.html">the full map</a>.</p></div>
+  <div class="card"><div class="kpi">3</div><p>language mirrors of the same physics:
+  <code>trivortex_core.py</code> (EN), <code>_ru.py</code> (RU), <code>_en.py</code>
+  (console-EN), each ~2 400 lines.</p></div>
+  <div class="card"><div class="kpi">4/4</div><p>verification checks passing:
+  choreography, Lagrange rotation, invariants, robustness — <a href="verification.html">V1–V4</a>.</p></div>
+  <div class="card"><div class="kpi">3</div><p>real astronomical presets wired into
+  the code: Sun–Earth–Moon, α&nbsp;Centauri, Pluto–Charon–Nix — <a href="system-presets.html">details</a>.</p></div>
+</div>
+
+<div class="grid">
+  <div class="card"><div class="kpi">4</div><p>seamless orbital animations
+  (GIF + MP4): the Theorem 3.1 breathing ring, the Chenciner–Montgomery figure
+  eight, the Lagrange triangle, laser station-keeping at L4 —
+  <a href="../animations/README.md">physics + reproduction</a>.</p></div>
+  <div class="card"><div class="kpi">56</div><p>monograph renditions in the
+  reading room: 28 typeset PDFs + 28 editable DOCX — Russian and English as
+  separate documents;
+  <a href="publications.html">the publications page</a>.</p></div>
+</div>
+
+<h2 id="name">Why «Trivortex»</h2>
+<p>The working title <strong>TRIVORTEX</strong> compresses the two anchors of
+the study into one word: <em>tri</em> — the three bodies of the classical problem,
+<em>vortex</em> — the vortex representation that makes the problem tractable.
+The repository keeps its historical name <code>research-papers</code> and its
+DOI infrastructure; version <strong>1.0.0</strong> is the first public release
+of the complete program.</p>
+
+<figure>
+  <img src="assets/orbits-showcase.svg" alt="Three choreographic regimes">
+  <figcaption>Three canonical regimes of the model, from the artistic to the
+  rigorously verified (the exact Lagrange rotation is certified by ladder check V2).</figcaption>
+</figure>
+
+<h2 id="results">Headline results</h2>
+<table>
+<tr><th>Claim</th><th>Status</th><th>Where</th></tr>
+<tr><td>Theorem 3.1 — closed form <code>r_k(t), θ_k(t)</code> with exact 2π/3
+choreography and periodicity</td><td class="pass">verified (V1, residuals ≤ 1e-12)</td>
+<td><a href="theorem-3-1.html">Theorem 3.1 page</a></td></tr>
+<tr><td>Rigid rotation of the Lagrange triangle at ω = 3Γ/(2πa²)</td>
+<td class="pass">verified (V2, shape ≤ 1e-10, ω ≤ 1e-6)</td>
+<td><a href="verification.html">Verification page</a></td></tr>
+<tr><td>Conservation of H, P, Q, I (equal and unequal circulations)</td>
+<td class="pass">verified (V3–V4, drift ≤ 1e-10)</td><td><a href="verification.html">Verification page</a></td></tr>
+<tr><td>Chaplygin integral C_Ch — recorded diagnostic along the closed form</td>
+<td class="warn">recorded (window-dependent by construction)</td>
+<td><a href="verification.html#honesty">Honesty notes</a></td></tr>
+</table>
+
+<h2 id="quickstart">Quick start</h2>
+<pre><code>git clone https://github.com/wild8highlander/research-papers.git
+cd research-papers
+pip install numpy scipy matplotlib mpmath
+
+# the interactive document (menu with 15 modes)
+python3 code/trivortex_core_en.py
+
+# the independent verification ladder
+python3 verification/trivortex/python/verify.py --preset quick</code></pre>
+
+<h2 id="abstract">Abstract / Аннотация</h2>
+<div class="note blue">
+<p><strong>EN.</strong> TRIVORTEX studies the three-body (and N-body) problem in a
+vortex formulation with a Chaplygin topological integral. The core document
+implements a Hofstadter-type Hamiltonian with N vortices, derives a Lagrange-type
+closed-form rotating solution (Theorem 3.1), couples it to spectral statistics,
+quantum-topological observables and real astronomical presets, and accompanies
+everything with a report engine (TXT/MD/HTML/CSV/JSON/DOCX/PDF). An independent
+verification ladder re-derives and certifies the choreography, the rigid rotation
+frequency and the conservation laws.</p>
+<p><strong>RU.</strong> «Тривортекс» — рабочее название документа, исследующего задачу
+трёх (и N) тел в вихревой формулировке с топологическим интегралом Чаплыгина:
+гамильтониан Хофштадтера с N вихрями, замкненная лагранжева форма вращения
+(теорема 3.1), спектральная статистика, квантово-топологические наблюдаемые,
+пресеты реальных систем и независимая лестница верификации V1–V4.</p>
+</div>
+
+<h2 id="map">Map of the site</h2>
+<ul class="toc">
+<li><a href="vortex-model.html">Vortex Model — the physics layer</a></li>
+<li><a href="theorem-3-1.html">Theorem 3.1 — statement and meaning</a></li>
+<li><a href="code.html">Code — the 22 sections</a></li>
+<li><a href="system-presets.html">System Presets — Sun–Earth–Moon &amp; friends</a></li>
+<li><a href="verification.html">Verification — ladder V1–V4 and roadmap</a></li>
+<li><a href="citation.html">Citation — CFF, BibTeX, DOI</a></li>
+<li><a href="license.html">License — IPL-RP-1.0</a></li>
+<li><a href="https://github.com/wild8highlander/research-papers">GitHub repository — issues, releases, full history</a></li>
+</ul>
+
+</main>
+<footer class="site"><div class="wrap"><div class="cols">
+  <div>
+    <div style="color:var(--gold-l);letter-spacing:2px;font-size:18px">TRIVORTEX</div>
+    <p class="small">The Three-Body Problem in the Vortex Model — a research
+    document with a verification ladder, by Isaev Iskhak Khamzatovich.</p>
+    <p class="small mono">DOI 10.5281/zenodo.21825394</p>
+  </div>
+  <div class="small">
+    <strong style="color:var(--ink)">Repository</strong><br>
+    <a href="https://github.com/wild8highlander/research-papers">GitHub source</a><br>
+    <a href="https://github.com/wild8highlander/research-papers/blob/main/LICENSE.md">License IPL-RP-1.0</a><br>
+    <a href="https://zenodo.org/records/21825394">Zenodo record</a><br>
+    <a href="https://orcid.org/0009-0003-7299-0701">ORCID profile</a>
+  </div>
+  <div class="small">
+    <strong style="color:var(--ink)">Document</strong><br>
+    <a href="vortex-model.html">Vortex model</a><br>
+    <a href="theorem-3-1.html">Theorem 3.1</a><br>
+    <a href="code.html">Code — 22 sections</a><br>
+    <a href="verification.html">Verification V1–V4</a>
+  </div>
+</div>
+<p class="small" style="text-align:center;margin-top:26px">© 2026 Isaev Iskhak Khamzatovich ·
+Proprietary license · Concept DOI 10.5281/zenodo.21825393</p>
+</div></footer>
+</body>
+</html>
