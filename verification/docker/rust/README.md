@@ -35,7 +35,7 @@ Dockerfile со средой Rust 1.75+: установка тулчейна + �
 **[⬆ Back to top](#-docker--rust--pinned-toolchain-image)** ·
 **[Repository root](../../README.md)**
 
-*Part of [wild8highlander/research-papers](https://github.com/wild8highlander/research-papers) · Licensed under [IPL-RP-1.0](https://github.com/wild8highlander/research-papers/blob/main/LICENSE.md) — All Rights Reserved*
+*Part of [wild8highlander/Trivortex](https://github.com/wild8highlander/Trivortex) · Licensed under [IPL-RP-1.0](https://github.com/wild8highlander/Trivortex/blob/main/LICENSE.md) — All Rights Reserved*
 
 </div>
 

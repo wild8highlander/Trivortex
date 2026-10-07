@@ -8,7 +8,7 @@ Instead, please report them privately using one of the following methods:
 
 ### Preferred: GitHub Security Advisories
 
-1. Go to the [Security Advisories](https://github.com/wild8highlander/research-papers/security/advisories) page
+1. Go to the [Security Advisories](https://github.com/wild8highlander/Trivortex/security/advisories) page
 2. Click **"New advisory"**
 3. Fill in the details of the vulnerability
 4. Submit as **"Private"** — this creates a confidential channel with the maintainer
@@ -18,7 +18,7 @@ Instead, please report them privately using one of the following methods:
 Send a detailed report to [aslan08_05@mail.ru](mailto:aslan08_05@mail.ru) with the subject line:
 
 ```text
-[SECURITY] trivortex / research-papers: <brief description>
+[SECURITY] trivortex / Trivortex: <brief description>
 ```
 
 ### What to Include
@@ -94,6 +94,6 @@ This repository employs multiple layers of security:
 
 ## OpenSSF Scorecard
 
-[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/wild8highlander/research-papers/badge)](https://securityscorecards.dev/viewer/?uri=github.com/wild8highlander/research-papers)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/wild8highlander/Trivortex/badge)](https://securityscorecards.dev/viewer/?uri=github.com/wild8highlander/Trivortex)
 
 We continuously monitor our security posture using the [OpenSSF Scorecard](https://securityscorecards.dev). Current scores are available at the link above.

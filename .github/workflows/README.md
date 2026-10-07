@@ -3,8 +3,8 @@
 > **Navigation:** [`.github`](../../README.md) › **`workflows`**
 
 ![License](https://img.shields.io/badge/License-IPL--RP--1.0-red?style=flat-square)
-![CI](https://img.shields.io/github/actions/workflow/status/wild8highlander/research-papers/ci.yml?branch=main&style=flat-square&label=CI)
-![Docs](https://img.shields.io/github/actions/workflow/status/wild8highlander/research-papers/deploy-docs.yml?branch=main&style=flat-square&label=Docs%20Deploy)
+![CI](https://img.shields.io/github/actions/workflow/status/wild8highlander/Trivortex/ci.yml?branch=main&style=flat-square&label=CI)
+![Docs](https://img.shields.io/github/actions/workflow/status/wild8highlander/Trivortex/deploy-docs.yml?branch=main&style=flat-square&label=Docs%20Deploy)
 
 The **GitHub Actions catalogue** of the TRIVORTEX repository (version 1.0.0) —
 12 YAML workflow definitions covering the verification, documentation, security

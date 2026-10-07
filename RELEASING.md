@@ -1,6 +1,6 @@
 # Release Guide
 
-This document describes the process for creating releases of the Research Papers repository. All releases follow [Semantic Versioning](https://semver.org) and are automatically deposited to Zenodo for DOI assignment.
+This document describes the process for creating releases of the Trivortex repository. All releases follow [Semantic Versioning](https://semver.org) and are automatically deposited to Zenodo for DOI assignment.
 
 ---
 
@@ -97,7 +97,7 @@ git push origin main --follow-tags
 
 The **Release Drafter** workflow automatically creates a draft release. Alternatively, create manually:
 
-1. Go to [Releases](https://github.com/wild8highlander/research-papers/releases/new)
+1. Go to [Releases](https://github.com/wild8highlander/Trivortex/releases/new)
 2. Select the tag `v${NEW_VERSION}`
 3. Title: `v${NEW_VERSION}`
 4. Copy changelog entries as description

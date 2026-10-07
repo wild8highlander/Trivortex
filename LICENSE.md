@@ -1,17 +1,17 @@
 # INDIVIDUAL PROPRIETARY LICENSE AGREEMENT
 
-## «Research Papers» — Individual Proprietary License (IPL-RP-1.0)
+## «Trivortex» — Individual Proprietary License (IPL-RP-1.0)
 
 | Field | Value |
 |---|---|
-| **Agreement identifier** | **IPL-RP-1.0** — Research Papers Individual Proprietary License |
+| **Agreement identifier** | **IPL-RP-1.0** — Trivortex Individual Proprietary License |
 | **Version / revision** | 1.0 (first edition) |
 | **Effective date** | September 9, 2026 |
 | **Author / Copyright Holder** | **Isaev Iskhak Khamzatovich** (Исаев Исхак Хамзатович) |
 | **Public identifier / GitHub** | **wild8highlander** — <https://github.com/wild8highlander> |
 | **ORCID** | 0009-0003-7299-0701 |
 | **Country of habitual residence** | Russian Federation |
-| **The Work** | The GitHub repository `wild8highlander/research-papers` and every element of its content, in every version, revision, format, language and medium, including (without limitation): research papers and preprints; analytical proofs and mathematical derivations; source code and verification suites (Lean 4, Coq/Rocq, Isabelle-HOL, Agda, Haskell, Rust, C++, Python, Julia, CMake and others); documentation (README, docs, MkDocs site); figures, images, diagrams and photographs; PDF and DOCX files; datasets, numerical results and spectra; configuration, build and workflow files; and the repository metadata itself |
+| **The Work** | The GitHub repository `wild8highlander/Trivortex` and every element of its content, in every version, revision, format, language and medium, including (without limitation): research papers and preprints; analytical proofs and mathematical derivations; source code and verification suites (Lean 4, Coq/Rocq, Isabelle-HOL, Agda, Haskell, Rust, C++, Python, Julia, CMake and others); documentation (README, docs, MkDocs site); figures, images, diagrams and photographs; PDF and DOCX files; datasets, numerical results and spectra; configuration, build and workflow files; and the repository metadata itself |
 | **License type** | Individual, personal, non-exclusive, non-transferable, non-sublicensable, revocable, worldwide for viewing purposes only — **"All Rights Reserved"** |
 | **Supersedes** | Creative Commons Attribution 4.0 International (CC-BY-4.0) — with respect to versions and copies of the Work received on or after the Effective Date (see Section 8) |
 | **Authoritative text** | This document — `LICENSE.md` (English) |
@@ -39,9 +39,9 @@
 
 **1.2. "Author" / "Copyright Holder" / "Licensor"** means Isaev Iskhak Khamzatovich (Исаев Исхак Хамзатович), the natural person who created the Work by his own creative effort, identified by the GitHub account **wild8highlander** (<https://github.com/wild8highlander>), ORCID 0009-0003-7299-0701, and all of his legal successors and permitted assignees. Under Article 1257 of the Civil Code of the Russian Federation, the author of a work is the citizen whose creative effort created it; under Article 1228(1)(2) of the Civil Code of the Russian Federation, a person is deemed the author only when the work was created by his own creative effort.
 
-**1.3. "Work"** means the GitHub repository `wild8highlander/research-papers` in its entirety and every element of its content, in every version, revision, branch, tag, release, archive, snapshot, mirror or derivative format, including without limitation: (a) research papers, preprints, drafts and analytical proofs; (b) mathematical derivations, formulas, theorems and corollaries, including the polarization correction *b* ≈ 0.0785 results and the AB-Cloud 36³ non-Hermitian Hofstadter Hamiltonian constructions; (c) source code in any programming or proof-assistant language (including Lean 4, Coq/Rocq, Isabelle-HOL, Agda, Haskell, Rust, C++, Python, Julia, CMake and any others); (d) documentation, README files, web documentation and MkDocs content; (e) figures, plots, images, diagrams, photographs and renderings; (f) PDF, DOCX and other document files; (g) datasets, numerical results, spectra and data tables; (h) configuration, build, continuous-integration and workflow files; (i) repository metadata, commit history authored by the Copyright Holder, and the selection, arrangement and compilation of all of the foregoing (protected as a compilation under Article 10(2) TRIPS and Article 5 WCT).
+**1.3. "Work"** means the GitHub repository `wild8highlander/Trivortex` in its entirety and every element of its content, in every version, revision, branch, tag, release, archive, snapshot, mirror or derivative format, including without limitation: (a) research papers, preprints, drafts and analytical proofs; (b) mathematical derivations, formulas, theorems and corollaries, including the polarization correction *b* ≈ 0.0785 results and the AB-Cloud 36³ non-Hermitian Hofstadter Hamiltonian constructions; (c) source code in any programming or proof-assistant language (including Lean 4, Coq/Rocq, Isabelle-HOL, Agda, Haskell, Rust, C++, Python, Julia, CMake and any others); (d) documentation, README files, web documentation and MkDocs content; (e) figures, plots, images, diagrams, photographs and renderings; (f) PDF, DOCX and other document files; (g) datasets, numerical results, spectra and data tables; (h) configuration, build, continuous-integration and workflow files; (i) repository metadata, commit history authored by the Copyright Holder, and the selection, arrangement and compilation of all of the foregoing (protected as a compilation under Article 10(2) TRIPS and Article 5 WCT).
 
-**1.4. "Repository"** means the public GitHub repository located at `https://github.com/wild8highlander/research-papers` together with its official mirror resources controlled by the Author (including the documentation site `https://wild8highlander.github.io/research-papers` and Zenodo records cited therein).
+**1.4. "Repository"** means the public GitHub repository located at `https://github.com/wild8highlander/Trivortex` together with its official mirror resources controlled by the Author (including the documentation site `https://wild8highlander.github.io/Trivortex` and Zenodo records cited therein).
 
 **1.5. "User" / "You"** means any natural or legal person who accesses, views, downloads, clones, forks or otherwise obtains or uses the Work or any part of it. By performing any such action after the Effective Date You accept this Agreement in full.
 
@@ -128,7 +128,7 @@ Without limiting the generality of Section 3, the rights of the Copyright Holder
 
 **5.3. Personal Backup Copy.** To download or `git clone` the Repository and retain a single Personal Backup Copy on User's own devices, solely for private archival purposes, in unmodified form, with all copyright notices, this Agreement and all RMI intact. The User shall promptly delete all copies upon the Copyright Holder's reasoned request.
 
-**5.4. Academic quotation.** To quote limited fragments of the Work for the purposes of criticism, review, scholarly analysis, teaching and scientific citation, with full attribution in the form: "Isaev, Iskhak Khamzatovich (2026). TRIVORTEX: The Three-Body (and N-Body) Problem in the Vortex Model with the Chaplygin Topological Integral. <https://github.com/wild8highlander/research-papers> (DOI: 10.5281/zenodo.21825394)". Quotation is permitted within the statutory limits of fair use / fair dealing / free use exceptions (17 U.S.C. § 107; Art. 5 InfoSoc Directive; Art. 1274 of the Civil Code of the Russian Federation; Art. 24 of the Copyright Law of the PRC). Quotation of code fragments beyond fair use, or use of quotations in a manner substituting for the Work, is not permitted.
+**5.4. Academic quotation.** To quote limited fragments of the Work for the purposes of criticism, review, scholarly analysis, teaching and scientific citation, with full attribution in the form: "Isaev, Iskhak Khamzatovich (2026). TRIVORTEX: The Three-Body (and N-Body) Problem in the Vortex Model with the Chaplygin Topological Integral. <https://github.com/wild8highlander/Trivortex> (DOI: 10.5281/zenodo.21825394)". Quotation is permitted within the statutory limits of fair use / fair dealing / free use exceptions (17 U.S.C. § 107; Art. 5 InfoSoc Directive; Art. 1274 of the Civil Code of the Russian Federation; Art. 24 of the Copyright Law of the PRC). Quotation of code fragments beyond fair use, or use of quotations in a manner substituting for the Work, is not permitted.
 
 **5.5. Linking.** To place hyperlinks to the Repository and its pages. A hyperlink to publicly available pages is not a Distribution of the Work and is permitted; embedding, mirroring or automated re-publishing of content is not.
 
@@ -181,7 +181,7 @@ Unless a separate written license signed by the Copyright Holder provides otherw
 
 **7.10. GitHub forks.** A "fork" on GitHub is a full copy of the Repository. Forking is permitted only as a verbatim copy with all notices intact; the fork remains subject to this Agreement without any additional permission of its owner. Public forks containing modifications, public "re-uploads" of the Repository under other accounts, and publication of the Work outside GitHub are prohibited without the Copyright Holder's separate written consent. The Copyright Holder may request GitHub to remove non-compliant forks and re-uploads under the DMCA and equivalent procedures (Section 9.5).
 
-**7.11. Use identity.** Use the name, pen name, likeness, ORCID, e-mail, or the marks "wild8highlander", "AB-Cloud", "Research Papers" and the like in a manner suggesting endorsement, sponsorship or affiliation of the Copyright Holder, except for nominative attribution strictly within the citation form of 5.4.
+**7.11. Use identity.** Use the name, pen name, likeness, ORCID, e-mail, or the marks "wild8highlander", "AB-Cloud", "Trivortex" and the like in a manner suggesting endorsement, sponsorship or affiliation of the Copyright Holder, except for nominative attribution strictly within the citation form of 5.4.
 
 **7.12. Circumvent the Agreement.** Induce, enable, assist or procure any third person to commit any act prohibited by this Section 7, and attempt any such act.
 
@@ -319,8 +319,8 @@ Any use of the Work beyond the permissions of Section 5 — including commercial
 
 - **GitHub**: <https://github.com/wild8highlander> (repository issues and contact channels of the account)
 - **ORCID**: 0009-0003-7299-0701
-- **Repository**: <https://github.com/wild8highlander/research-papers>
-- **Documentation**: <https://wild8highlander.github.io/research-papers>
+- **Repository**: <https://github.com/wild8highlander/Trivortex>
+- **Documentation**: <https://wild8highlander.github.io/Trivortex>
 - **Citation (DOI)**: 10.5281/zenodo.21825394
 
 ---

@@ -124,8 +124,8 @@ before submitting (any tag-balance checker will do).
 ## 7. Development setup
 
 ```bash
-git clone https://github.com/wild8highlander/research-papers.git
-cd research-papers
+git clone https://github.com/wild8highlander/Trivortex.git
+cd Trivortex
 python -m pip install numpy scipy matplotlib mpmath pytest ruff
 make test              # the pytest guard (28 tests)
 make verify-quick      # the ladder, CI preset

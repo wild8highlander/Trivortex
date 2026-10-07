@@ -35,10 +35,10 @@ docs = ["mkdocs>=1.5", "mkdocs-material>=9.0"]
 gpu = ["cupy-cuda12x>=13.0", "jax>=0.4"]
 
 [project.urls]
-Homepage = "https://wild8highlander.github.io/research-papers"
-Documentation = "https://wild8highlander.github.io/research-papers"
-Repository = "https://github.com/wild8highlander/research-papers"
-Issues = "https://github.com/wild8highlander/research-papers/issues"
+Homepage = "https://wild8highlander.github.io/Trivortex"
+Documentation = "https://wild8highlander.github.io/Trivortex"
+Repository = "https://github.com/wild8highlander/Trivortex"
+Issues = "https://github.com/wild8highlander/Trivortex/issues"
 
 [tool.ruff]
 line-length = 100

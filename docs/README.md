@@ -3,7 +3,7 @@
 > **Navigation:** [repository root](../README.md) › **`docs/`**
 >
 > Everything behind the GitHub Pages site at
-> **[wild8highlander.github.io/research-papers](https://wild8highlander.github.io/research-papers)**
+> **[wild8highlander.github.io/Trivortex](https://wild8highlander.github.io/Trivortex)**
 > — plus the SVG source assets of the repository's visual identity.
 
 ---
@@ -60,7 +60,7 @@ The workflow [`.github/workflows/deploy-docs.yml`](../.github/workflows/deploy-d
 
 The URL is configured in the repository settings (Pages → deploy from the
 `github-pages` environment); the canonical address is
-`https://wild8highlander.github.io/research-papers`.
+`https://wild8highlander.github.io/Trivortex`.
 
 ---
 

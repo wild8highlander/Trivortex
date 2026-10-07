@@ -34,7 +34,7 @@ verify-quick: ## Fast ladder smoke run (~0.5 s, what CI runs)
 verify-full: ## Long ladder run with tight integration (~35 s)
 	$(PYTHON) verification/trivortex/python/verify.py --preset full
 
-test: ## Run the pytest guard (28 tests)
+test: ## Run the pytest guard (27 tests)
 	$(PYTHON) -m pytest verification/tests/ -v --tb=short
 
 docs: ## Preview hint for the documentation site

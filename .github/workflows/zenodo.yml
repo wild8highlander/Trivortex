@@ -54,9 +54,9 @@ jobs:
         id: archive
         run: |
           mkdir -p /tmp/archive
-          ARCHIVE=/tmp/archive/research-papers-${{ steps.tag.outputs.tag }}.tar.gz
+          ARCHIVE=/tmp/archive/trivortex-${{ steps.tag.outputs.tag }}.tar.gz
           git archive --format=tar.gz \
-            --prefix=research-papers-${{ steps.tag.outputs.tag }}/ \
+            --prefix=trivortex-${{ steps.tag.outputs.tag }}/ \
             HEAD -o "$ARCHIVE"
           ls -lh "$ARCHIVE"
           echo "path=$ARCHIVE" >> "$GITHUB_OUTPUT"
@@ -127,7 +127,7 @@ jobs:
           {
             "metadata": {
               "title": "TRIVORTEX: The Three-Body (and N-Body) Problem in the Vortex Model with the Chaplygin Topological Integral (${RELEASE_TAG})",
-              "description": "<p>TRIVORTEX — a research repository by <strong>Iskhak Khamzatovich Isaev</strong>: the three-body (and N-body) problem in the vortex model with the Chaplygin topological integral; executable document, verification ladder V1\u2013V4, documentation site.</p><p>Release: ${RELEASE_TAG}. Source archive uploaded for permanent citable DOI.</p><p>GitHub: <a href=\"https://github.com/wild8highlander/research-papers\">https://github.com/wild8highlander/research-papers</a></p>",
+              "description": "<p>TRIVORTEX — a research repository by <strong>Iskhak Khamzatovich Isaev</strong>: the three-body (and N-body) problem in the vortex model with the Chaplygin topological integral; executable document, verification ladder V1\u2013V4, documentation site.</p><p>Release: ${RELEASE_TAG}. Source archive uploaded for permanent citable DOI.</p><p>GitHub: <a href=\"https://github.com/wild8highlander/Trivortex\">https://github.com/wild8highlander/Trivortex</a></p>",
               "upload_type": "publication",
               "publication_type": "article",
               "version": "${RELEASE_TAG}",
@@ -143,7 +143,7 @@ jobs:
               "access_right": "open",
               "related_identifiers": [
                 {
-                  "identifier": "https://github.com/wild8highlander/research-papers",
+                  "identifier": "https://github.com/wild8highlander/Trivortex",
                   "relation": "isSupplementTo",
                   "resource_type": "software",
                   "scheme": "url"

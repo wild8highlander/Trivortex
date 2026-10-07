@@ -18,16 +18,16 @@ identifiers:
     value: "10.5281/zenodo.21825393"
     description: "Zenodo Concept DOI (all versions)"
   - type: url
-    value: "https://github.com/wild8highlander/research-papers"
+    value: "https://github.com/wild8highlander/Trivortex"
     description: "GitHub repository URL"
   - type: url
-    value: "https://wild8highlander.github.io/research-papers"
+    value: "https://wild8highlander.github.io/Trivortex"
     description: "Documentation site URL"
   - type: url
     value: "https://zenodo.org/records/21825394"
     description: "Zenodo record page"
-repository-code: "https://github.com/wild8highlander/research-papers"
-url: "https://wild8highlander.github.io/research-papers"
+repository-code: "https://github.com/wild8highlander/Trivortex"
+url: "https://wild8highlander.github.io/Trivortex"
 abstract: >
   TRIVORTEX is the working title of a research document that studies the
   three-body (and N-body) problem through a vortex formulation with a
@@ -78,7 +78,7 @@ keywords:
   - mathematical-physics
   - celestial-mechanics
   - open-science
-license-url: "https://github.com/wild8highlander/research-papers/blob/main/LICENSE.md"
+license-url: "https://github.com/wild8highlander/Trivortex/blob/main/LICENSE.md"
 version: "1.0.0"
 date-released: "2026-10-07"
 preferred-citation:

@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [python, julia, java, lean4, coq, rust, cpp, haskell]
+        service: [agda, coq, cpp, haskell, isabelle, lean4, rust]
     steps:
       - uses: actions/checkout@v4
       - name: Build ${{ matrix.service }} image

@@ -6,7 +6,7 @@
 |---|---|
 | Document | `code/trivortex_core*.py` — the executable core, 22 sections |
 | Author | Isaev Iskhak Khamzatovich (ORCID 0009-0003-7299-0701) |
-| Program | TRIVORTEX — research-papers repository, version 1.0.0 |
+| Program | TRIVORTEX — Trivortex repository, version 1.0.0 |
 | DOI | 10.5281/zenodo.21825394 (concept DOI 10.5281/zenodo.21825393) |
 | Verification | Independent ladder V1–V4 + 27-test pytest guard, run on every push |
 | License | LicenseRef-Proprietary-Wild8Highlander-1.0 |
@@ -98,8 +98,8 @@ The verification ladder deliberately does **not** use them: V1–V4 operate on e
 ## 7. Reproduction
 
 ```bash
-git clone https://github.com/wild8highlander/research-papers.git
-cd research-papers
+git clone https://github.com/wild8highlander/Trivortex.git
+cd Trivortex
 python -m pip install numpy scipy matplotlib mpmath
 
 # the interactive document (menu: 15 modes, RU/EN mirrors available)
@@ -118,7 +118,7 @@ Every ladder run writes a JSON protocol with a full parameter snapshot — attac
 
 ## 8. Provenance and citation
 
-Author: Isaev Iskhak Khamzatovich ([ORCID 0009-0003-7299-0701](https://orcid.org/0009-0003-7299-0701)), independent researcher. Version 1.0.0 is the first public release of the TRIVORTEX research program. Cite via [`CITATION.cff`](https://github.com/wild8highlander/research-papers/blob/main/CITATION.cff):
+Author: Isaev Iskhak Khamzatovich ([ORCID 0009-0003-7299-0701](https://orcid.org/0009-0003-7299-0701)), independent researcher. Version 1.0.0 is the first public release of the TRIVORTEX research program. Cite via [`CITATION.cff`](https://github.com/wild8highlander/Trivortex/blob/main/CITATION.cff):
 
 ```bibtex
 @misc{trivortex2026isaev,
@@ -128,8 +128,8 @@ Author: Isaev Iskhak Khamzatovich ([ORCID 0009-0003-7299-0701](https://orcid.org
   year         = {2026},
   howpublished = {Zenodo},
   doi          = {10.5281/zenodo.21825394},
-  url          = {https://github.com/wild8highlander/research-papers}
+  url          = {https://github.com/wild8highlander/Trivortex}
 }
 ```
 
-License: `LicenseRef-Proprietary-Wild8Highlander-1.0` — personal, research and educational use with attribution; redistribution and commercial use require the author's written permission. Documentation site: [wild8highlander.github.io/research-papers](https://wild8highlander.github.io/research-papers).
+License: `LicenseRef-Proprietary-Wild8Highlander-1.0` — personal, research and educational use with attribution; redistribution and commercial use require the author's written permission. Documentation site: [wild8highlander.github.io/Trivortex](https://wild8highlander.github.io/Trivortex).

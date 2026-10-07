@@ -6,7 +6,7 @@
 |---|---|
 | Документ | `code/trivortex_core*.py` — исполнимое ядро, 22 секции |
 | Автор | Исаев Исхак Хамзатович (ORCID 0009-0003-7299-0701) |
-| Программа | TRIVORTEX — репозиторий research-papers, версия 1.0.0 |
+| Программа | TRIVORTEX — репозиторий Trivortex, версия 1.0.0 |
 | DOI | 10.5281/zenodo.21825394 (концептуальный DOI 10.5281/zenodo.21825393) |
 | Верификация | Независимая лестница V1–V4 + pytest-защита из 27 тестов, запуск на каждый push |
 | Лицензия | LicenseRef-Proprietary-Wild8Highlander-1.0 |
@@ -98,8 +98,8 @@ Pytest-защита из 27 тестов прикалывает аналитич
 ## 7. Воспроизведение
 
 ```bash
-git clone https://github.com/wild8highlander/research-papers.git
-cd research-papers
+git clone https://github.com/wild8highlander/Trivortex.git
+cd Trivortex
 python -m pip install numpy scipy matplotlib mpmath
 
 # интерактивный документ (меню: 15 режимов, зеркала RU/EN)
@@ -118,7 +118,7 @@ python -m pytest verification/tests/ -v
 
 ## 8. Провенанс и цитирование
 
-Автор: Исаев Исхак Хамзатович ([ORCID 0009-0003-7299-0701](https://orcid.org/0009-0003-7299-0701)), независимый исследователь. Версия 1.0.0 — первый публичный релиз исследовательской программы TRIVORTEX. Цитируйте через [`CITATION.cff`](https://github.com/wild8highlander/research-papers/blob/main/CITATION.cff):
+Автор: Исаев Исхак Хамзатович ([ORCID 0009-0003-7299-0701](https://orcid.org/0009-0003-7299-0701)), независимый исследователь. Версия 1.0.0 — первый публичный релиз исследовательской программы TRIVORTEX. Цитируйте через [`CITATION.cff`](https://github.com/wild8highlander/Trivortex/blob/main/CITATION.cff):
 
 ```bibtex
 @misc{trivortex2026isaev,
@@ -128,8 +128,8 @@ python -m pytest verification/tests/ -v
   year         = {2026},
   howpublished = {Zenodo},
   doi          = {10.5281/zenodo.21825394},
-  url          = {https://github.com/wild8highlander/research-papers}
+  url          = {https://github.com/wild8highlander/Trivortex}
 }
 ```
 
-Лицензия: `LicenseRef-Proprietary-Wild8Highlander-1.0` — личное, исследовательское и образовательное использование с указанием авторства; распространение и коммерческое использование требуют письменного разрешения автора. Сайт документации: [wild8highlander.github.io/research-papers](https://wild8highlander.github.io/research-papers).
+Лицензия: `LicenseRef-Proprietary-Wild8Highlander-1.0` — личное, исследовательское и образовательное использование с указанием авторства; распространение и коммерческое использование требуют письменного разрешения автора. Сайт документации: [wild8highlander.github.io/Trivortex](https://wild8highlander.github.io/Trivortex).

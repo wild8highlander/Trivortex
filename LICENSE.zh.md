@@ -1,17 +1,17 @@
 # 个人专有许可协议
 
-## 「Research Papers」个人专有许可（IPL-RP-1.0）
+## 「Trivortex」个人专有许可（IPL-RP-1.0）
 
 | 项目 | 内容 |
 |---|---|
-| **协议标识符** | **IPL-RP-1.0** — Research Papers 个人专有许可 |
+| **协议标识符** | **IPL-RP-1.0** — Trivortex 个人专有许可 |
 | **版本 / 修订版** | 1.0（第一版） |
 | **生效日期** | 2026 年 9 月 9 日 |
 | **作者 / 著作权人** | **伊萨耶夫·伊斯哈克·哈姆扎托维奇**（Исаев Исхак Хамзатович / Isaev Iskhak Khamzatovich） |
 | **公开标识 / GitHub** | **wild8highlander** — <https://github.com/wild8highlander> |
 | **ORCID** | 0009-0003-7299-0701 |
 | **经常居住地所在国** | 俄罗斯联邦 |
-| **作品** | GitHub 仓库 `wild8highlander/research-papers` 及其全部内容要素，涵盖所有版本、修订、格式、语言与载体，包括（但不限于）：研究论文与预印本；分析证明与数学推导；源代码与形式化验证套件（Lean 4、Coq/Rocq、Isabelle-HOL、Agda、Haskell、Rust、C++、Python、Julia、CMake 等）；文档（README、docs、MkDocs 站点）；图表、图像、示意图与照片；PDF 与 DOCX 文件；数据集、数值结果与频谱；配置、构建与工作流文件；以及仓库元数据本身 |
+| **作品** | GitHub 仓库 `wild8highlander/Trivortex` 及其全部内容要素，涵盖所有版本、修订、格式、语言与载体，包括（但不限于）：研究论文与预印本；分析证明与数学推导；源代码与形式化验证套件（Lean 4、Coq/Rocq、Isabelle-HOL、Agda、Haskell、Rust、C++、Python、Julia、CMake 等）；文档（README、docs、MkDocs 站点）；图表、图像、示意图与照片；PDF 与 DOCX 文件；数据集、数值结果与频谱；配置、构建与工作流文件；以及仓库元数据本身 |
 | **许可类型** | 个人、非独占、不可转让、不可再许可、可撤销、仅限浏览目的的全球性许可——**「保留所有权利」** |
 | **取代** | 知识共享署名 4.0 国际许可协议（CC-BY-4.0）——就 2026 年 9 月 9 日及之后获取的作品版本与副本而言（见第 8 条） |
 | **原始文本** | `LICENSE.md`（英文） |
@@ -39,9 +39,9 @@
 
 **1.2. 「作者」/「著作权人」/「许可人」** 指伊萨耶夫·伊斯哈克·哈姆扎托维奇（Исаев Исхак Хамзатович），即以自身创造性劳动创作作品的自然人，其 GitHub 账户标识为 **wild8highlander**（<https://github.com/wild8highlander），ORCID> 0009-0003-7299-0701，及其合法继受人与被允许的受让人。根据《俄罗斯联邦民法典》第 1257 条，作品作者是以其创造性劳动创作该作品的公民；根据第 1228 条第 1 款第 2 项，仅当作品由其自身创造性劳动创作时，该人才被视为作者。
 
-**1.3. 「作品」** 指 GitHub 仓库 `wild8highlander/research-papers` 整体及其每一个内容要素，涵盖所有版本、修订、分支、标签、发布、归档、快照、镜像与派生格式，包括但不限于：(a) 研究论文、预印本、草稿与分析证明；(b) 数学推导、公式、定理与推论，包括极化修正 *b* ≈ 0.0785 的结果以及 AB-Cloud（36³ 非厄米 Hofstadter 哈密顿量）构造；(c) 以任何编程语言或证明助手语言编写的源代码（包括 Lean 4、Coq/Rocq、Isabelle-HOL、Agda、Haskell、Rust、C++、Python、Julia、CMake 及其他）；(d) 文档、README 文件、网页文档与 MkDocs 内容；(e) 图表、绘图、图像、示意图、照片与渲染图；(f) PDF、DOCX 及其他文档文件；(g) 数据集、数值结果、频谱与数据表；(h) 配置、构建、持续集成与工作流文件；(i) 仓库元数据、著作权人创作的提交历史，以及上述全部内容的选取、编排与汇编（依据 TRIPS 协定第 10(2) 条与《世界知识产权组织版权条约》第 5 条作为汇编作品受保护）。
+**1.3. 「作品」** 指 GitHub 仓库 `wild8highlander/Trivortex` 整体及其每一个内容要素，涵盖所有版本、修订、分支、标签、发布、归档、快照、镜像与派生格式，包括但不限于：(a) 研究论文、预印本、草稿与分析证明；(b) 数学推导、公式、定理与推论，包括极化修正 *b* ≈ 0.0785 的结果以及 AB-Cloud（36³ 非厄米 Hofstadter 哈密顿量）构造；(c) 以任何编程语言或证明助手语言编写的源代码（包括 Lean 4、Coq/Rocq、Isabelle-HOL、Agda、Haskell、Rust、C++、Python、Julia、CMake 及其他）；(d) 文档、README 文件、网页文档与 MkDocs 内容；(e) 图表、绘图、图像、示意图、照片与渲染图；(f) PDF、DOCX 及其他文档文件；(g) 数据集、数值结果、频谱与数据表；(h) 配置、构建、持续集成与工作流文件；(i) 仓库元数据、著作权人创作的提交历史，以及上述全部内容的选取、编排与汇编（依据 TRIPS 协定第 10(2) 条与《世界知识产权组织版权条约》第 5 条作为汇编作品受保护）。
 
-**1.4. 「仓库」** 指位于 `https://github.com/wild8highlander/research-papers` 的公开 GitHub 仓库，连同权利人控制的其他官方镜像资源（包括文档站点 `https://wild8highlander.github.io/research-papers` 及其中引用的 Zenodo 记录）。
+**1.4. 「仓库」** 指位于 `https://github.com/wild8highlander/Trivortex` 的公开 GitHub 仓库，连同权利人控制的其他官方镜像资源（包括文档站点 `https://wild8highlander.github.io/Trivortex` 及其中引用的 Zenodo 记录）。
 
 **1.5. 「用户」/「您」** 指访问、查看、下载、克隆、复刻（fork）或以其他方式获取或使用本作品或其任何部分的自然人或法人。在生效日期之后实施任何上述行为，即表示您完整接受本协议。
 
@@ -128,7 +128,7 @@
 
 **5.3. 个人备份副本。** 下载或 `git clone` 仓库，并在用户自有设备上保存唯一一份个人备份副本，仅用于私人存档目的，保持未修改状态，完整保留所有版权声明、本协议及全部权利管理信息。经权利人合理要求，用户应立即删除所有副本。
 
-**5.4. 学术引用。** 为评论、评述、学术分析、教学与科学引用目的引用本作品的有限片段，并以如下形式完整署名：「Isaev, Iskhak Khamzatovich (2026). TRIVORTEX: The Three-Body (and N-Body) Problem in the Vortex Model with the Chaplygin Topological Integral. <https://github.com/wild8highlander/research-papers> (DOI: 10.5281/zenodo.21825394)」。引用限于法定合理使用 / 合理引用 / 自由使用范围内（《俄罗斯联邦民法典》第 1274 条；17 U.S.C. § 107；信息社会指令第 5 条；《中华人民共和国著作权法》第二十四条）。超出合理使用范围引用代码片段，或以引用方式替代本作品本身，均不被允许。
+**5.4. 学术引用。** 为评论、评述、学术分析、教学与科学引用目的引用本作品的有限片段，并以如下形式完整署名：「Isaev, Iskhak Khamzatovich (2026). TRIVORTEX: The Three-Body (and N-Body) Problem in the Vortex Model with the Chaplygin Topological Integral. <https://github.com/wild8highlander/Trivortex> (DOI: 10.5281/zenodo.21825394)」。引用限于法定合理使用 / 合理引用 / 自由使用范围内（《俄罗斯联邦民法典》第 1274 条；17 U.S.C. § 107；信息社会指令第 5 条；《中华人民共和国著作权法》第二十四条）。超出合理使用范围引用代码片段，或以引用方式替代本作品本身，均不被允许。
 
 **5.5. 链接。** 放置指向仓库及其页面的超链接。指向公开页面的超链接不构成本作品的传播，属被允许之列；嵌入、镜像或自动化转载内容则不属之。
 
@@ -181,7 +181,7 @@
 
 **7.10. GitHub fork。** GitHub 上的「fork」是仓库的完整副本。仅允许以声明完整的逐字副本形式 fork；fork 不经其所有者的任何额外许可仍受本协议约束。含有修改的公开 fork、以其他账户公开「重新上传」本仓库、以及在 GitHub 之外发表本作品，未经权利人另行书面同意均属禁止。权利人有权依据 DMCA 及类似程序（第 9.5 条）要求移除不合规的 fork 与重新上传。
 
-**7.11. 使用身份。** 以暗示著作权人认可、赞助或关联的方式使用姓名、笔名、形象、ORCID、电子邮箱或「wild8highlander」「AB-Cloud」「Research Papers」等标识，但严格限于第 5.4 条引用形式的指名署名除外。
+**7.11. 使用身份。** 以暗示著作权人认可、赞助或关联的方式使用姓名、笔名、形象、ORCID、电子邮箱或「wild8highlander」「AB-Cloud」「Trivortex」等标识，但严格限于第 5.4 条引用形式的指名署名除外。
 
 **7.12. 规避本协议。** 教唆、帮助、协助或促使任何第三人实施第 7 条禁止的任何行为，并试图实施任何此类行为。
 
@@ -319,8 +319,8 @@
 
 - **GitHub**：<https://github.com/wild8highlander> （仓库 issues 及账户联系渠道）
 - **ORCID**：0009-0003-7299-0701
-- **仓库**：<https://github.com/wild8highlander/research-papers>
-- **文档**：<https://wild8highlander.github.io/research-papers>
+- **仓库**：<https://github.com/wild8highlander/Trivortex>
+- **文档**：<https://wild8highlander.github.io/Trivortex>
 - **引用（DOI）**：10.5281/zenodo.21825394
 
 ---

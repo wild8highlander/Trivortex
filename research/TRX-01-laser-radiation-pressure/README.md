@@ -398,7 +398,7 @@ Cite the repository through [`CITATION.cff`](../../CITATION.cff) (DOI 10.5281/ze
   year         = {2026},
   howpublished = {Zenodo},
   doi          = {10.5281/zenodo.21825394},
-  url          = {https://github.com/wild8highlander/research-papers}
+  url          = {https://github.com/wild8highlander/Trivortex}
 }
 ```
 

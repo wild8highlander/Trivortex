@@ -6,6 +6,38 @@ versioning follows [SemVer](https://semver.org/).
 
 ---
 
+## [Unreleased]
+
+### Fixed
+- **Repository identity.** All 310 references to the pre-rename repository
+  slug `research-papers` (README badges and links, CITATION.cff, pyproject
+  URLs, .zenodo.json, the documentation site, every research and verification
+  README, the license texts, the Zenodo release workflow) now point to
+  `wild8highlander/Trivortex` and its GitHub Pages site
+  `wild8highlander.github.io/Trivortex`.
+- `Makefile`: the pytest-guard help line said «28 tests»; the guard runs 27.
+- `docs/site/index.html`: the pytest badge said «28 passed»; it is 27.
+- `.github/workflows/lint.yml`: the mypy step targeted the nonexistent
+  `verification/python/` directory; it now checks
+  `verification/common/python` and `verification/trivortex/python`.
+- `.github/workflows/docker.yml`: the build matrix referenced `python`,
+  `julia` and `java` Dockerfiles that do not exist and silently skipped the
+  real `agda` and `isabelle` images; the matrix now matches the committed
+  Dockerfiles exactly.
+- `.github/workflows/scorecard.yml`: the Scorecard action was given a
+  nonexistent `SCORECARD_TOKEN` secret; it now uses the built-in
+  `GITHUB_TOKEN`.
+- `.github/workflows/zenodo.yml`: release archives and deposit metadata are
+  now named `trivortex-<tag>` and carry the correct repository URL.
+
+### Added
+- `SUPPORT.md`: the support channel guide (which channel for what,
+  reproduction checklists, response expectations).
+- A ready-to-upload `social-preview.png` (1280×640) for the repository
+  settings — Settings → General → Social preview.
+
+---
+
 ## [1.0.0] — 2026-10-07 — the first public release
 
 The first complete, self-consistent public edition of the TRIVORTEX research
@@ -104,4 +136,4 @@ sources and checked on every push.
 
 ---
 
-[1.0.0]: https://github.com/wild8highlander/research-papers/releases/tag/v1.0.0
+[1.0.0]: https://github.com/wild8highlander/Trivortex/releases/tag/v1.0.0

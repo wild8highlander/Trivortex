@@ -4,7 +4,7 @@
 
 |  |  |
 |---|---|
-| Program | TRIVORTEX — research-papers |
+| Program | TRIVORTEX — Trivortex |
 | Author | Isaev Iskhak Khamzatovich (ORCID 0009-0003-7299-0701) |
 | DOI | 10.5281/zenodo.21825394 |
 | Version | 1.0.0 — first public release |

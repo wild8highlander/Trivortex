@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0E2145"/>
+      <stop offset="1" stop-color="#0A1730"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#D4AF37" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#D4AF37"/>
+      <stop offset="1" stop-color="#D4AF37" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#D4AF37" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#D4AF37" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1280" height="640" fill="url(#bg)"/>
+
+  <!-- starfield -->
+  <g fill="#E9EEF8">
+    <circle cx="94" cy="88" r="1.6" opacity="0.8"/>
+    <circle cx="212" cy="150" r="1.1" opacity="0.5"/>
+    <circle cx="330" cy="70" r="1.4" opacity="0.7"/>
+    <circle cx="1180" cy="110" r="1.5" opacity="0.8"/>
+    <circle cx="1080" cy="200" r="1.1" opacity="0.5"/>
+    <circle cx="1230" cy="330" r="1.3" opacity="0.6"/>
+    <circle cx="160" cy="560" r="1.4" opacity="0.7"/>
+    <circle cx="420" cy="600" r="1.0" opacity="0.4"/>
+    <circle cx="1140" cy="560" r="1.5" opacity="0.8"/>
+    <circle cx="700" cy="80" r="1.0" opacity="0.4"/>
+    <circle cx="940" cy="70" r="1.3" opacity="0.6"/>
+    <circle cx="60" cy="330" r="1.2" opacity="0.5"/>
+  </g>
+
+  <!-- orbit ring with three bodies (right side) -->
+  <circle cx="1000" cy="320" r="210" fill="url(#glow)"/>
+  <g transform="translate(1000 320) rotate(-18)">
+    <ellipse rx="210" ry="120" fill="none" stroke="#D4AF37" stroke-opacity="0.55" stroke-width="1.6"/>
+    <ellipse rx="210" ry="120" fill="none" stroke="#D4AF37" stroke-opacity="0.18" stroke-width="6"/>
+    <circle cx="-197" cy="33" r="10" fill="#F0D98C"/>
+    <circle cx="105" cy="-92" r="13" fill="#E9EEF8"/>
+    <circle cx="140" cy="86" r="8" fill="#59C2FF"/>
+  </g>
+
+  <!-- title block -->
+  <text x="84" y="238" font-family="Georgia, 'DejaVu Serif', serif" font-size="96" font-weight="bold"
+        letter-spacing="12" fill="#F0D98C">TRIVORTEX</text>
+  <rect x="88" y="268" width="620" height="3" fill="url(#gold)"/>
+  <text x="88" y="330" font-family="Georgia, 'DejaVu Serif', serif" font-size="33" letter-spacing="1.5"
+        fill="#E9EEF8">The Three-Body Problem in the Vortex Model</text>
+  <text x="88" y="378" font-family="Georgia, 'DejaVu Serif', serif" font-size="21" letter-spacing="1"
+        fill="#8FA3C4">Chaplygin topological integral · Theorem 3.1 · Lagrange choreography · verification ladder V1–V4</text>
+
+  <!-- footer -->
+  <text x="88" y="520" font-family="'DejaVu Sans Mono', monospace" font-size="19" fill="#59C2FF">DOI 10.5281/zenodo.21825394</text>
+  <text x="88" y="552" font-family="'DejaVu Sans Mono', monospace" font-size="17" fill="#8FA3C4">github.com/wild8highlander/Trivortex · wild8highlander.github.io/Trivortex</text>
+  <text x="88" y="598" font-family="Georgia, 'DejaVu Serif', serif" font-size="17" fill="#8FA3C4">Isaev Iskhak Khamzatovich · ORCID 0009-0003-7299-0701</text>
+</svg>

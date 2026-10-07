@@ -49,12 +49,12 @@
   ],
   "related_identifiers": [
     {
-      "identifier": "https://github.com/wild8highlander/research-papers/tree/v1.0.0",
+      "identifier": "https://github.com/wild8highlander/Trivortex/tree/v1.0.0",
       "relation": "isSupplementTo",
       "scheme": "url"
     },
     {
-      "identifier": "https://wild8highlander.github.io/research-papers",
+      "identifier": "https://wild8highlander.github.io/Trivortex",
       "relation": "isDocumentedBy",
       "scheme": "url"
     }

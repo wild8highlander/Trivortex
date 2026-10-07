@@ -18,15 +18,15 @@ four-check verification ladder that re-derives everything from scratch.
 
 **[Isaev Iskhak Khamzatovich](https://orcid.org/0009-0003-7299-0701)** · ORCID `0009-0003-7299-0701` · Independent Researcher
 
-[📖 Documentation site](https://wild8highlander.github.io/research-papers) · [📚 The document](code/) · [🧪 Verification](verification/) · [🔬 Research program](research/) · [🏛 Reading room](publications/) · [📝 How to cite](#19-citation-doi--zenodo)
+[📖 Documentation site](https://wild8highlander.github.io/Trivortex) · [📚 The document](code/) · [🧪 Verification](verification/) · [🔬 Research program](research/) · [🏛 Reading room](publications/) · [📝 How to cite](#19-citation-doi--zenodo)
 
 <!-- ROW 1 — LIVE CI/CD -->
-[![TRIVORTEX CI](https://img.shields.io/github/actions/workflow/status/wild8highlander/research-papers/ci.yml?branch=main&style=for-the-badge&logo=github&label=TRIVORTEX%20CI)](https://github.com/wild8highlander/research-papers/actions/workflows/ci.yml)
-[![Lint](https://img.shields.io/github/actions/workflow/status/wild8highlander/research-papers/lint.yml?branch=main&style=for-the-badge&logo=github&label=Lint)](https://github.com/wild8highlander/research-papers/actions/workflows/lint.yml)
-[![CodeQL](https://img.shields.io/github/actions/workflow/status/wild8highlander/research-papers/codeql.yml?branch=main&style=for-the-badge&logo=github&label=CodeQL)](https://github.com/wild8highlander/research-papers/actions/workflows/codeql.yml)
-[![Docs Deploy](https://img.shields.io/github/actions/workflow/status/wild8highlander/research-papers/deploy-docs.yml?branch=main&style=for-the-badge&logo=github&label=Docs%20Deploy)](https://github.com/wild8highlander/research-papers/actions/workflows/deploy-docs.yml)
-[![Docker](https://img.shields.io/github/actions/workflow/status/wild8highlander/research-papers/docker.yml?branch=main&style=for-the-badge&logo=docker&label=Docker)](https://github.com/wild8highlander/research-papers/actions/workflows/docker.yml)
-[![OpenSSF Scorecard](https://api.securityscorecards.dev/badge?org=wild8highlander&repo=research-papers)](https://securityscorecards.dev/viewer/?uri=github.com/wild8highlander/research-papers)
+[![TRIVORTEX CI](https://img.shields.io/github/actions/workflow/status/wild8highlander/Trivortex/ci.yml?branch=main&style=for-the-badge&logo=github&label=TRIVORTEX%20CI)](https://github.com/wild8highlander/Trivortex/actions/workflows/ci.yml)
+[![Lint](https://img.shields.io/github/actions/workflow/status/wild8highlander/Trivortex/lint.yml?branch=main&style=for-the-badge&logo=github&label=Lint)](https://github.com/wild8highlander/Trivortex/actions/workflows/lint.yml)
+[![CodeQL](https://img.shields.io/github/actions/workflow/status/wild8highlander/Trivortex/codeql.yml?branch=main&style=for-the-badge&logo=github&label=CodeQL)](https://github.com/wild8highlander/Trivortex/actions/workflows/codeql.yml)
+[![Docs Deploy](https://img.shields.io/github/actions/workflow/status/wild8highlander/Trivortex/deploy-docs.yml?branch=main&style=for-the-badge&logo=github&label=Docs%20Deploy)](https://github.com/wild8highlander/Trivortex/actions/workflows/deploy-docs.yml)
+[![Docker](https://img.shields.io/github/actions/workflow/status/wild8highlander/Trivortex/docker.yml?branch=main&style=for-the-badge&logo=docker&label=Docker)](https://github.com/wild8highlander/Trivortex/actions/workflows/docker.yml)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/badge?org=wild8highlander&repo=Trivortex)](https://securityscorecards.dev/viewer/?uri=github.com/wild8highlander/Trivortex)
 
 <!-- ROW 2 — SCHOLARLY IDENTITY -->
 [![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.21825394-blue?style=for-the-badge&logo=zenodo&label=Zenodo)](https://doi.org/10.5281/zenodo.21825394)
@@ -37,22 +37,22 @@ four-check verification ladder that re-derives everything from scratch.
 [![REUSE](https://img.shields.io/badge/REUSE-Compliant-2EA043?style=for-the-badge&logo=fsfe&logoColor=white)](REUSE.toml)
 
 <!-- ROW 3 — PROJECT VITALS -->
-[![Release](https://img.shields.io/badge/Release-v1.0.0-gold?style=for-the-badge&logo=github&label=First%20Release)](https://github.com/wild8highlander/research-papers/releases)
+[![Release](https://img.shields.io/badge/Release-v1.0.0-gold?style=for-the-badge&logo=github&label=First%20Release)](https://github.com/wild8highlander/Trivortex/releases)
 [![pytest](https://img.shields.io/badge/pytest-27%20passed-2EA043?style=for-the-badge&logo=pytest)](verification/tests/)
 [![Ladder](https://img.shields.io/badge/ladder-V1%E2%80%93V4%20%E2%9C%93%204%2F4-2EA043?style=for-the-badge)](verification/trivortex/python/verify.py)
 [![Document](https://img.shields.io/badge/document-22%20sections-1284BA?style=for-the-badge)](code/)
 [![Studies](https://img.shields.io/badge/studies-12%20%C3%97%202%20languages-9558B2?style=for-the-badge)](research/)
 [![Monographs](https://img.shields.io/badge/monographs-60%20renditions%20PDF%2BDOCX-8A2BE2?style=for-the-badge)](publications/)
-[![Docs](https://img.shields.io/badge/Docs-GH%20Pages-blue?style=for-the-badge&logo=github)](https://wild8highlander.github.io/research-papers)
+[![Docs](https://img.shields.io/badge/Docs-GH%20Pages-blue?style=for-the-badge&logo=github)](https://wild8highlander.github.io/Trivortex)
 
 <!-- ROW 4 — COMMUNITY PULSE -->
-[![Stars](https://img.shields.io/github/stars/wild8highlander/research-papers?style=for-the-badge&logo=github&color=yellow&label=Stars)](https://github.com/wild8highlander/research-papers/stargazers)
-[![Forks](https://img.shields.io/github/forks/wild8highlander/research-papers?style=for-the-badge&logo=github&color=blue&label=Forks)](https://github.com/wild8highlander/research-papers/network/members)
-[![Issues](https://img.shields.io/github/issues/wild8highlander/research-papers?style=for-the-badge&logo=github&color=orange&label=Issues)](https://github.com/wild8highlander/research-papers/issues)
-[![PRs](https://img.shields.io/github/issues-pr/wild8highlander/research-papers?style=for-the-badge&logo=github&color=blueviolet&label=PRs)](https://github.com/wild8highlander/research-papers/pulls)
-[![Commits](https://img.shields.io/github/commit-activity/t/wild8highlander/research-papers?style=for-the-badge&logo=git&color=blue&label=Commits)](https://github.com/wild8highlander/research-papers/commits/main)
-[![Last Commit](https://img.shields.io/github/last-commit/wild8highlander/research-papers/main?style=for-the-badge&logo=git&color=teal&label=Last%20Commit)](https://github.com/wild8highlander/research-papers/commits/main)
-[![Repo Size](https://img.shields.io/github/repo-size/wild8highlander/research-papers?style=for-the-badge&logo=github&color=informational&label=Repo%20Size)](https://github.com/wild8highlander/research-papers)
+[![Stars](https://img.shields.io/github/stars/wild8highlander/Trivortex?style=for-the-badge&logo=github&color=yellow&label=Stars)](https://github.com/wild8highlander/Trivortex/stargazers)
+[![Forks](https://img.shields.io/github/forks/wild8highlander/Trivortex?style=for-the-badge&logo=github&color=blue&label=Forks)](https://github.com/wild8highlander/Trivortex/network/members)
+[![Issues](https://img.shields.io/github/issues/wild8highlander/Trivortex?style=for-the-badge&logo=github&color=orange&label=Issues)](https://github.com/wild8highlander/Trivortex/issues)
+[![PRs](https://img.shields.io/github/issues-pr/wild8highlander/Trivortex?style=for-the-badge&logo=github&color=blueviolet&label=PRs)](https://github.com/wild8highlander/Trivortex/pulls)
+[![Commits](https://img.shields.io/github/commit-activity/t/wild8highlander/Trivortex?style=for-the-badge&logo=git&color=blue&label=Commits)](https://github.com/wild8highlander/Trivortex/commits/main)
+[![Last Commit](https://img.shields.io/github/last-commit/wild8highlander/Trivortex/main?style=for-the-badge&logo=git&color=teal&label=Last%20Commit)](https://github.com/wild8highlander/Trivortex/commits/main)
+[![Repo Size](https://img.shields.io/github/repo-size/wild8highlander/Trivortex?style=for-the-badge&logo=github&color=informational&label=Repo%20Size)](https://github.com/wild8highlander/Trivortex)
 [![Languages](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-3776AB?style=for-the-badge&logo=python&logoColor=white)](pyproject.toml)
 
 </div>
@@ -309,7 +309,7 @@ equations, RK4) rotating rigidly at the classical angular velocity
 integrals `H, P, Q, I` are conserved along the trajectory (V3), with or without
 the symmetric initial condition (V4). The full statement, the certified-vs-recorded
 boundary and the honesty notes live on the
-[Theorem 3.1 page](https://wild8highlander.github.io/research-papers/theorem-3-1.html)
+[Theorem 3.1 page](https://wild8highlander.github.io/Trivortex/theorem-3-1.html)
 and in the [verification framework README](verification/README.md).
 
 ---
@@ -387,7 +387,7 @@ console; `_ru.py` — Russian; `_en.py` — English), each with the identical
 
 The [code/README.md](code/README.md) documents every section, the menu modes and
 the report engine in depth; the documentation site mirrors it in browser form
-([code page](https://wild8highlander.github.io/research-papers/code.html)).
+([code page](https://wild8highlander.github.io/Trivortex/code.html)).
 
 ---
 
@@ -454,7 +454,7 @@ Why these three: they span six orders of magnitude in scale and illustrate exact
 why the three-body problem admits no universal closed form. The verification
 ladder deliberately does **not** use them — V1–V4 operate on exact model objects,
 keeping the certified core clean of astronomical parameter noise. Details:
-[system presets page](https://wild8highlander.github.io/research-papers/system-presets.html).
+[system presets page](https://wild8highlander.github.io/Trivortex/system-presets.html).
 
 ---
 
@@ -725,22 +725,22 @@ deterministic generator). Physics and reproduction notes:
 
 ## 14. Documentation site (GitHub Pages)
 
-The site at **[wild8highlander.github.io/research-papers](https://wild8highlander.github.io/research-papers)**
+The site at **[wild8highlander.github.io/Trivortex](https://wild8highlander.github.io/Trivortex)**
 is a static, dependency-free build published by
 [`deploy-docs.yml`](.github/workflows/deploy-docs.yml) from `docs/site/`:
 
 | Page | Content |
 |---|---|
-| [Overview](https://wild8highlander.github.io/research-papers/) | hero, badges, 60-second summary, headline results, abstract |
-| [Vortex Model](https://wild8highlander.github.io/research-papers/vortex-model.html) | bodies→vortices, the Hamiltonian, observables, literature context |
-| [Theorem 3.1](https://wild8highlander.github.io/research-papers/theorem-3-1.html) | statement, reference values, certified vs recorded, the Lagrange twin |
-| [Code](https://wild8highlander.github.io/research-papers/code.html) | the 22 sections, menu modes, report engine |
-| [System Presets](https://wild8highlander.github.io/research-papers/system-presets.html) | Sun–Earth–Moon, α Centauri, Pluto–Charon–Nix |
-| [Verification](https://wild8highlander.github.io/research-papers/verification.html) | V1–V4, criteria, roadmap, honesty notes |
-| [Research Lab](https://wild8highlander.github.io/research-papers/research.html) | the twelve studies with key results and direct links |
-| [Publications](https://wild8highlander.github.io/research-papers/publications.html) | the reading room: every PDF/DOCX rendition of the program |
-| [Citation](https://wild8highlander.github.io/research-papers/citation.html) | CFF, BibTeX, DOI |
-| [License](https://wild8highlander.github.io/research-papers/license.html) | IPL-RP-1.0, REUSE, contact |
+| [Overview](https://wild8highlander.github.io/Trivortex/) | hero, badges, 60-second summary, headline results, abstract |
+| [Vortex Model](https://wild8highlander.github.io/Trivortex/vortex-model.html) | bodies→vortices, the Hamiltonian, observables, literature context |
+| [Theorem 3.1](https://wild8highlander.github.io/Trivortex/theorem-3-1.html) | statement, reference values, certified vs recorded, the Lagrange twin |
+| [Code](https://wild8highlander.github.io/Trivortex/code.html) | the 22 sections, menu modes, report engine |
+| [System Presets](https://wild8highlander.github.io/Trivortex/system-presets.html) | Sun–Earth–Moon, α Centauri, Pluto–Charon–Nix |
+| [Verification](https://wild8highlander.github.io/Trivortex/verification.html) | V1–V4, criteria, roadmap, honesty notes |
+| [Research Lab](https://wild8highlander.github.io/Trivortex/research.html) | the twelve studies with key results and direct links |
+| [Publications](https://wild8highlander.github.io/Trivortex/publications.html) | the reading room: every PDF/DOCX rendition of the program |
+| [Citation](https://wild8highlander.github.io/Trivortex/citation.html) | CFF, BibTeX, DOI |
+| [License](https://wild8highlander.github.io/Trivortex/license.html) | IPL-RP-1.0, REUSE, contact |
 
 Local preview: `python3 -m http.server -d docs/site 8080` →
 <http://localhost:8080>. No build step, no toolchain — the pages are plain HTML
@@ -752,7 +752,7 @@ and the workflow publishes them verbatim (no Jekyll processing; a committed
 ## 15. Repository structure
 
 ```text
-research-papers/
+Trivortex/
 ├── README.md                        ← this file
 ├── LICENSE.md / LICENSE.ru.md / LICENSE.zh.md   ← proprietary license (EN + translations)
 ├── CITATION.cff · .zenodo.json      ← citation metadata (v1.0.0)
@@ -819,8 +819,8 @@ research-papers/
 ## 16. Quick start & reproduction
 
 ```bash
-git clone https://github.com/wild8highlander/research-papers.git
-cd research-papers
+git clone https://github.com/wild8highlander/Trivortex.git
+cd Trivortex
 python -m pip install numpy scipy matplotlib mpmath
 
 # ── the interactive document ─────────────────────────────
@@ -924,7 +924,7 @@ contribution rules: [verification/README.md](verification/README.md).
   howpublished = {Zenodo},
   doi          = {10.5281/zenodo.21825394},
   orcid        = {0009-0003-7299-0701},
-  url          = {https://github.com/wild8highlander/research-papers}
+  url          = {https://github.com/wild8highlander/Trivortex}
 }
 ```
 
@@ -934,7 +934,7 @@ The canonical metadata lives in [`CITATION.cff`](CITATION.cff) (GitHub's
 GitHub releases by [`zenodo.yml`](.github/workflows/zenodo.yml). If you cite the
 verification ladder rather than the document, name the preset you reproduced and
 attach the JSON protocol — see the
-[citation page](https://wild8highlander.github.io/research-papers/citation.html).
+[citation page](https://wild8highlander.github.io/Trivortex/citation.html).
 
 ---
 
@@ -1077,7 +1077,7 @@ document is provided as-is, without warranty of any kind.
 **TRIVORTEX** · The Three-Body Problem in the Vortex Model · **Version 1.0.0**
 [DOI 10.5281/zenodo.21825394](https://doi.org/10.5281/zenodo.21825394) ·
 [ORCID 0009-0003-7299-0701](https://orcid.org/0009-0003-7299-0701) ·
-[Documentation](https://wild8highlander.github.io/research-papers) ·
+[Documentation](https://wild8highlander.github.io/Trivortex) ·
 MMXXVI
 
 </div>

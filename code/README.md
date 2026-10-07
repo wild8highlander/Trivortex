@@ -323,7 +323,7 @@ The interactive layer is designed to survive real terminal conditions:
    lands, and pin reference values in
    [`verification/tests/`](../verification/tests/README.md).
 4. **Update the maps.** The section table in this README, the section map on
-   the [code page](https://wild8highlander.github.io/research-papers/code.html)
+   the [code page](https://wild8highlander.github.io/Trivortex/code.html)
    and the `SECTION_NAMES` registry in
    [`verification/common/python/config.py`](../verification/common/python/config.py)
    must move together with the code.

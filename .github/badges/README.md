@@ -28,6 +28,6 @@ Machine-readable **badge data** consumed by the root README. The single file her
 **[⬆ Back to top](#github--badges--openssf-scorecard-badge-data)** ·
 **[Repository root](../../README.md)**
 
-*Part of [wild8highlander/research-papers](https://github.com/wild8highlander/research-papers) · Licensed under [IPL-RP-1.0](https://github.com/wild8highlander/research-papers/blob/main/LICENSE.md) — All Rights Reserved*
+*Part of [wild8highlander/Trivortex](https://github.com/wild8highlander/Trivortex) · Licensed under [IPL-RP-1.0](https://github.com/wild8highlander/Trivortex/blob/main/LICENSE.md) — All Rights Reserved*
 
 </div>

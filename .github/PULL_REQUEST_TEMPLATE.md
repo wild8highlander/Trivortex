@@ -1,4 +1,4 @@
-<!-- PR Template — TRIVORTEX / research-papers -->
+<!-- PR Template — TRIVORTEX / Trivortex -->
 <!-- Please fill in all relevant sections. Remove sections that don't apply. -->
 
 <!-- markdownlint-disable-file MD041 -->
