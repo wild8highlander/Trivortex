@@ -139,7 +139,7 @@ jobs:
                 }
               ],
               "keywords": ["three-body-problem", "N-body-problem", "vortex-dynamics", "Chaplygin-integral", "Lagrange-solution", "choreographic-solutions", "Kirchhoff-equations", "Hofstadter-Hamiltonian", "Theorem-3.1", "TRIVORTEX", "verification-ladder", "mathematical-physics", "celestial-mechanics", "reproducible-research", "open-science"],
-              "license": "CC-BY-NC-SA-4.0",
+              "license": "LicenseRef-Proprietary-Wild8Highlander-1.0",
               "access_right": "open",
               "related_identifiers": [
                 {

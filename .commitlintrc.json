@@ -1,5 +1,3 @@
-# Commitlint — Enforce conventional commit messages
-# https://commitlint.js.org
 {
   "extends": ["@commitlint/config-conventional"],
   "rules": {
