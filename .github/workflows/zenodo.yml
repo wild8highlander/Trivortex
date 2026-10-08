@@ -32,11 +32,11 @@ permissions:
 jobs:
   zenodo:
     name: Upload to Zenodo
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ inputs.release_tag || github.event.release.tag_name }}
           fetch-depth: 0

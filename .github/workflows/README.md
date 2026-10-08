@@ -32,7 +32,7 @@ publisher optionally accepts `ZENODO_TOKEN` for DOI automation).
 ## The CI job in detail
 
 `ci.yml` is the contract that keeps the science honest. Three jobs, all on
-`ubuntu-latest`:
+`ubuntu-24.04`:
 
 1. **Syntax check** — `py_compile` over every Python file under `code/`,
    `verification/` and `research/` on Python 3.10, 3.11 and 3.12 (fail-fast
@@ -40,9 +40,11 @@ publisher optionally accepts `ZENODO_TOKEN` for DOI automation).
 2. **Verification ladder** — `verify.py --preset quick` (~0.5 s); the JSON
    protocol is uploaded as the `trivortex-verify-protocol` artifact
    (retention 30 days). If a single check fails, the job exits non-zero.
-3. **Pytest guard** — the full `verification/tests/` suite: 13 reference-value
-   pins for Theorem 3.1, 12 study smoke runs, the completeness, library and
-   companion-volume tests — 28 tests total.
+3. **Pytest guard** — the full `verification/tests/` suite: the Theorem 3.1
+   and Lagrange reference-value pins, the four ladder checks, the report
+   round-trip and 14 study smoke runs — 27 tests total. The job installs
+   `numpy scipy pytest`; eleven smoke studies import scipy at module level,
+   so a numpy-only environment fails the guard (as CI learned the hard way).
 
 ## Contract
 

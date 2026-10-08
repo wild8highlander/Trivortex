@@ -15,9 +15,9 @@ permissions:
 jobs:
   markdown-lint:
     name: Markdown
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Lint Markdown
         uses: DavidAnson/markdownlint-cli2-action@v17
         with:
@@ -28,9 +28,9 @@ jobs:
 
   yaml-lint:
     name: YAML
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Lint YAML
         uses: ibiqlik/action-yamllint@v3
         with:
@@ -43,10 +43,10 @@ jobs:
 
   python-lint:
     name: Python (ruff + black + mypy)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
           cache: pip
@@ -65,8 +65,8 @@ jobs:
 
   citation-lint:
     name: CITATION.cff
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Validate CITATION.cff
         uses: dieghernan/cff-validator@v3
