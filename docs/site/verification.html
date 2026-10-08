@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Verification V1-V4 — TRIVORTEX</title>
-<meta name="description" content="The independent verification ladder: four checks, registered criteria, JSON protocols, pytest guard and the multi-language roadmap.">
+<title>Verification — TRIVORTEX</title>
+<meta name="description" content="The independent verification ladder, the interactive scientific laboratory, four checks with registered criteria, JSON protocols, a 63-test pytest guard and seven landed language ports (Coq, Lean 4, Rust, Isabelle, Agda, C++, Haskell).">
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
@@ -14,9 +14,9 @@
 </div></header>
 <main class="wrap">
 
-<h1 style="letter-spacing:2px;font-size:36px">Verification — Ladder V1–V4</h1>
-<p class="muted">An independent checker, a pytest guard, seven pinned toolchains and
-a formalization roadmap.</p>
+<h1 style="letter-spacing:2px;font-size:36px">Verification — Ladder V1–V4 × 8 languages</h1>
+<p class="muted">An independent checker, an interactive laboratory, seven pinned
+toolchains — and the multi-language ports of milestones M1–M3, landed.</p>
 
 <h2 id="principle">The principle</h2>
 <p>Numbers printed by the code that defines them are repetition, not verification.
@@ -54,7 +54,8 @@ repository.</p>
 <pre><code>python3 verification/trivortex/python/verify.py --preset quick    # ~0.5 s (CI)
 python3 verification/trivortex/python/verify.py --preset default  # ~2 s
 python3 verification/trivortex/python/verify.py --preset full     # ~35 s
-python -m pytest verification/tests/ -v                           # 13 tests</code></pre>
+python3 verification/trivortex/python/lab.py                      # the interactive laboratory
+python -m pytest verification/tests/ -v                           # 63 tests</code></pre>
 
 <h2 id="honesty">Honesty notes</h2>
 <div class="note">
@@ -67,18 +68,25 @@ the dynamics are the vortex integrals H, P, Q, I — and those are what V3–V4
 certify. Any future language port must keep this separation.
 </div>
 
-<h2 id="roadmap">Multi-language roadmap</h2>
+<h2 id="roadmap">Multi-language roadmap — milestones M1–M3 landed</h2>
 <table>
 <tr><th>Directory</th><th>Artifact</th><th>Milestone</th><th>Status</th></tr>
 <tr><td class="mono">trivortex/python/</td><td>working ladder V1–V4 + JSON</td><td>M0</td><td class="pass">done</td></tr>
-<tr><td class="mono">tests/</td><td>pytest guard (13 tests)</td><td>M0</td><td class="pass">done</td></tr>
-<tr><td class="mono">coq/ · lean4/ · rust/</td><td>statement layer + second FP implementation</td><td>M1</td><td class="warn">planned — skeleton</td></tr>
-<tr><td class="mono">isabelle/ · agda/</td><td>SMT bounds + constructive angles</td><td>M2</td><td class="warn">planned — skeleton</td></tr>
-<tr><td class="mono">cpp/ · haskell/</td><td>benchmark ladder + exact-rational dual</td><td>M3</td><td class="warn">planned — skeleton</td></tr>
+<tr><td class="mono">tests/</td><td>pytest guard (63 tests)</td><td>M0</td><td class="pass">done</td></tr>
+<tr><td class="mono">trivortex/python/lab.py</td><td>interactive scientific laboratory — bilingual, custom parameters, 600 dpi figures</td><td>M0+</td><td class="pass">landed</td></tr>
+<tr><td class="mono">coq/</td><td>Trivortex.v — statement layer, choreography + periodicity proven, zero axioms</td><td>M1</td><td class="pass">landed</td></tr>
+<tr><td class="mono">lean4/</td><td>Trivortex.lean — Mathlib formalization, #print axioms closed</td><td>M1</td><td class="pass">landed</td></tr>
+<tr><td class="mono">rust/</td><td>f64 numeric twin + bilingual lab — 14/14 tests, protocol committed</td><td>M1</td><td class="pass">landed</td></tr>
+<tr><td class="mono">isabelle/</td><td>Trivortex.thy — HOL session + optional SMT bounds</td><td>M2</td><td class="pass">landed</td></tr>
+<tr><td class="mono">agda/</td><td>Trivortex.agda — constructive C3 rotation lattice (rot³ ≡ id)</td><td>M2</td><td class="pass">landed</td></tr>
+<tr><td class="mono">cpp/</td><td>CMake/CTest port + −O2 benchmark — 21 guards, ≈1.7e7 rhs/s</td><td>M3</td><td class="pass">landed</td></tr>
+<tr><td class="mono">haskell/</td><td>Double + exact ℚ(√3) dual — anchors hold by computation</td><td>M3</td><td class="pass">landed</td></tr>
 </table>
-<p class="small muted">Seven Docker toolchains are already pinned under
-<span class="mono">verification/docker/</span>; each roadmap stub states its
-acceptance criteria before the artifacts land. Full details in the
+<p class="small muted">Seven Docker toolchains are pinned under
+<span class="mono">verification/docker/</span>; every port keeps its checked
+acceptance criteria in its directory README, and the CI runs all ports
+non-blocking via <span class="mono">verification-ports.yml</span> until each
+stays green for three consecutive days. Full details in the
 <a href="https://github.com/wild8highlander/Trivortex/tree/main/verification">framework README</a>.</p>
 
 </main>

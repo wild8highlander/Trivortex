@@ -1,0 +1,83 @@
+{
+  "suite": "trivortex-verification-rust",
+  "version": "1.0",
+  "preset": "quick",
+  "date_utc": "2026-10-08T02:51:21+00:00",
+  "wall_time_s": 0.001957913,
+  "checks_passed": 4.0,
+  "checks_total": 4.0,
+  "all_passed": true,
+  "checks": [
+    {
+      "check": "V1 Theorem 3.1: choreography + periodicity of the closed form",
+      "angular_separation_error": 0.0000000000000688338275267597,
+      "angular_separation_tolerance": 0.000000000001,
+      "periodicity_residual": 0.00000000000009392486788328824,
+      "periodicity_tolerance": 0.000000000001,
+      "section6_drift_diagnostic": 15.01103578340651,
+      "passed": true,
+      "params": {
+        "C_Ch": 1.0,
+        "T": 6.283185307179586,
+        "n_points": 200.0,
+        "omega": 1.3748022274393588,
+        "window": "0..100T"}
+      }
+    ,
+    {
+      "check": "V2 Lagrange rigid rotation: shape + analytic omega = 3G/(2pi a^2)",
+      "shape_drift": 0.000000000000015765166949677223,
+      "shape_tolerance": 0.0000000001,
+      "omega_analytic": 0.477464829275686,
+      "omega_relative_error": 0.0000000000028567035358976095,
+      "omega_tolerance": 0.000001,
+      "passed": true,
+      "params": {
+        "Gamma": 1.0,
+        "a": 1.0,
+        "rotations": 2.0,
+        "steps_per_period": 2000.0,
+        "dt": 0.006579736267392906}
+      }
+    ,
+    {
+      "check": "V3 vortex integrals: H, P, Q, I conserved (equal Gamma)",
+      "relative_drifts": {
+        "H": 0.000000000000006926541306298275,
+        "P": 0.000000000000001609823385706477,
+        "Q": 0.000000000000000943689570931383,
+        "I": 0.00000000000002930988785010413}
+      ,
+      "worst_drift": 0.00000000000002930988785010413,
+      "tolerance": 0.0000000001,
+      "passed": true,
+      "params": {
+        "Gamma": 1.0,
+        "a": 1.0,
+        "rotations": 2.0,
+        "steps_per_period": 2000.0}
+      }
+    ,
+    {
+      "check": "V4 robustness: H, P, Q, I conserved for Gamma = (1, 2, 3)",
+      "relative_drifts": {
+        "H": 0.000000000000026098218136230996,
+        "P": 0.00000000000000510702591327572,
+        "Q": 0.000000000000007105427357601002,
+        "I": 0.00000000000002864375403532904}
+      ,
+      "worst_drift": 0.00000000000002864375403532904,
+      "tolerance": 0.0000000001,
+      "passed": true,
+      "params": {
+        "Gamma": [
+          1.0,
+          2.0,
+          3.0]
+        ,
+        "a": 1.0,
+        "rotations": 2.0,
+        "steps_per_period": 2000.0}
+      }
+    ]
+  }

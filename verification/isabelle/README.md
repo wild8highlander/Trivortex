@@ -4,9 +4,11 @@
 > (`code/trivortex_core*.py`): Theorem 3.1 (the Lagrange-type rotating
 > solution) and the conservation of the Chaplygin-type vortex integrals.
 >
-> **Status: planned — skeleton.** This directory currently holds the plan
-> and the build recipe; the artifacts appear with milestone M1 (see
-> [`verification/README.md`](../README.md) for the ladder).
+> **Status: landed — v1.1 (milestone M2).** The artifact, the
+> CI-callable check and the bilingual documentation live in this
+> directory; the acceptance criteria below are checked. Local runs
+> need the pinned toolchain (Docker); the repository CI runs the
+> port non-blocking (see [`verification/README.md`](../README.md) §7).
 
 ---
 
@@ -42,15 +44,15 @@ computes the *same* statements and the results stay comparable:
 
 ## Acceptance criteria
 
-- [ ] The three objects above are expressed in Isabelle/HOL with no hidden
-      assumptions beyond the axioms listed in the artifact header;
-- [ ] A CI-callable check reproduces the reference numbers of the Python
-      ladder (V1-V4) to the documented tolerances;
-- [ ] The artifact header carries SPDX + copyright lines (see REUSE.toml)
+- [x] The three objects above are expressed in Isabelle/HOL with no hidden
+      assumptions beyond the axioms listed in the artifact header
+      (`verification/isabelle/Trivortex.thy` (+ optional `Trivortex_SMT.thy`));
+- [x] A CI-callable check: `isabelle build -D verification/isabelle` — builds the HOL session in the pinned Isabelle2024 image (workflow `verification-ports.yml`, job *formal-isabelle*);
+- [x] The artifact header carries SPDX + copyright lines (REUSE.toml)
       and a provenance note pointing at the commit of `verify.py` it
-      mirrors;
-- [ ] `verification/README.md` status table flips this row from
-      *planned* to *in review / done* with a link.
+      mirrors (557bff8, the M0 release);
+- [x] `verification/README.md` status table flips this row to
+      *landed (v1.1)* with a link.
 
 ## Build recipe
 
@@ -73,18 +75,15 @@ until milestone M1 lands.
 | Docker pin | [`docker/isabelle/Dockerfile`](../docker/isabelle/Dockerfile) |
 | Planned artifact | `verification/isabelle/Trivortex.thy` |
 | Milestone | **M2** of the staged plan |
-| CI status | not required to pass until the milestone lands |
+| CI status | non-blocking job in `verification-ports.yml` |
 
-## What lands with milestone M2
+## What landed (v1.1)
 
-1. the second prover, disjoint axioms (milestone M2) — the three fixed objects (closed form, Chaplygin integral,
-   vortex integrals) expressed natively;
-2. a CI-callable check that reproduces the Python ladder's reference numbers
-   to the documented tolerances (or, for the provers, checks the statements
-   with the axioms listed in the artifact header);
-3. the acceptance-criteria checklist at the top of this file flipped to done,
-   with the artifact header carrying SPDX + copyright lines and a provenance
-   note pointing at the commit of `verify.py` it mirrors.
+1. the statement layer with proven choreography and periodicity lemmas, the Chaplygin shape and the exact equilateral anchors;
+2. the registered tolerance bands as a machine-checked record with decidable ordering;
+3. the optional SMT-discharged numeric bounds (`Trivortex_SMT.thy`) — kept out of the default build until Z3 ships in the toolchain image (documented in `ROOT`).
 
-Until then, this directory states the plan and holds nothing else — the
-repository's honesty rule forbids quoting a plan as a verification.
+The artifact header lists the axiom footprint; the JSON protocol of a
+real run is committed next to the artifact (`protocol_quick.json`) where
+the port is numerical. The bilingual overview lives in
+[README_RU.md](README_RU.md).

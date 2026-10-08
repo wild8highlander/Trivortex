@@ -4,9 +4,11 @@
 > (`code/trivortex_core*.py`): Theorem 3.1 (the Lagrange-type rotating
 > solution) and the conservation of the Chaplygin-type vortex integrals.
 >
-> **Status: planned — skeleton.** This directory currently holds the plan
-> and the build recipe; the artifacts appear with milestone M1 (see
-> [`verification/README.md`](../README.md) for the ladder).
+> **Status: landed — v1.1 (milestone M3).** The artifact, the
+> CI-callable check and the bilingual documentation live in this
+> directory; the acceptance criteria below are checked. Local runs
+> need the pinned toolchain (Docker); the repository CI runs the
+> port non-blocking (see [`verification/README.md`](../README.md) §7).
 
 ---
 
@@ -42,15 +44,15 @@ computes the *same* statements and the results stay comparable:
 
 ## Acceptance criteria
 
-- [ ] The three objects above are expressed in C++ (CMake) with no hidden
-      assumptions beyond the axioms listed in the artifact header;
-- [ ] A CI-callable check reproduces the reference numbers of the Python
-      ladder (V1-V4) to the documented tolerances;
-- [ ] The artifact header carries SPDX + copyright lines (see REUSE.toml)
+- [x] The three objects above are expressed in C++ (CMake) with no hidden
+      assumptions beyond the axioms listed in the artifact header
+      (`verification/cpp/` (CMake/CTest port + the `-O2` benchmark ladder));
+- [x] A CI-callable check: `cmake -S verification/cpp -B build && ctest --test-dir build` — runs the pinned-reference guard (21 assertions) and the benchmark ladder (workflow `verification-ports.yml`, job *cpp-ctest*);
+- [x] The artifact header carries SPDX + copyright lines (REUSE.toml)
       and a provenance note pointing at the commit of `verify.py` it
-      mirrors;
-- [ ] `verification/README.md` status table flips this row from
-      *planned* to *in review / done* with a link.
+      mirrors (557bff8, the M0 release);
+- [x] `verification/README.md` status table flips this row to
+      *landed (v1.1)* with a link.
 
 ## Build recipe
 
@@ -73,18 +75,15 @@ until milestone M1 lands.
 | Docker pin | [`docker/cpp/Dockerfile`](../docker/cpp/Dockerfile) |
 | Planned artifact | `verification/cpp/verify.cpp` |
 | Milestone | **M3** of the staged plan |
-| CI status | not required to pass until the milestone lands |
+| CI status | non-blocking job in `verification-ports.yml` |
 
-## What lands with milestone M3
+## What landed (v1.1)
 
-1. the compiled benchmark ladder + exact-arithmetic residual split — the three fixed objects (closed form, Chaplygin integral,
-   vortex integrals) expressed natively;
-2. a CI-callable check that reproduces the Python ladder's reference numbers
-   to the documented tolerances (or, for the provers, checks the statements
-   with the axioms listed in the artifact header);
-3. the acceptance-criteria checklist at the top of this file flipped to done,
-   with the artifact header carrying SPDX + copyright lines and a provenance
-   note pointing at the commit of `verify.py` it mirrors.
+1. the numeric twin compiled at `-O2` with the CTest guard of pinned reference values, reproducing the Python ladder's verdicts;
+2. the `-O2` benchmark (RK4 right-hand-side evaluations per second) recorded in every JSON protocol (`benchmark_rhs_per_s`);
+3. the interactive bilingual laboratory (`trivortex-lab`): presets, custom parameters, convergence analysis, JSON/CSV/SVG export.
 
-Until then, this directory states the plan and holds nothing else — the
-repository's honesty rule forbids quoting a plan as a verification.
+The artifact header lists the axiom footprint; the JSON protocol of a
+real run is committed next to the artifact (`protocol_quick.json`) where
+the port is numerical. The bilingual overview lives in
+[README_RU.md](README_RU.md).

@@ -1,0 +1,85 @@
+{
+  "suite": "trivortex-verification-cpp",
+  "version": "1.0",
+  "preset": "quick",
+  "date_utc": "2026-10-08T02:57:48+00:00",
+  "wall_time_s": 0.0037921589999999998,
+  "checks_passed": 4.0,
+  "checks_total": 4.0,
+  "all_passed": true,
+  "benchmark_rhs_per_s": 16734651.187114319,
+  "checks": [
+    {
+      "check": "V1 Theorem 3.1: choreography + periodicity of the closed form",
+      "angular_separation_error": 6.8833827526759706e-14,
+      "angular_separation_tolerance": 9.9999999999999998e-13,
+      "periodicity_residual": 9.3924867883288243e-14,
+      "periodicity_tolerance": 9.9999999999999998e-13,
+      "section6_drift_diagnostic": 15.011035783406509,
+      "passed": true,
+      "params": {
+        "C_Ch": 1.0,
+        "T": 6.2831853071795862,
+        "n_points": 200.0,
+        "omega": 1.3748022274393588,
+        "window": "0..100T"
+      }
+    },
+    {
+      "check": "V2 Lagrange rigid rotation: shape + analytic omega = 3G/(2pi a^2)",
+      "shape_drift": 1.5765166949677223e-14,
+      "shape_tolerance": 1e-10,
+      "omega_analytic": 0.47746482927568601,
+      "omega_relative_error": 2.8567035358976095e-12,
+      "omega_tolerance": 9.9999999999999995e-07,
+      "passed": true,
+      "params": {
+        "Gamma": 1.0,
+        "a": 1.0,
+        "rotations": 2.0,
+        "steps_per_period": 2000.0,
+        "dt": 0.0065797362673929057
+      }
+    },
+    {
+      "check": "V3 vortex integrals: H, P, Q, I conserved (equal Gamma)",
+      "relative_drifts": {
+        "H": 6.9265413062982746e-15,
+        "P": 1.609823385706477e-15,
+        "Q": 9.4368957093138306e-16,
+        "I": 2.9309887850104133e-14
+      },
+      "worst_drift": 2.9309887850104133e-14,
+      "tolerance": 1e-10,
+      "passed": true,
+      "params": {
+        "Gamma": 1.0,
+        "a": 1.0,
+        "rotations": 2.0,
+        "steps_per_period": 2000.0
+      }
+    },
+    {
+      "check": "V4 robustness: H, P, Q, I conserved for Gamma = (1, 2, 3)",
+      "relative_drifts": {
+        "H": 2.6098218136230996e-14,
+        "P": 5.1070259132757201e-15,
+        "Q": 7.1054273576010019e-15,
+        "I": 2.8643754035329039e-14
+      },
+      "worst_drift": 2.8643754035329039e-14,
+      "tolerance": 1e-10,
+      "passed": true,
+      "params": {
+        "Gamma": [
+          1.0,
+          2.0,
+          3.0
+        ],
+        "a": 1.0,
+        "rotations": 2.0,
+        "steps_per_period": 2000.0
+      }
+    }
+  ]
+}

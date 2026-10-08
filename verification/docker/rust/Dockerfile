@@ -1,6 +1,11 @@
-FROM rust:1.75
+FROM rust:1.77
+# TRIVORTEX verification — pinned Rust toolchain (milestone M1 numeric twin)
+# SPDX-FileCopyrightText: 2026 Isaev Iskhak Khamzatovich
+# SPDX-License-Identifier: LicenseRef-Proprietary-Wild8Highlander-1.0
 WORKDIR /app
 COPY rust/ /app/rust/
 WORKDIR /app/rust
-RUN cargo build --release
-ENTRYPOINT ["sh", "-c", "for s in section1_correction_b section2_preprint section3_ab_cloud section4_kdv section5_klein_attractor section6_riemann_zeros; do ./target/release/verify_$s; done"]
+# the CI-callable check of the M1 acceptance criteria: the numeric twin's
+# pinned-reference guard plus the quick ladder, built and run at -O3
+RUN cargo test --release
+ENTRYPOINT ["sh", "-c", "cargo run --release -- --preset quick --no-menu --lang en"]

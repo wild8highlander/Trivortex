@@ -1,0 +1,150 @@
+---
+name: Verification Ports (non-blocking)
+
+# The multi-language port contract of verification/README.md §10:
+#   * a port lands as NON-BLOCKING — a red port job never fails `main`;
+#   * turning a port blocking requires a green run on three consecutive
+#     days (then flip `continue-on-error` for that job in this file);
+#   * the executed ports (Rust, C++, Haskell, Python lab) run their own
+#     pinned-reference guards; the formal ports (Coq, Lean, Isabelle,
+#     Agda) compile inside their pinned Docker toolchains.
+
+on:
+  push:
+    branches: [main]
+    paths: ['verification/**']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: trivortex-ports-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rust-numeric-twin:
+    name: Rust numeric twin — cargo test (M1)
+    runs-on: ubuntu-24.04
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: '1.77.0'
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: verification/rust
+      - name: cargo test (pinned references + quick ladder)
+        run: cargo test --release --manifest-path verification/rust/Cargo.toml
+      - name: quick protocol + figures
+        run: |
+          cargo run --release --manifest-path verification/rust/Cargo.toml -- \
+            --preset quick --no-menu --lang en \
+            --out-dir verification/outputs/ports/rust --plots --csv
+
+  cpp-ctest:
+    name: C++ CMake/CTest port (M3)
+    runs-on: ubuntu-24.04
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v5
+      - name: configure (-O2 Release)
+        run: cmake -S verification/cpp -B verification/cpp/build -DCMAKE_BUILD_TYPE=Release
+      - name: build
+        run: cmake --build verification/cpp/build -j
+      - name: ctest (pinned references + quick ladder)
+        run: ctest --test-dir verification/cpp/build --output-on-failure
+      - name: quick protocol + figures
+        run: |
+          verification/cpp/build/trivortex-lab --preset quick --no-menu --lang en \
+            --out-dir verification/outputs/ports/cpp --plots --csv
+
+  haskell-dual-ladder:
+    name: Haskell dual ladder — cabal test (M3)
+    runs-on: ubuntu-24.04
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v5
+      - uses: haskell-actions/setup@v2
+        with:
+          ghc-version: '9.4.8'
+          cabal-version: '3.10'
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cabal/store
+            verification/haskell/dist-newstyle
+          key: haskell-${{ runner.os }}-${{ hashFiles('verification/haskell/*.cabal') }}
+      - name: cabal build + guard (pinned references + exact anchors)
+        working-directory: verification/haskell
+        run: |
+          cabal update
+          cabal build all
+          cabal test trivortex-guard
+      - name: quick protocol + figures
+        working-directory: verification/haskell
+        run: echo 0 | cabal run trivortex-lab
+
+  python-lab:
+    name: Python scientific laboratory (lab.py smoke)
+    runs-on: ubuntu-24.04
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: install numpy + matplotlib
+        run: pip install numpy matplotlib
+      - name: lab smoke (quick ladder + dashboard at 600 dpi)
+        run: python3 verification/trivortex/python/lab.py --smoke
+
+  formal-coq:
+    name: Coq statement layer — coqc (M1)
+    runs-on: ubuntu-24.04
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v5
+      - name: compile Trivortex.v in the pinned image
+        run: |
+          docker build -t trivortex-coq verification/docker/coq
+          docker run --rm -v "$PWD":/work -w /work trivortex-coq \
+            coqc verification/coq/Trivortex.v
+
+  formal-lean4:
+    name: Lean 4 Mathlib formalization — lake build (M1)
+    runs-on: ubuntu-24.04
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v5
+      - name: build Trivortex.lean in the pinned image
+        run: |
+          docker build -t trivortex-lean verification/docker/lean4
+          docker run --rm trivortex-lean lake build
+
+  formal-isabelle:
+    name: Isabelle HOL session — isabelle build (M2)
+    runs-on: ubuntu-24.04
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v5
+      - name: build Trivortex.thy in the pinned image
+        run: |
+          docker build -t trivortex-isabelle verification/docker/isabelle
+          docker run --rm trivortex-isabelle isabelle build -D /app/isabelle
+
+  formal-agda:
+    name: Agda constructive module — agda (M2)
+    runs-on: ubuntu-24.04
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v5
+      - name: type-check Trivortex.agda in the pinned image
+        run: |
+          docker build -t trivortex-agda verification/docker/agda
+          docker run --rm -v "$PWD":/work -w /work trivortex-agda \
+            agda verification/agda/Trivortex.agda

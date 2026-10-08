@@ -8,41 +8,72 @@ versioning follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
-### Fixed
-- **Lint — YAML job.** The mypy invocation in `lint.yml` ran 126 characters
-  against the repository's own 120-character yamllint limit, so the YAML
-  job failed on every push; the command is split across continuation
-  lines.
-- **Link Checker.** All runs failed on nine broken links: the CHANGELOG
-  `[1.0.0]` anchor pointed at a `v1.0.0` tag that never existed (now
-  linked to the source tree of the 1.0 commit); the README Stars badge
-  linked `/stargazers`, which GitHub serves as 404 to anonymous crawlers;
-  the Chinese license had the closing full-width parenthesis inside the
-  autolink, producing a `…highlander），ORCID` URL; the TRX-03 monographs
-  had the mass matrix `[[2/3, 1/3], [1/3, 2/3]]` parsed as a Markdown
-  link (wrapped in inline code).
-- **Scorecard workflow.** The job could never succeed: top-level
-  `permissions: read-all` starved the SARIF upload (`security-events`),
-  result publishing (`id-token`) and the badge push (`contents`); the
-  checkout dropped credentials before `git push`; the jq expression read
-  a `.checks` field that does not exist in SARIF and compared a float
-  with an integer test. The job now carries explicit permissions, keeps
-  credentials, averages the per-check scores with a null-safe floor, and
-  matches the committed badge label.
+### Added — the multi-language verification ports (milestones M1–M3, v1.1)
 
-### Changed
-- All workflow actions refreshed to the Node.js 24 generation, clearing
-  the "Node.js 20 is deprecated" annotations on every job: checkout v7,
-  setup-python v7, upload-artifact v7, cache v6, stale v11, labeler v7,
-  configure-pages v6, upload-pages-artifact v5, deploy-pages v5,
-  dependency-review-action v5, release-drafter v7,
-  markdownlint-cli2-action v24, cff-validator v5, codeql-action v4,
-  scorecard-action v2.4.4. The yamllint third-party action (Node 20
-  runtime) is replaced by a pip-installed run step with identical
-  targets.
-- CodeQL narrows to the `security-extended` query pack; the
-  `security-and-quality` pack dominated the code-scanning view with
-  style-level alerts on the research corpus.
+The verification roadmap stopped being a roadmap: every planned port
+landed, with its acceptance criteria checked in the same commit that
+brought the artifact.
+
+- **M0+ — the interactive scientific laboratory**
+  (`verification/trivortex/python/lab.py`): a bilingual (EN/RU)
+  researcher's bench around the unchanged `verify.py` — presets and
+  fully custom parameters (C_Ch, T, Γ, a, rotations, steps/period),
+  convergence and invariant-drift analyses, and a full figure set at
+  600 dpi in three formats (PNG + PDF + SVG): the closed form, the
+  Section-6 Chaplygin diagnostic, the choreography, the convergence,
+  the unequal-circulation robustness, the drift scan and a one-glance
+  dashboard. Every run writes the registered JSON protocol and CSV data.
+- **M1 — independent re-derivation**
+  - `verification/coq/Trivortex.v` — the statement layer in Gallina with
+    the choreography and periodicity lemmas **proven**; zero axioms
+    beyond the standard-library classical base (`Print Assumptions`
+    closed), plus the exact equilateral anchors H = 0, P = 0, Q = 0,
+    I = Γ and the tolerance bands as a machine-checked record.
+  - `verification/lean4/Trivortex.lean` — the same statement layer over
+    Mathlib (`theta_separation`, `r_periodic`, `theta_periodic`, the
+    Chaplygin shape, the exact anchors), all `#print axioms`-closed,
+    with `lakefile.lean` + `lean-toolchain` (v4.4.0).
+  - `verification/rust/` — the dependency-free f64 numeric twin of the
+    ladder: 14 pinned-reference tests, the quick preset reproducing the
+    Python reference numbers inside the registered bands (the V4 drifts
+    match bit-for-bit in printed form), an interactive bilingual
+    laboratory with JSON/CSV/SVG export, and the committed protocol of a
+    real run (`rust/protocol_quick.json`).
+- **M2 — cross-checked statements**
+  - `verification/isabelle/Trivortex.thy` — the Isabelle2024 HOL session
+    with proven choreography/periodicity, the exact anchors and the
+    machine-checked band record; the SMT-discharged numeric bounds land
+    as an optional session (`Trivortex_SMT.thy`) kept out of the default
+    build until Z3 ships in the pinned image.
+  - `verification/agda/Trivortex.agda` — the constructive angle
+    arithmetic: the C3 rotation lattice of the choreography (`rot³ ≡ id`
+    on `Fin 3`), the uniform-phase lattice, the closed-form periodicity
+    over ℚ given the single declared turn-period axiom, the Chaplygin
+    additivity identity and the exact centroid anchors.
+- **M3 — performance & exactness**
+  - `verification/cpp/` — the CMake/CTest port compiled at `-O2`: 21
+    pinned-reference guard assertions, the benchmark metric
+    (`benchmark_rhs_per_s`, ≈ 1.7e7 rhs/s measured) in every protocol,
+    and the interactive bilingual laboratory with SVG/CSV export;
+    the committed protocol of a real run (`cpp/protocol_quick.json`).
+  - `verification/haskell/` — the dual ladder: the `Double` numeric twin
+    (base-only, no dependencies) paired with the exact-rational run over
+    ℚ(√3), where the equilateral anchor identities hold *by computation*
+    (equality on ℚ(√3) is decidable); 21 guard assertions; bilingual lab.
+- **Infrastructure**
+  - `.github/workflows/verification-ports.yml` — the non-blocking CI
+    contract of §10: cargo test, CMake/CTest, cabal test, the lab smoke,
+    and the four formal toolchains compiled inside their pinned images.
+  - All seven toolchain Dockerfiles re-targeted from the retired section
+    binaries to the landed artifacts (the Rust image now builds the M1
+    crate; Isabelle bumped to the documented Isabelle2024 pin).
+  - `verification/tests/test_ports.py` — the toolchain-agnostic port
+    guard (36 tests): artifact presence, SPDX headers, the bilingual
+    README_RU contract, and the committed Rust/C++ protocols pinned
+    against the Python ladder's reference numbers.
+  - `verification/README.md`, `docs/site/verification.html` and every
+    port README flipped from *planned — skeleton* to *landed*, with each
+    directory gaining a bilingual `README_RU.md`.
 
 ## [1.0.1] — 2026-10-07 — the toolchain-consistency release
 
@@ -195,4 +226,4 @@ sources and checked on every push.
 
 [Unreleased]: https://github.com/wild8highlander/Trivortex/compare/v1.0.1...HEAD
 [1.0.1]: https://github.com/wild8highlander/Trivortex/releases/tag/v1.0.1
-[1.0.0]: https://github.com/wild8highlander/Trivortex/tree/589066f
+[1.0.0]: https://github.com/wild8highlander/Trivortex/releases/tag/v1.0.0

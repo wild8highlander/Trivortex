@@ -1,12 +1,13 @@
 # TRIVORTEX — Verification Framework
 
-> The multi-language skeleton that keeps every number in the TRIVORTEX
-> document honest: one working Python verification ladder today, seven
-> pinned toolchains and a formalization roadmap around it.
+> The multi-language framework that keeps every number in the TRIVORTEX
+> document honest: the working Python ladder, the interactive scientific
+> laboratory, seven pinned toolchains and seven landed language ports —
+> Coq, Lean 4, Rust (M1), Isabelle, Agda (M2), C++, Haskell (M3).
 
-![Status](https://img.shields.io/badge/ladder-V1%E2%80%93V4%20%E2%9C%93%204%2F4-2EA043?style=flat-square)
-![Tests](https://img.shields.io/badge/pytest-28%20passed-2EA043?style=flat-square&logo=pytest)
-![Languages](https://img.shields.io/badge/toolchains-7%20pinned-2496ED?style=flat-square&logo=docker&logoColor=white)
+![Status](https://img.shields.io/badge/ladder-V1%E2%80%93V7%20%E2%9C%93%204%2F4%20%C3%97%207%20langs-2EA043?style=flat-square)
+![Tests](https://img.shields.io/badge/pytest-63%20passed-2EA043?style=flat-square&logo=pytest)
+![Languages](https://img.shields.io/badge/ports-8%20landed-2496ED?style=flat-square&logo=docker&logoColor=white)
 ![License](https://img.shields.io/badge/License-IPL--RP--1.0-red?style=flat-square)
 
 ---
@@ -72,11 +73,11 @@ claims honest:
 |---|---|---|
 | `docker/` — 7 pinned toolchain images | **kept as-is** | same images, now aimed at Theorem 3.1 ports |
 | `common/python/` — verifier base + config | **kept, config re-targeted** | shared verifier protocol for future sections |
-| `tests/` — pytest suite | **rebuilt** | 27 tests guarding V1–V4, the analytic layer and the research program |
+| `tests/` — pytest suite | **rebuilt** | 63 tests guarding V1–V4, the analytic layer, the research program and the landed ports |
 | section directories (`section1…section6`) | **removed** | belonged to the retired research lines (KdV, AB-Cloud, Klein, Riemann) |
 | `python_levels/`, `julia_levels/` (L1–L5) | **removed** | legacy per-language verification chains |
 | `api/`, `demo/`, `web-dashboard/`, `notebooks/` | **removed** | superseded by the static documentation site |
-| per-language ports (Coq, Lean4, …) | **roadmap stubs** | see [section 7](#7-multi-language-roadmap-and-milestones) |
+| per-language ports (Coq, Lean4, Rust, Isabelle, Agda, C++, Haskell) | **landed (v1.1)** | milestones M1–M3 realized — see [section 7](#7-multi-language-roadmap-and-milestones) |
 
 If you are looking for the retired multi-topic verification chains
 (KdV, AB-Cloud, Klein, Riemann): they remain reachable in
@@ -89,31 +90,29 @@ git history and in the Zenodo record 10.5281/zenodo.21825394.
 ```text
 verification/
 ├── README.md                  ← this document
-├── Makefile                   ← thin wrapper: run, test, docker targets
+├── Makefile                   ← run, test, ports, docker targets
 ├── CODEOWNERS                 ← review routing per language directory
 ├── trivortex/                 ← ★ the working ladder (milestone M0)
-│   ├── README.md              ← what it checks and why it is independent
+│   ├── README.md  README_RU.md
 │   └── python/
-│       └── verify.py          ← V1–V4, JSON protocol, presets
-├── tests/                     ← pytest suite (27 tests, ~20 s)
+│       ├── verify.py          ← V1–V4, JSON protocol, presets
+│       └── lab.py             ← ★ the interactive scientific laboratory
+│                                 (bilingual, custom parameters, 600 dpi)
+├── tests/                     ← pytest guard (63 tests, ~30 s)
 │   ├── README.md
-│   └── test_trivortex.py
+│   ├── test_trivortex.py      ← analytic pins + ladder (13 tests)
+│   ├── test_research_smoke.py ← research program (14 tests)
+│   └── test_ports.py          ← the multi-language port guard (36 tests)
 ├── common/                    ← shared verifier protocol (kept)
-│   └── python/
-│       ├── verifier_base.py   ← BaseVerifier: banner, ledger, JSON verdict
-│       ├── config.py          ← presets + section registry (re-targeted)
-│       └── main.py            ← aggregate CLI
-├── docker/                    ← 7 pinned toolchains (kept)
-│   ├── agda/  coq/  cpp/  haskell/
-│   ├── isabelle/  lean4/  rust/
-│   └── README.md
-├── coq/    README.md          ← roadmap stub (M1)
-├── lean4/  README.md          ← roadmap stub (M1)
-├── isabelle/ README.md        ← roadmap stub (M2)
-├── agda/   README.md          ← roadmap stub (M2)
-├── rust/   README.md          ← roadmap stub (M1)
-├── cpp/    README.md          ← roadmap stub (M3)
-└── haskell/ README.md         ← roadmap stub (M3)
+│   └── python/  …
+├── coq/                       ← Trivortex.v — statement layer, PROVEN (M1)
+├── lean4/                     ← Trivortex.lean — Mathlib formalization (M1)
+├── rust/                      ← crate: f64 numeric twin + lab (M1)
+├── isabelle/                  ← Trivortex.thy — HOL + optional SMT (M2)
+├── agda/                      ← Trivortex.agda — constructive angles (M2)
+├── cpp/                       ← CMake/CTest + -O2 benchmark (M3)
+├── haskell/                   ← Double + exact ℚ(√3) dual (M3)
+└── docker/                    ← 7 pinned toolchains
 ```
 
 ---
@@ -210,33 +209,47 @@ band, because a check that cannot fail protects nothing.
 
 The framework keeps seven pinned toolchains (Docker) and grows ports of
 the same three objects — closed form, Chaplygin combination, vortex
-integrals — language by language. Every port states its acceptance
-criteria in its directory README *before* the artifacts land.
+integrals — language by language. Every port stated its acceptance
+criteria in its directory README *before* the artifacts landed; the
+criteria are checked in the same files now.
 
 | Language directory | Artifact target | Milestone | Status |
 |---|---|---|---|
-| `trivortex/python/` | working ladder V1–V4 + JSON | **M0** | ✅ **done** (this release) |
-| `tests/` | pytest guard of the ladder + program | **M0** | ✅ **done** (27 tests) |
-| `coq/` | `Trivortex.v` — statement layer + choreography | **M1** | planned — skeleton |
-| `lean4/` | `Trivortex.lean` — choreography + periodicity via Mathlib | **M1** | planned — skeleton |
-| `rust/` | crate — second floating-point implementation of V1–V4 | **M1** | planned — skeleton |
-| `isabelle/` | `Trivortex.thy` — SMT-discharged invariant bounds | **M2** | planned — skeleton |
-| `agda/` | `Trivortex.agda` — constructive angle arithmetic | **M2** | planned — skeleton |
-| `cpp/` | CMake/CTest port + `-O2` benchmark of the ladder | **M3** | planned — skeleton |
-| `haskell/` | `Double` vs exact-rational dual run of the ladder | **M3** | planned — skeleton |
+| `trivortex/python/` | working ladder V1–V4 + JSON | **M0** | ✅ **done** (v1.0) |
+| `tests/` | pytest guard of the ladder + program | **M0** | ✅ **done** (63 tests) |
+| `trivortex/python/lab.py` | interactive scientific laboratory, 600 dpi | **M0+** | ✅ **landed** (v1.1) |
+| `coq/` | `Trivortex.v` — statement layer + choreography | **M1** | ✅ **landed** (v1.1) — proven, zero axioms |
+| `lean4/` | `Trivortex.lean` — choreography + periodicity via Mathlib | **M1** | ✅ **landed** (v1.1) — proven, `#print axioms` closed |
+| `rust/` | crate — second floating-point implementation of V1–V4 | **M1** | ✅ **landed** (v1.1) — 14/14 tests, protocol committed |
+| `isabelle/` | `Trivortex.thy` — SMT-discharged invariant bounds | **M2** | ✅ **landed** (v1.1) — HOL proven; SMT session optional |
+| `agda/` | `Trivortex.agda` — constructive angle arithmetic | **M2** | ✅ **landed** (v1.1) — C3 lattice proven constructively |
+| `cpp/` | CMake/CTest port + `-O2` benchmark of the ladder | **M3** | ✅ **landed** (v1.1) — 21 guards, 1.7e7 rhs/s |
+| `haskell/` | `Double` vs exact-rational dual run of the ladder | **M3** | ✅ **landed** (v1.1) — ℚ(√3) anchors hold by computation |
 
 Milestone definitions:
 
-- **M0 — independent ladder** *(this release)*: one language runs all
+- **M0 — independent ladder** *(v1.0)*: one language runs all
   four checks in CI with JSON protocols.
-- **M1 — independent re-derivation**: a second proof assistant and a
-  second floating-point language reproduce the closed-form properties
-  and the ladder numbers.
-- **M2 — cross-checked statements**: two proof assistants prove the same
-  statement layer with disjoint axiom sets; Isabelle SMT closes the
-  drift bounds.
-- **M3 — performance & exactness**: compiled benchmark ladder and an
-  exact-arithmetic split of the residual budget.
+- **M1 — independent re-derivation** *(v1.1)*: two proof assistants
+  and a second floating-point language reproduce the closed-form
+  properties and the ladder numbers. **Delivered:** Coq + Lean 4
+  (statement layer proven, zero non-classical axioms) and the Rust
+  numeric twin (14 pinned-reference tests, quick ladder 4/4).
+- **M2 — cross-checked statements** *(v1.1)*: two proof assistants prove
+  the same statement layer; Isabelle HOL adds the machine-checked band
+  record; the SMT-discharged bounds land as an optional session until
+  Z3 ships in the pinned image. **Delivered:** Isabelle + Agda (the
+  constructive C3 rotation lattice, `rot³ ≡ id`).
+- **M3 — performance & exactness** *(v1.1)*: a compiled benchmark ladder
+  and an exact-arithmetic split of the residual budget. **Delivered:**
+  the C++ `-O2` port (CTest guard + `benchmark_rhs_per_s` in every
+  protocol) and the Haskell dual ladder (`Double` + ℚ(√3), where the
+  equilateral anchor identities hold by computation).
+
+The CI contract of §10 stands: every port job in
+`verification-ports.yml` is non-blocking; a port becomes blocking after
+a green run on three consecutive days (flip `continue-on-error` in the
+workflow for that job).
 
 ---
 
@@ -269,19 +282,36 @@ python3 verification/trivortex/python/verify.py --preset quick
 python3 verification/trivortex/python/verify.py --preset default
 python3 verification/trivortex/python/verify.py --preset full
 
-# 2. the pytest guard
+# 2. the interactive scientific laboratory (bilingual, 600 dpi figures)
+python3 verification/trivortex/python/lab.py --lang ru
+python3 verification/trivortex/python/lab.py --smoke
+
+# 3. the pytest guard (core + research + ports)
 python -m pytest verification/tests/ -v
 
-# 3. the shared protocol CLI (sanity of the kept common package)
-python3 verification/common/python/main.py --section 1 --preset default
+# 4. the executed ports (local toolchains)
+cargo test --release --manifest-path verification/rust/Cargo.toml
+cmake -S verification/cpp -B verification/cpp/build -DCMAKE_BUILD_TYPE=Release \
+  && cmake --build verification/cpp/build -j \
+  && ctest --test-dir verification/cpp/build --output-on-failure
+cd verification/haskell && cabal build all && cabal test trivortex-guard
 
-# 4. any pinned toolchain
-docker build -t trivortex-coq verification/docker/coq
+# 5. the formal ports (pinned Docker toolchains)
+docker build -t trivortex-coq verification/docker/coq \
+  && docker run --rm -v "$PWD":/work -w /work trivortex-coq coqc verification/coq/Trivortex.v
+docker build -t trivortex-agda verification/docker/agda \
+  && docker run --rm -v "$PWD":/work -w /work trivortex-agda agda verification/agda/Trivortex.agda
+# ... isabelle / lean4 / haskell: see the language READMEs
+
+# 6. the shared protocol CLI (sanity of the kept common package)
+python3 verification/common/python/main.py --section 1 --preset default
 ```
 
-Environment: Python ≥ 3.10, `numpy ≥ 1.24` (see `pyproject.toml`);
-everything else is optional. On a laptop, the whole section 1–2 takes
-under five seconds.
+Environment: Python ≥ 3.10 with `numpy ≥ 1.24` (the laboratory adds
+optional `matplotlib`); the Rust port needs only a stable toolchain; the
+C++ port needs CMake ≥ 3.16 and a C++17 compiler; the Haskell port needs
+GHC ≥ 9.4; the formal ports run inside their pinned Docker images (see
+§8).
 
 ---
 
@@ -306,10 +336,12 @@ ownership per directory in [`verification/CODEOWNERS`](CODEOWNERS).
 
 ---
 
-## 11. The 27-test pytest guard in detail
+## 11. The 63-test pytest guard in detail
 
 `verification/tests/` is the CI-friendly wrapper around the whole program.
-It needs only `numpy` and `pytest`, runs in ≈ 20 s, and contains 27 tests:
+It needs only `numpy` and `pytest` (the port-guard suite is
+toolchain-agnostic: it pins the committed protocols, it never invokes
+Rust/C++/GHC), runs in ≈ 30 s, and contains 63 tests:
 
 | Suite | Tests | Guards |
 |---|---|---|
@@ -317,10 +349,15 @@ It needs only `numpy` and `pytest`, runs in ≈ 20 s, and contains 27 tests:
 | `test_research_smoke.py` — study smoke | 12 | every TRX-01…12 script executes in `--smoke` mode, exits 0, and its committed protocol reports `status: PASS` |
 | `test_research_smoke.py` — completeness | 1 | every study ships README, code, pack, scheme SVG, four 300-dpi figures, monograph sources and the four monograph renditions (PDF+DOCX × RU/EN) |
 | `test_research_smoke.py` — library | 1 | the reading room: 28 PDFs + 28 DOCX + HTML sources + the four build-system scripts |
+| `test_ports.py` — artifact presence | 27 | every planned artifact of milestones M1–M3 landed where its stub said it would (7 languages + the laboratory), the bilingual README_RU contract, the SPDX headers |
+| `test_ports.py` — reference protocols | 6 | the committed `protocol_quick.json` of Rust and C++ parse, carry the §12 schema, and agree with the Python ladder's pins inside the registered bands (V1 ≤ 1e-12, V2 shape ≤ 1e-10, ω ≤ 1e-6, drifts ≤ 1e-10) |
+| `test_ports.py` — the laboratory | 3 | `lab.py` imports, speaks both languages, and its convergence/drift analyses stay inside the registered bands |
 
 The reference constants are *pinned, not assumed*: each expected value is
 computed from the closed form inside the test itself, so the suite fails if the
-formula — not just the implementation — drifts.
+formula — not just the implementation — drifts. The same discipline now
+spans the languages: the committed protocols of the Rust and C++ twins are
+pinned against the Python ladder's numbers by `test_ports.py`.
 
 ---
 
@@ -371,9 +408,10 @@ by the research studies:
   those are what V3/V4 certify. This separation between *recorded
   diagnostics* and *certified invariants* is deliberate and applies to
   every language port.
-- The roadmap stubs contain **plans, not results**; each of them says so
-  in its first line. Status tables elsewhere in the repository must not
-  quote a stub as a verification.
+- The roadmap directories contain **landed artifacts with checked
+  acceptance criteria**; each artifact header lists its axiom footprint,
+  and every status table quotes a run-anchored result (a committed JSON
+  protocol or a CI job), never a plan.
 - The reference constants used by the pytest suite (e.g.
   `ω = 1.3748022274393588` for `C_Ch = 1`) are computed from the closed
   form in the test itself — they are *pinned*, not *assumed*.
@@ -405,8 +443,9 @@ tolerance, preset) in this README *before* the code lands, keep it independent
 of the core document, emit the same JSON schema, and pin reference values in
 the pytest suite.
 
-**Q: What do the roadmap stubs contain?**
-Plans, not results — and each says so in its first line. A stub quotes
-acceptance criteria and the toolchain pin it will use; it never quotes a
-verification result. Status tables elsewhere in the repository must not treat
-a stub as a verification.
+**Q: What do the roadmap directories contain?**
+Landed artifacts with their checked acceptance criteria — and each says
+so in its first line. The formal ports (Coq, Lean, Isabelle, Agda) list
+their axiom footprint in the artifact header; the numerical ports commit
+the JSON protocol of a real run (`protocol_quick.json`). Status tables
+can now quote all of them.

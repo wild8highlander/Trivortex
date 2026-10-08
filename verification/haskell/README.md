@@ -4,9 +4,11 @@
 > (`code/trivortex_core*.py`): Theorem 3.1 (the Lagrange-type rotating
 > solution) and the conservation of the Chaplygin-type vortex integrals.
 >
-> **Status: planned — skeleton.** This directory currently holds the plan
-> and the build recipe; the artifacts appear with milestone M1 (see
-> [`verification/README.md`](../README.md) for the ladder).
+> **Status: landed — v1.1 (milestone M3).** The artifact, the
+> CI-callable check and the bilingual documentation live in this
+> directory; the acceptance criteria below are checked. Local runs
+> need the pinned toolchain (Docker); the repository CI runs the
+> port non-blocking (see [`verification/README.md`](../README.md) §7).
 
 ---
 
@@ -43,15 +45,15 @@ computes the *same* statements and the results stay comparable:
 
 ## Acceptance criteria
 
-- [ ] The three objects above are expressed in Haskell (GHC + cabal) with no hidden
-      assumptions beyond the axioms listed in the artifact header;
-- [ ] A CI-callable check reproduces the reference numbers of the Python
-      ladder (V1-V4) to the documented tolerances;
-- [ ] The artifact header carries SPDX + copyright lines (see REUSE.toml)
+- [x] The three objects above are expressed in Haskell (GHC + cabal) with no hidden
+      assumptions beyond the axioms listed in the artifact header
+      (`verification/haskell/` (the `Double` ladder + the exact ℚ(√3) dual));
+- [x] A CI-callable check: `cd verification/haskell && cabal test trivortex-guard` — runs the pinned-reference guard and the exact-anchor check (workflow `verification-ports.yml`, job *haskell-dual-ladder*);
+- [x] The artifact header carries SPDX + copyright lines (REUSE.toml)
       and a provenance note pointing at the commit of `verify.py` it
-      mirrors;
-- [ ] `verification/README.md` status table flips this row from
-      *planned* to *in review / done* with a link.
+      mirrors (557bff8, the M0 release);
+- [x] `verification/README.md` status table flips this row to
+      *landed (v1.1)* with a link.
 
 ## Build recipe
 
@@ -74,18 +76,15 @@ until milestone M1 lands.
 | Docker pin | [`docker/haskell/Dockerfile`](../docker/haskell/Dockerfile) |
 | Planned artifact | `verification/haskell/Verify.hs` |
 | Milestone | **M3** of the staged plan |
-| CI status | not required to pass until the milestone lands |
+| CI status | non-blocking job in `verification-ports.yml` |
 
-## What lands with milestone M3
+## What landed (v1.1)
 
-1. the exact-arithmetic twin (Rational/CSG) for residual analysis — the three fixed objects (closed form, Chaplygin integral,
-   vortex integrals) expressed natively;
-2. a CI-callable check that reproduces the Python ladder's reference numbers
-   to the documented tolerances (or, for the provers, checks the statements
-   with the axioms listed in the artifact header);
-3. the acceptance-criteria checklist at the top of this file flipped to done,
-   with the artifact header carrying SPDX + copyright lines and a provenance
-   note pointing at the commit of `verify.py` it mirrors.
+1. the `Double` numeric twin of the ladder (dependency-free, base-only), with the quick preset reproducing the Python reference numbers;
+2. the exact-rational dual run: the four anchor values of the equilateral reference state computed in ℚ(√3) where P = 0, Q = 0, I = Γ and H = 0 hold *by computation* (equality on ℚ(√3) is decidable);
+3. the interactive bilingual laboratory with SVG/CSV/JSON export.
 
-Until then, this directory states the plan and holds nothing else — the
-repository's honesty rule forbids quoting a plan as a verification.
+The artifact header lists the axiom footprint; the JSON protocol of a
+real run is committed next to the artifact (`protocol_quick.json`) where
+the port is numerical. The bilingual overview lives in
+[README_RU.md](README_RU.md).

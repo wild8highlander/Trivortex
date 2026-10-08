@@ -1,0 +1,21 @@
+session Trivortex = HOL +
+  description "
+    TRIVORTEX verification statement layer (milestone M2).
+    SPDX-FileCopyrightText: 2026 Isaev Iskhak Khamzatovich
+    SPDX-License-Identifier: LicenseRef-Proprietary-Wild8Highlander-1.0
+  "
+  theories
+    Trivortex
+
+(* ---------------------------------------------------------------------
+   Optional SMT-discharged numeric bounds (the M2 flavor of this port).
+
+   The theory below replays its proofs with the `smt` method, which needs
+   Z3 on PATH. The docker/isabelle image does not ship Z3 by default, so
+   the session is listed but commented: uncomment the block after
+   installing Z3 (e.g. `apt-get install z3` inside the image) and rebuild.
+
+   session Trivortex_SMT = Trivortex +
+     theories
+       Trivortex_SMT
+   --------------------------------------------------------------------- *)

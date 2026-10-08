@@ -1,0 +1,43 @@
+-- TRIVORTEX verification — Haskell dual ladder (milestone M3)
+-- SPDX-FileCopyrightText: 2026 Isaev Iskhak Khamzatovich
+-- SPDX-License-Identifier: LicenseRef-Proprietary-Wild8Highlander-1.0
+--
+-- cabal build all
+-- cabal run trivortex-lab                -- the interactive laboratory
+-- cabal test  trivortex-guard            -- the CI-callable guard
+
+cabal-version:       2.4
+name:                trivortex-verify
+version:             1.0.0
+synopsis:            TRIVORTEX verification ladder V1–V4 — Haskell dual ladder
+description:         Double numeric twin of verification/trivortex/python/verify.py
+                     plus the exact-rational ℚ(√3) dual run of the equilateral
+                     anchor identities (the M3 exactness split).
+license:             LicenseRef-Proprietary-Wild8Highlander-1.0
+license-file:        ../../LICENSE.md
+author:              Isaev Iskhak Khamzatovich
+maintainer:          wild8highlander@users.noreply.github.com
+build-type:          Simple
+
+common shared
+  default-language:  Haskell2010
+  ghc-options:       -O2 -Wall
+  build-depends:     base >=4.14 && <5
+
+library
+  import:            shared
+  hs-source-dirs:    src
+  exposed-modules:   Trivortex.Verify
+
+executable trivortex-lab
+  import:            shared
+  hs-source-dirs:    app
+  main-is:           Main.hs
+  build-depends:     trivortex-verify
+
+test-suite trivortex-guard
+  import:            shared
+  type:              exitcode-stdio-1.0
+  hs-source-dirs:    test
+  main-is:           Ladder.hs
+  build-depends:     trivortex-verify

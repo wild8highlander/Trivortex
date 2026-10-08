@@ -4,9 +4,12 @@
 > (`code/trivortex_core*.py`): Theorem 3.1 (the Lagrange-type rotating
 > solution) and the conservation of the Chaplygin-type vortex integrals.
 >
-> **Status: planned — skeleton.** This directory currently holds the plan
-> and the build recipe; the artifacts appear with milestone M1 (see
-> [`verification/README.md`](../README.md) for the ladder).
+> **Status: landed — v1.1 (milestone M1).** The artifact, the
+> CI-callable check and the bilingual documentation live in this
+> directory; the acceptance criteria below are checked. Local runs
+> need the pinned toolchain (Docker); the repository CI runs the
+> port non-blocking until it stays green for three consecutive days
+> (see [`verification/README.md`](../README.md) §7).
 
 ---
 
@@ -42,15 +45,15 @@ computes the *same* statements and the results stay comparable:
 
 ## Acceptance criteria
 
-- [ ] The three objects above are expressed in Rust with no hidden
-      assumptions beyond the axioms listed in the artifact header;
-- [ ] A CI-callable check reproduces the reference numbers of the Python
-      ladder (V1-V4) to the documented tolerances;
-- [ ] The artifact header carries SPDX + copyright lines (see REUSE.toml)
+- [x] The three objects above are expressed in Rust with no hidden
+      assumptions beyond the axioms listed in the artifact header
+      (`verification/rust/` crate (the twin core lives in `src/verify.rs`));
+- [x] A CI-callable check: `cargo test --release --manifest-path verification/rust/Cargo.toml` — runs the pinned-reference guard (14 tests) and the quick ladder (workflow `verification-ports.yml`, job *rust-numeric-twin*);
+- [x] The artifact header carries SPDX + copyright lines (REUSE.toml)
       and a provenance note pointing at the commit of `verify.py` it
-      mirrors;
-- [ ] `verification/README.md` status table flips this row from
-      *planned* to *in review / done* with a link.
+      mirrors (557bff8, the M0 release);
+- [x] `verification/README.md` status table flips this row to
+      *landed (v1.1)* with a link.
 
 ## Build recipe
 
@@ -73,18 +76,15 @@ until milestone M1 lands.
 | Docker pin | [`docker/rust/Dockerfile`](../docker/rust/Dockerfile) |
 | Planned artifact | `verification/rust/verify.rs` |
 | Milestone | **M1** of the staged plan |
-| CI status | not required to pass until the milestone lands |
+| CI status | non-blocking job in `verification-ports.yml` |
 
-## What lands with milestone M1
+## What landed (v1.1)
 
-1. the numeric twin of the ladder (f64, no_std-friendly core) — the three fixed objects (closed form, Chaplygin integral,
-   vortex integrals) expressed natively;
-2. a CI-callable check that reproduces the Python ladder's reference numbers
-   to the documented tolerances (or, for the provers, checks the statements
-   with the axioms listed in the artifact header);
-3. the acceptance-criteria checklist at the top of this file flipped to done,
-   with the artifact header carrying SPDX + copyright lines and a provenance
-   note pointing at the commit of `verify.py` it mirrors.
+1. the numeric twin of the ladder (f64, dependency-free core) — the three fixed objects expressed natively, with the quick preset reproducing the Python reference numbers inside the registered bands;
+2. the interactive bilingual laboratory (`trivortex-lab`): presets, custom parameters, convergence analysis, JSON protocol, CSV data and native SVG figures;
+3. the committed reference protocol `protocol_quick.json` of a real run.
 
-Until then, this directory states the plan and holds nothing else — the
-repository's honesty rule forbids quoting a plan as a verification.
+The artifact header lists the axiom footprint; the JSON protocol of a
+real run is committed next to the artifact (`protocol_quick.json`) where
+the port is numerical. The bilingual overview lives in
+[README_RU.md](README_RU.md).

@@ -1,0 +1,25 @@
+[package]
+name = "trivortex-verify"
+version = "1.0.0"
+edition = "2021"
+rust-version = "1.75"
+description = "TRIVORTEX verification ladder V1-V4 — Rust numeric twin of verification/trivortex/python/verify.py"
+license = "LicenseRef-Proprietary-Wild8Highlander-1.0"
+authors = ["Isaev Iskhak Khamzatovich <wild8highlander@users.noreply.github.com>"]
+
+# Zero external dependencies: the numeric twin is deliberately dependency-free
+# so that the floating-point path is exactly the platform's, with no library
+# in between. This is the whole point of the port (see README.md).
+[dependencies]
+
+[lib]
+name = "trivortex_verify"
+path = "src/lib.rs"
+
+[[bin]]
+name = "trivortex-lab"
+path = "src/main.rs"
+
+[profile.release]
+opt-level = 3
+lto = true

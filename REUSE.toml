@@ -12,6 +12,26 @@ precedence = "aggregate"
 SPDX-FileCopyrightText = "2026 Isaev Iskhak Khamzatovich"
 SPDX-License-Identifier = "LicenseRef-Proprietary-Wild8Highlander-1.0"
 
+# ── the multi-language verification ports (milestones M1–M3) ──────────
+[[annotations]]
+path = [
+  "verification/rust/**",
+  "verification/cpp/**",
+  "verification/haskell/**",
+  "verification/coq/*.v",
+  "verification/lean4/*.lean",
+  "verification/lean4/lean-toolchain",
+  "verification/isabelle/*.thy",
+  "verification/isabelle/ROOT",
+  "verification/agda/*.agda",
+  "verification/docker/*/Dockerfile",
+  "verification/Makefile",
+  "verification/tests/*.py"
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Isaev Iskhak Khamzatovich"
+SPDX-License-Identifier = "LicenseRef-Proprietary-Wild8Highlander-1.0"
+
 [[annotations]]
 path = [
   ".github/workflows/**",
