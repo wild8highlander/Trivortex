@@ -53,7 +53,7 @@ a registered criterion, and any content for the retired research directions
 3. **Certified vs recorded.** Keep the boundary the ladder enforces:
    window-dependent diagnostics (like the C_Ch endpoint drift) are *recorded*;
    only window-independent statements are *certified*. See
-   [`verification/README.md §11`](verification/README.md#11-honesty-notes).
+   [`verification/README.md §13`](verification/README.md#13-honesty-notes).
 4. **All three mirrors move together.** Structural changes to the document
    (new sections, changed numbering) land in
    `trivortex_core.py`, `trivortex_core_ru.py` and `trivortex_core_en.py` in

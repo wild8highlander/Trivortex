@@ -12,7 +12,7 @@ better answer faster, and keeps the issue tracker useful for everyone.
 | «How do I run the document / the ladder?» | [Documentation site](https://wild8highlander.github.io/Trivortex/) and the [README §16](README.md#16-quick-start--reproduction) |
 | Something is broken (crash, wrong number, dead link) | [Bug report](https://github.com/wild8highlander/Trivortex/issues/new?template=bug_report.yml) |
 | You want a feature, preset, study or format | [Feature request](https://github.com/wild8highlander/Trivortex/issues/new?template=feature_request.yml) |
-| Questions about the physics, the model or Theorem 3.1 | [GitHub Discussions](https://github.com/wild8highlander/Trivortex/discussions) (once enabled) or a **Question** issue |
+| Questions about the physics, the model or Theorem 3.1 | A **Question** issue via the [issue chooser](https://github.com/wild8highlander/Trivortex/issues/new/choose) |
 | Security vulnerability | **Do not open a public issue** — see [SECURITY.md](SECURITY.md) |
 | Citation, DOI, Zenodo, licensing | [CITATION.cff](CITATION.cff), [README §19](README.md#19-citation-doi--zenodo), [NOTICE.md](NOTICE.md) |
 

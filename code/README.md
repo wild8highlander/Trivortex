@@ -220,7 +220,7 @@ the same objects:
 If a refactor ever makes the two disagree, the pytest guard catches it at the
 pinned reference values before either side drifts. The ladder's honesty notes
 explain why the C_Ch drift is a *recorded diagnostic* rather than a conservation
-law — read [`verification/README.md §11`](../verification/README.md#11-honesty-notes)
+law — read [`verification/README.md §13`](../verification/README.md#13-honesty-notes)
 before quoting it anywhere.
 
 ---

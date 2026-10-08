@@ -35,7 +35,7 @@ periods → chain → ring → dynamics → ladder → runner / figures
 Nothing in the package imports the parent TRIVORTEX framework at
 runtime; the parent appears only in the test suite as the reference
 oracle. See the module guide in
-[`cycloring/README.md`](cycloring/README.md#9-the-module-guide) for the
+[`cycloring/README.md`](../README.md#9-the-module-guide) for the
 per-module API table, and the package-level docstrings for the full
 contracts.
 

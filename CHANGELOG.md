@@ -338,6 +338,6 @@ sources and checked on every push.
 
 ---
 
-[Unreleased]: https://github.com/wild8highlander/Trivortex/compare/v1.0.1...HEAD
-[1.0.1]: https://github.com/wild8highlander/Trivortex/releases/tag/v1.0.1
-[1.0.0]: https://github.com/wild8highlander/Trivortex/releases/tag/v1.0.0
+[Unreleased]: https://github.com/wild8highlander/Trivortex/commits/main
+[1.0.1]: https://github.com/wild8highlander/Trivortex/commits/a310c863d139d2866d103f37ca5877a3b890b7b6
+[1.0.0]: https://zenodo.org/records/21825394
