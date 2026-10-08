@@ -165,8 +165,8 @@ The linearized Kirchhoff dynamics at the regular $N$-gon reproduces the
 classical Havelock classification: **stable for $N \le 7$, unstable for
 $N \ge 8$**. Stage W4 computes the full co-rotating spectrum for
 $N = 2..8$: the stable cases sit on the numerically-zero noise floor
-($\max\operatorname{Re}\lambda \le 7\times10^{-9}$), while $N = 8$ shows
-$\max\operatorname{Re}\lambda = +0.4502$ — a three-order-of-magnitude
+($\max\mathrm{Re}\lambda \le 7\times10^{-9}$), while $N = 8$ shows
+$\max\mathrm{Re}\lambda = +0.4502$ — a three-order-of-magnitude
 margin, visible in [`fig03`](figures/fig03_stability_scan.png). This is
 the prototype of the parent roadmap item **T3** (spectral stability of
 the choreography).
@@ -202,9 +202,9 @@ the rest to the committed protocols.
 Two scans organize the bench's numeric payload. The **stability scan**
 (stage W4) walks $N = 2..8$, linearizes the Kirchhoff flow at the frozen
 polygon, and classifies each level by the sign of
-$\max\operatorname{Re}\lambda$:
+$\max\mathrm{Re}\lambda$:
 
-| $N$ | $\max\operatorname{Re}\lambda$ | classification |
+| $N$ | $\max\mathrm{Re}\lambda$ | classification |
 |----:|-------------------------------|-----------------|
 | 2 | $6.9\times10^{-10}$ | stable (Havelock) |
 | 3 | $1.7\times10^{-17}$ | stable (Havelock) |
@@ -240,7 +240,7 @@ protocols certify.
 |--------|:------:|----------------|
 | [`fig01_two_layers.png`](figures/fig01_two_layers.png) | — | Layer G against Layer K: the limaçon riders of the H1 ansatz ($N=3$) and the rigid $N$-gon ring ($N=7$) |
 | [`fig02_ring_rotation.png`](figures/fig02_ring_rotation.png) | W2 | $\omega_N$ analytic against measured (RK4, two rotations) with the relative error band |
-| [`fig03_stability_scan.png`](figures/fig03_stability_scan.png) | W4 | the Havelock scan $\max\operatorname{Re}\lambda(N)$ and the threshold spectra pair |
+| [`fig03_stability_scan.png`](figures/fig03_stability_scan.png) | W4 | the Havelock scan $\max\mathrm{Re}\lambda(N)$ and the threshold spectra pair |
 | [`fig04_admissibility_bridge.png`](figures/fig04_admissibility_bridge.png) | W5, W7 | the $\pi\ln 2$ admissibility boundary and the D1 compatibility periods $T_{comp}$ |
 | [`scheme_polyvortex.svg`](figures/scheme_polyvortex.svg) | — | the architecture: Layer K + Layer G → the W-ladder → committed protocols |
 

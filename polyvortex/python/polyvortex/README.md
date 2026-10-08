@@ -27,7 +27,7 @@ the figures only.
 | `relative_drifts` | `(inv0, inv1)` | the relative drifts between two invariant snapshots |
 | `jacobian` | `(state, gamma)` | the stability Jacobian of the configuration |
 | `corotating_spectrum` | `(state, gamma, omega)` | the eigenvalues in the co-rotating frame |
-| `max_growth_rate` | `(state, gamma, omega)` | $\max\operatorname{Re}\lambda$ — the Havelock classifier input |
+| `max_growth_rate` | `(state, gamma, omega)` | $\max\mathrm{Re}\lambda$ — the Havelock classifier input |
 
 ## `ansatz.py` — Layer G, the closed form
 

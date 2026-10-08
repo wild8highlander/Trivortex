@@ -166,7 +166,7 @@ whole ring family (protocol `W3_invariants_default.json`).
 equilibrium — the Jacobian $J = A + \omega_N S$ with the analytic pair-Jacobian
 $A$ and the transport generator $S$ — yields the classical classification:
 
-| $N$ | $\max \operatorname{Re}\lambda$ | verdict | Havelock |
+| $N$ | $\max \mathrm{Re}\lambda$ | verdict | Havelock |
 |----:|--------------------------------:|---------|----------|
 | 2 | 6.9e-10 | stable | stable |
 | 3 | 0.0 | stable | stable |
@@ -180,7 +180,7 @@ The threshold — stable for $N \le 7$, unstable from $N = 8$ — is the
 Havelock (1931) result, with Khazin's later rigorous treatment; the numeric
 margin is three orders of magnitude on both sides (the stable cases sit at
 the defective-zero noise floor, see the Remark in Section 6.3; the unstable
-$N = 8$ case grows at $\operatorname{Re}\lambda = 0.450$). This stage is the
+$N = 8$ case grows at $\mathrm{Re}\lambda = 0.450$). This stage is the
 numerical prototype of the parent roadmap item **T3**.
 
 ## 4. The generalized closed form: Hypothesis H1 and its registers
@@ -357,7 +357,7 @@ multiplicity two and geometric multiplicity one (the continuum of rotated
 polygons is a one-parameter family of equilibria). Rounding splits such a
 defective double zero into a $\pm$-real pair of size
 $\sqrt{\varepsilon_{mach}\,\|J\|} \sim 10^{-9}$ — visible in the W4 protocol
-as $\max\operatorname{Re}\lambda \in \{\pm 10^{-9}\}$ for the stable cases.
+as $\max\mathrm{Re}\lambda \in \{\pm 10^{-9}\}$ for the stable cases.
 The stability classifier therefore runs at tolerance $10^{-7}$, three orders
 above the noise floor and three below the $N = 8$ growth rate $0.450$.
 
@@ -396,8 +396,8 @@ $3.5 \cdot 10^{-15}$ (protocol `W7_bridge_default.json`). The quadrature
 convergence is itself a measured fact: at the quick preset's 80 nodes the
 sharpest case ($\varepsilon = 0.9$) retains $2 \cdot 10^{-9}$, dropping
 six orders at 160 nodes — the spectral convergence expected for analytic
-integrand with the nearest pole at $\operatorname{Im}\varphi =
-\operatorname{arccosh}(1/\varepsilon)$.
+integrand with the nearest pole at $\mathrm{Im}\varphi =
+\mathrm{arccosh}(1/\varepsilon)$.
 
 **Design rule D1 (compatibility curve).** *Define the compatibility period*
 
@@ -477,7 +477,7 @@ minimum-radius register $10^{-6}$ absolute (uniform-grid sampling bound).
 | W2 | $\omega_N$ relative error, $N = 2..8$ | $\le 2.9 \cdot 10^{-12}$ | PASS |
 | W2 | chord-shape deviation | $\le 3.3 \cdot 10^{-14}$ ($N \le 7$) | PASS |
 | W3 | worst invariant drift | $\le 4.2 \cdot 10^{-14}$ | PASS |
-| W4 | stable band $\max\operatorname{Re}\lambda$ | $\le 7.0 \cdot 10^{-9}$ | PASS |
+| W4 | stable band $\max\mathrm{Re}\lambda$ | $\le 7.0 \cdot 10^{-9}$ | PASS |
 | W4 | $N = 8$ growth rate | $+0.4502$ | PASS (unstable) |
 | W5 | threshold equivalences on 200 points | 0 violations | PASS |
 | W5 | min-radius sampling error | $1.9 \cdot 10^{-7}$ | PASS |

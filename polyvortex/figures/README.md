@@ -16,7 +16,7 @@ from a protocol.
 |------|:------:|-----------------|
 | [`fig01_two_layers.png`](fig01_two_layers.png) | — | the two layers side by side: Layer G — the limaçon orbit $r(\theta) = \sqrt{C(1+\varepsilon\cos\theta)}$ with three riders at $2\pi/3$ ($N=3$, $\varepsilon = 0.626$); Layer K — the rigid N-gon ring with its circumscribed circle ($N = 7$, $\omega_N = 6/4\pi$) |
 | [`fig02_ring_rotation.png`](fig02_ring_rotation.png) | W2 | the analytic $\omega_N = \Gamma(N-1)/(4\pi R^2)$ against the measured rotation rate (RK4, two rotations) for $N = 2..8$, with the relative-error panel |
-| [`fig03_stability_scan.png`](fig03_stability_scan.png) | W4 | the Havelock scan: $\max\operatorname{Re}\lambda(N)$ over $N = 2..8$ with the $10^{-7}$ classifier (left); the spectra at the threshold pair N = 7 / N = 8 (right) — the stable floor at $7\times10^{-9}$ against $+0.4502$ |
+| [`fig03_stability_scan.png`](fig03_stability_scan.png) | W4 | the Havelock scan: $\max\mathrm{Re}\lambda(N)$ over $N = 2..8$ with the $10^{-7}$ classifier (left); the spectra at the threshold pair N = 7 / N = 8 (right) — the stable floor at $7\times10^{-9}$ against $+0.4502$ |
 | [`fig04_admissibility_bridge.png`](fig04_admissibility_bridge.png) | W5, W7 | the admissibility boundary $C_{Ch} > \pi\ln 2 = 2.1776$ with the equivalence scan (left); the D1 compatibility periods $T_{comp}(N, C_{Ch})$ of the averaged-frequency bridge (right) |
 | [`scheme_polyvortex.svg`](scheme_polyvortex.svg) | — | the mini-repository architecture: Layer K + Layer G → the W-ladder → the committed protocols, with tolerances annotated |
 

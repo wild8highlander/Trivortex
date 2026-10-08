@@ -169,8 +169,8 @@ $T_{comp}$ — проектное правило любого будущего �
 $N \le 7$, неустойчив при $N \ge 8$**. Ступень W4 вычисляет полный
 сор-вращающийся спектр при $N = 2..8$: устойчивые случаи сидят на
 численно-нулевом шумовом полу
-($\max\operatorname{Re}\lambda \le 7\times10^{-9}$), а $N = 8$ показывает
-$\max\operatorname{Re}\lambda = +0.4502$ — запас в три порядка, видный на
+($\max\mathrm{Re}\lambda \le 7\times10^{-9}$), а $N = 8$ показывает
+$\max\mathrm{Re}\lambda = +0.4502$ — запас в три порядка, видный на
 [`fig03`](figures/fig03_stability_scan.png). Это прототип пункта **T3**
 родительской дорожной карты (спектральная устойчивость хореографии).
 
@@ -205,9 +205,9 @@ JSON-протокол в [`results/protocols/`](results/protocols/) с полн�
 Два скана организуют числовую нагрузку стенда. **Скан устойчивости**
 (ступень W4) идёт по $N = 2..8$, линеаризует кирхгофовский поток на
 замороженном многоугольнике и классифицирует каждый уровень по знаку
-$\max\operatorname{Re}\lambda$:
+$\max\mathrm{Re}\lambda$:
 
-| $N$ | $\max\operatorname{Re}\lambda$ | классификация |
+| $N$ | $\max\mathrm{Re}\lambda$ | классификация |
 |----:|-------------------------------|-----------------|
 | 2 | $6.9\times10^{-10}$ | устойчив (Гавелок) |
 | 3 | $1.7\times10^{-17}$ | устойчив (Гавелок) |
@@ -243,7 +243,7 @@ $1.9\times10^{-7}$ на полярной сетке из 4096 точек, а а�
 |--------|:------:|-----------------|
 | [`fig01_two_layers.png`](figures/fig01_two_layers.png) | — | слой G против слоя K: Limaçon-наездники анsatца H1 ($N=3$) и жёсткое N-угольное кольцо ($N=7$) |
 | [`fig02_ring_rotation.png`](figures/fig02_ring_rotation.png) | W2 | $\omega_N$ аналитика против измеренного (RK4, два оборота) с полосой относительной ошибки |
-| [`fig03_stability_scan.png`](figures/fig03_stability_scan.png) | W4 | скан Гавелока $\max\operatorname{Re}\lambda(N)$ и пара спектров порога |
+| [`fig03_stability_scan.png`](figures/fig03_stability_scan.png) | W4 | скан Гавелока $\max\mathrm{Re}\lambda(N)$ и пара спектров порога |
 | [`fig04_admissibility_bridge.png`](figures/fig04_admissibility_bridge.png) | W5, W7 | граница допустимости $\pi\ln 2$ и периоды совместимости D1 $T_{comp}$ |
 | [`scheme_polyvortex.svg`](figures/scheme_polyvortex.svg) | — | архитектура: слой K + слой G → лестница W → закоммиченные протоколы |
 
