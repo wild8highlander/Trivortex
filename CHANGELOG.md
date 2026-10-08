@@ -75,6 +75,35 @@ brought the artifact.
     port README flipped from *planned — skeleton* to *landed*, with each
     directory gaining a bilingual `README_RU.md`.
 
+### Added — the post-M3 roadmap (§7.1)
+
+- `verification/README.md` §7.1 pre-registers the next phase as eleven
+  tracks in three milestones: **M4 — hardening** (blocking port jobs
+  after three green days, the Isabelle SMT session online, the Lean
+  Mathlib cache, a generated site table, release v1.2), **M5 — depth**
+  (50-digit mpmath anchors, the Julia third numeric twin, the Chaplygin
+  integral identity proven in Coq and Lean, the exact Haskell run over
+  the full ladder) and **M6 — widening** (the V5 regular N-gon ring
+  check, the rust-vs-c++ benchmark board). Each track names its
+  acceptance criterion in advance.
+
+### Fixed — lint debt
+
+- `verification/README.md`: the table of contents still pointed at the
+  pre-v1.1 fragment `#11-the-27-test-pytest-guard-in-detail`; the
+  section is titled «The 63-test pytest guard in detail» — the anchor
+  is repaired and the markdownlint `MD051` failure is gone.
+- `verification/trivortex/python/lab.py`: reformatted by `black` (the
+  «Python (ruff + black + mypy)» CI job) and de-noised for `mypy` — the
+  `preset_name` None-path now falls back to `"default"` explicitly, and
+  the trajectory arrays no longer reassign the list-typed `traj`
+  binding (`pts` carries the ndarray). `mypy` reports 0 issues in the
+  checked 6 sources.
+- `verification/tests/test_ports.py`: reformatted by `black`.
+- Local guard: `ruff check .`, `black --check .`, `mypy` and
+  `markdownlint-cli2` all report zero issues; `pytest` stays at
+  63 passed.
+
 ## [1.0.1] — 2026-10-07 — the toolchain-consistency release
 
 A maintenance release: no physics content changed — every theorem,

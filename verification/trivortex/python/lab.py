@@ -186,6 +186,7 @@ FIG_DPI = 600  # the registered raster resolution of the laboratory
 # Matplotlib bootstrap (late import; brand style)
 # ---------------------------------------------------------------------------
 
+
 def load_plt():
     import matplotlib
 
@@ -234,6 +235,7 @@ PALETTE = [STEEL, GOLD, GREEN, CRIMSON, NAVY, "#8C6BB1", "#39A0A0", "#E1772E"]
 # Run helpers
 # ---------------------------------------------------------------------------
 
+
 def ask(prompt: str, default: str) -> str:
     try:
         raw = input(f"{prompt}").strip()
@@ -276,7 +278,9 @@ def print_report(checks, lang: str, wall: float, preset_name: str) -> None:
             if isinstance(val, dict):
                 print(f"    {key}:")
                 for kk, vv in val.items():
-                    print(f"      {kk} = {vv:.6e}" if isinstance(vv, float) else f"      {kk} = {vv}")
+                    print(
+                        f"      {kk} = {vv:.6e}" if isinstance(vv, float) else f"      {kk} = {vv}"
+                    )
             else:
                 print(f"    {key} = {val:.6e}" if isinstance(val, float) else f"    {key} = {val}")
     n_pass = sum(1 for c in checks if c["passed"])
@@ -313,6 +317,7 @@ def write_csv(path: str, header: list[str], rows) -> None:
 # The ladder wrapper (custom-parameter capable)
 # ---------------------------------------------------------------------------
 
+
 def run_full_ladder(
     lang: str,
     preset_name: str | None,
@@ -337,7 +342,7 @@ def run_full_ladder(
         )
         preset_label = "custom"
     else:
-        cfg = PRESETS[preset_name]
+        cfg = PRESETS[preset_name or "default"]
         v1 = check_v1_theorem31(n_points=cfg["n_points_cch"])
         v2 = check_v2_lagrange_rotation(
             rotations=cfg["rotations"], steps_per_period=cfg["steps_per_period"]
@@ -348,7 +353,7 @@ def run_full_ladder(
         v4 = check_v4_robustness(
             rotations=max(2, cfg["rotations"] - 2), steps_per_period=cfg["steps_per_period"]
         )
-        preset_label = preset_name
+        preset_label = preset_name or "default"
 
     checks = [v1, v2, v3, v4]
     wall = time.perf_counter() - t0
@@ -437,6 +442,7 @@ def v4_trajectory(rotations: int = 3, steps_per_period: int = 4000):
 # Figures (600 dpi, three formats: PNG + PDF + SVG)
 # ---------------------------------------------------------------------------
 
+
 def _save_all(fig, out_dir: str, name: str) -> list[str]:
     figdir = os.path.join(out_dir, "figures")
     os.makedirs(figdir, exist_ok=True)
@@ -501,16 +507,19 @@ def fig_choreography(out_dir: str):
     for _ in range(2 * 2000):
         state = rk4_step(state, gamma_vec, dt)
         traj.append(state.copy())
-    traj = np.array(traj)
+    pts = np.array(traj)
 
     fig, axes = plt.subplots(1, 2, figsize=(10.8, 5.2), constrained_layout=True)
     for k in range(3):
-        axes[0].plot(traj[:, 2 * k], traj[:, 2 * k + 1], lw=1.5, color=PALETTE[k],
-                     label=f"vortex {k}")
-        axes[0].plot(traj[0, 2 * k], traj[0, 2 * k + 1], "o", ms=7, mfc="white",
-                     mec=PALETTE[k], mew=1.8)
+        axes[0].plot(
+            pts[:, 2 * k], pts[:, 2 * k + 1], lw=1.5, color=PALETTE[k], label=f"vortex {k}"
+        )
+        axes[0].plot(
+            pts[0, 2 * k], pts[0, 2 * k + 1], "o", ms=7, mfc="white", mec=PALETTE[k], mew=1.8
+        )
     axes[0].set_title("V2 — Lagrange rigid rotation (tracks)")
-    axes[0].set_xlabel("$x$"); axes[0].set_ylabel("$y$")
+    axes[0].set_xlabel("$x$")
+    axes[0].set_ylabel("$y$")
     axes[0].set_aspect("equal")
     axes[0].legend(loc="upper left", bbox_to_anchor=(1.01, 1.0), frameon=False)
 
@@ -521,11 +530,11 @@ def fig_choreography(out_dir: str):
         d = (th[1] - th[0]) % (2.0 * math.pi)
         sides.append(d)
     axes[1].plot(t[1:], sides, lw=1.2, color=NAVY)
-    axes[1].axhline(2.0 * math.pi / 3.0, color=GOLD, lw=1.0, ls="--",
-                    label=r"exactly $2\pi/3$")
+    axes[1].axhline(2.0 * math.pi / 3.0, color=GOLD, lw=1.0, ls="--", label=r"exactly $2\pi/3$")
     axes[1].set_ylim(2.0 * math.pi / 3.0 - 1e-9, 2.0 * math.pi / 3.0 + 1e-9)
     axes[1].set_title("V1 — the angular separation stays exactly $2\\pi/3$")
-    axes[1].set_xlabel(r"$t$"); axes[1].set_ylabel(r"$\theta_{k+1}-\theta_k$")
+    axes[1].set_xlabel(r"$t$")
+    axes[1].set_ylabel(r"$\theta_{k+1}-\theta_k$")
     axes[1].legend(loc="upper left", bbox_to_anchor=(1.01, 1.0), frameon=False)
     paths = _save_all(fig, out_dir, "fig3_choreography")
     plt.close(fig)
@@ -538,10 +547,12 @@ def fig_convergence(out_dir: str, rows: list[dict]):
     fig, axes = plt.subplots(1, 2, figsize=(10.6, 4.6), constrained_layout=True)
     axes[0].loglog(x, [r["omega_rel_err"] for r in rows], "o-", lw=1.8, color=STEEL, ms=6)
     axes[0].set_title(r"V2 convergence: $\omega$ relative error")
-    axes[0].set_xlabel("steps per period"); axes[0].set_ylabel(r"$|\omega_{meas}-\omega|/\omega$")
+    axes[0].set_xlabel("steps per period")
+    axes[0].set_ylabel(r"$|\omega_{meas}-\omega|/\omega$")
     axes[1].loglog(x, [r["shape_drift"] for r in rows], "s-", lw=1.8, color=GOLD, ms=6)
     axes[1].set_title("V2 convergence: shape drift")
-    axes[1].set_xlabel("steps per period"); axes[1].set_ylabel(r"$\max_i |s_i - a|/a$")
+    axes[1].set_xlabel("steps per period")
+    axes[1].set_ylabel(r"$\max_i |s_i - a|/a$")
     for ax in axes:
         ax.grid(True, which="both", alpha=0.5)
     paths = _save_all(fig, out_dir, "fig4_convergence")
@@ -554,12 +565,17 @@ def fig_robustness(out_dir: str):
     traj = np.array([s for _, s in v4_trajectory()])
     fig, ax = plt.subplots(figsize=(7.6, 6.4), constrained_layout=True)
     for k, g in enumerate((1.0, 2.0, 3.0)):
-        ax.plot(traj[:, 2 * k], traj[:, 2 * k + 1], lw=1.4, color=PALETTE[k],
-                label=rf"$\Gamma_{k+1}={g:.0f}$")
-        ax.plot(traj[0, 2 * k], traj[0, 2 * k + 1], "o", ms=7, mfc="white",
-                mec=PALETTE[k], mew=1.8)
+        ax.plot(
+            traj[:, 2 * k],
+            traj[:, 2 * k + 1],
+            lw=1.4,
+            color=PALETTE[k],
+            label=rf"$\Gamma_{k+1}={g:.0f}$",
+        )
+        ax.plot(traj[0, 2 * k], traj[0, 2 * k + 1], "o", ms=7, mfc="white", mec=PALETTE[k], mew=1.8)
     ax.set_title("V4 — unequal circulations on a generic triangle")
-    ax.set_xlabel("$x$"); ax.set_ylabel("$y$")
+    ax.set_xlabel("$x$")
+    ax.set_ylabel("$y$")
     ax.set_aspect("equal")
     ax.legend(loc="upper left", bbox_to_anchor=(1.01, 1.0), frameon=False)
     paths = _save_all(fig, out_dir, "fig5_robustness")
@@ -589,31 +605,53 @@ def fig_dashboard(out_dir: str, checks: list[dict], conv_rows: list[dict]):
     gs = fig.add_gridspec(2, 3)
 
     # (0,0) verdict table
-    ax = fig.add_subplot(gs[0, 0]); ax.axis("off")
+    ax = fig.add_subplot(gs[0, 0])
+    ax.axis("off")
     ax.set_title("Verdicts", loc="left")
     rows = [("check", "residual", "tolerance", "verdict")]
     if len(checks) == 4:
         v1, v2, v3, v4 = checks
-        rows.append(("V1 choreography", f"{v1['angular_separation_error']:.2e}",
-                      "1e-12", "PASS" if v1["passed"] else "FAIL"))
-        rows.append(("V1 periodicity", f"{v1['periodicity_residual']:.2e}",
-                      "1e-12", "PASS" if v1["passed"] else "FAIL"))
-        rows.append(("V2 shape", f"{v2['shape_drift']:.2e}", "1e-10",
-                     "PASS" if v2["passed"] else "FAIL"))
-        rows.append(("V2 omega", f"{v2['omega_relative_error']:.2e}", "1e-6",
-                     "PASS" if v2["passed"] else "FAIL"))
-        rows.append(("V3 drift", f"{v3['worst_drift']:.2e}", "1e-10",
-                     "PASS" if v3["passed"] else "FAIL"))
-        rows.append(("V4 drift", f"{v4['worst_drift']:.2e}", "1e-10",
-                     "PASS" if v4["passed"] else "FAIL"))
-    table = ax.table(cellText=rows[1:], colLabels=rows[0], loc="center",
-                     cellLoc="center")
+        rows.append(
+            (
+                "V1 choreography",
+                f"{v1['angular_separation_error']:.2e}",
+                "1e-12",
+                "PASS" if v1["passed"] else "FAIL",
+            )
+        )
+        rows.append(
+            (
+                "V1 periodicity",
+                f"{v1['periodicity_residual']:.2e}",
+                "1e-12",
+                "PASS" if v1["passed"] else "FAIL",
+            )
+        )
+        rows.append(
+            ("V2 shape", f"{v2['shape_drift']:.2e}", "1e-10", "PASS" if v2["passed"] else "FAIL")
+        )
+        rows.append(
+            (
+                "V2 omega",
+                f"{v2['omega_relative_error']:.2e}",
+                "1e-6",
+                "PASS" if v2["passed"] else "FAIL",
+            )
+        )
+        rows.append(
+            ("V3 drift", f"{v3['worst_drift']:.2e}", "1e-10", "PASS" if v3["passed"] else "FAIL")
+        )
+        rows.append(
+            ("V4 drift", f"{v4['worst_drift']:.2e}", "1e-10", "PASS" if v4["passed"] else "FAIL")
+        )
+    table = ax.table(cellText=rows[1:], colLabels=rows[0], loc="center", cellLoc="center")
     table.auto_set_font_size(False)
     table.set_fontsize(8.6)
     table.scale(1.0, 1.5)
     for (r, _c), cell in table.get_celld().items():
         if r == 0:
-            cell.set_facecolor(NAVY); cell.set_text_props(color="white", weight="bold")
+            cell.set_facecolor(NAVY)
+            cell.set_text_props(color="white", weight="bold")
         elif rows[r][3] == "PASS":
             cell.set_facecolor("#EDF6EF")
         else:
@@ -632,8 +670,9 @@ def fig_dashboard(out_dir: str, checks: list[dict], conv_rows: list[dict]):
     omega = analytical_frequency(1.0, 2.0 * math.pi)
     t = np.linspace(0.0, 4.0 * math.pi / omega, 500)
     for k in range(3):
-        ax.plot(t, [analytical_radius(x, 1.0, 2.0 * math.pi, k) for x in t],
-                lw=1.4, color=PALETTE[k])
+        ax.plot(
+            t, [analytical_radius(x, 1.0, 2.0 * math.pi, k) for x in t], lw=1.4, color=PALETTE[k]
+        )
     ax.set_title("Theorem 3.1: $r_k(t)$")
     ax.set_xlabel("$t$")
 
@@ -647,15 +686,16 @@ def fig_dashboard(out_dir: str, checks: list[dict], conv_rows: list[dict]):
     for _ in range(2 * 1500):
         state = rk4_step(state, gamma_vec, dt)
         traj.append(state.copy())
-    traj = np.array(traj)
+    pts = np.array(traj)
     for k in range(3):
-        ax.plot(traj[:, 2 * k], traj[:, 2 * k + 1], lw=1.2, color=PALETTE[k], alpha=0.85)
+        ax.plot(pts[:, 2 * k], pts[:, 2 * k + 1], lw=1.2, color=PALETTE[k], alpha=0.85)
         # the three vortices share one orbit with a 2*pi/3 phase shift —
         # mark their distinct start positions
-        ax.plot(traj[0, 2 * k], traj[0, 2 * k + 1], "o", ms=7, mfc="white",
-                mec=PALETTE[k], mew=1.8)
+        ax.plot(pts[0, 2 * k], pts[0, 2 * k + 1], "o", ms=7, mfc="white", mec=PALETTE[k], mew=1.8)
     ax.set_title("Rigid rotation (V2)")
-    ax.set_aspect("equal"); ax.set_xlabel("$x$"); ax.set_ylabel("$y$")
+    ax.set_aspect("equal")
+    ax.set_xlabel("$x$")
+    ax.set_ylabel("$y$")
 
     # (1,1) chaplygin diagnostic
     ax = fig.add_subplot(gs[1, 1])
@@ -672,7 +712,8 @@ def fig_dashboard(out_dir: str, checks: list[dict], conv_rows: list[dict]):
     for key, color in zip(("dH", "dP", "dQ", "dI"), PALETTE):
         ax.semilogy(tt, np.maximum(scan[key], 1e-18), lw=1.1, color=color, label=f"${key}$")
     ax.set_title("Invariant drifts (V3)")
-    ax.set_xlabel(r"$t/T$"); ax.set_ylabel("relative drift")
+    ax.set_xlabel(r"$t/T$")
+    ax.set_ylabel("relative drift")
     ax.legend(fontsize=7.5, ncol=2, frameon=False, loc="lower right")
 
     fig.suptitle("TRIVORTEX — verification ladder dashboard", fontsize=15, fontweight="bold")
@@ -684,6 +725,7 @@ def fig_dashboard(out_dir: str, checks: list[dict], conv_rows: list[dict]):
 # ---------------------------------------------------------------------------
 # Interactive session
 # ---------------------------------------------------------------------------
+
 
 def box_line(text: str, width: int = 64) -> str:
     return f"│ {text.ljust(width - 3)} │"
@@ -736,8 +778,10 @@ def interactive(lang: str, out_dir: str) -> int:
             print(s["conv_title"])
             print(s["conv_header"])
             for r in conv_rows:
-                print(f"  {r['steps_per_period']:>13}   {r['omega_rel_err']:>14.3e}   "
-                      f"{r['shape_drift']:>11.3e}")
+                print(
+                    f"  {r['steps_per_period']:>13}   {r['omega_rel_err']:>14.3e}   "
+                    f"{r['shape_drift']:>11.3e}"
+                )
             write_csv(
                 os.path.join(out_dir, "data", "convergence_study.csv"),
                 ["steps_per_period", "omega_rel_err", "shape_drift"],
@@ -751,8 +795,10 @@ def interactive(lang: str, out_dir: str) -> int:
             print(s["drift_header"])
             scan = invariant_drift_scan()
             for i in range(0, len(scan["t"]), max(len(scan["t"]) // 20, 1)):
-                print(f"  {scan['t'][i] / scan['T']:>7.3f}   {scan['dH'][i]:>8.2e}   "
-                      f"{scan['dP'][i]:>8.2e}   {scan['dQ'][i]:>8.2e}   {scan['dI'][i]:>8.2e}")
+                print(
+                    f"  {scan['t'][i] / scan['T']:>7.3f}   {scan['dH'][i]:>8.2e}   "
+                    f"{scan['dP'][i]:>8.2e}   {scan['dQ'][i]:>8.2e}   {scan['dI'][i]:>8.2e}"
+                )
             fig_invariants(out_dir, scan)
             print(f"{s['fig_saved']} {os.path.join(out_dir, 'figures')} (fig6)")
         elif pick == "5":
@@ -766,8 +812,9 @@ def interactive(lang: str, out_dir: str) -> int:
             for key in ("fig1", "fig2", "fig3", "fig4", "fig5", "fig6"):
                 print(f"  • {s[key]}")
         elif pick == "6":
-            fig_dashboard(out_dir, last_checks or run_full_ladder("en", "quick", None, out_dir)[0],
-                          conv_rows)
+            fig_dashboard(
+                out_dir, last_checks or run_full_ladder("en", "quick", None, out_dir)[0], conv_rows
+            )
             print(f"{s['fig_saved']} {os.path.join(out_dir, 'figures')}")
             print(f"  • {s['fig7']}")
         elif pick == "7":
@@ -785,6 +832,7 @@ def interactive(lang: str, out_dir: str) -> int:
 # ---------------------------------------------------------------------------
 # CLI entry
 # ---------------------------------------------------------------------------
+
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="TRIVORTEX scientific verification laboratory")

@@ -82,6 +82,10 @@ certify. Any future language port must keep this separation.
 <tr><td class="mono">cpp/</td><td>CMake/CTest port + −O2 benchmark — 21 guards, ≈1.7e7 rhs/s</td><td>M3</td><td class="pass">landed</td></tr>
 <tr><td class="mono">haskell/</td><td>Double + exact ℚ(√3) dual — anchors hold by computation</td><td>M3</td><td class="pass">landed</td></tr>
 </table>
+<p class="small muted"><strong>Next — roadmap §7.1.</strong>
+<span class="mono">M4 hardening</span>: blocking port jobs after three green days, the Isabelle SMT session online, the Lean Mathlib cache, a generated site table, release v1.2 ·
+<span class="mono">M5 depth</span>: 50-digit mpmath anchors, the Julia third numeric twin, the Chaplygin integral identity proven in Coq and Lean, the exact Haskell run over the full ladder ·
+<span class="mono">M6 widening</span>: the V5 regular N-gon ring check, the rust-vs-c++ benchmark board. Every track names its acceptance criterion in advance.</p>
 <p class="small muted">Seven Docker toolchains are pinned under
 <span class="mono">verification/docker/</span>; every port keeps its checked
 acceptance criteria in its directory README, and the CI runs all ports

@@ -120,6 +120,7 @@ class TestPortArtifacts:
 # 2. Reference protocols — schema of verification/README.md §12
 # ---------------------------------------------------------------------------
 
+
 def load_protocol(lang: str) -> dict:
     with open(os.path.join(VERIFY, lang, "protocol_quick.json"), encoding="utf-8") as f:
         return json.load(f)
@@ -129,8 +130,17 @@ class TestPortProtocols:
     @pytest.mark.parametrize("lang", ["rust", "cpp"])
     def test_protocol_schema(self, lang):
         report = load_protocol(lang)
-        for key in ("suite", "version", "preset", "date_utc", "wall_time_s",
-                    "checks_passed", "checks_total", "all_passed", "checks"):
+        for key in (
+            "suite",
+            "version",
+            "preset",
+            "date_utc",
+            "wall_time_s",
+            "checks_passed",
+            "checks_total",
+            "all_passed",
+            "checks",
+        ):
             assert key in report, f"{lang}: protocol missing field {key}"
         assert report["preset"] == "quick"
         assert report["all_passed"] is True
@@ -183,6 +193,7 @@ class TestPortProtocols:
 # ---------------------------------------------------------------------------
 # 3. The Python laboratory — importability and the CI smoke entry
 # ---------------------------------------------------------------------------
+
 
 def load_lab():
     path = os.path.join(VERIFY, "trivortex", "python", "lab.py")

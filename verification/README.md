@@ -24,7 +24,7 @@
 8. [Docker toolchains](#8-docker-toolchains)
 9. [How to reproduce everything](#9-how-to-reproduce-everything)
 10. [How to contribute a new language](#10-how-to-contribute-a-new-language)
-11. [The 27-test pytest guard in detail](#11-the-27-test-pytest-guard-in-detail)
+11. [The 63-test pytest guard in detail](#11-the-63-test-pytest-guard-in-detail)
 12. [The JSON protocol schema](#12-the-json-protocol-schema)
 13. [Honesty notes](#13-honesty-notes)
 14. [Frequently asked questions](#14-frequently-asked-questions)
@@ -250,6 +250,64 @@ The CI contract of §10 stands: every port job in
 `verification-ports.yml` is non-blocking; a port becomes blocking after
 a green run on three consecutive days (flip `continue-on-error` in the
 workflow for that job).
+
+### 7.1 What is next — the M4+ roadmap
+
+With M0–M3 landed, the program shifts from *breadth* (more languages)
+to *hardening* (fewer escape hatches) and *depth* (stronger
+statements). The tracks below are pre-registered in the same spirit
+that governed M1–M3: an acceptance criterion may be tightened before
+the artifacts land, never after.
+
+**M4 — hardening** *(targets v1.2)*. Everything here tightens what
+already exists; no new science.
+
+1. **Blocking ports.** After three consecutive green days of
+   `verification-ports.yml`, flip every port job to blocking
+   (`continue-on-error: false`). Acceptance: all nine port jobs green
+   *and* enforced on `main`.
+2. **Isabelle SMT online.** Ship Z3 inside the pinned Isabelle image
+   and move `Trivortex_SMT.thy` from the optional session into the
+   default `ROOT` build. Acceptance: the SMT session appears green in
+   the isabelle CI job log.
+3. **Lean cache.** Pre-warm the Mathlib cache in the lean4 job (lake
+   cache action keyed on `lean-toolchain`). Acceptance: the lean4 job
+   wall time ≤ 15 min.
+4. **Generated site table.** `docs/site/verification.html` currently
+   mirrors the roadmap by hand; a `make site` target will regenerate
+   the table from the committed JSON protocols. Acceptance: the HTML
+   table is produced by the generator and stable on re-run.
+5. **Release v1.2.** Tag the release carrying the landed M1–M3
+   artifacts, the non-blocking→blocking flip and the lint-debt cleanup.
+
+**M5 — depth** *(targets v1.3)*. Strengthen the evidence without
+widening the surface.
+
+1. **50-digit anchors.** An mpmath re-derivation of the V1/V2 anchors
+   (ω, the Chaplygin combination) at 50 significant digits.
+   Acceptance: the float ω matches the high-precision value to
+   ≤ 1e-30 relative; the protocol is committed.
+2. **Third numeric twin.** A Julia port of the V1–V4 ladder.
+   Acceptance: all four checks inside the §6 tolerance bands; the
+   protocol of a real run is committed.
+3. **The Chaplygin identity, proven.** Coq and Lean currently pin the
+   equilateral anchors H = 0, P = 0, Q = 0, I = Γ as proven
+   statements; the next step derives `I = Γ` from the velocity field
+   by the Stokes/Chaplygin argument inside each assistant. Acceptance:
+   the integral identity proven with zero non-classical axioms in both.
+4. **Exact Haskell everywhere.** The ℚ(√3) dual ladder currently
+   certifies the equilateral anchors; extend the exact run to the full
+   V1–V4 loop. Acceptance: the exact ladder reports all four checks.
+
+**M6 — widening** *(targets v2.0)*. New physics surface, ported under
+the same pre-registration rule.
+
+1. **V5 — the regular ring.** A fifth ladder rung: the regular N-gon
+    vortex ring (N = 7) — rotation rate, shape stability, invariant
+    drift. Acceptance: V5 lands in Python first, then in at least two
+    ports; §5 and the protocols gain the new rung.
+2. **Benchmark board.** rust vs c++ rhs/s side by side, same machine
+    and same protocol. Acceptance: both numbers pinned in §9.
 
 ---
 
