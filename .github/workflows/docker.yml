@@ -17,7 +17,7 @@ jobs:
       matrix:
         service: [agda, coq, cpp, haskell, isabelle, lean4, rust]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Build ${{ matrix.service }} image
         run: |
           cd verification

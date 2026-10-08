@@ -15,14 +15,27 @@ jobs:
   analysis:
     name: Scorecard Analysis
     runs-on: ubuntu-24.04
+    # Job-level grants: the top-level read-all stays intact, but the
+    # analysis genuinely needs all five of these or it fails silently:
+    #   - security-events: write — upload-sarif refuses read-only tokens
+    #   - id-token: write         — publish_results signs with OIDC
+    #   - contents: write         — the badge commit is pushed back to main
+    #   - issues/pull-requests    — scorecard-action bookkeeping
+    permissions:
+      contents: write
+      security-events: write
+      id-token: write
+      issues: write
+      pull-requests: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
-          persist-credentials: false
+          # credentials must survive for the badge-commit git push below
+          persist-credentials: true
 
       - name: Run Scorecard
-        uses: ossf/scorecard-action@v2
+        uses: ossf/scorecard-action@v2.4.4
         with:
           results_file: results.sarif
           results_format: sarif
@@ -30,13 +43,19 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload SARIF
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: results.sarif
 
       - name: Update Scorecard Badge
         run: |
-          SCORE=$(jq '.checks | map(.score) | add / length' results.sarif 2>/dev/null || echo "0")
+          # scorecard SARIF carries one result per check with the check's
+          # own 0–10 score in properties.score; average them, floor to an
+          # integer (the [ -ge ] test below is integer-only), and fall
+          # back to 0 when the SARIF is missing or malformed.
+          SCORE=$(jq '[.runs[0].results[]?.properties.score // empty]
+                       | if length > 0 then (add / length | floor) else 0 end
+                       ' results.sarif 2>/dev/null || echo "0")
           if [ "$SCORE" -ge 8 ]; then COLOR="brightgreen";
           elif [ "$SCORE" -ge 6 ]; then COLOR="green";
           elif [ "$SCORE" -ge 4 ]; then COLOR="yellow";
@@ -44,7 +63,7 @@ jobs:
           cat > .github/badges/scorecard-badge.json << EOF
           {
             "schemaVersion": 1,
-            "label": "OpenSSF Score",
+            "label": "OpenSSF Scorecard",
             "message": "${SCORE}/10",
             "color": "${COLOR}"
           }

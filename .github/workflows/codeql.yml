@@ -32,14 +32,16 @@ jobs:
       security-events: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: python
           build-mode: none
-          queries: security-extended,security-and-quality
+          # security-extended only: the security-and-quality pack floods the
+          # code-scanning view with style-level alerts on the research corpus.
+          queries: security-extended
           config: |
             paths-ignore:
               - '**/test/**'
@@ -50,7 +52,7 @@ jobs:
       # resulting SARIF to code scanning automatically; no separate
       # upload-sarif step is needed (a wrong sarif path fails the job).
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4
         with:
           category: "/language:python"
           upload: always

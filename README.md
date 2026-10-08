@@ -46,7 +46,7 @@ four-check verification ladder that re-derives everything from scratch.
 [![Docs](https://img.shields.io/badge/Docs-GH%20Pages-blue?style=for-the-badge&logo=github)](https://wild8highlander.github.io/Trivortex)
 
 <!-- ROW 4 — COMMUNITY PULSE -->
-[![Stars](https://img.shields.io/github/stars/wild8highlander/Trivortex?style=for-the-badge&logo=github&color=yellow&label=Stars)](https://github.com/wild8highlander/Trivortex/stargazers)
+[![Stars](https://img.shields.io/github/stars/wild8highlander/Trivortex?style=for-the-badge&logo=github&color=yellow&label=Stars)](https://github.com/wild8highlander/Trivortex)
 [![Forks](https://img.shields.io/github/forks/wild8highlander/Trivortex?style=for-the-badge&logo=github&color=blue&label=Forks)](https://github.com/wild8highlander/Trivortex/network/members)
 [![Issues](https://img.shields.io/github/issues/wild8highlander/Trivortex?style=for-the-badge&logo=github&color=orange&label=Issues)](https://github.com/wild8highlander/Trivortex/issues)
 [![PRs](https://img.shields.io/github/issues-pr/wild8highlander/Trivortex?style=for-the-badge&logo=github&color=blueviolet&label=PRs)](https://github.com/wild8highlander/Trivortex/pulls)

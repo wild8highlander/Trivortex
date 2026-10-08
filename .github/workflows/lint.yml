@@ -17,9 +17,9 @@ jobs:
     name: Markdown
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Lint Markdown
-        uses: DavidAnson/markdownlint-cli2-action@v17
+        uses: DavidAnson/markdownlint-cli2-action@v24
         with:
           config: .markdownlint.json
           globs: |
@@ -30,23 +30,18 @@ jobs:
     name: YAML
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
+      - name: Install yamllint
+        run: pip install yamllint
       - name: Lint YAML
-        uses: ibiqlik/action-yamllint@v3
-        with:
-          config_file: .yamllint.yml
-          file_or_dir: |
-            .github/workflows/
-            .pre-commit-config.yaml
-            environment.yml
-            CITATION.cff
+        run: yamllint -c .yamllint.yml .github/workflows/ .pre-commit-config.yaml environment.yml CITATION.cff
 
   python-lint:
     name: Python (ruff + black + mypy)
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
           cache: pip
@@ -61,12 +56,14 @@ jobs:
         run: black --check .
 
       - name: Type check with mypy
-        run: mypy verification/common/python verification/trivortex/python --ignore-missing-imports --no-error-summary || true
+        run: |
+          mypy verification/common/python verification/trivortex/python \
+            --ignore-missing-imports --no-error-summary || true
 
   citation-lint:
     name: CITATION.cff
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Validate CITATION.cff
-        uses: dieghernan/cff-validator@v3
+        uses: dieghernan/cff-validator@v5

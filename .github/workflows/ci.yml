@@ -30,9 +30,9 @@ jobs:
       matrix:
         python-version: ['3.10', '3.11', '3.12']
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
       - name: Compile every Python file
@@ -63,8 +63,8 @@ jobs:
     name: Verification ladder V1–V4 (quick)
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
           cache: pip
@@ -75,7 +75,7 @@ jobs:
           python3 verification/trivortex/python/verify.py --preset quick \
             --out-dir verification/outputs/trivortex
       - name: Upload JSON protocol
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: trivortex-verify-protocol
           path: verification/outputs/trivortex/*.json
@@ -86,8 +86,8 @@ jobs:
     name: Pytest guard (reference values)
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
           cache: pip

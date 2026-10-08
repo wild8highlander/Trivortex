@@ -8,7 +8,41 @@ versioning follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
-Nothing yet — the toolchain-consistency work ships in 1.0.1 below.
+### Fixed
+- **Lint — YAML job.** The mypy invocation in `lint.yml` ran 126 characters
+  against the repository's own 120-character yamllint limit, so the YAML
+  job failed on every push; the command is split across continuation
+  lines.
+- **Link Checker.** All runs failed on nine broken links: the CHANGELOG
+  `[1.0.0]` anchor pointed at a `v1.0.0` tag that never existed (now
+  linked to the source tree of the 1.0 commit); the README Stars badge
+  linked `/stargazers`, which GitHub serves as 404 to anonymous crawlers;
+  the Chinese license had the closing full-width parenthesis inside the
+  autolink, producing a `…highlander），ORCID` URL; the TRX-03 monographs
+  had the mass matrix `[[2/3, 1/3], [1/3, 2/3]]` parsed as a Markdown
+  link (wrapped in inline code).
+- **Scorecard workflow.** The job could never succeed: top-level
+  `permissions: read-all` starved the SARIF upload (`security-events`),
+  result publishing (`id-token`) and the badge push (`contents`); the
+  checkout dropped credentials before `git push`; the jq expression read
+  a `.checks` field that does not exist in SARIF and compared a float
+  with an integer test. The job now carries explicit permissions, keeps
+  credentials, averages the per-check scores with a null-safe floor, and
+  matches the committed badge label.
+
+### Changed
+- All workflow actions refreshed to the Node.js 24 generation, clearing
+  the "Node.js 20 is deprecated" annotations on every job: checkout v7,
+  setup-python v7, upload-artifact v7, cache v6, stale v11, labeler v7,
+  configure-pages v6, upload-pages-artifact v5, deploy-pages v5,
+  dependency-review-action v5, release-drafter v7,
+  markdownlint-cli2-action v24, cff-validator v5, codeql-action v4,
+  scorecard-action v2.4.4. The yamllint third-party action (Node 20
+  runtime) is replaced by a pip-installed run step with identical
+  targets.
+- CodeQL narrows to the `security-extended` query pack; the
+  `security-and-quality` pack dominated the code-scanning view with
+  style-level alerts on the research corpus.
 
 ## [1.0.1] — 2026-10-07 — the toolchain-consistency release
 
@@ -161,4 +195,4 @@ sources and checked on every push.
 
 [Unreleased]: https://github.com/wild8highlander/Trivortex/compare/v1.0.1...HEAD
 [1.0.1]: https://github.com/wild8highlander/Trivortex/releases/tag/v1.0.1
-[1.0.0]: https://github.com/wild8highlander/Trivortex/releases/tag/v1.0.0
+[1.0.0]: https://github.com/wild8highlander/Trivortex/tree/589066f
