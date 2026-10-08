@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="320" viewBox="0 0 1500 320" role="img" aria-label="POLYVORTEX banner — the N-vortex extension bench">
+  <defs>
+    <linearGradient id="bgb" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0E2145"/><stop offset="1" stop-color="#0A1730"/>
+    </linearGradient>
+    <linearGradient id="goldline" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#D4AF37" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#D4AF37" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#D4AF37" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#D4AF37" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#D4AF37" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1500" height="320" fill="url(#bgb)"/>
+
+  <!-- starfield -->
+  <circle cx="150" cy="50" r="1.2" fill="#FFFFFF" opacity="0.5"/>
+  <circle cx="360" cy="240" r="0.9" fill="#FFFFFF" opacity="0.4"/>
+  <circle cx="80" cy="180" r="0.8" fill="#FFFFFF" opacity="0.35"/>
+  <circle cx="540" cy="36" r="1.0" fill="#FFFFFF" opacity="0.45"/>
+  <circle cx="800" cy="270" r="0.8" fill="#FFFFFF" opacity="0.35"/>
+  <circle cx="1050" cy="44" r="1.1" fill="#FFFFFF" opacity="0.5"/>
+  <circle cx="1230" cy="250" r="0.9" fill="#FFFFFF" opacity="0.4"/>
+  <circle cx="1440" cy="60" r="1.0" fill="#FFFFFF" opacity="0.45"/>
+  <circle cx="920" cy="26" r="0.7" fill="#FFFFFF" opacity="0.3"/>
+  <circle cx="240" cy="120" r="0.7" fill="#FFFFFF" opacity="0.3"/>
+
+  <!-- right-side decorative figure: the two-layer picture (limacon riders + rigid N-gon) -->
+  <circle cx="1245" cy="160" r="130" fill="url(#halo)"/>
+  <!-- layer K: the rigid ring -->
+  <circle cx="1245" cy="160" r="92" fill="none" stroke="#7FA6D9" stroke-width="1.4" opacity="0.8"/>
+  <!-- limacon bounds -->
+  <circle cx="1245" cy="160" r="112" fill="none" stroke="#3D5A8F" stroke-width="0.9" stroke-dasharray="3 5" opacity="0.6"/>
+  <circle cx="1245" cy="160" r="34" fill="none" stroke="#3D5A8F" stroke-width="0.9" stroke-dasharray="3 5" opacity="0.6"/>
+  <!-- the shared limacon orbit (inner loop + outer arc, schematic) -->
+  <path d="M 1245 252 C 1150 240, 1120 120, 1205 108 C 1245 100, 1258 130, 1245 160 C 1232 190, 1245 220, 1245 252"
+        fill="none" stroke="#D4AF37" stroke-width="2" opacity="0.9"/>
+  <!-- three riders -->
+  <circle cx="1245" cy="68" r="5" fill="#FFFFFF"/>
+  <circle cx="1156" cy="196" r="5" fill="#FFFFFF"/>
+  <circle cx="1334" cy="196" r="5" fill="#FFFFFF"/>
+  <!-- polygon skeleton of layer K -->
+  <path d="M 1245 68 L 1313 106 L 1334 196 L 1245 252 L 1156 196 L 1177 106 Z"
+        fill="none" stroke="#7FA6D9" stroke-width="1" opacity="0.55"/>
+
+  <!-- logo mark -->
+  <g transform="translate(64 52) scale(0.9)">
+    <circle cx="100" cy="100" r="94" fill="none" stroke="#D4AF37" stroke-width="1.6" opacity="0.5"/>
+    <circle cx="78" cy="82" r="46" fill="none" stroke="#F0D878" stroke-width="7" stroke-opacity="0.95"/>
+    <circle cx="122" cy="82" r="46" fill="none" stroke="#E8C96A" stroke-width="7" stroke-opacity="0.95"/>
+    <circle cx="100" cy="117" r="46" fill="none" stroke="#C09A32" stroke-width="7" stroke-opacity="0.95"/>
+    <circle cx="78" cy="82" r="46" fill="none" stroke="#0E2145" stroke-width="10" stroke-dasharray="8 281" stroke-dashoffset="-79"/>
+    <circle cx="122" cy="82" r="46" fill="none" stroke="#0E2145" stroke-width="10" stroke-dasharray="8 281" stroke-dashoffset="-116"/>
+    <circle cx="100" cy="117" r="46" fill="none" stroke="#0E2145" stroke-width="10" stroke-dasharray="8 281" stroke-dashoffset="-43"/>
+    <path d="M 78 82 L 122 82 L 100 117 Z" fill="none" stroke="#FFFFFF" stroke-width="1" opacity="0.6"/>
+    <circle cx="78" cy="82" r="1.8" fill="#FFFFFF"/>
+    <circle cx="122" cy="82" r="1.8" fill="#FFFFFF"/>
+    <circle cx="100" cy="117" r="1.8" fill="#FFFFFF"/>
+  </g>
+
+  <!-- title block -->
+  <text x="252" y="128" font-family="DejaVu Sans" font-size="58" font-weight="bold" fill="#D4AF37" letter-spacing="6">POLYVORTEX</text>
+  <text x="256" y="172" font-family="DejaVu Sans" font-size="26" fill="#FFFFFF" letter-spacing="1.5">The N-Vortex Extension Bench</text>
+  <text x="256" y="212" font-family="DejaVu Sans" font-size="16.5" fill="#9FB2D4">Lifting Theorem 3.1 to arbitrary N — the Kirchhoff numeric layer K against the closed-form</text>
+  <text x="256" y="236" font-family="DejaVu Sans" font-size="16.5" fill="#9FB2D4">layer G: the admissibility threshold C_Ch &gt; π ln 2 and the Havelock stability boundary N ≤ 7.</text>
+
+  <rect x="252" y="258" width="1100" height="2" fill="url(#goldline)"/>
+  <text x="252" y="290" font-family="DejaVu Sans" font-size="14" fill="#D4AF37" letter-spacing="2">TRIVORTEX MINI-RESEARCH PROGRAM</text>
+  <text x="1500" y="290" text-anchor="end" font-family="DejaVu Sans" font-size="14" fill="#9FB2D4">W1–W7 verified · RK4 + mpmath registers · bilingual monographs</text>
+</svg>

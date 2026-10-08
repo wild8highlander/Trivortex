@@ -1,28 +1,28 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="980" height="560" viewBox="0 0 980 560">
   <rect x="0" y="0" width="980" height="560" fill="#FFFFFF"/>
-  <text x="490" y="38" text-anchor="middle" font-family="DejaVu Sans" font-size="21" font-weight="bold" fill="#0A1A3A">CYCLORING — архитектура исследования</text>
-  <text x="490" y="60" text-anchor="middle" font-family="DejaVu Sans" font-size="12" fill="#5A6472">тройка (N, B, λ₀) → цепочка дефектов → дискриминант Δ_Ch → трансдьюсер → синхронное дыхание</text>
+  <text x="490" y="38" text-anchor="middle" font-family="DejaVu Sans" font-size="21" font-weight="bold" fill="#0A1A3A">CYCLORING — the research architecture</text>
+  <text x="490" y="60" text-anchor="middle" font-family="DejaVu Sans" font-size="12" fill="#5A6472">the level triple (N, B, λ₀) → the defect chain → the discriminant Δ_Ch → the transducer → the synchronous breathing</text>
 
   <rect x="40" y="95" width="200" height="92" rx="10" fill="#F4F6FA" stroke="#0A1A3A" stroke-width="1.4"/>
-  <text x="140" y="120" text-anchor="middle" font-family="DejaVu Sans" font-size="13" font-weight="bold" fill="#0A1A3A">Тройка уровня</text>
-  <text x="140" y="143" text-anchor="middle" font-family="DejaVu Sans" font-size="12" fill="#1A2433">N — порядок μ_N</text>
-  <text x="140" y="161" text-anchor="middle" font-family="DejaVu Sans" font-size="12" fill="#1A2433">B = NΓR₀² — импульс</text>
+  <text x="140" y="120" text-anchor="middle" font-family="DejaVu Sans" font-size="13" font-weight="bold" fill="#0A1A3A">The level triple</text>
+  <text x="140" y="143" text-anchor="middle" font-family="DejaVu Sans" font-size="12" fill="#1A2433">N — the order of μ_N</text>
+  <text x="140" y="161" text-anchor="middle" font-family="DejaVu Sans" font-size="12" fill="#1A2433">B = NΓR₀² — the impulse</text>
   <text x="140" y="179" text-anchor="middle" font-family="DejaVu Sans" font-size="12" fill="#1A2433">λ₀ = Γ(N−1)/(4πR₀²)</text>
 
   <rect x="300" y="95" width="200" height="92" rx="10" fill="#F4F6FA" stroke="#2E5FA3" stroke-width="1.4"/>
-  <text x="400" y="120" text-anchor="middle" font-family="DejaVu Sans" font-size="13" font-weight="bold" fill="#0A1A3A">Цепочка дефектов</text>
+  <text x="400" y="120" text-anchor="middle" font-family="DejaVu Sans" font-size="13" font-weight="bold" fill="#0A1A3A">The defect chain</text>
   <text x="400" y="143" text-anchor="middle" font-family="DejaVu Sans" font-size="12" fill="#1A2433">δ = π/N, k = ⌈Bλ₀/Γ²⌉</text>
   <text x="400" y="161" text-anchor="middle" font-family="DejaVu Sans" font-size="12" fill="#1A2433">γ = δ⁴/k, δ_eff = δ⁵/k</text>
   <text x="400" y="179" text-anchor="middle" font-family="DejaVu Sans" font-size="12" fill="#1A2433">W_N = Σ P(a,a)</text>
 
   <rect x="560" y="95" width="200" height="92" rx="10" fill="#F4F6FA" stroke="#B03A2E" stroke-width="1.4"/>
-  <text x="660" y="120" text-anchor="middle" font-family="DejaVu Sans" font-size="13" font-weight="bold" fill="#0A1A3A">Дискриминант Δ_Ch</text>
+  <text x="660" y="120" text-anchor="middle" font-family="DejaVu Sans" font-size="13" font-weight="bold" fill="#0A1A3A">The discriminant Δ_Ch</text>
   <text x="660" y="143" text-anchor="middle" font-family="DejaVu Sans" font-size="12" fill="#1A2433">Δ_Ch = γ·W_N/(N−1)</text>
-  <text x="660" y="161" text-anchor="middle" font-family="DejaVu Sans" font-size="12" fill="#1A2433">Γ-периоды уровня</text>
+  <text x="660" y="161" text-anchor="middle" font-family="DejaVu Sans" font-size="12" fill="#1A2433">the Γ-periods of the level</text>
   <text x="660" y="179" text-anchor="middle" font-family="DejaVu Sans" font-size="12" fill="#1A2433">Ω(a,b) = Γ(a/N)Γ(b/N)/Γ((a+b)/N)</text>
 
   <rect x="780" y="95" width="160" height="92" rx="10" fill="#F4F6FA" stroke="#1E8449" stroke-width="1.4"/>
-  <text x="860" y="120" text-anchor="middle" font-family="DejaVu Sans" font-size="13" font-weight="bold" fill="#0A1A3A">Трансдьюсер</text>
+  <text x="860" y="120" text-anchor="middle" font-family="DejaVu Sans" font-size="13" font-weight="bold" fill="#0A1A3A">The transducer</text>
   <text x="860" y="143" text-anchor="middle" font-family="DejaVu Sans" font-size="12" fill="#1A2433">ε = Δ/(1+Δ)</text>
   <text x="860" y="161" text-anchor="middle" font-family="DejaVu Sans" font-size="12" fill="#1A2433">ν = ω_L(1−ε²)^(−3/2)</text>
   <text x="860" y="179" text-anchor="middle" font-family="DejaVu Sans" font-size="12" fill="#1A2433">C_N = −ln ε</text>
@@ -32,22 +32,22 @@
   <line x1="760" y1="141" x2="780" y2="141" stroke="#0A1A3A" stroke-width="1.6" marker-end="url(#arr)"/>
 
   <rect x="120" y="255" width="360" height="120" rx="10" fill="#EFF4FB" stroke="#0A1A3A" stroke-width="1.4"/>
-  <text x="300" y="282" text-anchor="middle" font-family="DejaVu Sans" font-size="13" font-weight="bold" fill="#0A1A3A">Алгебраизация кольца (теорема 1)</text>
-  <text x="300" y="308" text-anchor="middle" font-family="DejaVu Sans" font-size="12.5" fill="#1A2433">z_k = r(t)·ζ_N^k·e^{iνt}  ⟺  корни системы z^N = σ(t)</text>
+  <text x="300" y="282" text-anchor="middle" font-family="DejaVu Sans" font-size="13" font-weight="bold" fill="#0A1A3A">Algebraization of the ring (Theorem 1)</text>
+  <text x="300" y="308" text-anchor="middle" font-family="DejaVu Sans" font-size="12.5" fill="#1A2433">z_k = r(t)·ζ_N^k·e^{iνt}  ⟺  the roots of z^N = σ(t)</text>
   <text x="300" y="330" text-anchor="middle" font-family="DejaVu Sans" font-size="12.5" fill="#1A2433">S_m = Σ z_k^m = 0 (m &lt; N),  S_N = Nσ,  L = 0</text>
-  <text x="300" y="352" text-anchor="middle" font-family="DejaVu Sans" font-size="12.5" fill="#1A2433">Gal(ℚ(ζ_N)/ℚ) ≅ (ℤ/N)^× — релябелинг вихрей</text>
+  <text x="300" y="352" text-anchor="middle" font-family="DejaVu Sans" font-size="12.5" fill="#1A2433">Gal(ℚ(ζ_N)/ℚ) ≅ (ℤ/N)^× — the vortex relabeling</text>
 
   <rect x="520" y="255" width="340" height="120" rx="10" fill="#EFF4FB" stroke="#1E8449" stroke-width="1.4"/>
-  <text x="690" y="282" text-anchor="middle" font-family="DejaVu Sans" font-size="13" font-weight="bold" fill="#0A1A3A">Синхронное дыхание (теорема 4)</text>
+  <text x="690" y="282" text-anchor="middle" font-family="DejaVu Sans" font-size="13" font-weight="bold" fill="#0A1A3A">The synchronous breathing (Theorem 4)</text>
   <text x="690" y="308" text-anchor="middle" font-family="DejaVu Sans" font-size="12.5" fill="#1A2433">r(t) = R₀(1+ε·cos νt), θ_k = νt + 2πk/N</text>
   <text x="690" y="330" text-anchor="middle" font-family="DejaVu Sans" font-size="12.5" fill="#1A2433">⟨(1+ε·cos u)^(−2)⟩ = (1−ε²)^(−3/2)</text>
-  <text x="690" y="352" text-anchor="middle" font-family="DejaVu Sans" font-size="12.5" fill="#1A2433">замыкание розеток: T_c = 2π/ν</text>
+  <text x="690" y="352" text-anchor="middle" font-family="DejaVu Sans" font-size="12.5" fill="#1A2433">the rosette closure: T_c = 2π/ν</text>
 
   <rect x="40" y="420" width="900" height="100" rx="10" fill="#FFFFFF" stroke="#2E5FA3" stroke-width="1.2"/>
-  <text x="490" y="447" text-anchor="middle" font-family="DejaVu Sans" font-size="13" font-weight="bold" fill="#0A1A3A">Лестница W1–W7 (детерминированные протоколы results/protocols/)</text>
-  <text x="490" y="472" text-anchor="middle" font-family="DejaVu Sans" font-size="12" fill="#1A2433">W1 ядро периодов · W2 алгебраическая граница · W3 корневая система · W4 поток кольца</text>
-  <text x="490" y="492" text-anchor="middle" font-family="DejaVu Sans" font-size="12" fill="#1A2433">W5 тождество переноса · W6 синхронное замыкание · W7 трансдьюсер уровней 7, 9, 15, 30</text>
-  <text x="490" y="512" text-anchor="middle" font-family="DejaVu Sans" font-size="11" fill="#5A6472">mpmath 50 знаков · RK4 · допуск 1e−30 / 1e−12 / 1e−9</text>
+  <text x="490" y="447" text-anchor="middle" font-family="DejaVu Sans" font-size="13" font-weight="bold" fill="#0A1A3A">The W1–W7 ladder (deterministic protocols in results/protocols/)</text>
+  <text x="490" y="472" text-anchor="middle" font-family="DejaVu Sans" font-size="12" fill="#1A2433">W1 the period core · W2 the algebraic boundary · W3 the root system · W4 the polygon flow</text>
+  <text x="490" y="492" text-anchor="middle" font-family="DejaVu Sans" font-size="12" fill="#1A2433">W5 the transport identity · W6 the synchronous closure · W7 the transducer of the levels 7, 9, 15, 30</text>
+  <text x="490" y="512" text-anchor="middle" font-family="DejaVu Sans" font-size="11" fill="#5A6472">mpmath 50 digits · RK4 · tolerances 1e−30 / 1e−12 / 1e−9</text>
 
   <defs>
     <marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">

@@ -1,6 +1,6 @@
 # TRIVORTEX — Top-level Makefile
 
-.PHONY: help install run run-ru run-en verify verify-quick verify-full test docs docs-serve lint clean
+.PHONY: help install run run-ru run-en verify verify-quick verify-full test mini-test mini-ladders mini-figures cycloring-ladder cycloring-test polyvortex-ladder polyvortex-test docs docs-serve lint clean
 
 .DEFAULT_GOAL := help
 
@@ -36,6 +36,29 @@ verify-full: ## Long ladder run with tight integration (~35 s)
 
 test: ## Run the pytest guard (27 tests)
 	$(PYTHON) -m pytest verification/tests/ -v --tb=short
+
+mini-test: ## Run both mini-program guards (37 cycloring + 26 polyvortex tests)
+	$(PYTHON) -m pytest cycloring/tests/ polyvortex/tests/ -v --tb=short
+
+mini-ladders: ## Run both mini-program W-ladders (default preset, refresh protocols)
+	cd cycloring && PYTHONPATH=python $(PYTHON) python/cycloring/runner.py --preset default
+	cd polyvortex && PYTHONPATH=python $(PYTHON) python/polyvortex/runner.py --preset default
+
+mini-figures: ## Regenerate both mini-program figure sets (EN primary + RU mirror)
+	cd cycloring && PYTHONPATH=python $(PYTHON) -m cycloring.figures
+	cd polyvortex && PYTHONPATH=python $(PYTHON) -m polyvortex.figures
+
+cycloring-ladder: ## CYCLORING: run W1..W7 (default preset)
+	cd cycloring && PYTHONPATH=python $(PYTHON) python/cycloring/runner.py --preset default
+
+cycloring-test: ## CYCLORING: the pytest guard (37 tests)
+	cd cycloring && $(PYTHON) -m pytest tests/ -q
+
+polyvortex-ladder: ## POLYVORTEX: run W1..W7 (default preset)
+	cd polyvortex && PYTHONPATH=python $(PYTHON) python/polyvortex/runner.py --preset default
+
+polyvortex-test: ## POLYVORTEX: the pytest guard (26 tests)
+	cd polyvortex && $(PYTHON) -m pytest tests/ -q
 
 docs: ## Preview hint for the documentation site
 	@echo "Serving docs/site at http://localhost:8080 ..."

@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="320" viewBox="0 0 1500 320" role="img" aria-label="CYCLORING banner — the Gamma-period ring laboratory">
+  <defs>
+    <linearGradient id="bgb" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0E2145"/><stop offset="1" stop-color="#0A1730"/>
+    </linearGradient>
+    <linearGradient id="goldline" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#D4AF37" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#D4AF37" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#D4AF37" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#D4AF37" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#D4AF37" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1500" height="320" fill="url(#bgb)"/>
+
+  <!-- starfield -->
+  <circle cx="120" cy="60" r="1.2" fill="#FFFFFF" opacity="0.5"/>
+  <circle cx="340" cy="250" r="0.9" fill="#FFFFFF" opacity="0.4"/>
+  <circle cx="90" cy="210" r="0.8" fill="#FFFFFF" opacity="0.35"/>
+  <circle cx="520" cy="40" r="1.0" fill="#FFFFFF" opacity="0.45"/>
+  <circle cx="760" cy="280" r="0.8" fill="#FFFFFF" opacity="0.35"/>
+  <circle cx="1010" cy="50" r="1.1" fill="#FFFFFF" opacity="0.5"/>
+  <circle cx="1240" cy="260" r="0.9" fill="#FFFFFF" opacity="0.4"/>
+  <circle cx="1420" cy="70" r="1.0" fill="#FFFFFF" opacity="0.45"/>
+  <circle cx="880" cy="30" r="0.7" fill="#FFFFFF" opacity="0.3"/>
+  <circle cx="200" cy="130" r="0.7" fill="#FFFFFF" opacity="0.3"/>
+
+  <!-- right-side decorative figure: the breathing seven-gon ring -->
+  <circle cx="1245" cy="160" r="130" fill="url(#halo)"/>
+  <circle cx="1245" cy="160" r="88" fill="none" stroke="#3D5A8F" stroke-width="1" opacity="0.7"/>
+  <circle cx="1245" cy="160" r="108" fill="none" stroke="#3D5A8F" stroke-width="0.8" stroke-dasharray="3 5" opacity="0.55"/>
+  <!-- rosette loops (three of the seven) -->
+  <g fill="none" stroke="#D4AF37" stroke-width="1.7" opacity="0.85">
+    <ellipse cx="1245" cy="118" rx="60" ry="52" transform="rotate(24 1245 118)"/>
+    <ellipse cx="1286" cy="184" rx="58" ry="50" transform="rotate(144 1286 184)"/>
+    <ellipse cx="1204" cy="184" rx="58" ry="50" transform="rotate(264 1204 184)"/>
+  </g>
+  <!-- the seven vortices on the outer circle -->
+  <g fill="#FFFFFF">
+    <circle cx="1245" cy="72" r="4.4"/>
+    <circle cx="1329" cy="117" r="4.4"/>
+    <circle cx="1329" cy="203" r="4.4"/>
+    <circle cx="1245" cy="248" r="4.4"/>
+    <circle cx="1161" cy="203" r="4.4"/>
+    <circle cx="1161" cy="117" r="4.4"/>
+  </g>
+  <circle cx="1245" cy="160" r="4.4" fill="#D4AF37"/>
+  <!-- heptagon skeleton -->
+  <path d="M 1245 72 L 1329 117 L 1329 203 L 1245 248 L 1161 203 L 1161 117 Z"
+        fill="none" stroke="#7FA6D9" stroke-width="1.1" opacity="0.6"/>
+
+  <!-- logo mark -->
+  <g transform="translate(64 52) scale(0.9)">
+    <circle cx="100" cy="100" r="94" fill="none" stroke="#D4AF37" stroke-width="1.6" opacity="0.5"/>
+    <circle cx="78" cy="82" r="46" fill="none" stroke="#F0D878" stroke-width="7" stroke-opacity="0.95"/>
+    <circle cx="122" cy="82" r="46" fill="none" stroke="#E8C96A" stroke-width="7" stroke-opacity="0.95"/>
+    <circle cx="100" cy="117" r="46" fill="none" stroke="#C09A32" stroke-width="7" stroke-opacity="0.95"/>
+    <circle cx="78" cy="82" r="46" fill="none" stroke="#0E2145" stroke-width="10" stroke-dasharray="8 281" stroke-dashoffset="-79"/>
+    <circle cx="122" cy="82" r="46" fill="none" stroke="#0E2145" stroke-width="10" stroke-dasharray="8 281" stroke-dashoffset="-116"/>
+    <circle cx="100" cy="117" r="46" fill="none" stroke="#0E2145" stroke-width="10" stroke-dasharray="8 281" stroke-dashoffset="-43"/>
+    <path d="M 78 82 L 122 82 L 100 117 Z" fill="none" stroke="#FFFFFF" stroke-width="1" opacity="0.6"/>
+    <circle cx="78" cy="82" r="1.8" fill="#FFFFFF"/>
+    <circle cx="122" cy="82" r="1.8" fill="#FFFFFF"/>
+    <circle cx="100" cy="117" r="1.8" fill="#FFFFFF"/>
+  </g>
+
+  <!-- title block -->
+  <text x="252" y="128" font-family="DejaVu Sans" font-size="58" font-weight="bold" fill="#D4AF37" letter-spacing="6">CYCLORING</text>
+  <text x="256" y="172" font-family="DejaVu Sans" font-size="26" fill="#FFFFFF" letter-spacing="1.5">The Gamma-Period Ring Laboratory</text>
+  <text x="256" y="212" font-family="DejaVu Sans" font-size="16.5" fill="#9FB2D4">The regular N-vortex ring as the root system of one binomial — angular phases on the</text>
+  <text x="256" y="236" font-family="DejaVu Sans" font-size="16.5" fill="#9FB2D4">cyclotomic lattice, radial modulation from Gamma-periods through a finite defect chain.</text>
+
+  <rect x="252" y="258" width="1100" height="2" fill="url(#goldline)"/>
+  <text x="252" y="290" font-family="DejaVu Sans" font-size="14" fill="#D4AF37" letter-spacing="2">TRIVORTEX MINI-RESEARCH PROGRAM</text>
+  <text x="1500" y="290" text-anchor="end" font-family="DejaVu Sans" font-size="14" fill="#9FB2D4">W1–W7 verified · mpmath 50 digits · bilingual monographs</text>
+</svg>

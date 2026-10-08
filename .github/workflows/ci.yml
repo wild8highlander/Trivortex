@@ -2,9 +2,12 @@
 name: TRIVORTEX CI
 
 # The repository pipeline for the TRIVORTEX document:
-#   1. syntax-check every Python file (code/ + verification/ + research/);
+#   1. syntax-check every Python file (code/ + verification/ + research/
+#      + cycloring/python + polyvortex/python);
 #   2. run the independent verification ladder V1-V4 (quick preset);
-#   3. run the pytest guard (13 core tests + 14 research smoke tests).
+#   3. run the W1-W7 ladders of the two mini-research programs
+#      (cycloring, polyvortex, quick preset);
+#   4. run the pytest guard (63 verification tests + 37 cycloring + 26 polyvortex).
 # A green run is what the CI badge in the root README reflects.
 
 on:
@@ -39,7 +42,7 @@ jobs:
         run: |
           python - <<'PY'
           import py_compile, os, sys
-          roots = ["code", "verification", "research"]
+          roots = ["code", "verification", "research", "cycloring/python", "polyvortex/python"]
           errors = []
           for root in roots:
               for dirpath, _dirs, files in os.walk(root):
@@ -82,6 +85,35 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+  mini-program-ladders:
+    name: Mini-program ladders W1–W7 (quick)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install dependencies
+        run: pip install numpy mpmath
+      - name: CYCLORING — the W-ladder (quick)
+        run: |
+          cd cycloring
+          PYTHONPATH=python python3 python/cycloring/runner.py --preset quick
+      - name: POLYVORTEX — the W-ladder (quick)
+        run: |
+          cd polyvortex
+          PYTHONPATH=python python3 python/polyvortex/runner.py --preset quick
+      - name: Upload the mini-program protocols
+        uses: actions/upload-artifact@v7
+        with:
+          name: mini-program-protocols
+          path: |
+            cycloring/results/protocols/*.json
+            polyvortex/results/protocols/*.json
+          if-no-files-found: error
+          retention-days: 30
+
   pytest-guard:
     name: Pytest guard (reference values)
     runs-on: ubuntu-24.04
@@ -92,6 +124,10 @@ jobs:
           python-version: '3.12'
           cache: pip
       - name: Install test dependencies
-        run: pip install numpy scipy pytest
-      - name: Run the suite
+        run: pip install numpy scipy mpmath pytest
+      - name: The verification suite
         run: python -m pytest verification/tests/ -v --tb=short
+      - name: The cycloring guard (37 tests)
+        run: python -m pytest cycloring/tests/ -v --tb=short
+      - name: The polyvortex guard (26 tests)
+        run: python -m pytest polyvortex/tests/ -v --tb=short
