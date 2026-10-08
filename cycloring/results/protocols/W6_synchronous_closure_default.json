@@ -1,0 +1,17 @@
+{
+  "stage": "W6",
+  "preset": "default",
+  "check": "W6 synchronous closure: rosette return + shape rigidity",
+  "eps_level": 0.0036639542627336812,
+  "nu_synchronous": 0.47747444407050277,
+  "closure_time": 13.159207545465671,
+  "closure_residual": 3.1401849173675503e-16,
+  "shape_rigidity_residual": 4.440892098500626e-16,
+  "radial_excursion": 0.0073279085254673625,
+  "params": {
+    "N": 7,
+    "Gamma": 1.0,
+    "R": 1.0
+  },
+  "passed": true
+}

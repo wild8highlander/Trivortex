@@ -126,6 +126,46 @@ brought the artifact.
   `polyvortex/python/polyvortex`; `REUSE.toml` covers `polyvortex/**`;
   the root layout tree lists the mini-repository.
 
+### Added — the cycloring mini-research (the Gamma-period ring laboratory)
+
+- `cycloring/` — a second self-contained mini-research inside the
+  framework, written from scratch with no external references: the
+  regular N-vortex ring treated as an algebraic object — the root
+  system of the binomial z^N = sigma(t) — with its angular phases on
+  the cyclotomic lattice and its radial modulation produced from the
+  Gamma-periods Omega(a,b) = Gamma(a/N)Gamma(b/N)/Gamma((a+b)/N)
+  through a finite defect chain (delta = pi/N, k = ceil(B*lambda_0/Gamma^2),
+  gamma = delta^4/k, delta_eff = delta^5/k, Delta_Ch = gamma*W_N/(N-1)).
+- Five theorems with full proofs and numeric certification:
+  **Theorem 1** (the ring is the full root set of z^N = sigma(t); the
+  roots-of-unity filter S_m = 0 for m < N, S_N = N*sigma; the Galois
+  group acts by vortex relabeling), **Theorem 2** (the boundary of the
+  period domain is algebraic: Omega(a, N-a) = pi/sin(pi*a/N), the sine
+  product of 2 sin(pi m/N) = N), **Theorem 3** (the period transducer:
+  eps = Delta/(1+Delta), nu = omega_L (1+Delta)^3/(1+2*Delta)^{3/2}
+  = omega_L (1-eps^2)^{-3/2}, C_N = -ln eps; the strict monotonicity
+  of gamma; the classical limit), **Theorem 4** (the mean-transport
+  identity M[(1+eps cos u)^{-2}] = (1-eps^2)^{-3/2} and the exact
+  synchronous closure T_c = 2*pi/nu), **Theorem 5** (the dichotomy:
+  the distance product R^{N(N-1)/2} N^{N/2} and the discriminant
+  N^N |sigma|^{N-1} are algebraic; H(R) = -(Gamma^2/2 pi)[(N(N-1)/2)
+  ln R + (N/2) ln N] carries the transcendental shell).
+- The W-ladder (W1 period core, W2 algebraic boundary, W3 root system,
+  W4 polygon flow, W5 transport identity, W6 synchronous closure,
+  W7 transducer table) with deterministic JSON protocols; mpmath
+  registers at 50 digits (residuals 5.1e-49), RK4 dynamics registers
+  (rate 1.1e-10, invariant drifts 2.0e-12); the registered level table
+  N = 7/9/15/30 (eps from 3.664e-3 down to 2.135e-7; the stiffness
+  power law ~1.7e3 * N^{-6.7} as a numerical fit).
+- The publication stack: the big research monograph (RU+EN, md+docx+pdf)
+  and the five-theorem monograph edition (RU+EN, docx+pdf, 20 files),
+  five 300 dpi protocol-bound figures plus the architecture scheme SVG.
+- `cycloring/tests/` — 37 self-contained tests; the pytest guard grows
+  from 89 to 126 tests (`pyproject.toml` testpaths extended).
+- CI integration: `lint.yml` mypy paths include
+  `cycloring/python/cycloring`; `REUSE.toml` covers `cycloring/**`;
+  the root layout tree lists the mini-research.
+
 ### Fixed — lint debt and stale numbers
 
 - Root `README.md`: the header, badges and sections resynced with the

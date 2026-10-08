@@ -1,0 +1,17 @@
+{
+  "stage": "W2",
+  "preset": "default",
+  "check": "W2 algebraic boundary: Omega(a,N-a)=pi/sin + sine product",
+  "max_boundary_residual": 5.131708243377016e-49,
+  "max_sine_product_residual": 5.131708243377016e-49,
+  "params": {
+    "levels": [
+      7,
+      9,
+      15,
+      30
+    ],
+    "mp_dps": 50
+  },
+  "passed": true
+}

@@ -27,7 +27,8 @@ path = [
   "verification/docker/*/Dockerfile",
   "verification/Makefile",
   "verification/tests/*.py",
-  "polyvortex/**"
+  "polyvortex/**",
+  "cycloring/**"
 ]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2026 Isaev Iskhak Khamzatovich"

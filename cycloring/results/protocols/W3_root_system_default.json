@@ -1,0 +1,37 @@
+{
+  "stage": "W3",
+  "preset": "default",
+  "check": "W3 root system: z^N - sigma identity + moments + impulse",
+  "per_level": {
+    "7": {
+      "root_system_residual": 9.099386826154683e-14,
+      "moment_residual": 3.2368285245694686e-15,
+      "s_n_residual": 1.794391381352886e-16,
+      "impulse_residual": 7.447602459741819e-16
+    },
+    "9": {
+      "root_system_residual": 5.240704272917405e-13,
+      "moment_residual": 6.400267377805281e-15,
+      "s_n_residual": 2.2066970251086873e-16,
+      "impulse_residual": 1.1443916996305594e-15
+    },
+    "15": {
+      "root_system_residual": 6.39756959392577e-11,
+      "moment_residual": 2.940000749198718e-14,
+      "s_n_residual": 5.921189464667501e-17,
+      "impulse_residual": 1.9389211565826713e-15
+    }
+  },
+  "worst_root_system_residual": 6.39756959392577e-11,
+  "worst_moment_residual": 2.940000749198718e-14,
+  "worst_s_n_residual": 2.2066970251086873e-16,
+  "worst_impulse_residual": 1.9389211565826713e-15,
+  "params": {
+    "levels": [
+      7,
+      9,
+      15
+    ]
+  },
+  "passed": true
+}

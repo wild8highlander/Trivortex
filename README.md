@@ -39,7 +39,7 @@ interactive laboratory, Coq, Lean 4, Rust, Isabelle, Agda, C++ and Haskell.
 
 <!-- ROW 3 — PROJECT VITALS -->
 [![Release](https://img.shields.io/badge/Release-v1.0.1-gold?style=for-the-badge&logo=github&label=Latest%20Release)](https://github.com/wild8highlander/Trivortex/releases)
-[![pytest](https://img.shields.io/badge/pytest-89%20passed-2EA043?style=for-the-badge&logo=pytest)](verification/tests/)
+[![pytest](https://img.shields.io/badge/pytest-126%20passed-2EA043?style=for-the-badge&logo=pytest)](verification/tests/)
 [![Ladder](https://img.shields.io/badge/ladder-V1%E2%80%93V4%20%E2%9C%93%204%2F4-2EA043?style=for-the-badge)](verification/trivortex/python/verify.py)
 [![Ports](https://img.shields.io/badge/ports-8%20landed%20%28M1%E2%80%93M3%29-2EA043?style=for-the-badge)](verification/README.md)
 [![Document](https://img.shields.io/badge/document-22%20sections-1284BA?style=for-the-badge)](code/)
@@ -68,7 +68,7 @@ interactive laboratory, Coq, Lean 4, Rust, Isabelle, Agda, C++ and Haskell.
 3. [The vortex approach and the Chaplygin integral](#3-the-vortex-approach-and-the-chaplygin-integral)
 4. [Theorem 3.1 — the closed form](#4-theorem-31--the-closed-form)
 5. [Verification ladder V1–V4](#5-verification-ladder-v1v4)
-6. [The pytest guard — 89 tests](#6-the-pytest-guard--89-tests)
+6. [The pytest guard — 126 tests](#6-the-pytest-guard--126-tests)
 7. [Inside the document — 22 sections](#7-inside-the-document--22-sections)
 8. [The interactive menu — 15 modes](#8-the-interactive-menu--15-modes)
 9. [The report engine — seven formats](#9-the-report-engine--seven-formats)
@@ -352,14 +352,15 @@ protocol per run. Registered criteria and the latest reference results:
 
 ---
 
-## 6. The pytest guard — 89 tests
+## 6. The pytest guard — 126 tests
 
 The suite in [`verification/tests/`](verification/tests/) pins the analytic layer
 to hard reference values, guards all seven landed language ports and wraps the
-whole research program in CI-friendly form; the mini-repository
-[`polyvortex/tests/`](polyvortex/tests/) adds 26 more (the N-vortex bench,
-cross-pinned to the parent ladder). Together: **89 tests** in ≈ 25 s, only
-`numpy`, `scipy` and `pytest` required.
+whole research program in CI-friendly form; the mini-repositories
+[`polyvortex/tests/`](polyvortex/tests/) and
+[`cycloring/tests/`](cycloring/tests/) add 26 and 37 more (the N-vortex bench
+and the Gamma-period ring laboratory, both self-contained). Together:
+**126 tests** in ≈ 30 s, only `numpy`, `scipy` and `pytest` required.
 
 | Suite | Tests | What they guard |
 |---|---|---|
@@ -368,6 +369,7 @@ cross-pinned to the parent ladder). Together: **89 tests** in ≈ 25 s, only
 | `test_research_smoke.py` — smoke | 12 | every TRX study executes in `--smoke` mode and reports `status: PASS` |
 | `test_research_smoke.py` — completeness | 1 | all twelve studies ship README, code, pack, figures, monograph sources and four monograph renditions |
 | `test_research_smoke.py` — library | 1 | the reading room: 28 PDFs + 28 DOCX + HTML sources + build system |
+| `test_cr_*.py` (cycloring) | 37 | the Gamma-period ring laboratory: the reflection and sine-product identities, the defect chain and the transducer, the root system, the polygon flow, the transport identity, the synchronous closure, the transducer table of the levels 7/9/15/30 |
 
 ---
 
@@ -813,6 +815,17 @@ Trivortex/
 │   ├── tests/                       ← 26 tests, cross-pinned to the parent
 │   └── results/protocols/           ← seven committed JSON protocols
 │
+├── cycloring/                       ← ★ THE GAMMA-PERIOD RING LABORATORY (mini-research)
+│   ├── README.md · README_RU.md · CHANGELOG.md · Makefile
+│   ├── docs/monograph/              ← THE BIG MONOGRAPH: RU+EN × md+docx+pdf
+│   ├── docs/monographs/             ← THEOREM EDITION: Theorems 1–5 —
+│   │                                  RU+EN × docx+pdf (20 files)
+│   ├── figures/                     ← fig01–fig05 (300 dpi PNG) + scheme SVG
+│   ├── python/cycloring/            ← periods (mpmath) · chain · ring · dynamics
+│   │                                  · ladder · runner · figures
+│   ├── tests/                       ← 37 tests, self-contained
+│   └── results/protocols/           ← seven committed JSON protocols
+│
 ├── publications/                    ← ★ THE READING ROOM
 │   ├── pdf/                         ← 28 vector A4 PDFs (RU and EN separate)
 │   ├── docx/                        ← the same 28 documents as editable DOCX
@@ -850,8 +863,8 @@ python3 verification/trivortex/python/verify.py --preset full      # ~35 s
 
 # ── the pytest guard ─────────────────────────────────────
 python -m pytest verification/tests/ -v                            # 63 tests
-python -m pytest polyvortex/tests/ -v                              # 26 tests (the mini-repo)
-python -m pytest -v                                                # all 89 from the root
+python -m pytest polyvortex/tests/ cycloring/tests/ -v             # 63 mini-repo tests
+python -m pytest -v                                                # all 126 from the root
 
 # ── the extended research program (12 executable studies) ─
 python3 research/TRX-01-laser-radiation-pressure/code/trx01_laser_radiation_pressure.py

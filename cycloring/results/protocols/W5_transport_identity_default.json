@@ -1,0 +1,19 @@
+{
+  "stage": "W5",
+  "preset": "default",
+  "check": "W5 transport identity: mean law + exact 2 pi phase advance",
+  "max_mp_residual": 2.6727647100921956e-51,
+  "max_float_residual": 4.440892098500626e-16,
+  "max_phase_advance_error": 1.7763568394002505e-15,
+  "params": {
+    "eps_grid": [
+      0.05,
+      0.08666666666666667,
+      0.12333333333333334,
+      "...",
+      0.6000000000000001
+    ],
+    "n_eps": 16
+  },
+  "passed": true
+}

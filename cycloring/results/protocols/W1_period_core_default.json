@@ -1,0 +1,18 @@
+{
+  "stage": "W1",
+  "preset": "default",
+  "check": "W1 period core: reflection register + P(1,1)=1 + symmetry",
+  "max_reflection_residual": 5.131708243377016e-49,
+  "normalization_error": 0.0,
+  "symmetry_error": 0.0,
+  "params": {
+    "levels": [
+      7,
+      9,
+      15,
+      30
+    ],
+    "mp_dps": 50
+  },
+  "passed": true
+}

@@ -1,0 +1,26 @@
+{
+  "stage": "W4",
+  "preset": "default",
+  "check": "W4 polygon flow: rigid rotation + shape + invariants + H form",
+  "omega_analytic": 0.477464829275686,
+  "omega_measured": 0.4774648292750297,
+  "omega_relative_error": 1.3745689750652017e-12,
+  "max_radius_drift": 1.709743457922741e-14,
+  "invariant_drifts": {
+    "H": 1.249565716701129e-14,
+    "P": 5.329070518200751e-15,
+    "Q": 2.4424906541753444e-15,
+    "I": 8.120488408686859e-15
+  },
+  "worst_invariant_drift": 1.249565716701129e-14,
+  "h_closed_form_error": 0.0,
+  "distance_product_error": 1.252757600802803e-16,
+  "params": {
+    "N": 7,
+    "Gamma": 1.0,
+    "R": 1.0,
+    "rotations": 2,
+    "steps_per_period": 2400
+  },
+  "passed": true
+}
