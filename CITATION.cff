@@ -79,7 +79,7 @@ keywords:
   - celestial-mechanics
   - open-science
 license-url: "https://github.com/wild8highlander/Trivortex/blob/main/LICENSE.md"
-version: "1.0.0"
+version: "1.0.1"
 date-released: "2026-10-07"
 preferred-citation:
   type: article

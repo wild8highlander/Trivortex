@@ -37,7 +37,7 @@ four-check verification ladder that re-derives everything from scratch.
 [![REUSE](https://img.shields.io/badge/REUSE-Compliant-2EA043?style=for-the-badge&logo=fsfe&logoColor=white)](REUSE.toml)
 
 <!-- ROW 3 — PROJECT VITALS -->
-[![Release](https://img.shields.io/badge/Release-v1.0.0-gold?style=for-the-badge&logo=github&label=First%20Release)](https://github.com/wild8highlander/Trivortex/releases)
+[![Release](https://img.shields.io/badge/Release-v1.0.1-gold?style=for-the-badge&logo=github&label=Latest%20Release)](https://github.com/wild8highlander/Trivortex/releases)
 [![pytest](https://img.shields.io/badge/pytest-27%20passed-2EA043?style=for-the-badge&logo=pytest)](verification/tests/)
 [![Ladder](https://img.shields.io/badge/ladder-V1%E2%80%93V4%20%E2%9C%93%204%2F4-2EA043?style=for-the-badge)](verification/trivortex/python/verify.py)
 [![Document](https://img.shields.io/badge/document-22%20sections-1284BA?style=for-the-badge)](code/)

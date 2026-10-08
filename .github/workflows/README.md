@@ -6,7 +6,7 @@
 ![CI](https://img.shields.io/github/actions/workflow/status/wild8highlander/Trivortex/ci.yml?branch=main&style=flat-square&label=CI)
 ![Docs](https://img.shields.io/github/actions/workflow/status/wild8highlander/Trivortex/deploy-docs.yml?branch=main&style=flat-square&label=Docs%20Deploy)
 
-The **GitHub Actions catalogue** of the TRIVORTEX repository (version 1.0.0) —
+The **GitHub Actions catalogue** of the TRIVORTEX repository (version 1.0.1) —
 12 YAML workflow definitions covering the verification, documentation, security
 and release lifecycle. Every workflow is idempotent, uses pinned action versions
 and requires no secrets beyond the built-in `GITHUB_TOKEN` (the Zenodo

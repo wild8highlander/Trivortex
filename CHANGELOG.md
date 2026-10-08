@@ -8,6 +8,15 @@ versioning follows [SemVer](https://semver.org/).
 
 ## [Unreleased]
 
+Nothing yet — the toolchain-consistency work ships in 1.0.1 below.
+
+## [1.0.1] — 2026-10-07 — the toolchain-consistency release
+
+A maintenance release: no physics content changed — every theorem,
+verification check, study, figure and monograph is bit-for-bit the 1.0.0
+program. What changed is the repository toolchain around it, made fully
+self-consistent after the rename to Trivortex.
+
 ### Fixed
 - **Repository identity.** All 310 references to the pre-rename repository
   slug `research-papers` (README badges and links, CITATION.cff, pyproject
@@ -29,6 +38,20 @@ versioning follows [SemVer](https://semver.org/).
   `GITHUB_TOKEN`.
 - `.github/workflows/zenodo.yml`: release archives and deposit metadata are
   now named `trivortex-<tag>` and carry the correct repository URL.
+- `.commitlintrc.json`: the file carried shell-style `#` comment lines above
+  the JSON body; strict JSON loaders (commitlint's own included) reject
+  comments, so the config could be silently ignored. It is now valid JSON.
+- `.github/workflows/zenodo.yml`: the release deposit declared
+  `CC-BY-NC-SA-4.0` while `LICENSE.md`, `.zenodo.json` and `MANIFEST.json`
+  all declare IPL-RP-1.0; every Zenodo pathway now states the same license
+  (`LicenseRef-Proprietary-Wild8Highlander-1.0`).
+- `.gitignore`: Python bytecode (`__pycache__/`, `*.py[cod]`), tooling caches
+  (`.pytest_cache/`, `.mypy_cache/`, `.ruff_cache/`, coverage), virtualenvs
+  and OS noise are now ignored, so running the document or the tests can no
+  longer stage artifacts into a commit.
+- Release metadata alignment: `pyproject.toml`, `CITATION.cff`,
+  `.zenodo.json` and the README/ documentation-site release badges all state
+  1.0.1, matching the tag.
 
 ### Added
 - `SUPPORT.md`: the support channel guide (which channel for what,
@@ -136,4 +159,6 @@ sources and checked on every push.
 
 ---
 
+[Unreleased]: https://github.com/wild8highlander/Trivortex/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/wild8highlander/Trivortex/releases/tag/v1.0.1
 [1.0.0]: https://github.com/wild8highlander/Trivortex/releases/tag/v1.0.0
