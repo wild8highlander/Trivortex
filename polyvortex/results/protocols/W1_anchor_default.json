@@ -1,0 +1,22 @@
+{
+  "suite": "polyvortex-ladder",
+  "version": "1.1.0",
+  "stage": "W1",
+  "preset": "default",
+  "date_utc": "2026-10-08T09:09:49.264250+00:00",
+  "check": {
+    "check": "W1 Theorem 3.1 anchor at N=3: separation + periodicity + literals",
+    "angular_separation_error": 6.88338275267597e-14,
+    "periodicity_residual": 9.392486788328824e-14,
+    "frequency_anchor_error": 0.0,
+    "amplitude_anchor_error": 0.0,
+    "section6_drift_diagnostic": 15.0112976935465,
+    "params": {
+      "C_Ch": 1.0,
+      "T": 6.283185307179586,
+      "n_points": 400,
+      "omega": 1.3748022274393588
+    },
+    "passed": true
+  }
+}

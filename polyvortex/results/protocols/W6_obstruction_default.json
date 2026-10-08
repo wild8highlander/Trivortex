@@ -1,0 +1,98 @@
+{
+  "suite": "polyvortex-ladder",
+  "version": "1.1.0",
+  "stage": "W6",
+  "preset": "default",
+  "date_utc": "2026-10-08T09:09:56.332696+00:00",
+  "check": {
+    "check": "W6 kinematic obstruction: symmetric pulsation violates the radial equation by |dr/dt|; the phase-shifted H1 shape is not a polygon",
+    "symmetric_pulsation": [
+      {
+        "N": 3,
+        "eps": 0.01,
+        "max_abs_induced_radial_velocity": 1.3212347333429733e-16,
+        "radial_identity_max_abs_error": 1.3183898417423734e-16,
+        "passed": true
+      },
+      {
+        "N": 3,
+        "eps": 0.05,
+        "max_abs_induced_radial_velocity": 1.24941894413408e-16,
+        "radial_identity_max_abs_error": 1.249000902703301e-16,
+        "passed": true
+      },
+      {
+        "N": 3,
+        "eps": 0.1,
+        "max_abs_induced_radial_velocity": 1.325270336861536e-16,
+        "radial_identity_max_abs_error": 1.3877787807814457e-16,
+        "passed": true
+      },
+      {
+        "N": 3,
+        "eps": 0.3,
+        "max_abs_induced_radial_velocity": 1.5612493342931405e-16,
+        "radial_identity_max_abs_error": 1.6653345369377348e-16,
+        "passed": true
+      },
+      {
+        "N": 5,
+        "eps": 0.01,
+        "max_abs_induced_radial_velocity": 3.5618227542776415e-16,
+        "radial_identity_max_abs_error": 3.5648567431323386e-16,
+        "passed": true
+      },
+      {
+        "N": 5,
+        "eps": 0.05,
+        "max_abs_induced_radial_velocity": 3.7411527753324005e-16,
+        "radial_identity_max_abs_error": 3.7470027081099033e-16,
+        "passed": true
+      },
+      {
+        "N": 5,
+        "eps": 0.1,
+        "max_abs_induced_radial_velocity": 3.629077599544599e-16,
+        "radial_identity_max_abs_error": 3.625572064791527e-16,
+        "passed": true
+      },
+      {
+        "N": 5,
+        "eps": 0.3,
+        "max_abs_induced_radial_velocity": 4.927648375316669e-16,
+        "radial_identity_max_abs_error": 4.926614671774132e-16,
+        "passed": true
+      }
+    ],
+    "phase_shifted_H1": [
+      {
+        "eps": 0.01,
+        "max_shape_register_deviation": 0.008660254037844428,
+        "max_abs_induced_radial_velocity": 3.99294137393287e-06
+      },
+      {
+        "eps": 0.05,
+        "max_shape_register_deviation": 0.04330127018922214,
+        "max_abs_induced_radial_velocity": 0.00010126389864319963
+      },
+      {
+        "eps": 0.1,
+        "max_shape_register_deviation": 0.08660254037844428,
+        "max_abs_induced_radial_velocity": 0.00041249509464307406
+      },
+      {
+        "eps": 0.3,
+        "max_shape_register_deviation": 0.25980762113533173,
+        "max_abs_induced_radial_velocity": 0.004004167646238169
+      }
+    ],
+    "params": {
+      "R": 1.0,
+      "omega": 1.0,
+      "Gamma": 1.0,
+      "t_grid": 200,
+      "note": "the tangential register demands omega = G(N-1)/(4 pi r^2(t)), incompatible with any pulsation; see monograph Lemma C"
+    },
+    "passed": true
+  }
+}

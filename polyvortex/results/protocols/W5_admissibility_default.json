@@ -1,0 +1,21 @@
+{
+  "suite": "polyvortex-ladder",
+  "version": "1.1.0",
+  "stage": "W5",
+  "preset": "default",
+  "date_utc": "2026-10-08T09:09:56.249264+00:00",
+  "check": {
+    "check": "W5 admissibility: eps < 1 iff C_Ch > pi*ln(2) = 2.177586090303602",
+    "threshold_C_Ch_star": 2.177586090303602,
+    "amplitude_at_threshold_error": 0.0,
+    "equivalence_violations": 0,
+    "grid_points": 200,
+    "admissible_points": 164,
+    "min_radius_max_abs_error": 1.8973243681719154e-07,
+    "params": {
+      "C_Ch_max": 10.0,
+      "min_radius_grid": 4096
+    },
+    "passed": true
+  }
+}

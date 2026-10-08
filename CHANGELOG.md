@@ -75,7 +75,7 @@ brought the artifact.
     port README flipped from *planned — skeleton* to *landed*, with each
     directory gaining a bilingual `README_RU.md`.
 
-### Added — the post-M3 roadmap (§7.1)
+### Added — the post-M3 roadmap (§7.1, §18)
 
 - `verification/README.md` §7.1 pre-registers the next phase as eleven
   tracks in three milestones: **M4 — hardening** (blocking port jobs
@@ -86,9 +86,54 @@ brought the artifact.
   the full ladder) and **M6 — widening** (the V5 regular N-gon ring
   check, the rust-vs-c++ benchmark board). Each track names its
   acceptance criterion in advance.
+- Root `README.md` §18 — *The research frontier* — extends the roadmap
+  with the **theorem pipeline** (five registered gates from numerical
+  observation to a blocking CI rung and a monograph section) and the
+  **theorem queue** T1–T6: the regular N-gon rotation rate (T1, doubling
+  as ladder rung V5), the field-theoretic Chaplygin identity (T2), the
+  spectral stability of the choreography (T3), the a posteriori RK4
+  drift bound (T4), the admissible region of the closed form (T5) and
+  the full D3 symmetry lattice (T6) — plus deep-research tracks R1–R6
+  (50-digit anchors, the Julia twin, the N_v = 4…6 atlas, the stability
+  map, the statistical suite, the WASM playground).
 
-### Fixed — lint debt
+### Added — the polyvortex mini-repository (the N-vortex extension bench)
 
+- `polyvortex/` — a self-contained mini-repository inside the framework:
+  its own codes, its own research monograph, its own seven-stage ladder
+  **W1–W7** and its own committed JSON protocols. The passage from the
+  three-vortex Theorem 3.1 to an arbitrary number N of equal point
+  vortices, on the two-layer discipline (Kirchhoff dynamics vs the
+  topological closed form) with the layers kept explicitly separated.
+- Three rigorous statements with proofs and numeric certification:
+  **Theorem B** (the closed form is non-degenerate iff
+  C_Ch > pi*ln(2) = 2.177586...; the registered default C_Ch = 1 lies
+  below it — a decidable boundary for roadmap item T5), **Lemma C**
+  (the induced radial velocity of a regular N-gon vanishes identically,
+  so symmetric pulsation is dynamically obstructed for every N —
+  Hypothesis H1 reduces to the classical rigid rotation), **Lemma D**
+  (the cycle-averaged kinematic rate omega_N*(1-eps^2)^(-3/2), certified
+  to 3e-15, yielding the compatibility curve D1: T_comp(N, C_Ch)).
+- Classical registers generalized and reproduced: omega_N measured to
+  2.9e-12 for N = 2..8; H, P, Q, I conserved to 4.2e-14; the Havelock
+  stability threshold (stable N<=7, unstable N>=8) reproduced
+  spectrally with a three-order margin.
+- `polyvortex/tests/` — 26 tests, including cross-validation against
+  the parent ladder (the vectorized RHS, the invariants and the gauge
+  diagnostic are pinned to `verify.py`); the pytest guard grows from
+  63 to 89 tests (`pyproject.toml` testpaths extended).
+- CI integration: `lint.yml` mypy paths include
+  `polyvortex/python/polyvortex`; `REUSE.toml` covers `polyvortex/**`;
+  the root layout tree lists the mini-repository.
+
+### Fixed — lint debt and stale numbers
+
+- Root `README.md`: the header, badges and sections resynced with the
+  v1.1 state — the version line, the pytest badge (27 → 63) and the new
+  ports badge; §6 «The pytest guard» now lists all 63 tests including
+  the 36-test port guard; §17 marks M1–M3 as landed with the actual
+  artifacts; §16's guard comment says 63; the repository tree no longer
+  calls the language directories "roadmap stubs".
 - `verification/README.md`: the table of contents still pointed at the
   pre-v1.1 fragment `#11-the-27-test-pytest-guard-in-detail`; the
   section is titled «The 63-test pytest guard in detail» — the anchor

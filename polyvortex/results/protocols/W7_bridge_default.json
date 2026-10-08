@@ -1,0 +1,355 @@
+{
+  "suite": "polyvortex-ladder",
+  "version": "1.1.0",
+  "stage": "W7",
+  "preset": "default",
+  "date_utc": "2026-10-08T09:09:56.490663+00:00",
+  "check": {
+    "check": "W7 averaged-frequency bridge: <omega_kin> = omega_N (1-eps^2)^(-3/2); compatibility periods T_comp(N, C_Ch) for the D1 design rule",
+    "integral_identity_max_relative_error": 2.9113739407737147e-15,
+    "bridge_max_relative_error": 3.4956813234441685e-15,
+    "compatibility_selfcheck_max_relative_error": 3.478086661440399e-16,
+    "per_N": [
+      {
+        "N": 2,
+        "avg_kinematic_frequency": [
+          {
+            "eps": 0.2,
+            "numeric": 0.08460251749497344,
+            "exact": 0.08460251749497354
+          },
+          {
+            "eps": 0.5,
+            "numeric": 0.12251753231595351,
+            "exact": 0.1225175323159538
+          },
+          {
+            "eps": 0.8,
+            "numeric": 0.36841422012012714,
+            "exact": 0.3684142201201283
+          }
+        ]
+      },
+      {
+        "N": 3,
+        "avg_kinematic_frequency": [
+          {
+            "eps": 0.2,
+            "numeric": 0.16920503498994688,
+            "exact": 0.16920503498994707
+          },
+          {
+            "eps": 0.5,
+            "numeric": 0.24503506463190702,
+            "exact": 0.2450350646319076
+          },
+          {
+            "eps": 0.8,
+            "numeric": 0.7368284402402543,
+            "exact": 0.7368284402402566
+          }
+        ]
+      },
+      {
+        "N": 4,
+        "avg_kinematic_frequency": [
+          {
+            "eps": 0.2,
+            "numeric": 0.2538075524849204,
+            "exact": 0.2538075524849206
+          },
+          {
+            "eps": 0.5,
+            "numeric": 0.36755259694786047,
+            "exact": 0.36755259694786135
+          },
+          {
+            "eps": 0.8,
+            "numeric": 1.1052426603603813,
+            "exact": 1.1052426603603849
+          }
+        ]
+      },
+      {
+        "N": 5,
+        "avg_kinematic_frequency": [
+          {
+            "eps": 0.2,
+            "numeric": 0.33841006997989376,
+            "exact": 0.33841006997989415
+          },
+          {
+            "eps": 0.5,
+            "numeric": 0.49007012926381405,
+            "exact": 0.4900701292638152
+          },
+          {
+            "eps": 0.8,
+            "numeric": 1.4736568804805086,
+            "exact": 1.4736568804805132
+          }
+        ]
+      },
+      {
+        "N": 6,
+        "avg_kinematic_frequency": [
+          {
+            "eps": 0.2,
+            "numeric": 0.4230125874748672,
+            "exact": 0.4230125874748677
+          },
+          {
+            "eps": 0.5,
+            "numeric": 0.6125876615797676,
+            "exact": 0.6125876615797691
+          },
+          {
+            "eps": 0.8,
+            "numeric": 1.8420711006006354,
+            "exact": 1.8420711006006418
+          }
+        ]
+      },
+      {
+        "N": 7,
+        "avg_kinematic_frequency": [
+          {
+            "eps": 0.2,
+            "numeric": 0.5076151049698407,
+            "exact": 0.5076151049698412
+          },
+          {
+            "eps": 0.5,
+            "numeric": 0.7351051938957209,
+            "exact": 0.7351051938957227
+          },
+          {
+            "eps": 0.8,
+            "numeric": 2.2104853207207626,
+            "exact": 2.2104853207207698
+          }
+        ]
+      },
+      {
+        "N": 8,
+        "avg_kinematic_frequency": [
+          {
+            "eps": 0.2,
+            "numeric": 0.5922176224648141,
+            "exact": 0.5922176224648148
+          },
+          {
+            "eps": 0.5,
+            "numeric": 0.8576227262116747,
+            "exact": 0.8576227262116767
+          },
+          {
+            "eps": 0.8,
+            "numeric": 2.57889954084089,
+            "exact": 2.5788995408408986
+          }
+        ]
+      }
+    ],
+    "compatibility_table": [
+      {
+        "C_Ch": 3.0,
+        "N": 3,
+        "eps": 0.6255912638610585,
+        "T_comp": 146.12942257742225,
+        "omega_at_T_comp": 0.11172822041623108,
+        "admissible": true
+      },
+      {
+        "C_Ch": 3.0,
+        "N": 4,
+        "eps": 0.6255912638610585,
+        "T_comp": 97.41961505161483,
+        "omega_at_T_comp": 0.16759233062434664,
+        "admissible": true
+      },
+      {
+        "C_Ch": 3.0,
+        "N": 5,
+        "eps": 0.6255912638610585,
+        "T_comp": 73.06471128871112,
+        "omega_at_T_comp": 0.22345644083246216,
+        "admissible": true
+      },
+      {
+        "C_Ch": 3.0,
+        "N": 6,
+        "eps": 0.6255912638610585,
+        "T_comp": 58.4517690309689,
+        "omega_at_T_comp": 0.2793205510405777,
+        "admissible": true
+      },
+      {
+        "C_Ch": 3.0,
+        "N": 7,
+        "eps": 0.6255912638610585,
+        "T_comp": 48.70980752580741,
+        "omega_at_T_comp": 0.3351846612486933,
+        "admissible": true
+      },
+      {
+        "C_Ch": 3.0,
+        "N": 8,
+        "eps": 0.6255912638610585,
+        "T_comp": 41.75126359354921,
+        "omega_at_T_comp": 0.39104877145680883,
+        "admissible": true
+      },
+      {
+        "C_Ch": 5.0,
+        "N": 3,
+        "eps": 0.25566601670792094,
+        "T_comp": 875.9793309934694,
+        "omega_at_T_comp": 0.035227931638917166,
+        "admissible": true
+      },
+      {
+        "C_Ch": 5.0,
+        "N": 4,
+        "eps": 0.25566601670792094,
+        "T_comp": 583.9862206623129,
+        "omega_at_T_comp": 0.052841897458375746,
+        "admissible": true
+      },
+      {
+        "C_Ch": 5.0,
+        "N": 5,
+        "eps": 0.25566601670792094,
+        "T_comp": 437.9896654967347,
+        "omega_at_T_comp": 0.07045586327783433,
+        "admissible": true
+      },
+      {
+        "C_Ch": 5.0,
+        "N": 6,
+        "eps": 0.25566601670792094,
+        "T_comp": 350.3917323973877,
+        "omega_at_T_comp": 0.08806982909729291,
+        "admissible": true
+      },
+      {
+        "C_Ch": 5.0,
+        "N": 7,
+        "eps": 0.25566601670792094,
+        "T_comp": 291.99311033115646,
+        "omega_at_T_comp": 0.10568379491675149,
+        "admissible": true
+      },
+      {
+        "C_Ch": 5.0,
+        "N": 8,
+        "eps": 0.25566601670792094,
+        "T_comp": 250.27980885527697,
+        "omega_at_T_comp": 0.12329776073621007,
+        "admissible": true
+      },
+      {
+        "C_Ch": 10.0,
+        "N": 3,
+        "eps": 0.04325000109443836,
+        "T_comp": 9496.034944761901,
+        "omega_at_T_comp": 0.015960255345756305,
+        "admissible": true
+      },
+      {
+        "C_Ch": 10.0,
+        "N": 4,
+        "eps": 0.04325000109443836,
+        "T_comp": 6330.689963174601,
+        "omega_at_T_comp": 0.023940383018634454,
+        "admissible": true
+      },
+      {
+        "C_Ch": 10.0,
+        "N": 5,
+        "eps": 0.04325000109443836,
+        "T_comp": 4748.0174723809505,
+        "omega_at_T_comp": 0.03192051069151261,
+        "admissible": true
+      },
+      {
+        "C_Ch": 10.0,
+        "N": 6,
+        "eps": 0.04325000109443836,
+        "T_comp": 3798.4139779047605,
+        "omega_at_T_comp": 0.03990063836439076,
+        "admissible": true
+      },
+      {
+        "C_Ch": 10.0,
+        "N": 7,
+        "eps": 0.04325000109443836,
+        "T_comp": 3165.3449815873005,
+        "omega_at_T_comp": 0.04788076603726891,
+        "admissible": true
+      },
+      {
+        "C_Ch": 10.0,
+        "N": 8,
+        "eps": 0.04325000109443836,
+        "T_comp": 2713.1528413605433,
+        "omega_at_T_comp": 0.05586089371014706,
+        "admissible": true
+      },
+      {
+        "C_Ch": 20.0,
+        "N": 3,
+        "eps": 0.001721640672710962,
+        "T_comp": 459401.4309114245,
+        "omega_at_T_comp": 0.007957782535426021,
+        "admissible": true
+      },
+      {
+        "C_Ch": 20.0,
+        "N": 4,
+        "eps": 0.001721640672710962,
+        "T_comp": 306267.6206076163,
+        "omega_at_T_comp": 0.011936673803139035,
+        "admissible": true
+      },
+      {
+        "C_Ch": 20.0,
+        "N": 5,
+        "eps": 0.001721640672710962,
+        "T_comp": 229700.71545571226,
+        "omega_at_T_comp": 0.015915565070852043,
+        "admissible": true
+      },
+      {
+        "C_Ch": 20.0,
+        "N": 6,
+        "eps": 0.001721640672710962,
+        "T_comp": 183760.57236456982,
+        "omega_at_T_comp": 0.019894456338565052,
+        "admissible": true
+      },
+      {
+        "C_Ch": 20.0,
+        "N": 7,
+        "eps": 0.001721640672710962,
+        "T_comp": 153133.81030380816,
+        "omega_at_T_comp": 0.02387334760627807,
+        "admissible": true
+      },
+      {
+        "C_Ch": 20.0,
+        "N": 8,
+        "eps": 0.001721640672710962,
+        "T_comp": 131257.55168897842,
+        "omega_at_T_comp": 0.02785223887399108,
+        "admissible": true
+      }
+    ],
+    "params": {
+      "Gamma": 1.0,
+      "quad_nodes": 160,
+      "registered_pair_note": "the parent default (C_Ch=1, T=2pi) lies below the admissibility threshold pi*ln(2); see monograph Section 7"
+    },
+    "passed": true
+  }
+}

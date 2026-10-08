@@ -1,0 +1,75 @@
+{
+  "suite": "polyvortex-ladder",
+  "version": "1.1.0",
+  "stage": "W2",
+  "preset": "default",
+  "date_utc": "2026-10-08T09:09:53.922232+00:00",
+  "check": {
+    "check": "W2 regular N-gon rigid rotation: omega_N = G(N-1)/(4 pi R^2), N=2..8",
+    "per_N": [
+      {
+        "N": 2,
+        "omega_analytic": 0.07957747154594767,
+        "omega_measured": 0.07957747154572078,
+        "omega_relative_error": 2.851158103697156e-12,
+        "shape_deviation": 2.353672812205332e-14,
+        "passed": "True"
+      },
+      {
+        "N": 3,
+        "omega_analytic": 0.15915494309189535,
+        "omega_measured": 0.1591549430914413,
+        "omega_relative_error": 2.85290203794616e-12,
+        "shape_deviation": 2.6201263381153694e-14,
+        "passed": "True"
+      },
+      {
+        "N": 4,
+        "omega_analytic": 0.238732414637843,
+        "omega_measured": 0.23873241463716174,
+        "omega_relative_error": 2.8536577427873955e-12,
+        "shape_deviation": 3.108624468950438e-14,
+        "passed": "True"
+      },
+      {
+        "N": 5,
+        "omega_analytic": 0.3183098861837907,
+        "omega_measured": 0.3183098861828826,
+        "omega_relative_error": 2.85290203794616e-12,
+        "shape_deviation": 2.731148640577885e-14,
+        "passed": "True"
+      },
+      {
+        "N": 6,
+        "omega_analytic": 0.3978873577297384,
+        "omega_measured": 0.39788735772860306,
+        "omega_relative_error": 2.8533554608509012e-12,
+        "shape_deviation": 3.241851231905457e-14,
+        "passed": "True"
+      },
+      {
+        "N": 7,
+        "omega_analytic": 0.477464829275686,
+        "omega_measured": 0.4774648292743228,
+        "omega_relative_error": 2.855052890186599e-12,
+        "shape_deviation": 3.019806626980426e-14,
+        "passed": "True"
+      },
+      {
+        "N": 8,
+        "omega_analytic": 0.5570423008216338,
+        "omega_measured": 0.5570423008200721,
+        "omega_relative_error": 2.8034490453136805e-12,
+        "shape_deviation": 3.354205801997523e-12,
+        "passed": "True"
+      }
+    ],
+    "params": {
+      "Gamma": 1.0,
+      "R": 1.0,
+      "rotations": 2,
+      "steps_per_period": 2000
+    },
+    "passed": "True"
+  }
+}

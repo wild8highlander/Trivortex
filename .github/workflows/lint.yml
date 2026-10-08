@@ -58,6 +58,7 @@ jobs:
       - name: Type check with mypy
         run: |
           mypy verification/common/python verification/trivortex/python \
+            polyvortex/python/polyvortex \
             --ignore-missing-imports --no-error-summary || true
 
   citation-lint:

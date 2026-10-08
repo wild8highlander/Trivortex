@@ -8,11 +8,12 @@
 
 ### The Three-Body (and N-Body) Problem in the Vortex Model
 
-**Version 1.0.0 — the first public release.** A closed-form Lagrange-type rotating
+**Version 1.1 — the multi-language verification release.** A closed-form Lagrange-type rotating
 solution (Theorem 3.1), a Chaplygin topological integral, a 22-section interactive
 executable document, twelve companion studies with bilingual monographs, four
-orbital animations — and an independent
-four-check verification ladder that re-derives everything from scratch.
+orbital animations — and an independent verification framework that re-derives
+the core claims from scratch in eight languages: the Python ladder, the
+interactive laboratory, Coq, Lean 4, Rust, Isabelle, Agda, C++ and Haskell.
 
 <img src="docs/assets/divider-gold.svg" width="55%" alt="gold ornament divider"/>
 
@@ -38,8 +39,9 @@ four-check verification ladder that re-derives everything from scratch.
 
 <!-- ROW 3 — PROJECT VITALS -->
 [![Release](https://img.shields.io/badge/Release-v1.0.1-gold?style=for-the-badge&logo=github&label=Latest%20Release)](https://github.com/wild8highlander/Trivortex/releases)
-[![pytest](https://img.shields.io/badge/pytest-27%20passed-2EA043?style=for-the-badge&logo=pytest)](verification/tests/)
+[![pytest](https://img.shields.io/badge/pytest-89%20passed-2EA043?style=for-the-badge&logo=pytest)](verification/tests/)
 [![Ladder](https://img.shields.io/badge/ladder-V1%E2%80%93V4%20%E2%9C%93%204%2F4-2EA043?style=for-the-badge)](verification/trivortex/python/verify.py)
+[![Ports](https://img.shields.io/badge/ports-8%20landed%20%28M1%E2%80%93M3%29-2EA043?style=for-the-badge)](verification/README.md)
 [![Document](https://img.shields.io/badge/document-22%20sections-1284BA?style=for-the-badge)](code/)
 [![Studies](https://img.shields.io/badge/studies-12%20%C3%97%202%20languages-9558B2?style=for-the-badge)](research/)
 [![Monographs](https://img.shields.io/badge/monographs-60%20renditions%20PDF%2BDOCX-8A2BE2?style=for-the-badge)](publications/)
@@ -66,7 +68,7 @@ four-check verification ladder that re-derives everything from scratch.
 3. [The vortex approach and the Chaplygin integral](#3-the-vortex-approach-and-the-chaplygin-integral)
 4. [Theorem 3.1 — the closed form](#4-theorem-31--the-closed-form)
 5. [Verification ladder V1–V4](#5-verification-ladder-v1v4)
-6. [The pytest guard — 27 tests](#6-the-pytest-guard--27-tests)
+6. [The pytest guard — 89 tests](#6-the-pytest-guard--89-tests)
 7. [Inside the document — 22 sections](#7-inside-the-document--22-sections)
 8. [The interactive menu — 15 modes](#8-the-interactive-menu--15-modes)
 9. [The report engine — seven formats](#9-the-report-engine--seven-formats)
@@ -78,7 +80,7 @@ four-check verification ladder that re-derives everything from scratch.
 15. [Repository structure](#15-repository-structure)
 16. [Quick start & reproduction](#16-quick-start--reproduction)
 17. [The verification framework and milestones](#17-the-verification-framework-and-milestones)
-18. [Roadmap after 1.0.0](#18-roadmap-after-100)
+18. [The research frontier — theorem pipeline and roadmap](#18-the-research-frontier--theorem-pipeline-and-roadmap)
 19. [Citation, DOI & Zenodo](#19-citation-doi--zenodo)
 20. [Community & governance](#20-community--governance)
 21. [GitHub features inventory](#21-github-features-inventory)
@@ -350,15 +352,19 @@ protocol per run. Registered criteria and the latest reference results:
 
 ---
 
-## 6. The pytest guard — 27 tests
+## 6. The pytest guard — 89 tests
 
 The suite in [`verification/tests/`](verification/tests/) pins the analytic layer
-to hard reference values and wraps the whole research program in CI-friendly
-form. It runs in ≈ 20 s and needs only `numpy` and `pytest`.
+to hard reference values, guards all seven landed language ports and wraps the
+whole research program in CI-friendly form; the mini-repository
+[`polyvortex/tests/`](polyvortex/tests/) adds 26 more (the N-vortex bench,
+cross-pinned to the parent ladder). Together: **89 tests** in ≈ 25 s, only
+`numpy`, `scipy` and `pytest` required.
 
 | Suite | Tests | What they guard |
 |---|---|---|
 | `test_trivortex.py` | 13 | Theorem 3.1 reference values (ω, ε, periodicity, C_Ch formula shape), ladder quick-run in-process, JSON protocol shape |
+| `test_ports.py` | 36 | the seven landed ports: artifact presence, SPDX headers, the bilingual README_RU contract, and the committed Rust/C++ protocols pinned against the Python ladder's reference numbers |
 | `test_research_smoke.py` — smoke | 12 | every TRX study executes in `--smoke` mode and reports `status: PASS` |
 | `test_research_smoke.py` — completeness | 1 | all twelve studies ship README, code, pack, figures, monograph sources and four monograph renditions |
 | `test_research_smoke.py` — library | 1 | the reading room: 28 PDFs + 28 DOCX + HTML sources + build system |
@@ -773,7 +779,7 @@ Trivortex/
 │   ├── common/python/               ← shared verifier protocol
 │   ├── docker/                      ← 7 pinned toolchains (Coq, Lean4, …)
 │   ├── coq/ lean4/ rust/ isabelle/ agda/ cpp/ haskell/
-│   │                                ← per-language roadmap stubs (M1–M3)
+│   │                                ← per-language landed ports (M1–M3)
 │   └── Makefile · CODEOWNERS
 │
 ├── research/                        ← ★ EXTENDED RESEARCH PROGRAM
@@ -795,6 +801,17 @@ Trivortex/
 │        + figures/ (scheme SVG + 4 PNG @ 300 DPI)
 │        + monograph/ (EN+RU sources × PDF+DOCX renditions)
 │        + results/ + pack.py)
+│
+├── polyvortex/                      ← ★ THE N-VORTEX EXTENSION BENCH (mini-repo)
+│   ├── README.md · README_RU.md · CHANGELOG.md · Makefile
+│   ├── docs/monograph/              ← THE BIG MONOGRAPH: RU+EN × md+docx+pdf
+│   ├── docs/monographs/             ← THEOREM EDITION: Theorems A, B, E;
+│   │                                  Lemmas C, D — RU+EN × docx+pdf (20 files)
+│   ├── figures/                     ← fig01–fig04 (300 dpi PNG) + scheme SVG
+│   ├── python/polyvortex/           ← model (Kirchhoff N-body) · ansatz (H1)
+│   │                                  · classical · ladder · runner · figures
+│   ├── tests/                       ← 26 tests, cross-pinned to the parent
+│   └── results/protocols/           ← seven committed JSON protocols
 │
 ├── publications/                    ← ★ THE READING ROOM
 │   ├── pdf/                         ← 28 vector A4 PDFs (RU and EN separate)
@@ -832,7 +849,9 @@ python3 verification/trivortex/python/verify.py --preset default   # ~2 s
 python3 verification/trivortex/python/verify.py --preset full      # ~35 s
 
 # ── the pytest guard ─────────────────────────────────────
-python -m pytest verification/tests/ -v                            # 27 tests
+python -m pytest verification/tests/ -v                            # 63 tests
+python -m pytest polyvortex/tests/ -v                              # 26 tests (the mini-repo)
+python -m pytest -v                                                # all 89 from the root
 
 # ── the extended research program (12 executable studies) ─
 python3 research/TRX-01-laser-radiation-pressure/code/trx01_laser_radiation_pressure.py
@@ -866,15 +885,16 @@ without a single follow-up question.
 
 ## 17. The verification framework and milestones
 
-The ladder is milestone **M0** of a staged plan that re-uses the repository's
-seven pinned Docker toolchains:
+The ladder was milestone **M0** of a staged plan that re-uses the repository's
+seven pinned Docker toolchains. With v1.1 the plan is complete — all three
+language milestones landed:
 
 | Milestone | Meaning | Artifacts |
 |---|---|---|
-| **M0** ✅ | independent numerical ladder in one language | `verify.py` V1–V4 + pytest guard (this release) |
-| **M1** | a second proof assistant + a second floating-point language reproduce the results | `coq/`, `lean4/`, `rust/` (roadmap stubs ready) |
-| **M2** | two provers prove the same statement layer with disjoint axioms | `isabelle/`, `agda/` |
-| **M3** | compiled benchmark ladder + exact-arithmetic residual split | `cpp/`, `haskell/` |
+| **M0** ✅ | independent numerical ladder in one language | `verify.py` V1–V4 + the pytest guard + the interactive laboratory |
+| **M1** ✅ | independent re-derivation: two proof assistants + a second floating-point language | `coq/Trivortex.v` (proven, zero axioms), `lean4/Trivortex.lean` (Mathlib), `rust/` (14/14 tests) — v1.1 |
+| **M2** ✅ | two provers prove the same statement layer with disjoint axioms | `isabelle/Trivortex.thy` (HOL + optional SMT session), `agda/Trivortex.agda` (constructive C3 lattice) — v1.1 |
+| **M3** ✅ | compiled benchmark ladder + exact-arithmetic residual split | `cpp/` (21 guards, ≈ 1.7e7 rhs/s), `haskell/` (Double + exact ℚ(√3) dual) — v1.1 |
 
 Each language directory states its acceptance criteria **before** the artifacts
 land, and every port must keep the certified-vs-recorded separation of
@@ -883,28 +903,75 @@ contribution rules: [verification/README.md](verification/README.md).
 
 ---
 
-## 18. Roadmap after 1.0.0
+## 18. The research frontier — theorem pipeline and roadmap
 
-**Short term (v1.0.x)**
+With M0–M3 landed, the program widens from *verifying the document* to
+*deriving new mathematics with the same machinery*. This section states how
+a claim becomes a theorem here, queues the candidate theorems, and maps
+the engineering tracks around them. The operative rules are the ones that
+governed M1–M3: an acceptance criterion is registered before the artifacts
+land, and a check becomes blocking only after it stays green.
 
-- land the M1 ports (Coq statement layer, Rust numeric twin) behind their
-  registered acceptance criteria;
-- extend the ladder with a fourth preset targeting `N_v > 3` vortex ensembles;
-- per-study HTML renditions of the monographs (already 1:1 for the study set).
+### 18.1 The theorem pipeline — from observation to proof
 
-**Medium term (v1.1)**
+Every new theorem passes five registered gates, in order:
 
-- a Julia mirror of the document under the TRIVORTEX brand;
-- statistical suite CI job (spectral statistics on fixed seeds, protocol JSON);
-- the choreography atlas: catalogue of relative equilibria for `N_v = 4…6`.
+1. **Observation.** The claim appears as a rung of the numerical ladder
+   with a JSON protocol — a number, a band and a parameter snapshot.
+   Nothing enters the pipeline from prose alone.
+2. **Pre-registration.** The statement and its tolerance band are written
+   into this file and `verification/README.md` *before* any proof attempt;
+   the band may be tightened later, never loosened.
+3. **Double formalization.** The statement is proven independently in Coq
+   and Lean 4 (Mathlib) with `Print Assumptions` / `#print axioms` closed;
+   Isabelle HOL may add a machine-checked band record and Agda a
+   constructive variant.
+4. **Exact certification.** Where the statement is algebraic, the Haskell
+   ℚ(√3) track certifies it by computation — equality on exact rationals
+   is decidable, so anchor identities hold *by evaluation*.
+5. **Blocking CI + monograph.** The new rung joins the pytest guard and
+   the ladder; the theorem gets a section in the core monograph and a
+   bilingual publication rendition.
 
-**Long term (v2.0)**
+### 18.2 The theorem queue
 
-- formal certification of Theorem 3.1 in at least two independent provers (M2
-  complete);
-- interactive browser playground for the Kirchhoff dynamics (WebAssembly port of
-  the ladder);
-- a printed edition of the document assembled by its own report engine.
+| # | Candidate theorem | Statement (informal) | Proof strategy | Target |
+|---|---|---|---|---|
+| **T1** | Regular N-gon ring rotation | N equal vortices at the vertices of a regular N-gon of circumradius R rotate rigidly with ω_N = (N−1)Γ / (4πR²); for N = 3 this is exactly the Lagrange ω = 0.477464829275686 of §4 | the roots-of-unity identity Σ_k 1/(1−e^{2πik/N}) = (N−1)/2 turns the velocity sum into algebra; formalize the identity in Mathlib, then the rigid-rotation lemma | **M5** |
+| **T2** | Chaplygin identity, field-theoretic | I = Γ holds along *every* solution, not only at the equilateral anchors — derived from the velocity field by the Stokes/Chaplygin argument | transport the vorticity 2-form along the Kirchhoff flow; the line-integral scaffold in Coq, the boundary argument over Mathlib | **M5** |
+| **T3** | Spectral stability of the choreography | the Kirchhoff system linearized at the equilateral relative equilibrium has a purely imaginary spectrum (linear stability) | exact characteristic polynomial in Γ and a; a Routh–Hurwitz-type coefficient criterion — decidable, so Coq/Lean can close it; numerics give the eigenvalue picture | **M5–M6** |
+| **T4** | A posteriori drift bound | for RK4 with step h over a period T, the invariant drift obeys \|H(T)−H(0)\| ≤ C·h⁴·T with an explicit C for the vortex Hamiltonian | backward-error analysis: the modified Hamiltonian is conserved to O(h⁴); formalize the scaling theorem, measure C on the ladder | **M6** |
+| **T5** | Admissible region of the closed form | the algebraic equation behind Theorem 3.1 has a real root exactly when its discriminant is non-negative — characterize that region in (C_Ch, T) | the discriminant is a polynomial in C_Ch and T — a decidable statement; certify the boundary by ℚ(√3) evaluation | **M6** |
+| **T6** | Full D3 symmetry lattice | the equilateral choreography is invariant under the whole dihedral group D3: both rotations and reflections preserve H, P, Q, I | Agda already proves rot³ ≡ id constructively; add the reflection generator and the group law; mirror it in Mathlib's `MulAction` | **M6** |
+
+T1 doubles as ladder rung **V5**: once proven, the N-gon ring joins V1–V4
+with its own protocol, tolerance band and port coverage — Python first,
+then at least two ports, under the same pre-registration rule as before.
+
+### 18.3 Deep-research tracks
+
+| Track | What | Why it matters | Target |
+|---|---|---|---|
+| **R1** — 50-digit anchors | mpmath re-derivation of ω and the Chaplygin combination at 50 significant digits | separates float-ladder artifacts from mathematics; feeds T5's discriminant boundary | M5 |
+| **R2** — third numeric twin | a Julia port of V1–V4 | a third independent floating-point implementation inside the §6 tolerance bands | M5 |
+| **R3** — choreography atlas | catalogue of relative equilibria for N_v = 4…6 with symmetry labels | raw material for T1/T3 generalizations; nested polygons and collinear families as test cases | M6 |
+| **R4** — stability map | a Γ_1/Γ_2/Γ_3 scan of T3's spectrum over a grid | turns the stability theorem into a picture; drives the V4 robustness extension | M6 |
+| **R5** — statistical suite | spectral statistics on fixed seeds with protocol JSON | extends the honesty contract to distributional claims | M6+ |
+| **R6** — WASM playground | the Kirchhoff dynamics compiled to WebAssembly in the browser | makes the choreography tangible; the same ladder code, zero re-derivation | M6+ |
+
+### 18.4 Milestones M4–M6
+
+- **M4 — hardening (v1.2).** No new science: flip the nine port jobs to
+  blocking after three green days; bring the Isabelle SMT session online
+  (Z3 in the pinned image); pre-warm the Lean Mathlib cache; generate the
+  site table from the committed JSON protocols. The full track list lives
+  in [§7.1 of the verification README](verification/README.md).
+- **M5 — depth (v1.3).** The theorem queue opens: **T1** (together with
+  the new V5 rung) and **T2** land double-formalized; tracks R1–R2 report
+  their committed protocols.
+- **M6 — widening (v2.0).** **T3–T6** formalized or certified; the atlas
+  (R3) and the stability map (R4) published; the benchmark board pins the
+  rust-vs-c++ throughput; the playground (R6) ships.
 
 ---
 

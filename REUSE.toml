@@ -26,7 +26,8 @@ path = [
   "verification/agda/*.agda",
   "verification/docker/*/Dockerfile",
   "verification/Makefile",
-  "verification/tests/*.py"
+  "verification/tests/*.py",
+  "polyvortex/**"
 ]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2026 Isaev Iskhak Khamzatovich"
