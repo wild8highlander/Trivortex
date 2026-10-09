@@ -1,0 +1,75 @@
+{
+  "suite": "planetvortex-hardcore",
+  "version": "2.0.0",
+  "stage": "X5",
+  "preset": "default",
+  "date_utc": "2026-10-09T09:02:10.879890+00:00",
+  "check": {
+    "check": "X5 hardcore: integrator certification — the measured convergence order of the Kepler orbit is 2 for the leapfrog and 4 for the Yoshida composition (log-log regression of the error against dt over the committed grids); forward+backward integration recovers the initial state to roundoff (self-adjoint); the symplectic energy is bounded with NO secular trend (ratio <= 0.1) while the RK4 control drifts; the Laplace-Runge-Lenz vector, the vis-viva law and the exact orbit equation r = p/(1 + e cos theta) hold along the orbit",
+    "convergence": {
+      "leapfrog_grid": [
+        300,
+        600,
+        1200,
+        2400
+      ],
+      "leapfrog_errors": [
+        0.02565691601491552,
+        0.006410769413173237,
+        0.0016024732687509786,
+        0.0004006045800248974
+      ],
+      "leapfrog_slope": 2.000327235297876,
+      "yoshida_grid": [
+        100,
+        200,
+        400,
+        800
+      ],
+      "yoshida_errors": [
+        0.008424375044440126,
+        0.0005332122992715182,
+        3.3427357453522975e-05,
+        2.090785274095723e-06
+      ],
+      "yoshida_slope": 3.992453598356294
+    },
+    "reversibility": {
+      "leapfrog": 8.742120762792925e-13,
+      "yoshida4": 7.478944519826449e-12
+    },
+    "energy_envelopes": {
+      "leapfrog": {
+        "max_relative": 0.002038154639526777,
+        "secular_trend_ratio": 0.002584034778770475
+      },
+      "yoshida4": {
+        "max_relative": 1.750547476855583e-05,
+        "secular_trend_ratio": 7.721788034077881e-05
+      },
+      "rk4_control": {
+        "max_relative": 6.284653661690154e-05,
+        "final_relative": 6.241968577877201e-05,
+        "secular_trend_ratio": 0.9926345521600831
+      }
+    },
+    "two_body_invariants": {
+      "e": 0.4,
+      "revolutions": 12,
+      "steps_per_period": 8000,
+      "lrl_drift": 1.0983609059866522e-10,
+      "vis_viva_relative": 2.2285442750903188e-12,
+      "orbit_equation_relative": 1.4869930683606266e-10
+    },
+    "params": {
+      "order_orbit": {
+        "a": 1.0,
+        "e": 0.4,
+        "t_final_periods": 5.37
+      },
+      "bounded_window_periods": 80,
+      "bounded_steps_per_period": 150
+    },
+    "passed": true
+  }
+}

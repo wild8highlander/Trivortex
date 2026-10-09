@@ -1,0 +1,96 @@
+{
+  "suite": "planetvortex-hardcore",
+  "version": "2.0.0",
+  "stage": "X6",
+  "preset": "default",
+  "date_utc": "2026-10-09T09:02:17.943776+00:00",
+  "check": {
+    "check": "X6 hardcore: the GR bridge — perihelion precession from the 1PN two-body equations (Schwarzschild test particle, harmonic gauge), measured from interpolated perihelion passages against the closed form 6 pi mu/(c^2 a (1 - e^2)); the Newtonian control run advances at integrator zero; Mercury reproduces the textbook 42.98 arcsec/century from the committed data",
+    "per_planet": [
+      {
+        "planet": "Mercury",
+        "a_au": 0.38709927,
+        "e": 0.20563593,
+        "formula_rad_per_orbit": 5.018850845434587e-07,
+        "measured_rad_per_orbit": 5.018988712457706e-07,
+        "newtonian_control_rad_per_orbit": 2.8838194200011405e-11,
+        "measured_over_formula": 1.000027469838687,
+        "orbits_per_century": 415.2026109167878,
+        "arcsec_per_century": 42.9822848657515
+      },
+      {
+        "planet": "Venus",
+        "a_au": 0.72333566,
+        "e": 0.00677672,
+        "formula_rad_per_orbit": 2.572429467502201e-07,
+        "measured_rad_per_orbit": 2.5726014173677805e-07,
+        "newtonian_control_rad_per_orbit": 1.8755623477075877e-11,
+        "measured_over_formula": 1.0000668433742312,
+        "orbits_per_century": 162.54934334960683,
+        "arcsec_per_century": 8.624895233952522
+      },
+      {
+        "planet": "Earth",
+        "a_au": 1.00000261,
+        "e": 0.01671123,
+        "formula_rad_per_orbit": 1.861160449588561e-07,
+        "measured_rad_per_orbit": 1.861334404746422e-07,
+        "newtonian_control_rad_per_orbit": 1.848115845479986e-11,
+        "measured_over_formula": 1.0000934659652259,
+        "orbits_per_century": 99.99835731651227,
+        "arcsec_per_century": 3.8388559340029897
+      }
+    ],
+    "worst_measured_over_formula_deviation": 9.346596522585554e-05,
+    "worst_newtonian_advance_rad_per_orbit": 2.8838194200011405e-11,
+    "mercury_arcsec_per_century": 42.9822848657515,
+    "textbook_mercury_arcsec_per_century": 42.98,
+    "century_anchor_relative_error": 5.316113893684387e-05,
+    "formula_ladder_all_planets": [
+      {
+        "planet": "Mercury",
+        "arcsec_per_century": 42.9822848657515
+      },
+      {
+        "planet": "Venus",
+        "arcsec_per_century": 8.624895233952522
+      },
+      {
+        "planet": "Earth",
+        "arcsec_per_century": 3.8388559340029897
+      },
+      {
+        "planet": "Mars",
+        "arcsec_per_century": 1.3509400218986956
+      },
+      {
+        "planet": "Jupiter",
+        "arcsec_per_century": 0.062390457046050896
+      },
+      {
+        "planet": "Saturn",
+        "arcsec_per_century": 0.013705212005498112
+      },
+      {
+        "planet": "Uranus",
+        "arcsec_per_century": 0.002385810308411357
+      },
+      {
+        "planet": "Neptune",
+        "arcsec_per_century": 0.0007750585071379903
+      }
+    ],
+    "params": {
+      "n_orbits": 30,
+      "steps_per_orbit": 2400,
+      "planets_numeric": [
+        "Mercury",
+        "Venus",
+        "Earth"
+      ],
+      "pn_gauge": "harmonic, test particle",
+      "c_au_per_year": 63241.07708426628
+    },
+    "passed": true
+  }
+}

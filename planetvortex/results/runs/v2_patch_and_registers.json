@@ -1,0 +1,346 @@
+{
+  "run": "the V2 disk patch and the register algebra",
+  "pipeline": "make all-ladders (suite v) + this dump",
+  "combinatorics": {
+    "V": 56,
+    "E": 84,
+    "F": 24,
+    "euler": -4,
+    "vertex_degrees": [
+      3
+    ],
+    "face_lengths": [
+      7
+    ],
+    "edge_valences": [
+      2
+    ],
+    "n_antipodal_pairs": 12,
+    "incidence_products": {
+      "3V": 168,
+      "2E": 168,
+      "7F": 168
+    }
+  },
+  "patch": {
+    "chambers": 336,
+    "n_heptagons": 24,
+    "interior_sides": 9,
+    "n_boundary_pairs": 75,
+    "n_map_edges": 84,
+    "heptagon_sides": 168,
+    "flag_certificate": true,
+    "coxeter_triple": [
+      0,
+      47,
+      89
+    ],
+    "errors": []
+  },
+  "sigma_float": 0.015524718017380526,
+  "budget_float": {
+    "alpha_sum": 25.132741228718352,
+    "residual": 7.105427357601002e-15,
+    "total_area": 25.132741228718363,
+    "area_residual": 1.7763568394002505e-14
+  },
+  "budget_exact_50dps": {
+    "alpha_sum_residual": "4.2764235361475130338248583474423710061043150081681e-50",
+    "total_area_residual": "5.5593505969917669439723158516750823079356095106185e-49",
+    "identity_tolerance": "1.0e-48"
+  },
+  "assignment": [
+    {
+      "body": "Sun",
+      "kind": "star",
+      "face_pair": [
+        0,
+        3
+      ]
+    },
+    {
+      "body": "Jupiter",
+      "kind": "planet",
+      "face_pair": [
+        1,
+        17
+      ]
+    },
+    {
+      "body": "Neptune",
+      "kind": "planet",
+      "face_pair": [
+        2,
+        10
+      ]
+    },
+    {
+      "body": "Saturn",
+      "kind": "planet",
+      "face_pair": [
+        4,
+        9
+      ]
+    },
+    {
+      "body": "Uranus",
+      "kind": "planet",
+      "face_pair": [
+        5,
+        16
+      ]
+    },
+    {
+      "body": "Earth",
+      "kind": "planet",
+      "face_pair": [
+        6,
+        23
+      ]
+    },
+    {
+      "body": "Venus",
+      "kind": "planet",
+      "face_pair": [
+        7,
+        18
+      ]
+    },
+    {
+      "body": "Mars",
+      "kind": "planet",
+      "face_pair": [
+        8,
+        11
+      ]
+    },
+    {
+      "body": "Mercury",
+      "kind": "planet",
+      "face_pair": [
+        12,
+        15
+      ]
+    },
+    {
+      "body": "Eris",
+      "kind": "dwarf",
+      "face_pair": [
+        13,
+        22
+      ]
+    },
+    {
+      "body": "Pluto",
+      "kind": "dwarf",
+      "face_pair": [
+        14,
+        19
+      ]
+    },
+    {
+      "body": "Ceres",
+      "kind": "dwarf",
+      "face_pair": [
+        20,
+        21
+      ]
+    }
+  ],
+  "bodies": [
+    {
+      "body": "Sun",
+      "kind": "star",
+      "gm": 1.32712440018e+20,
+      "s": 12.319754029629188,
+      "alpha": 1.9031343950397146,
+      "circumradius": 0.9443455504836687,
+      "edge": 0.9146063953650614,
+      "inradius": 0.8003017924817712,
+      "area": 2.386022502670963,
+      "pythagoras_residual": 2.220446049250313e-16
+    },
+    {
+      "body": "Mercury",
+      "kind": "planet",
+      "gm": 22032000000000.0,
+      "s": -3.2914452687188955,
+      "alpha": 2.1454938620596975,
+      "circumradius": 0.5029251639269706,
+      "edge": 0.4512163212218688,
+      "inradius": 0.44577883983697053,
+      "area": 0.689506233531084,
+      "pythagoras_residual": 0.0
+    },
+    {
+      "body": "Venus",
+      "kind": "planet",
+      "gm": 324859000000000.0,
+      "s": -0.600549968667778,
+      "alpha": 2.103718471312109,
+      "circumradius": 0.6008518085152648,
+      "edge": 0.5465168795524169,
+      "inradius": 0.5287314310818015,
+      "area": 0.9819339687642028,
+      "pythagoras_residual": 4.440892098500626e-16
+    },
+    {
+      "body": "Earth",
+      "kind": "planet",
+      "gm": 398600441800000.0,
+      "s": -0.3959816945477854,
+      "alpha": 2.100542606541094,
+      "circumradius": 0.6076726089483038,
+      "edge": 0.5532919183114796,
+      "inradius": 0.5344346285060283,
+      "area": 1.004165022161306,
+      "pythagoras_residual": 0.0
+    },
+    {
+      "body": "Mars",
+      "kind": "planet",
+      "gm": 42828370000000.0,
+      "s": -2.6267404772384957,
+      "alpha": 2.1351745076071627,
+      "circumradius": 0.5287516708200287,
+      "edge": 0.4760076352982937,
+      "inradius": 0.46784071110622805,
+      "area": 0.761741714698827,
+      "pythagoras_residual": 2.220446049250313e-16
+    },
+    {
+      "body": "Jupiter",
+      "kind": "planet",
+      "gm": 1.26686534e+17,
+      "s": 5.365529867398422,
+      "alpha": 2.0110967641880015,
+      "circumradius": 0.7767023420056988,
+      "edge": 0.7276760207500783,
+      "inradius": 0.6720997868179287,
+      "area": 1.6302859186329552,
+      "pythagoras_residual": 4.440892098500626e-16
+    },
+    {
+      "body": "Saturn",
+      "kind": "planet",
+      "gm": 3.7931187e+16,
+      "s": 4.159587717977935,
+      "alpha": 2.0298186760030283,
+      "circumradius": 0.7442874084409835,
+      "edge": 0.6932099134247712,
+      "inradius": 0.6462909099164849,
+      "area": 1.4992325359277672,
+      "pythagoras_residual": 4.440892098500626e-16
+    },
+    {
+      "body": "Uranus",
+      "kind": "planet",
+      "gm": 5793939000000000.0,
+      "s": 2.2806264394361264,
+      "alpha": 2.058989020017967,
+      "circumradius": 0.6910179122666329,
+      "edge": 0.6376591502140401,
+      "inradius": 0.6032412790799508,
+      "area": 1.2950401278231976,
+      "pythagoras_residual": 4.440892098500626e-16
+    },
+    {
+      "body": "Neptune",
+      "kind": "planet",
+      "gm": 6.836529e+16,
+      "s": 4.748679307965652,
+      "alpha": 2.020673195182059,
+      "circumradius": 0.7602789472255995,
+      "edge": 0.7101491410321061,
+      "inradius": 0.659061328052232,
+      "area": 1.5632509016745537,
+      "pythagoras_residual": 2.220446049250313e-16
+    },
+    {
+      "body": "Ceres",
+      "kind": "dwarf",
+      "gm": 62632500000.0,
+      "s": -9.154412176973974,
+      "alpha": 2.236514770055591,
+      "circumradius": 0.13834227404493177,
+      "edge": 0.1203595583394828,
+      "inradius": 0.12449214123351811,
+      "area": 0.052359877559828405,
+      "pythagoras_residual": 0.0
+    },
+    {
+      "body": "Pluto",
+      "kind": "dwarf",
+      "gm": 869600000000.0,
+      "s": -6.523663153880332,
+      "alpha": 2.1956731332975625,
+      "circumradius": 0.35186430042511313,
+      "edge": 0.31042811060134823,
+      "inradius": 0.31453000309611795,
+      "area": 0.3382513348660279,
+      "pythagoras_residual": 0.0
+    },
+    {
+      "body": "Eris",
+      "kind": "dwarf",
+      "gm": 1108000000000.0,
+      "s": -6.281384622380102,
+      "alpha": 2.1919118274143568,
+      "circumradius": 0.36532872006177114,
+      "edge": 0.3227172148269497,
+      "inradius": 0.3263620665718035,
+      "area": 0.3645804760484683,
+      "pythagoras_residual": 2.220446049250313e-16
+    }
+  ],
+  "antipodal_pairs": [
+    [
+      0,
+      3
+    ],
+    [
+      1,
+      17
+    ],
+    [
+      2,
+      10
+    ],
+    [
+      4,
+      9
+    ],
+    [
+      5,
+      16
+    ],
+    [
+      6,
+      23
+    ],
+    [
+      7,
+      18
+    ],
+    [
+      8,
+      11
+    ],
+    [
+      12,
+      15
+    ],
+    [
+      13,
+      22
+    ],
+    [
+      14,
+      19
+    ],
+    [
+      20,
+      21
+    ]
+  ]
+}

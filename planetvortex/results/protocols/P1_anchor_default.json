@@ -1,0 +1,44 @@
+{
+  "suite": "planetvortex-ladder",
+  "version": "2.0.0",
+  "stage": "P1",
+  "preset": "default",
+  "date_utc": "2026-10-09T09:01:50.251431+00:00",
+  "check": {
+    "check": "P1 anchor: exact figure literals (s1, s2, s3, angles pi/7 : 2pi/7 : 4pi/7, area sqrt(7)/4, omega7 = 3/2pi) + the Kepler-Earth anchor vs 4pi^2/GM_sun",
+    "exact_literals": {
+      "s1": "0.867767478235116240951536665697",
+      "s2": "1.56366296493605961741688905335",
+      "s3": "1.94985582436364721403626336599",
+      "product_s1s2s3": "2.64575131106459059050161575364",
+      "cell_area": "0.66143782776614764762540393841",
+      "omega7": "0.477464829275686007306651290118",
+      "angle1": "0.448798950512827605494663340468",
+      "angle2": "0.897597901025655210989326680937",
+      "angle3": "1.79519580205131042197865336187",
+      "sqrt7": "2.64575131106459059050161575364"
+    },
+    "chord_relative_errors": {
+      "s1": 0.0,
+      "s2": 0.0,
+      "s3": 0.0
+    },
+    "angle_relative_errors": [
+      4.947529504498804e-16,
+      0.0,
+      1.236882376124701e-16
+    ],
+    "area_relative_error": 1.6784994417006302e-16,
+    "omega_relative_error": 0.0,
+    "kepler_earth_si_value": 2.9747047723175626e-19,
+    "kepler_earth_si_constant": 2.9747337626376933e-19,
+    "kepler_earth_relative_error": 9.745517563556405e-06,
+    "params": {
+      "dps": 30,
+      "big_r": 1.0,
+      "au_m": 149597870700.0,
+      "gm_sun": 1.32712440018e+20
+    },
+    "passed": true
+  }
+}

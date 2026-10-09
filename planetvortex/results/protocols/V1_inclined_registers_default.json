@@ -1,0 +1,201 @@
+{
+  "suite": "planetvortex-vregister",
+  "version": "2.0.0",
+  "stage": "V1",
+  "preset": "default",
+  "date_utc": "2026-10-09T09:03:07.039146+00:00",
+  "check": {
+    "check": "V1 the spatial registers: the SO(3) tilt algebra of the 11-body inclination register (orthogonality, determinant, the normal recovery n = (sin i sin Om, -sin i cos Om, cos i)), the exact arc registers lambda = R_bar * i (Eris 44.04 deg the extreme), the 55-pair mutual-inclination matrix, and the full 3D Newtonian Sun + 8-planets integration from the real J2000 sky: E and the vector L conserved, the osculating (a, e, i) inside the secular bands, Kepler III from the perihelion passages, the z-ladder recorded",
+    "tilt_registers": {
+      "worst_orthogonality": 2.220446049250313e-16,
+      "worst_determinant_gap": 3.3306690738754696e-16,
+      "worst_normal_recovery": 0.0,
+      "arc_register_monotone": true,
+      "n_bodies": 11
+    },
+    "mutual_inclinations": {
+      "n_pairs": 55,
+      "max_mutual_deg": 44.247748281520686,
+      "max_pair": [
+        "Neptune",
+        "Eris"
+      ]
+    },
+    "energy_drift_relative": 2.140626970278803e-13,
+    "angular_momentum_drift_relative": 4.724749243034996e-15,
+    "angular_momentum_vector_drift": 4.543028118302881e-15,
+    "worst_a_deviation_relative": 0.004468945656809822,
+    "worst_e_deviation": 0.004669327193057699,
+    "worst_inclination_drift_rad": 2.4137223679816906e-05,
+    "worst_kepler3_dynamic_deviation": 0.0001028438014765154,
+    "z_ladder_au": {
+      "Mercury": 0.05116648789990574,
+      "Venus": 0.043066166214913805,
+      "Earth": 3.07875660834799e-05,
+      "Mars": 0.053578382725087186,
+      "Jupiter": 0.1244296242720698,
+      "Saturn": 0.4212330882400453,
+      "Uranus": 0.24642665936269262,
+      "Neptune": 0.8270574721589651
+    },
+    "per_planet": [
+      {
+        "planet": "Mercury",
+        "a_committed_au": 0.38709927,
+        "a_end_au": 0.3870854831423048,
+        "e_committed": 0.20563593,
+        "e_end": 0.20594156072676664,
+        "i_committed_deg": 7.00497902,
+        "i_drift_rad": 1.170466935425385e-05,
+        "a_deviation_relative": 3.561581941295902e-05,
+        "e_deviation": 0.00030563072676664804,
+        "max_abs_z_au": 0.05116648789990574,
+        "kepler3_dynamic": {
+          "measured": true,
+          "perihelia_used": 49,
+          "T_measured_years": 0.24083082859084337,
+          "T_kepler_years": 0.2408427028547018,
+          "T_committed_days": 87.9691,
+          "a_mean_au": 0.3870859887952415,
+          "kepler3_dynamic_deviation": 4.322031356362999e-06,
+          "T_vs_kepler_deviation": 4.930298372207709e-05
+        }
+      },
+      {
+        "planet": "Venus",
+        "a_committed_au": 0.72333566,
+        "a_end_au": 0.7232353590991704,
+        "e_committed": 0.00677672,
+        "e_end": 0.006946112798951112,
+        "i_committed_deg": 3.39467605,
+        "i_drift_rad": 2.777045707044734e-06,
+        "a_deviation_relative": 0.0001386643938302257,
+        "e_deviation": 0.00016939279895111185,
+        "max_abs_z_au": 0.043066166214913805,
+        "kepler3_dynamic": {
+          "measured": true,
+          "perihelia_used": 19,
+          "T_measured_years": 0.6150541893258654,
+          "T_kepler_years": 0.615190021583028,
+          "T_committed_days": 224.701,
+          "a_mean_au": 0.7232419959132836,
+          "kepler3_dynamic_deviation": 5.3152179475768335e-05,
+          "T_vs_kepler_deviation": 0.00022079723727164158
+        }
+      },
+      {
+        "planet": "Earth",
+        "a_committed_au": 1.00000261,
+        "a_end_au": 0.9991794954028189,
+        "e_committed": 0.01671123,
+        "e_end": 0.017099817472827863,
+        "i_committed_deg": 1.531e-05,
+        "i_drift_rad": 2.4137223679816906e-05,
+        "a_deviation_relative": 0.0008231124488574936,
+        "e_deviation": 0.00038858747282786293,
+        "max_abs_z_au": 3.07875660834799e-05,
+        "kepler3_dynamic": {
+          "measured": true,
+          "perihelia_used": 11,
+          "T_measured_years": 0.998779227749084,
+          "T_kepler_years": 1.000002413255226,
+          "T_committed_days": 365.256,
+          "a_mean_au": 0.9991672350405124,
+          "kepler3_dynamic_deviation": 5.9301428616764795e-05,
+          "T_vs_kepler_deviation": 0.0012231825542904362
+        }
+      },
+      {
+        "planet": "Mars",
+        "a_committed_au": 1.52371034,
+        "a_end_au": 1.5239934238251656,
+        "e_committed": 0.09339412,
+        "e_end": 0.09382160726388257,
+        "i_committed_deg": 1.84969142,
+        "i_drift_rad": 1.899175722998997e-05,
+        "a_deviation_relative": 0.00018578585294991748,
+        "e_deviation": 0.00042748726388257274,
+        "max_abs_z_au": 0.053578382725087186,
+        "kepler3_dynamic": {
+          "measured": true,
+          "perihelia_used": 6,
+          "T_measured_years": 1.8815559428057815,
+          "T_kepler_years": 1.8808473605938967,
+          "T_committed_days": 686.98,
+          "a_mean_au": 1.5240407569924552,
+          "kepler3_dynamic_deviation": 0.0001028438014765154,
+          "T_vs_kepler_deviation": 0.0003767356281698664
+        }
+      },
+      {
+        "planet": "Jupiter",
+        "a_committed_au": 5.202887,
+        "a_end_au": 5.2099496697252965,
+        "e_committed": 0.04838624,
+        "e_end": 0.0489766692902491,
+        "i_committed_deg": 1.30439695,
+        "i_drift_rad": 9.571707648484834e-06,
+        "a_deviation_relative": 0.0013574520694562269,
+        "e_deviation": 0.000590429290249106,
+        "max_abs_z_au": 0.1244296242720698,
+        "kepler3_dynamic": {
+          "measured": false
+        }
+      },
+      {
+        "planet": "Saturn",
+        "a_committed_au": 9.53667594,
+        "a_end_au": 9.50906776350841,
+        "e_committed": 0.05386179,
+        "e_end": 0.053708410430863406,
+        "i_committed_deg": 2.48599187,
+        "i_drift_rad": 2.342131434758532e-05,
+        "a_deviation_relative": 0.0028949475336361367,
+        "e_deviation": 0.00015337956913659412,
+        "max_abs_z_au": 0.4212330882400453,
+        "kepler3_dynamic": {
+          "measured": false
+        }
+      },
+      {
+        "planet": "Uranus",
+        "a_committed_au": 19.18916464,
+        "a_end_au": 19.122714112006953,
+        "e_committed": 0.04725744,
+        "e_end": 0.04470532873789091,
+        "i_committed_deg": 0.77263783,
+        "i_drift_rad": 9.634827545602909e-06,
+        "a_deviation_relative": 0.003462919269269872,
+        "e_deviation": 0.002552111262109087,
+        "max_abs_z_au": 0.24642665936269262,
+        "kepler3_dynamic": {
+          "measured": false
+        }
+      },
+      {
+        "planet": "Neptune",
+        "a_committed_au": 30.06992276,
+        "a_end_au": 30.20430361071891,
+        "e_committed": 0.00859048,
+        "e_end": 0.013259807193057698,
+        "i_committed_deg": 1.77004347,
+        "i_drift_rad": 1.6454125094104294e-05,
+        "a_deviation_relative": 0.004468945656809822,
+        "e_deviation": 0.004669327193057699,
+        "max_abs_z_au": 0.8270574721589651,
+        "kepler3_dynamic": {
+          "measured": false
+        }
+      }
+    ],
+    "params": {
+      "years": 12.0,
+      "dt": 0.0002,
+      "n_steps": 60000,
+      "sample_every": 8,
+      "bodies": 9,
+      "dimension": 3
+    },
+    "passed": true
+  }
+}

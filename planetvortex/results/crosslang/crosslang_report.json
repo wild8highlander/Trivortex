@@ -1,0 +1,301 @@
+{
+  "suite": "planetvortex-crosslang",
+  "version": "2.0.0",
+  "kernel": "gravikernel.c",
+  "tolerance": 1e-09,
+  "checks": [
+    {
+      "register": "group_census",
+      "passed": true,
+      "detail": {
+        "gl2_7": 2016,
+        "sl2_7": 336,
+        "psl2_7": 168
+      }
+    },
+    {
+      "register": "map_registers",
+      "passed": true,
+      "detail": {
+        "V": 56,
+        "E": 84,
+        "F": 24,
+        "euler": -4,
+        "face_fixed_points": 0
+      }
+    },
+    {
+      "register": "register_algebra_12_bodies",
+      "passed": true,
+      "detail": {
+        "worst_rel": 1.7943827847182335e-14,
+        "at": "Earth.s"
+      }
+    },
+    {
+      "register": "budget_residuals_below_tolerance",
+      "passed": true,
+      "detail": {
+        "c_alpha": 0.0,
+        "c_area": 3.552713678800501e-14,
+        "py_alpha": 7.105427357601002e-15,
+        "py_area": 1.7763568394002505e-14
+      }
+    },
+    {
+      "register": "budget_closure_exact_c_long_double",
+      "passed": true,
+      "detail": {
+        "ld_alpha_sum_residual": 0.0
+      }
+    },
+    {
+      "register": "arc_registers_11_bodies",
+      "passed": true,
+      "detail": {
+        "worst_rel": 1.5992382757991064e-16
+      }
+    },
+    {
+      "register": "tilt_orthogonality",
+      "passed": true,
+      "detail": {
+        "worst_orthogonality": 2.22e-16,
+        "earth_period_anchor_rel": 1.03e-13
+      }
+    },
+    {
+      "register": "kepler_anchor",
+      "passed": true,
+      "detail": {
+        "worst_orthogonality": 2.22e-16,
+        "earth_period_anchor_rel": 1.03e-13
+      }
+    }
+  ],
+  "c_report": {
+    "kernel": "gravikernel.c",
+    "language": "C99",
+    "group": {
+      "gl2_7": 2016,
+      "sl2_7": 336,
+      "psl2_7": 168,
+      "involutions": 21,
+      "order3": 56,
+      "witness_ab_order": 7
+    },
+    "map": {
+      "V": 56,
+      "E": 84,
+      "F": 24,
+      "euler": -4,
+      "face_fixed_points": 0
+    },
+    "register_algebra": {
+      "sigma": 0.015524718017380538,
+      "s_sum": 4.618527782440651e-14,
+      "alpha_sum": 25.132741228718345,
+      "alpha_sum_residual": 0,
+      "total_area": 25.13274122871838,
+      "total_area_residual": 3.552713678800501e-14,
+      "worst_pythagoras_residual": 4.440892098500626e-16,
+      "ld_s_sum": 0,
+      "ld_alpha_sum_residual": 0,
+      "bodies": [
+        {
+          "body": "Sun",
+          "gm": 1.32712440018e+20,
+          "s": 12.319754029629195,
+          "alpha": 1.9031343950397144,
+          "circumradius": 0.9443455504836689,
+          "edge": 0.9146063953650623,
+          "inradius": 0.8003017924817715,
+          "area": 2.386022502670965
+        },
+        {
+          "body": "Mercury",
+          "gm": 22032000000000,
+          "s": -3.2914452687188884,
+          "alpha": 2.1454938620596975,
+          "circumradius": 0.5029251639269706,
+          "edge": 0.4512163212218688,
+          "inradius": 0.44577883983697053,
+          "area": 0.689506233531084
+        },
+        {
+          "body": "Venus",
+          "gm": 324859000000000,
+          "s": -0.6005499686677709,
+          "alpha": 2.103718471312109,
+          "circumradius": 0.6008518085152648,
+          "edge": 0.5465168795524169,
+          "inradius": 0.5287314310818015,
+          "area": 0.9819339687642028
+        },
+        {
+          "body": "Earth",
+          "gm": 398600441800000,
+          "s": -0.3959816945477783,
+          "alpha": 2.100542606541094,
+          "circumradius": 0.6076726089483038,
+          "edge": 0.5532919183114796,
+          "inradius": 0.5344346285060283,
+          "area": 1.004165022161306
+        },
+        {
+          "body": "Mars",
+          "gm": 42828370000000,
+          "s": -2.6267404772384886,
+          "alpha": 2.135174507607162,
+          "circumradius": 0.5287516708200299,
+          "edge": 0.4760076352982937,
+          "inradius": 0.46784071110622893,
+          "area": 0.7617417146988306
+        },
+        {
+          "body": "Jupiter",
+          "gm": 1.26686534e+17,
+          "s": 5.365529867398429,
+          "alpha": 2.0110967641880015,
+          "circumradius": 0.7767023420056988,
+          "edge": 0.7276760207500783,
+          "inradius": 0.6720997868179287,
+          "area": 1.6302859186329552
+        },
+        {
+          "body": "Saturn",
+          "gm": 37931187000000000,
+          "s": 4.159587717977942,
+          "alpha": 2.0298186760030283,
+          "circumradius": 0.7442874084409835,
+          "edge": 0.6932099134247712,
+          "inradius": 0.6462909099164849,
+          "area": 1.4992325359277672
+        },
+        {
+          "body": "Uranus",
+          "gm": 5793939000000000,
+          "s": 2.2806264394361335,
+          "alpha": 2.058989020017967,
+          "circumradius": 0.6910179122666329,
+          "edge": 0.6376591502140401,
+          "inradius": 0.6032412790799508,
+          "area": 1.2950401278231976
+        },
+        {
+          "body": "Neptune",
+          "gm": 68365290000000000,
+          "s": 4.748679307965659,
+          "alpha": 2.0206731951820585,
+          "circumradius": 0.7602789472256003,
+          "edge": 0.7101491410321061,
+          "inradius": 0.6590613280522324,
+          "area": 1.5632509016745573
+        },
+        {
+          "body": "Ceres",
+          "gm": 62632500000,
+          "s": -9.154412176973967,
+          "alpha": 2.236514770055591,
+          "circumradius": 0.13834227404493177,
+          "edge": 0.1203595583394828,
+          "inradius": 0.12449214123351811,
+          "area": 0.052359877559828405
+        },
+        {
+          "body": "Pluto",
+          "gm": 869600000000,
+          "s": -6.5236631538803245,
+          "alpha": 2.1956731332975625,
+          "circumradius": 0.35186430042511313,
+          "edge": 0.31042811060134823,
+          "inradius": 0.31453000309611795,
+          "area": 0.3382513348660279
+        },
+        {
+          "body": "Eris",
+          "gm": 1108000000000,
+          "s": -6.281384622380095,
+          "alpha": 2.1919118274143568,
+          "circumradius": 0.36532872006177114,
+          "edge": 0.3227172148269497,
+          "inradius": 0.3263620665718035,
+          "area": 0.3645804760484683
+        }
+      ]
+    },
+    "spatial": {
+      "worst_orthogonality": 2.22e-16,
+      "earth_period_anchor_rel": 1.03e-13
+    },
+    "inclination_register": [
+      {
+        "body": "Mercury",
+        "inclination_deg": 7.00497902,
+        "node_deg": 48.33076593,
+        "arc": 0.12225994793212572
+      },
+      {
+        "body": "Venus",
+        "inclination_deg": 3.39467605,
+        "node_deg": 76.67984255,
+        "arc": 0.05924827411109565
+      },
+      {
+        "body": "Earth",
+        "inclination_deg": 1.531e-05,
+        "node_deg": -11.26064,
+        "arc": 2.6720990848033185e-07
+      },
+      {
+        "body": "Mars",
+        "inclination_deg": 1.84969142,
+        "node_deg": 49.55953891,
+        "arc": 0.03228320542488929
+      },
+      {
+        "body": "Jupiter",
+        "inclination_deg": 1.30439695,
+        "node_deg": 100.47390909,
+        "arc": 0.02276602153047185
+      },
+      {
+        "body": "Saturn",
+        "inclination_deg": 2.48599187,
+        "node_deg": 113.66242448,
+        "arc": 0.04338874330931085
+      },
+      {
+        "body": "Uranus",
+        "inclination_deg": 0.77263783,
+        "node_deg": 74.01692503,
+        "arc": 0.013485074058964219
+      },
+      {
+        "body": "Neptune",
+        "inclination_deg": 1.77004347,
+        "node_deg": 131.78422574,
+        "arc": 0.030893086454925476
+      },
+      {
+        "body": "Ceres",
+        "inclination_deg": 10.5876,
+        "node_deg": 80.393,
+        "arc": 0.18478847988415165
+      },
+      {
+        "body": "Pluto",
+        "inclination_deg": 17.14001206,
+        "node_deg": 110.30393684,
+        "arc": 0.29914964427853585
+      },
+      {
+        "body": "Eris",
+        "inclination_deg": 44.04,
+        "node_deg": 35.951,
+        "arc": 0.7686430025783026
+      }
+    ]
+  },
+  "passed": true
+}

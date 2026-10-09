@@ -1,0 +1,127 @@
+{
+  "suite": "planetvortex-ladder",
+  "version": "2.0.0",
+  "stage": "P2",
+  "preset": "default",
+  "date_utc": "2026-10-09T09:01:51.457599+00:00",
+  "check": {
+    "check": "P2 Kepler register: the two-body period of every planet matches 2*pi*sqrt(a^3/(4pi^2(1+m/M))) at integration precision; the uncorrected formula misses by m_i/2M_sun (Jupiter ~4.8e-4); the fact-sheet periods are a recorded provenance diagnostic",
+    "per_planet": [
+      {
+        "planet": "Mercury",
+        "a_au": 0.38709927,
+        "mass_ratio": 1.660130730548829e-07,
+        "T_measured_years": 0.24084270285473325,
+        "T_kepler_corrected_years": 0.2408427028547018,
+        "T_kepler_uncorrected_years": 0.2408427228462196,
+        "deviation_corrected_relative": 1.3057097765373977e-13,
+        "deviation_uncorrected_relative": 8.300639570494976e-08,
+        "mass_signature_predicted": 8.300653652744145e-08,
+        "T_factsheet_years": 0.24084626967830253,
+        "factsheet_deviation_relative": 1.4809764042872544e-05
+      },
+      {
+        "planet": "Venus",
+        "a_au": 0.72333566,
+        "mass_ratio": 2.447841362542493e-06,
+        "T_measured_years": 0.6151900215827147,
+        "T_kepler_corrected_years": 0.615190021583028,
+        "T_kepler_uncorrected_years": 0.6151907745263576,
+        "deviation_corrected_relative": 5.092815659509759e-13,
+        "deviation_uncorrected_relative": 1.2239189436130793e-06,
+        "mass_signature_predicted": 1.2239206812712464e-06,
+        "T_factsheet_years": 0.6151978097193703,
+        "factsheet_deviation_relative": 1.2659724750149025e-05
+      },
+      {
+        "planet": "Earth",
+        "a_au": 1.00000261,
+        "mass_ratio": 3.003489663410131e-06,
+        "T_measured_years": 1.0000024132553726,
+        "T_kepler_corrected_years": 1.000002413255226,
+        "T_kepler_uncorrected_years": 1.0000039150025544,
+        "deviation_corrected_relative": 1.4654908559017398e-13,
+        "deviation_uncorrected_relative": 1.5017413023992128e-06,
+        "mass_signature_predicted": 1.5017448317050654e-06,
+        "T_factsheet_years": 1.0000164271047227,
+        "factsheet_deviation_relative": 1.401381567770518e-05
+      },
+      {
+        "planet": "Mars",
+        "a_au": 1.52371034,
+        "mass_ratio": 3.227155645257605e-07,
+        "T_measured_years": 1.8808473605945015,
+        "T_kepler_corrected_years": 1.8808473605938967,
+        "T_kepler_uncorrected_years": 1.8808476640832312,
+        "deviation_corrected_relative": 3.2158351415863853e-13,
+        "deviation_uncorrected_relative": 1.6135742170835377e-07,
+        "mass_signature_predicted": 1.6135778226288026e-07,
+        "T_factsheet_years": 1.880848733744011,
+        "factsheet_deviation_relative": 7.300699371199841e-07
+      },
+      {
+        "planet": "Jupiter",
+        "a_au": 5.202887,
+        "mass_ratio": 0.0009545942639802064,
+        "T_measured_years": 11.862040483516864,
+        "T_kepler_corrected_years": 11.862040483514269,
+        "T_kepler_uncorrected_years": 11.867700850900263,
+        "deviation_corrected_relative": 2.1878675477213431e-13,
+        "deviation_uncorrected_relative": 0.00047695568455196176,
+        "mass_signature_predicted": 0.0004772971319901032,
+        "T_factsheet_years": 11.861982203969884,
+        "factsheet_deviation_relative": 4.91311292235794e-06
+      },
+      {
+        "planet": "Saturn",
+        "a_au": 9.53667594,
+        "mass_ratio": 0.0002858148565036957,
+        "T_measured_years": 29.446486502544737,
+        "T_kepler_corrected_years": 29.44648650253434,
+        "T_kepler_uncorrected_years": 29.45069432354851,
+        "deviation_corrected_relative": 3.5302141134140365e-13,
+        "deviation_uncorrected_relative": 0.0001428768013937734,
+        "mass_signature_predicted": 0.00014290742825184786,
+        "T_factsheet_years": 29.457138945927444,
+        "factsheet_deviation_relative": 0.0003617560075354085
+      },
+      {
+        "planet": "Uranus",
+        "a_au": 19.18916464,
+        "mass_ratio": 4.3657843976149925e-05,
+        "T_measured_years": 84.05714277160774,
+        "T_kepler_corrected_years": 84.05714277158049,
+        "T_kepler_uncorrected_years": 84.05897762836634,
+        "deviation_corrected_relative": 3.2426059755355817e-13,
+        "deviation_uncorrected_relative": 2.1828206937084545e-05,
+        "mass_signature_predicted": 2.1828921988074962e-05,
+        "T_factsheet_years": 84.02053388090349,
+        "factsheet_deviation_relative": 0.00043552385282097714
+      },
+      {
+        "planet": "Neptune",
+        "a_au": 30.06992276,
+        "mass_ratio": 0.0005151385204787697,
+        "T_measured_years": 164.84912135643265,
+        "T_kepler_corrected_years": 164.84912135633104,
+        "T_kepler_uncorrected_years": 164.89157595577393,
+        "deviation_corrected_relative": 6.163673204788488e-13,
+        "deviation_uncorrected_relative": 0.00025746978943709265,
+        "mass_signature_predicted": 0.00025756926023938486,
+        "T_factsheet_years": 164.7693360711841,
+        "factsheet_deviation_relative": 0.00048398975069127167
+      }
+    ],
+    "worst_deviation_corrected": 6.163673204788488e-13,
+    "worst_deviation_uncorrected": 0.00047695568455196176,
+    "correction_improvement_factor": 773817281.8465137,
+    "factsheet_worst_deviation": 0.00048398975069127167,
+    "factsheet_worst_planet": "Neptune",
+    "params": {
+      "n_revolutions": 2,
+      "steps_per_revolution": 3600,
+      "integrator": "RK4, perihelion minima, parabolic interpolation"
+    },
+    "passed": true
+  }
+}

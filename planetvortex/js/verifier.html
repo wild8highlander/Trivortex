@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PLANETVORTEX — the browser verifier (zero dependencies)</title>
+<style>
+  :root { --navy:#0A1A3A; --steel:#2E5FA3; --gold:#C9A227; --crimson:#B03A2E;
+          --green:#1E8449; --light:#F4F6FA; --grid:#D5DCE8; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: Georgia, 'Times New Roman', serif; background:var(--light); color:var(--navy); }
+  header { background:linear-gradient(135deg, var(--navy) 0%, #12295a 100%); color:#fff; padding:34px 24px 26px; text-align:center; }
+  header h1 { margin:0 0 6px; font-size:26px; letter-spacing:2px; }
+  header p { margin:0; opacity:.85; font-size:14px; }
+  header .gold { color:var(--gold); }
+  main { max-width:1100px; margin:0 auto; padding:24px; }
+  section { background:#fff; border:1px solid var(--grid); border-radius:8px; padding:20px 22px; margin-bottom:22px; }
+  h2 { margin:0 0 12px; font-size:19px; border-bottom:2px solid var(--gold); padding-bottom:6px; }
+  table { width:100%; border-collapse:collapse; font-size:13.5px; }
+  th, td { padding:6px 8px; border-bottom:1px solid var(--grid); text-align:left; }
+  th { background:var(--light); font-family:Verdana,sans-serif; font-size:11.5px; letter-spacing:.4px; }
+  td.num { font-variant-numeric: tabular-nums; text-align:right; }
+  .pass { color:var(--green); font-weight:bold; }
+  .fail { color:var(--crimson); font-weight:bold; }
+  .grid2 { display:grid; grid-template-columns: 1fr 1fr; gap:18px; }
+  @media (max-width: 860px) { .grid2 { grid-template-columns: 1fr; } }
+  input, select, button { font:inherit; padding:6px 8px; border:1px solid var(--grid); border-radius:4px; }
+  button { background:var(--navy); color:#fff; cursor:pointer; border:none; padding:8px 16px; }
+  button:hover { background:var(--steel); }
+  canvas { width:100%; height:auto; background:#fff; }
+  .muted { color:#5b6b85; font-size:12.5px; line-height:1.5; }
+  code { background:var(--light); padding:1px 5px; border-radius:3px; font-size:12.5px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>PLANETVORTEX <span class="gold">·</span> THE BROWSER VERIFIER</h1>
+  <p>The closed gravifigure, recalculated from nothing in your browser —
+     <span class="gold">zero dependencies, zero installs</span>.</p>
+  <p class="muted" style="color:#c7d3ea">Reimplements the V2 register algebra, the PSL(2,7) census and the V1
+     tilt algebra in plain JavaScript; every number below is recomputed live on this page.</p>
+</header>
+<main>
+
+<section>
+  <h2>1 · The self-test battery — PASS/FAIL</h2>
+  <p class="muted">The same checks the committed protocols carry, executed right here.
+     The group census enumerates all 2401 matrices over F<sub>7</sub>.</p>
+  <table id="battery"><thead><tr><th>#</th><th>register</th><th>recorded</th><th>registered tolerance</th><th>status</th></tr></thead><tbody></tbody></table>
+</section>
+
+<section>
+  <h2>2 · The gravimetric register — any body you like</h2>
+  <div class="grid2">
+    <div>
+      <p class="muted">
+        Pick a registered body or enter <b>your own planet</b>: give GM (m³/s²)
+        — or a mass in kg and a radius — and the page computes its antipodal
+        register pair on the Klein quartic: the vertex angle α, the exact
+        hyperbolic dimensions (R, ℓ, r, A) and the spatial tilt λ.
+      </p>
+      <p>
+        <select id="bodySelect"></select>
+      </p>
+      <p class="muted">— or a custom body —</p>
+      <p>
+        <input id="customName" placeholder="name (e.g. Kepler-452b)" size="16">
+        <input id="customGM" placeholder="GM, m³/s²" size="14">
+        <input id="customMassKg" placeholder="or mass, kg" size="12">
+      </p>
+      <p><button id="computeBtn">Compute the register</button></p>
+      <p class="muted">GM = G·M; for a mass in kg the page uses G = 6.67430×10⁻¹¹.
+         G = 6.26325×10¹⁰ m³/s² is Ceres, 8.696×10¹¹ is Pluto, 1.108×10¹² is Eris.</p>
+    </div>
+    <div>
+      <canvas id="registerCanvas" width="640" height="560"></canvas>
+      <p class="muted" style="text-align:center">the register heptagon in the Poincaré disk
+         (the blue cell), inside the closed 24-cell skeleton</p>
+    </div>
+  </div>
+  <table id="registerTable"><thead><tr>
+    <th>body</th><th class="num">GM, m³/s²</th><th class="num">s = ln GM − ⟨ln GM⟩</th>
+    <th class="num">α = 2π/3 − σs</th><th class="num">R</th><th class="num">ℓ</th>
+    <th class="num">r</th><th class="num">A = 5π − 7α</th><th class="num">λ = i, rad</th>
+  </tr></thead><tbody></tbody></table>
+  <p class="muted" id="budgetLine"></p>
+</section>
+
+<section>
+  <h2>3 · What am I looking at?</h2>
+  <p class="muted">
+    The <b>Klein quartic</b> x³y + y³z + z³x = 0 is the genus-3 surface whose
+    symmetry group PSL(2,7) — 168 elements, the smallest non-abelian simple
+    group — reaches the Hurwitz bound 84(g−1). Its {7,3} tessellation has
+    <b>24 heptagons</b> glued in antipodal pairs: <b>12 gravitational
+    registers</b>. The mass ladder of the solar system — the Sun, the eight
+    planets, Ceres, Pluto, Eris — is carried by the vertex angles
+    α<sub>i</sub> = 2π/3 − σ·s<sub>i</sub> with s<sub>i</sub> = ln GM<sub>i</sub> − ⟨ln GM⟩;
+    the geometric-mean normalization makes Σs<sub>i</sub> = 0 <i>exactly</i>, and that
+    is precisely the condition that the decorated tessellation closes on the
+    Gauss–Bonnet budget Σα<sub>i</sub> = 8π = 2π(2g−2). <b>The Euler characteristic
+    absorbs the mass ladder.</b> The heavier the body, the wider its heptagon —
+    gravity drawn as geometry, in exact closed form:
+    cosh R = cot(α/2)cot(π/7), cosh(ℓ/2) = cos(π/7)/sin(α/2),
+    cosh r = cos(α/2)/sin(π/7), A = 5π − 7α.
+  </p>
+  <p class="muted">Full monographs, protocols and the C/Python/JS sources:
+     the <code>planetvortex/</code> folder of the TRIVORTEX repository.</p>
+</section>
+
+</main>
+<script>
+"use strict";
+/* ==================================================================
+ * THE PLANETVORTEX BROWSER CORE — a faithful JS port of klein.py and
+ * spatial.py (the committed registers, no external dependencies).
+ * ================================================================== */
+
+const TWO_PI = 2 * Math.PI;
+const REGULAR_ANGLE = TWO_PI / 3;
+const EUCLIDEAN_CEILING = 5 * Math.PI / 7;
+const CEILING_MARGIN = 0.05;
+
+const BODIES = [
+  ["Sun", 1.32712440018e20, "star", 0.0, 0.0],
+  ["Mercury", 2.2032e13, "planet", 7.00497902, 48.33076593],
+  ["Venus", 3.24859e14, "planet", 3.39467605, 76.67984255],
+  ["Earth", 3.986004418e14, "planet", 0.00001531, -11.26064],
+  ["Mars", 4.282837e13, "planet", 1.84969142, 49.55953891],
+  ["Jupiter", 1.26686534e17, "planet", 1.30439695, 100.47390909],
+  ["Saturn", 3.7931187e16, "planet", 2.48599187, 113.66242448],
+  ["Uranus", 5.793939e15, "planet", 0.77263783, 74.01692503],
+  ["Neptune", 6.836529e16, "planet", 1.77004347, 131.78422574],
+  ["Ceres", 6.26325e10, "dwarf", 10.5876, 80.393],
+  ["Pluto", 8.696e11, "dwarf", 17.14001206, 110.30393684],
+  ["Eris", 1.108e12, "dwarf", 44.040, 35.951],
+];
+const G_NEWTON = 6.67430e-11;
+
+/* ---- part 1: PSL(2,7) from nothing (the X1 census) ---- */
+function mul7(a, b) { return ((a * b) % 7 + 7) % 7; }
+function det7(m) { return mul7(m[0][0] * m[1][1] - m[0][1] * m[1][0] + 49, 1) % 7; }
+function enumeratePSL() {
+  const canon = new Set();
+  let gl = 0, sl = 0;
+  for (let a = 0; a < 7; a++) for (let b = 0; b < 7; b++)
+  for (let c = 0; c < 7; c++) for (let d = 0; d < 7; d++) {
+    const det = ((a * d - b * c) % 7 + 7) % 7;
+    if (det === 0) continue;
+    gl++;
+    if (det !== 1) continue;
+    sl++;
+    // canonical: lexicographic min of (A, -A)
+    const neg = [(7 - a) % 7, (7 - b) % 7, (7 - c) % 7, (7 - d) % 7];
+    const pos = [a, b, c, d];
+    const key = (pos.join("") <= neg.join("")) ? pos.join("") : neg.join("");
+    canon.add(key);
+  }
+  return { gl, sl, psl: canon.size };
+}
+
+/* ---- part 2: the register algebra (klein.py, float shadow) ---- */
+function registerAlgebra(bodies) {
+  const n = bodies.length;
+  const lnGM = bodies.map(b => Math.log(b[1]));
+  const mean = lnGM.reduce((a, x) => a + x, 0) / n;
+  const s = lnGM.map(x => x - mean);
+  const worstNeg = Math.max(...s.map(x => -x));
+  const sigma = (1 - CEILING_MARGIN) * (EUCLIDEAN_CEILING - REGULAR_ANGLE) / worstNeg;
+  const alpha = s.map(x => REGULAR_ANGLE - sigma * x);
+  const dims = alpha.map(a => {
+    const R = Math.acosh((1 / Math.tan(a / 2)) * (1 / Math.tan(Math.PI / 7)));
+    const edge = 2 * Math.acosh(Math.cos(Math.PI / 7) / Math.sin(a / 2));
+    const inr = Math.acosh(Math.cos(a / 2) / Math.sin(Math.PI / 7));
+    const area = 5 * Math.PI - 7 * a;
+    return { R, edge, inr, area };
+  });
+  const alphaSum = alpha.reduce((a, x) => a + x, 0);
+  const sSum = s.reduce((a, x) => a + x, 0);
+  return { bodies, s, sigma, alpha, dims, alphaSum, sSum, mean };
+}
+
+/* ---- part 3: the tilt algebra (spatial.py) ---- */
+function tiltMatrix(iDeg, oDeg) {
+  const i = iDeg * Math.PI / 180, w = oDeg * Math.PI / 180;
+  const ci = Math.cos(i), si = Math.sin(i), co = Math.cos(w), so = Math.sin(w);
+  return [
+    [co, -so * ci, so * si],
+    [so, co * ci, -co * si],
+    [0, si, ci],
+  ];
+}
+function tiltOrthogonality(T) {
+  let worst = 0;
+  for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) {
+    let dot = 0;
+    for (let k = 0; k < 3; k++) dot += T[k][r] * T[k][c];
+    worst = Math.max(worst, Math.abs(dot - (r === c ? 1 : 0)));
+  }
+  return worst;
+}
+
+/* ---- part 4: the Poincaré disk (for the drawing) ---- */
+function geoCircle(u, v) {
+  const det = u.re * v.im - u.im * v.re;
+  if (Math.abs(det) < 1e-13) return null;
+  const w = solve2(u.re, u.im, v.re, v.im, (1 + abs2(u)) / 2, (1 + abs2(v)) / 2);
+  const rho = Math.sqrt(Math.max(abs2(w) - 1, 0));
+  return { w, rho };
+}
+function abs2(p) { return p.re * p.re + p.im * p.im; }
+function solve2(ax, ay, bx, by, ra, rb) {
+  const det = ax * by - ay * bx;
+  return { re: (ra * by - ay * rb) / det, im: (ax * rb - ra * bx) / det };
+}
+function reflect(p, u, v) {
+  const circ = geoCircle(u, v);
+  if (!circ) {
+    const w = (Math.abs(u.re) + Math.abs(u.im)) >= (Math.abs(v.re) + Math.abs(v.im)) ? u : v;
+    const th = Math.atan2(w.im, w.re);
+    const c = Math.cos(2 * th), s = Math.sin(2 * th);
+    return { re: c * p.re + s * p.im, im: s * p.re - c * p.im };
+  }
+  const zr = p.re - circ.w.re, zi = p.im - circ.w.im;
+  const d = zr * zr + zi * zi, r2 = circ.rho * circ.rho;
+  const wr = circ.w.re + r2 * zr / d, wi = circ.w.im - r2 * zi / d;
+  return { re: wr, im: wi };
+}
+function hypMidpoint(u, v) {
+  const ku = { re: 2 * u.re / (1 + abs2(u)), im: 2 * u.im / (1 + abs2(u)) };
+  const kv = { re: 2 * v.re / (1 + abs2(v)), im: 2 * v.im / (1 + abs2(v)) };
+  const km = { re: (ku.re + kv.re) / 2, im: (ku.im + kv.im) / 2 };
+  const den = 1 + Math.sqrt(Math.max(0, 1 - abs2(km)));
+  return { re: km.re / den, im: km.im / den };
+}
+
+/* ---- the {7,3} skeleton: the central heptagon, then 2 shells ---- */
+function skeletonTiling() {
+  const R = Math.acosh((1 / Math.tan(Math.PI / 3)) * (1 / Math.tan(Math.PI / 7)));
+  const t = Math.tanh(R / 2);
+  const P = k => ({ re: t * Math.cos(TWO_PI * k / 7 + Math.PI / 7), im: t * Math.sin(TWO_PI * k / 7 + Math.PI / 7) });
+  const central = Array.from({ length: 7 }, (_, k) => P(k));
+  const faces = [central];
+  const seen = new Set(faces[0].map(keyP));
+  for (let k = 0; k < 7; k++) {
+    const a = central[k], b = central[(k + 1) % 7];
+    const mirror = central.map(p => reflect(p, a, b));
+    faces.push(mirror);
+    mirror.forEach(p => seen.add(keyP(p)));
+    for (let j = 0; j < 7; j++) {
+      const a2 = mirror[j], b2 = mirror[(j + 1) % 7];
+      const m2 = mirror.map(p => reflect(p, a2, b2));
+      if ([...m2].some(p => !seen.has(keyP(p)))) { faces.push(m2); m2.forEach(p => seen.add(keyP(p))); }
+    }
+  }
+  return faces;
+}
+function keyP(p) { return (Math.round(p.re * 1e7)) + ":" + (Math.round(p.im * 1e7)); }
+
+/* ==================================================================
+ * THE BATTERY
+ * ================================================================== */
+function runBattery() {
+  const rows = [];
+  const add = (name, recorded, tolText, ok) => rows.push({ name, recorded, tolText, ok });
+
+  // 1. the group census (2401 matrices enumerated)
+  const t0 = performance.now();
+  const census = enumeratePSL();
+  const ms = (performance.now() - t0).toFixed(1);
+  add("PSL(2,7) census: |GL|=2016, |SL|=336, |PSL|=168",
+      `${census.gl}, ${census.sl}, ${census.psl} (${ms} ms)`, "exact integers",
+      census.gl === 2016 && census.sl === 336 && census.psl === 168);
+
+  // 2. the normalization sum(s) = 0
+  const alg = registerAlgebra(BODIES);
+  const sAbs = alg.s.reduce((a, x) => a + Math.abs(x), 0);
+  add("geometric-mean normalization Σsᵢ = 0",
+      Math.abs(alg.sSum).toExponential(2), "≤ 1e-9 (relative)", Math.abs(alg.sSum) / sAbs <= 1e-9);
+
+  // 3. the budget closure Σα = 8π
+  const budgetResid = Math.abs(alg.alphaSum - 8 * Math.PI);
+  add("budget closure Σαᵢ = 8π = 2π(2g−2)",
+      budgetResid.toExponential(2), "≤ 1e-9", budgetResid <= 1e-9);
+
+  // 4. the area closure Σ 2Aᵢ = 8π
+  const areaSum = alg.dims.reduce((a, d) => a + 2 * d.area, 0);
+  const areaResid = Math.abs(areaSum - 8 * Math.PI);
+  add("Gauss–Bonnet area Σ2Aᵢ = 8π", areaResid.toExponential(2), "≤ 1e-9", areaResid <= 1e-9);
+
+  // 5. the hyperbolic Pythagoras on all 12 registers
+  let pyth = 0;
+  alg.dims.forEach((d, i) => {
+    pyth = Math.max(pyth, Math.abs(Math.cosh(d.R) - Math.cosh(d.edge / 2) * Math.cosh(d.inr)));
+  });
+  add("hyperbolic Pythagoras cosh R = cosh(ℓ/2)·cosh r (12 cells)",
+      pyth.toExponential(2), "≤ 1e-12", pyth <= 1e-12);
+
+  // 6. the hyperbolicity ceiling
+  const worstAlpha = Math.max(...alg.alpha);
+  add("hyperbolicity margin under the Euclidean ceiling 5π/7",
+      (EUCLIDEAN_CEILING - worstAlpha).toFixed(4), "≥ 0.005", EUCLIDEAN_CEILING - worstAlpha >= 0.005);
+
+  // 7. the tilt orthogonality over the 11 wandering bodies
+  let orth = 0;
+  BODIES.slice(1).forEach(b => { orth = Math.max(orth, tiltOrthogonality(tiltMatrix(b[3], b[4]))); });
+  add("SO(3) tilt orthogonality (11 bodies)", orth.toExponential(2), "≤ 1e-14", orth <= 1e-14);
+
+  // 8. the arc register: λ(Earth) = 0, λ(Eris) maximal
+  const earth = BODIES[3], eris = BODIES[11];
+  const lamE = earth[3] * Math.PI / 180, lamX = eris[3] * Math.PI / 180;
+  add("arc register λ = R̄·i (Earth ≈ 0, Eris maximal)",
+      `λ⊕ = ${lamE.toExponential(2)}, λₑ = ${lamX.toFixed(4)}`, "exact radians",
+      lamE <= 1e-6 && lamX > 0.75);
+
+  // 9. the Kepler anchor: T²/a³(1+m/M) = 4π²/GM_sun in SI
+  const AU = 149597870700, GM_SUN = 1.32712440018e20;
+  const earthGM = 3.986004418e14;
+  const T = 365.256 * 86400, aM = 1.00000261 * AU;
+  const kEarth = T * T / (aM ** 3) * (1 + earthGM / GM_SUN);
+  const kConst = 4 * Math.PI * Math.PI / GM_SUN;
+  const kErr = Math.abs(kEarth - kConst) / kConst;
+  add("the Kepler–Earth SI anchor", kErr.toExponential(2), "≤ 1e-4", kErr <= 1e-4);
+
+  // 10. the disk witness: the bisection-solved heptagon vs the closed form
+  const angleAt = t => {
+    // the interior angle of the regular disk heptagon at Euclidean radius t
+    const verts = Array.from({ length: 7 }, (_, k) => ({ re: t * Math.cos(TWO_PI * k / 7), im: t * Math.sin(TWO_PI * k / 7) }));
+    const tang = (u, v, at) => {
+      // the geodesic circle through u, v; the tangent at the point `at`
+      const det = u.re * v.im - u.im * v.re;
+      if (Math.abs(det) < 1e-13) {
+        const th = Math.atan2(u.im, u.re);
+        return { re: -Math.sin(th), im: Math.cos(th) };
+      }
+      const w = solve2(u.re, u.im, v.re, v.im, (1 + abs2(u)) / 2, (1 + abs2(v)) / 2);
+      const rv = { re: at.re - w.re, im: at.im - w.im };
+      const tg = { re: -rv.im, im: rv.re };
+      const n = Math.hypot(tg.re, tg.im);
+      return { re: tg.re / n, im: tg.im / n };
+    };
+    const t1 = tang(verts[0], verts[1], verts[0]);
+    const t2 = tang(verts[0], verts[6], verts[0]);
+    return Math.acos(Math.max(-1, Math.min(1, t1.re * t2.re + t1.im * t2.im)));
+  };
+  let lo = 0.02, hi = 0.98;
+  for (let it = 0; it < 90; it++) {
+    const mid = (lo + hi) / 2;
+    if (angleAt(mid) > REGULAR_ANGLE) lo = mid; else hi = mid;
+  }
+  const tWit = (lo + hi) / 2;
+  const Rnum = 2 * Math.atanh(tWit);
+  const Rclosed = Math.acosh((1 / Math.tan(Math.PI / 3)) * (1 / Math.tan(Math.PI / 7)));
+  const wErr = Math.abs(Rnum - Rclosed);
+  add("the Poincaré-disk witness vs the closed form cosh R",
+      wErr.toExponential(2), "≤ 1e-9", wErr <= 1e-9);
+
+  return { rows, alg };
+}
+
+/* ==================================================================
+ * THE PAGE
+ * ================================================================== */
+const fmt = (x, d = 9) => (Math.abs(x) < 1e-3 && x !== 0) ? x.toExponential(4) : x.toFixed(d);
+
+function fillBattery(rows) {
+  const tb = document.querySelector("#battery tbody");
+  tb.innerHTML = "";
+  rows.forEach((r, i) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${i + 1}</td><td>${r.name}</td><td class="num">${r.recorded}</td>
+      <td>${r.tolText}</td><td class="${r.ok ? "pass" : "fail"}">${r.ok ? "PASS" : "FAIL"}</td>`;
+    tb.appendChild(tr);
+  });
+}
+
+function currentBodies() {
+  const list = BODIES.slice();
+  const name = document.getElementById("customName").value.trim();
+  const gm = parseFloat(document.getElementById("customGM").value);
+  const kg = parseFloat(document.getElementById("customMassKg").value);
+  if (name && (gm > 0 || kg > 0)) {
+    list.push([name, gm > 0 ? gm : kg * G_NEWTON, "custom", 0.0, 0.0]);
+  }
+  return list;
+}
+
+function fillRegisterTable(alg, selected) {
+  const tb = document.querySelector("#registerTable tbody");
+  tb.innerHTML = "";
+  alg.bodies.forEach((b, i) => {
+    const d = alg.dims[i];
+    const tr = document.createElement("tr");
+    if (b[0] === selected) tr.style.background = "#FFF7E0";
+    tr.innerHTML = `<td>${b[0]}</td><td class="num">${b[1].toExponential(6)}</td>
+      <td class="num">${fmt(alg.s[i], 4)}</td><td class="num">${alg.alpha[i].toFixed(6)}</td>
+      <td class="num">${d.R.toFixed(6)}</td><td class="num">${d.edge.toFixed(6)}</td>
+      <td class="num">${d.inr.toFixed(6)}</td><td class="num">${d.area.toFixed(6)}</td>
+      <td class="num">${fmt(b[3] * Math.PI / 180, 5)}</td>`;
+    tb.appendChild(tr);
+  });
+  const resid = Math.abs(alg.alphaSum - 8 * Math.PI);
+  document.getElementById("budgetLine").innerHTML =
+    `The budget closure of THIS table: Σα = ${alg.alphaSum.toFixed(12)} against 8π = ` +
+    `${(8 * Math.PI).toFixed(12)} — residual <b>${resid.toExponential(3)}</b> ` +
+    `(the geometric mean ⟨GM⟩ = e<sup>${alg.mean.toFixed(4)}</sup>; ` +
+    `σ = ${alg.sigma.toFixed(6)}). ${resid < 1e-9 ? '<span class="pass">The figure closes.</span>' : '<span class="fail">Broken.</span>'}`;
+}
+
+function drawRegister(alg, selected) {
+  const canvas = document.getElementById("registerCanvas");
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width, H = canvas.height, R0 = W * 0.46;
+  const cx = W / 2, cy = H / 2;
+  ctx.clearRect(0, 0, W, H);
+  // the unit circle
+  ctx.strokeStyle = "#0A1A3A"; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(cx, cy, R0, 0, TWO_PI); ctx.stroke();
+  const X = p => cx + p.re * R0, Y = p => cy - p.im * R0;
+  // the skeleton
+  const faces = skeletonTiling();
+  ctx.strokeStyle = "#D5DCE8"; ctx.lineWidth = 1;
+  faces.forEach(f => {
+    ctx.beginPath();
+    f.forEach((p, k) => k ? ctx.lineTo(X(p), Y(p)) : ctx.moveTo(X(p), Y(p)));
+    ctx.closePath(); ctx.stroke();
+  });
+  // the selected register heptagon: the closed-form dimensions, drawn
+  const idx = alg.bodies.findIndex(b => b[0] === selected);
+  if (idx >= 0) {
+    const alpha = alg.alpha[idx];
+    const R = alg.dims[idx].R;
+    const t = Math.tanh(R / 2);
+    const pts = Array.from({ length: 7 }, (_, k) => ({
+      re: t * Math.cos(TWO_PI * k / 7 + Math.PI / 7),
+      im: t * Math.sin(TWO_PI * k / 7 + Math.PI / 7),
+    }));
+    ctx.fillStyle = "rgba(201, 162, 39, 0.30)";
+    ctx.strokeStyle = "#2E5FA3"; ctx.lineWidth = 2;
+    ctx.beginPath();
+    pts.forEach((p, k) => k ? ctx.lineTo(X(p), Y(p)) : ctx.moveTo(X(p), Y(p)));
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#0A1A3A"; ctx.font = "13px Georgia";
+    ctx.fillText(`${selected}: α = ${alpha.toFixed(4)} rad, R = ${alg.dims[idx].R.toFixed(4)}, A = ${alg.dims[idx].area.toFixed(4)} (hyperbolic, R̄ = 1)`, 12, 22);
+    ctx.fillText(`cosh R = cot(α/2)·cot(π/7) — the exact closed form`, 12, 40);
+  }
+}
+
+function refresh() {
+  const { rows, alg } = runBattery();
+  fillBattery(rows);
+  const sel = document.getElementById("bodySelect").value ||
+    document.getElementById("bodySelect").options[0].value;
+  fillRegisterTable(alg, sel);
+  drawRegister(alg, sel);
+}
+
+(function init() {
+  const sel = document.getElementById("bodySelect");
+  BODIES.forEach(b => {
+    const o = document.createElement("option");
+    o.value = b[0]; o.textContent = `${b[0]} (${b[2]})`;
+    sel.appendChild(o);
+  });
+  document.getElementById("computeBtn").addEventListener("click", refresh);
+  sel.addEventListener("change", refresh);
+  refresh();
+})();
+</script>
+</body>
+</html>

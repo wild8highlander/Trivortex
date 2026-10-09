@@ -1,0 +1,31 @@
+{
+  "suite": "planetvortex-ladder",
+  "version": "2.0.0",
+  "stage": "P4",
+  "preset": "default",
+  "date_utc": "2026-10-09T09:01:56.806925+00:00",
+  "check": {
+    "check": "P4 PSL(2,7) algebra: 168 line-preserving permutations of Z_7 (closure, inverses, transitivity, stabilizers 24/24, the pair axiom), |GL(3,2)| = 168, an explicit isomorphism Z_7 -> F_2^3 conjugating the two group copies in S_7, and the congruent line-triangles (angles pi/7 : 2pi/7 : 4pi/7, area sqrt(7)/4)",
+    "group_order_cyclic": 168,
+    "group_order_binary": 168,
+    "n_lines": 7,
+    "n_flags": 21,
+    "has_identity": true,
+    "closed_under_product": true,
+    "inverses_present": true,
+    "point_transitive": true,
+    "stabilizer_point": 24,
+    "stabilizer_line": 24,
+    "pair_axiom": true,
+    "isomorphism_found": true,
+    "isomorphism_maps_lines_to_lines": true,
+    "groups_conjugate_in_s7": true,
+    "congruence_max_abs_error": 6.661338147750939e-16,
+    "area_max_abs_error": 1.1102230246251565e-16,
+    "angle_ladder_max_abs_error": 5.551115123125783e-16,
+    "params": {
+      "tolerances": "integers exact; chords/angles/area <= 1e-12"
+    },
+    "passed": true
+  }
+}

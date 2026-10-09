@@ -1,0 +1,146 @@
+{
+  "suite": "planetvortex-ladder",
+  "version": "2.0.0",
+  "stage": "P7",
+  "preset": "default",
+  "date_utc": "2026-10-09T09:02:05.896918+00:00",
+  "check": {
+    "check": "P7 gravity bridge: the Schwarzschild ladder r_s = 2GM/c^2 exact against the closed form; adjacent Hill spheres never overlap (min margin >= 3); the exact figure dimensions in AU and the mass-ladder deficit diagnostics",
+    "schwarzschild_ladder": [
+      {
+        "body": "Sun",
+        "r_s_m": 2953.2500765008035,
+        "r_s_au": 1.974125743021557e-08
+      },
+      {
+        "body": "Mercury",
+        "r_s_m": 0.0004902781206994664,
+        "r_s_au": 3.2773068119576275e-15
+      },
+      {
+        "body": "Venus",
+        "r_s_m": 0.007229087691190449,
+        "r_s_au": 4.8323466486281e-14
+      },
+      {
+        "body": "Earth",
+        "r_s_m": 0.008870056078235341,
+        "r_s_au": 5.929266263437091e-14
+      },
+      {
+        "body": "Mars",
+        "r_s_m": 0.0009530597656237023,
+        "r_s_au": 6.370811036040383e-15
+      },
+      {
+        "body": "Jupiter",
+        "r_s_m": 2.819155583126773,
+        "r_s_au": 1.8844891106640418e-11
+      },
+      {
+        "body": "Saturn",
+        "r_s_m": 0.8440827468346057,
+        "r_s_au": 5.642344659619582e-12
+      },
+      {
+        "body": "Uranus",
+        "r_s_m": 0.12893253106242492,
+        "r_s_au": 8.618607367813619e-13
+      },
+      {
+        "body": "Neptune",
+        "r_s_m": 1.5213328750124377,
+        "r_s_au": 1.0169482144991772e-11
+      }
+    ],
+    "schwarzschild_worst_relative_error": 1.0064977160876754e-16,
+    "hill_margins": [
+      {
+        "pair": "Mercury-Venus",
+        "gap_au": 0.33623639000000005,
+        "r_H_sum_au": 0.008234304793122234,
+        "margin": 40.83360993399759
+      },
+      {
+        "pair": "Venus-Earth",
+        "gap_au": 0.27666694999999986,
+        "r_H_sum_au": 0.01676307996932617,
+        "margin": 16.50454155836859
+      },
+      {
+        "pair": "Earth-Mars",
+        "gap_au": 0.5237077300000001,
+        "r_H_sum_au": 0.017250518876982847,
+        "margin": 30.358955213734287
+      },
+      {
+        "pair": "Mars-Jupiter",
+        "gap_au": 3.6791766599999995,
+        "r_H_sum_au": 0.36244985443262384,
+        "margin": 10.150857049616846
+      },
+      {
+        "pair": "Jupiter-Saturn",
+        "gap_au": 4.333788940000001,
+        "r_H_sum_au": 0.7907667990883491,
+        "margin": 5.480489247900005
+      },
+      {
+        "pair": "Saturn-Uranus",
+        "gap_au": 9.652488700000001,
+        "r_H_sum_au": 0.9040565320827034,
+        "margin": 10.676864064864683
+      },
+      {
+        "pair": "Uranus-Neptune",
+        "gap_au": 10.88075812,
+        "r_H_sum_au": 2.1398397534114117,
+        "margin": 5.084847172622853
+      }
+    ],
+    "hill_min_margin": 5.084847172622853,
+    "figure_dimensions_au": {
+      "side_s1": 0.8677674782351162,
+      "short_diagonal_s2": 1.5636629649360596,
+      "long_diagonal_s3": 1.9498558243636472,
+      "cell_area_sqrt7_over_4": 0.6614378277661477
+    },
+    "diagnostics": {
+      "mass_ladder_line_sums": {
+        "Mercury+Venus+Jupiter": 1.155866,
+        "Venus+Mars+Saturn": 0.92081,
+        "Mars+Jupiter+Uranus": 2.695823,
+        "Jupiter+Saturn+Neptune": 6.714949,
+        "Mercury+Saturn+Uranus": 1.883411,
+        "Venus+Uranus+Neptune": 3.307891,
+        "Mercury+Mars+Neptune": 0.008008
+      },
+      "mass_ladder_line_spread_dex": 6.706941,
+      "mean_motion_span_mercury_neptune": 684.1265853578132,
+      "chord_ladder_span_s3_over_s1": 2.246979603717467,
+      "vortex_mass_ladder": {
+        "equal_ring_radius_drift": 9.769962616701378e-15,
+        "weighted_ring_radius_drift": 0.29759657741253687,
+        "weight_ladder": [
+          0.900064,
+          0.900951,
+          0.900125,
+          1.27079,
+          1.011018,
+          0.916958,
+          1.100094
+        ],
+        "window_rotations": 1.0,
+        "note": "recorded only: the equal-circulation heptagon stays rigid (drift at machine zero) while the gravity-weighted heptagon deforms within a single rotation — the mass ladder breaks the mass-blind symmetry of the figure dynamically as well"
+      },
+      "note": "recorded only: the real mass ladder breaks the mass-blind PSL(2,7) symmetry of the figure by ~5.3 dex of line sums"
+    },
+    "params": {
+      "dps": 30,
+      "tolerances": {
+        "hill_margin_min": 3.0
+      }
+    },
+    "passed": true
+  }
+}

@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="940" height="470" viewBox="0 0 940 470">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#0A1A3A"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="940" height="470" fill="#FFFFFF"/>
+  <text x="470" y="30" text-anchor="middle" font-family="Liberation Sans, Arial" font-size="19" font-weight="bold" fill="#0A1A3A">PLANETVORTEX — the planetary gravity-geometry bench (mini-repository)</text>
+
+  <rect x="30" y="60" width="200" height="120" rx="8" fill="#F4F6FA" stroke="#2E5FA3" stroke-width="1.4"/>
+  <text x="130" y="86" text-anchor="middle" font-family="Liberation Sans, Arial" font-size="13" font-weight="bold" fill="#0A1A3A">Inputs</text>
+  <text x="130" y="108" text-anchor="middle" font-family="Liberation Serif, Georgia" font-size="12" fill="#0A1A3A">NASA register: GM, a, e, T</text>
+  <text x="130" y="128" text-anchor="middle" font-family="Liberation Serif, Georgia" font-size="12" fill="#0A1A3A">Γ, R — the vortex figure</text>
+  <text x="130" y="148" text-anchor="middle" font-family="Liberation Serif, Georgia" font-size="12" fill="#0A1A3A">the Fano lines &#123;i, i+1, i+3&#125;</text>
+  <text x="130" y="168" text-anchor="middle" font-family="Liberation Serif, Georgia" font-size="11" fill="#2E5FA3">presets: quick / default / full</text>
+
+  <rect x="330" y="46" width="280" height="56" rx="8" fill="#FFFFFF" stroke="#2E5FA3" stroke-width="1.4"/>
+  <text x="470" y="68" text-anchor="middle" font-family="Liberation Sans, Arial" font-size="13" font-weight="bold" fill="#0A1A3A">Layer N — nbody.py</text>
+  <text x="470" y="88" text-anchor="middle" font-family="Liberation Serif, Georgia" font-size="11.5" fill="#0A1A3A">Sun + 8 planets · RK4 · E, L · osculating (a, e)</text>
+
+  <rect x="330" y="110" width="280" height="56" rx="8" fill="#FFFFFF" stroke="#2E5FA3" stroke-width="1.4"/>
+  <text x="470" y="132" text-anchor="middle" font-family="Liberation Sans, Arial" font-size="13" font-weight="bold" fill="#0A1A3A">Layer F — fano.py · classical.py</text>
+  <text x="470" y="152" text-anchor="middle" font-family="Liberation Serif, Georgia" font-size="11.5" fill="#0A1A3A">PSL(2,7) · exact figure · Kepler · Schwarzschild · Hill</text>
+
+  <rect x="330" y="174" width="280" height="56" rx="8" fill="#FFFFFF" stroke="#2E5FA3" stroke-width="1.4"/>
+  <text x="470" y="196" text-anchor="middle" font-family="Liberation Sans, Arial" font-size="13" font-weight="bold" fill="#0A1A3A">Layer V — model.py</text>
+  <text x="470" y="216" text-anchor="middle" font-family="Liberation Serif, Georgia" font-size="11.5" fill="#0A1A3A">Kirchhoff RHS · RK4 · H, P, Q, I · Jacobian</text>
+
+  <rect x="660" y="60" width="250" height="120" rx="8" fill="#F4F6FA" stroke="#2E5FA3" stroke-width="1.4"/>
+  <text x="785" y="86" text-anchor="middle" font-family="Liberation Sans, Arial" font-size="13" font-weight="bold" fill="#0A1A3A">P-ladder — ladder.py</text>
+  <text x="785" y="107" text-anchor="middle" font-family="Liberation Serif, Georgia" font-size="11.5" fill="#0A1A3A">P1 anchor · P2 Kepler · P3 N-body</text>
+  <text x="785" y="126" text-anchor="middle" font-family="Liberation Serif, Georgia" font-size="11.5" fill="#0A1A3A">P4 algebra · P5 lattice · P6 cells</text>
+  <text x="785" y="145" text-anchor="middle" font-family="Liberation Serif, Georgia" font-size="11.5" fill="#0A1A3A">P7 gravity bridge</text>
+  <text x="785" y="166" text-anchor="middle" font-family="Liberation Serif, Georgia" font-size="11" fill="#2E5FA3">tolerances: 1e-16 … 1e-2</text>
+
+  <rect x="240" y="252" width="460" height="64" rx="8" fill="#FFFFFF" stroke="#0A1A3A" stroke-width="1.6"/>
+  <text x="470" y="276" text-anchor="middle" font-family="Liberation Sans, Arial" font-size="13" font-weight="bold" fill="#0A1A3A">results/protocols/P1..P7_*.json — committed, deterministic</text>
+  <text x="470" y="298" text-anchor="middle" font-family="Liberation Serif, Georgia" font-size="11.5" fill="#0A1A3A">"every number is bound to a run" — re-derived by the test guard</text>
+
+  <rect x="60" y="340" width="380" height="100" rx="8" fill="#F4F6FA" stroke="#2E5FA3" stroke-width="1.4"/>
+  <text x="250" y="366" text-anchor="middle" font-family="Liberation Sans, Arial" font-size="13" font-weight="bold" fill="#0A1A3A">figures/ — this module</text>
+  <text x="250" y="388" text-anchor="middle" font-family="Liberation Serif, Georgia" font-size="11.5" fill="#0A1A3A">fig01 the figure · fig02 Kepler · fig03 simulation</text>
+  <text x="250" y="407" text-anchor="middle" font-family="Liberation Serif, Georgia" font-size="11.5" fill="#0A1A3A">fig04 lattice + cycles · scheme_planetvortex.svg</text>
+  <text x="250" y="426" text-anchor="middle" font-family="Liberation Serif, Georgia" font-size="11" fill="#2E5FA3">300 dpi PNG, bound to the protocols</text>
+
+  <rect x="500" y="340" width="380" height="100" rx="8" fill="#F4F6FA" stroke="#2E5FA3" stroke-width="1.4"/>
+  <text x="690" y="366" text-anchor="middle" font-family="Liberation Sans, Arial" font-size="13" font-weight="bold" fill="#0A1A3A">docs/ — the publication stack</text>
+  <text x="690" y="388" text-anchor="middle" font-family="Liberation Serif, Georgia" font-size="11.5" fill="#0A1A3A">monograph/ (RU+EN) — the big research monograph</text>
+  <text x="690" y="407" text-anchor="middle" font-family="Liberation Serif, Georgia" font-size="11.5" fill="#0A1A3A">Theorems A, B, C · Lemmas D, E — the statement editions</text>
+  <text x="690" y="426" text-anchor="middle" font-family="Liberation Serif, Georgia" font-size="11" fill="#2E5FA3">feeds parent roadmap T1, T3 (N=7 register) and R4</text>
+
+  <line x1="230" y1="100" x2="322" y2="74" stroke="#0A1A3A" stroke-width="1.3" marker-end="url(#arr)"/>
+  <line x1="230" y1="120" x2="322" y2="136" stroke="#0A1A3A" stroke-width="1.3" marker-end="url(#arr)"/>
+  <line x1="230" y1="150" x2="322" y2="202" stroke="#0A1A3A" stroke-width="1.3" marker-end="url(#arr)"/>
+  <line x1="610" y1="74" x2="652" y2="100" stroke="#0A1A3A" stroke-width="1.3" marker-end="url(#arr)"/>
+  <line x1="610" y1="138" x2="652" y2="122" stroke="#0A1A3A" stroke-width="1.3" marker-end="url(#arr)"/>
+  <line x1="610" y1="202" x2="652" y2="150" stroke="#0A1A3A" stroke-width="1.3" marker-end="url(#arr)"/>
+  <line x1="785" y1="180" x2="700" y2="250" stroke="#0A1A3A" stroke-width="1.3" marker-end="url(#arr)"/>
+  <line x1="380" y1="316" x2="250" y2="336" stroke="#0A1A3A" stroke-width="1.3" marker-end="url(#arr)"/>
+  <line x1="560" y1="316" x2="690" y2="336" stroke="#0A1A3A" stroke-width="1.3" marker-end="url(#arr)"/>
+</svg>

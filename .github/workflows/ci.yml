@@ -5,9 +5,10 @@ name: TRIVORTEX CI
 #   1. syntax-check every Python file (code/ + verification/ + research/
 #      + cycloring/python + polyvortex/python);
 #   2. run the independent verification ladder V1-V4 (quick preset);
-#   3. run the W1-W7 ladders of the two mini-research programs
-#      (cycloring, polyvortex, quick preset);
-#   4. run the pytest guard (63 verification tests + 37 cycloring + 26 polyvortex).
+#   3. run the W1-W7 + P1-P7 + X1-X6 + V1-V2 ladders of the three mini-research
+#      programs (cycloring, polyvortex, planetvortex, quick preset);
+#   4. run the pytest guard (63 verification tests + 37 cycloring + 26 polyvortex +
+#      80 planetvortex).
 # A green run is what the CI badge in the root README reflects.
 
 on:
@@ -42,7 +43,7 @@ jobs:
         run: |
           python - <<'PY'
           import py_compile, os, sys
-          roots = ["code", "verification", "research", "cycloring/python", "polyvortex/python"]
+          roots = ["code", "verification", "research", "cycloring/python", "polyvortex/python", "planetvortex/python"]
           errors = []
           for root in roots:
               for dirpath, _dirs, files in os.walk(root):
@@ -86,7 +87,7 @@ jobs:
           retention-days: 30
 
   mini-program-ladders:
-    name: Mini-program ladders W1–W7 (quick)
+    name: Mini-program ladders W1–W7 + P1–P7 (quick)
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
@@ -104,6 +105,15 @@ jobs:
         run: |
           cd polyvortex
           PYTHONPATH=python python3 python/polyvortex/runner.py --preset quick
+      - name: PLANETVORTEX — the P-ladder, the X-register and the V-register (quick)
+        run: |
+          cd planetvortex
+          PYTHONPATH=python python3 python/planetvortex/runner.py --suite all --preset quick
+      - name: PLANETVORTEX — the cross-language oracle (C99 vs Python)
+        run: |
+          cd planetvortex
+          make -C c clean run > /dev/null
+          PYTHONPATH=python python3 tools/crosslang_diff.py
       - name: Upload the mini-program protocols
         uses: actions/upload-artifact@v7
         with:
@@ -111,6 +121,7 @@ jobs:
           path: |
             cycloring/results/protocols/*.json
             polyvortex/results/protocols/*.json
+            planetvortex/results/protocols/*.json
           if-no-files-found: error
           retention-days: 30
 
@@ -131,3 +142,5 @@ jobs:
         run: python -m pytest cycloring/tests/ -v --tb=short
       - name: The polyvortex guard (26 tests)
         run: python -m pytest polyvortex/tests/ -v --tb=short
+      - name: The planetvortex guard (80 tests)
+        run: python -m pytest planetvortex/tests/ -v --tb=short

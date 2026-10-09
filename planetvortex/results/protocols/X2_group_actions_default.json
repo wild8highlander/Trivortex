@@ -1,0 +1,52 @@
+{
+  "suite": "planetvortex-hardcore",
+  "version": "2.0.0",
+  "stage": "X2",
+  "preset": "default",
+  "date_utc": "2026-10-09T09:02:06.055445+00:00",
+  "check": {
+    "check": "X2 hardcore: the two natural actions of PSL(2,7) — conjugation on the seven S_4 subgroups gives a faithful transitive action on 7 points whose image is CONJUGATE in S_7 to the research model of fano.py (the Fano points certified); conjugation on the eight Sylow-7 subgroups gives the natural 2-transitive (and 3-homogeneous) action on P^1(F_7); the Sylow census n2 = 21 (self-normalizing D8), n3 = 28-stabilizer signature, n7 = 8 with the Frobenius-21 normalizer (1, 14, 6)",
+    "involutions": 21,
+    "elements_order3": 56,
+    "elements_order7": 48,
+    "sylow_7_count": 8,
+    "sylow_3_count": 28,
+    "sylow_2_count": 21,
+    "normalizer_sylow2_order": 8,
+    "normalizer_sylow7_order": 21,
+    "normalizer_sylow7_order_census": {
+      "1": 1,
+      "3": 14,
+      "7": 6
+    },
+    "s4_subgroup_count": 7,
+    "s4_subgroup_count_all_classes": 14,
+    "s4_stabilizer_order_census": {
+      "1": 1,
+      "2": 9,
+      "3": 8,
+      "4": 6
+    },
+    "action7_image_order": 168,
+    "action7_kernel": 1,
+    "action7_transitive": true,
+    "bridge_to_research_model": true,
+    "bridge_sigma": [
+      0,
+      1,
+      3,
+      2,
+      6,
+      5,
+      4
+    ],
+    "action8_image_order": 168,
+    "action8_2_transitive": true,
+    "action8_ordered_pair_orbit_size": 56,
+    "action8_triple_orbit_size": 56,
+    "params": {
+      "model": "conjugation actions of SL(2,7)/{+-I}"
+    },
+    "passed": true
+  }
+}

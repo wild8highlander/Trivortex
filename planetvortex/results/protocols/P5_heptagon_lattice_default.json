@@ -1,0 +1,30 @@
+{
+  "suite": "planetvortex-ladder",
+  "version": "2.0.0",
+  "stage": "P5",
+  "preset": "default",
+  "date_utc": "2026-10-09T09:01:57.662047+00:00",
+  "check": {
+    "check": "P5 heptagon lattice: the N=7 ring rotates rigidly at 3/2pi, the invariants hold, the co-rotating spectrum is Havelock-stable (the last stable level, cross-pinned to polyvortex W4)",
+    "omega_analytic": 0.477464829275686,
+    "omega_measured": 0.4774648292750431,
+    "omega_relative_error": 1.3465497647978658e-12,
+    "invariant_drifts": {
+      "H": 1.249565716701129e-14,
+      "P": 5.329070518200751e-15,
+      "Q": 2.4424906541753444e-15,
+      "I": 8.120488408686859e-15
+    },
+    "hamiltonian_exact": -1.08395426662194,
+    "hamiltonian_relative_error": 0.0,
+    "max_Re_lambda": 7.001539666058459e-09,
+    "havelock_stable": true,
+    "params": {
+      "gamma": 1.0,
+      "big_r": 1.0,
+      "rotations": 2.0,
+      "steps_per_rotation": 2400
+    },
+    "passed": true
+  }
+}

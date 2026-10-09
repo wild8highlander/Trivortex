@@ -1,0 +1,55 @@
+{
+  "suite": "planetvortex-hardcore",
+  "version": "2.0.0",
+  "stage": "X1",
+  "preset": "default",
+  "date_utc": "2026-10-09T09:02:05.922523+00:00",
+  "check": {
+    "check": "X1 hardcore: PSL(2,7) from first principles — 2401 matrices over F_7 enumerated; |GL(2,7)| = 2016, |SL(2,7)| = 336, |PSL(2,7)| = 168; the quotient {±I} is exactly 2-to-1; the centre of SL is {±I} and the centre of PSL is trivial; the class equation 1 + 21 + 42 + 56 + 24 + 24 = 168; simplicity certified over all 32 unions of conjugacy classes by Lagrange",
+    "matrices_enumerated": 2401,
+    "group_order_gl": 2016,
+    "group_order_sl": 336,
+    "group_order_psl": 168,
+    "gl_closed_form": 2016,
+    "sl_closed_form": 336,
+    "quotient_exactly_2_to_1": true,
+    "centre_sl": [
+      [
+        1,
+        0,
+        0,
+        1
+      ],
+      [
+        6,
+        0,
+        0,
+        6
+      ]
+    ],
+    "centre_psl_trivial": true,
+    "element_order_census": {
+      "1": 1,
+      "2": 21,
+      "3": 56,
+      "4": 42,
+      "7": 48
+    },
+    "conjugacy_class_sizes": [
+      1,
+      21,
+      24,
+      24,
+      42,
+      56
+    ],
+    "class_equation_sum": 168,
+    "normal_subgroup_union_found": false,
+    "simple": true,
+    "params": {
+      "field": "F_7",
+      "model": "SL(2,7)/{+-I} canonical reps"
+    },
+    "passed": true
+  }
+}

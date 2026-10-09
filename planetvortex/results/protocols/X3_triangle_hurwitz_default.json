@@ -1,0 +1,53 @@
+{
+  "suite": "planetvortex-hardcore",
+  "version": "2.0.0",
+  "stage": "X3",
+  "preset": "default",
+  "date_utc": "2026-10-09T09:02:07.569001+00:00",
+  "check": {
+    "check": "X3 hardcore: the (2,3,7) triangle generation — EVERY pair (a, b) with |a| = 2, |b| = 3, |ab| = 7 generates the whole PSL(2,7) (no subgroup of order 42 or 84 exists); the Klein relations a^2 = b^3 = (ab)^7 = [a,b]^4 = 1 hold on the witness; the Hurwitz bound 84(g-1) = 168 and Riemann-Hurwitz 42(2g-2) = 168 are exact; the Klein quartic x^3 y + y^3 z + z^3 x is smooth (28(xyz)^3 = 0 contradiction + coordinate cases), hence genus 3 — the canonical PSL(2,7) surface",
+    "n_involutions": 21,
+    "n_order3": 56,
+    "product_order_distribution": {
+      "2": 168,
+      "3": 336,
+      "4": 336,
+      "7": 336
+    },
+    "n_pairs_237": 336,
+    "n_non_generating": 0,
+    "witness_pair_orders": [
+      2,
+      3,
+      7
+    ],
+    "klein_relations": {
+      "a_squared_identity": true,
+      "b_cubed_identity": true,
+      "ab_seventh_identity": true,
+      "commutator_fourth_identity": true
+    },
+    "hurwitz_bound_84_g_minus_1": 168,
+    "riemann_hurwitz_42_2g_minus_2": 168,
+    "class_equation_cross_check": 168,
+    "orbifold_chi_numerator": -1,
+    "orbifold_chi_denominator": 42,
+    "klein_quartic_smoothness": {
+      "lhs_product": {
+        "(3, 3, 3)": 27
+      },
+      "rhs_product": {
+        "(3, 3, 3)": 1
+      },
+      "identity_27_xyz3": true,
+      "contradiction_28": true,
+      "coordinate_cases_trivial": true,
+      "genus_of_smooth_quartic": 3
+    },
+    "params": {
+      "group": "PSL(2,7) matrix model",
+      "genus": 3
+    },
+    "passed": true
+  }
+}

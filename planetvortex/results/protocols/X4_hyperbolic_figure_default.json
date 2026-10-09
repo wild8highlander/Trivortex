@@ -1,0 +1,51 @@
+{
+  "suite": "planetvortex-hardcore",
+  "version": "2.0.0",
+  "stage": "X4",
+  "preset": "default",
+  "date_utc": "2026-10-09T09:02:07.576578+00:00",
+  "check": {
+    "check": "X4 hardcore: the hyperbolic {7,3} figure — cosh(ell/2) = cos(pi/7)/sin(pi/3), cosh(r) = cos(pi/3)/sin(pi/7), cosh(R) = cot(pi/7) cot(pi/3) with the hyperbolic Pythagoras cosh R = cosh(ell/2) cosh r at 50 dps; the area ladder pi/42 -> pi/3 -> 8pi = 2pi(2g-2); the combinatorial closure 3V = 7F = 2E = 168, V - E + F = -4 (genus 3), Schlaefli (7-2)(3-2) = 5 > 4; the Poincare-disk heptagon solved numerically (angle = 2pi/3 by bisection) confirms R and the edge as the independent witness",
+    "literals": {
+      "dps": "50",
+      "cosh_half_edge": "1.0403492368298681173161942726052531844678191219582",
+      "cosh_inradius": "1.1523824354812432526205751117734275567222509438032",
+      "cosh_circumradius": "1.1988801872890561523550403682353537659188977204614",
+      "half_edge": "0.28312815336765737616659220366840443719828649709566",
+      "edge": "0.56625630673531475233318440733680887439657299419131",
+      "inradius": "0.54527483175354308723044745025066872408608222344419",
+      "circumradius": "0.62067173755638587163513348933865362118526286487644",
+      "triangle_area": "0.074799825085471267582443890078083402004694509508933",
+      "heptagon_area": "1.0471975511965977461542144610931676280657231331251",
+      "total_area": "25.132741228718345907701147066236023073577355195001",
+      "gauss_bonnet_area": "25.132741228718345907701147066236023073577355195001",
+      "pythagoras_residual": "2.672764710092195646140536467151481878815196880105e-51",
+      "area_residual": "5.5593505969917669439723158516750823079356095106185e-49",
+      "triangle_area_vs_pi_42": "1.6704779438076222788378352919696761742594980500657e-51",
+      "heptagon_area_vs_pi_3": "2.4054882390829760815264828204363336909336771920945e-50",
+      "total_area_vs_8pi": "5.5593505969917669439723158516750823079356095106185e-49"
+    },
+    "identities_at_dps": true,
+    "combinatorial_closure": true,
+    "combinatorics": {
+      "V": 56,
+      "E": 84,
+      "F": 24,
+      "genus": 3
+    },
+    "disk_witness": {
+      "t_vertex": 0.30074261874637864,
+      "circumradius_numeric": 0.6206717375563858,
+      "edge_numeric": 0.5662563067353149,
+      "angle_numeric": 2.0943951023931957
+    },
+    "witness_circumradius_error": 0.0,
+    "witness_edge_error": 1.1102230246251565e-16,
+    "params": {
+      "dps": 50,
+      "tiling": "{7,3}",
+      "surface": "Klein quartic"
+    },
+    "passed": true
+  }
+}

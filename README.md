@@ -29,7 +29,7 @@ interactive laboratory, Coq, Lean 4, Rust, Isabelle, Agda, C++ and Haskell.
 [![CodeQL](https://img.shields.io/github/actions/workflow/status/wild8highlander/Trivortex/codeql.yml?branch=main&style=for-the-badge&logo=github&label=CodeQL)](https://github.com/wild8highlander/Trivortex/actions/workflows/codeql.yml)
 [![Docs Deploy](https://img.shields.io/github/actions/workflow/status/wild8highlander/Trivortex/deploy-docs.yml?branch=main&style=for-the-badge&logo=github&label=Docs%20Deploy)](https://github.com/wild8highlander/Trivortex/actions/workflows/deploy-docs.yml)
 [![Docker](https://img.shields.io/github/actions/workflow/status/wild8highlander/Trivortex/docker.yml?branch=main&style=for-the-badge&logo=docker&label=Docker)](https://github.com/wild8highlander/Trivortex/actions/workflows/docker.yml)
-[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/wild8highlander/Trivortex/badge)](https://securityscorecards.dev/viewer/?uri=github.com/wild8highlander/Trivortex)
+[![OpenSSF Scorecard](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fwild8highlander%2FTrivortex%2Fmain%2F.github%2Fbadges%2Fscorecard-badge.json&style=for-the-badge)](https://securityscorecards.dev/viewer/?uri=github.com/wild8highlander/Trivortex)
 
 <!-- ROW 2 — SCHOLARLY IDENTITY -->
 [![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.21825394-blue?style=for-the-badge&logo=zenodo&label=Zenodo)](https://doi.org/10.5281/zenodo.21825394)
@@ -41,7 +41,7 @@ interactive laboratory, Coq, Lean 4, Rust, Isabelle, Agda, C++ and Haskell.
 
 <!-- ROW 3 — PROJECT VITALS -->
 [![Release](https://img.shields.io/badge/Release-v1.0.1-gold?style=for-the-badge&logo=github&label=Latest%20Release)](https://github.com/wild8highlander/Trivortex/releases)
-[![pytest](https://img.shields.io/badge/pytest-126%20passed-2EA043?style=for-the-badge&logo=pytest)](verification/tests/)
+[![pytest](https://img.shields.io/badge/pytest-206%20passed-2EA043?style=for-the-badge&logo=pytest)](verification/tests/)
 [![Ladder](https://img.shields.io/badge/ladder-V1%E2%80%93V4%20%E2%9C%93%204%2F4-2EA043?style=for-the-badge)](verification/trivortex/python/verify.py)
 [![Ports](https://img.shields.io/badge/ports-8%20landed%20%28M1%E2%80%93M3%29-2EA043?style=for-the-badge)](verification/README.md)
 [![Document](https://img.shields.io/badge/document-22%20sections-1284BA?style=for-the-badge)](code/)
@@ -70,7 +70,7 @@ interactive laboratory, Coq, Lean 4, Rust, Isabelle, Agda, C++ and Haskell.
 3. [The vortex approach and the Chaplygin integral](#3-the-vortex-approach-and-the-chaplygin-integral)
 4. [Theorem 3.1 — the closed form](#4-theorem-31--the-closed-form)
 5. [Verification ladder V1–V4](#5-verification-ladder-v1v4)
-6. [The pytest guard — 126 tests](#6-the-pytest-guard--126-tests)
+6. [The pytest guard — 206 tests](#6-the-pytest-guard--206-tests)
 7. [Inside the document — 22 sections](#7-inside-the-document--22-sections)
 8. [The interactive menu — 15 modes](#8-the-interactive-menu--15-modes)
 9. [The report engine — seven formats](#9-the-report-engine--seven-formats)
@@ -172,6 +172,7 @@ The first public release is a complete, self-consistent edition. Concretely, it 
 | Documentation site | [`docs/site/`](docs/site/) | 9-page static site on GitHub Pages | deployed by CI |
 | **Cycloring** | [`cycloring/`](cycloring/) | the Gamma-period ring laboratory — mini-research with its own W-ladder, monographs, bilingual figures | 37 tests + W1–W7, all PASS |
 | **Polyvortex** | [`polyvortex/`](polyvortex/) | the N-vortex extension bench — Theorems A/B/E, Lemmas C/D, the π ln 2 boundary | 26 tests + W1–W7, all PASS |
+| **Planetvortex** | [`planetvortex/`](planetvortex/) | the planetary gravity–geometry bench — the solar system as a PSL(2,7) figure, exact heptagonal geometry, the vortex lattice, the Newtonian planets, the hardcore GR bridge, the spatial V-register and the closed gravifigure of the Klein quartic | 80 tests + P1–P7 + X1–X6 + V1–V2, all PASS |
 
 ---
 
@@ -356,15 +357,17 @@ protocol per run. Registered criteria and the latest reference results:
 
 ---
 
-## 6. The pytest guard — 126 tests
+## 6. The pytest guard — 206 tests
 
 The suite in [`verification/tests/`](verification/tests/) pins the analytic layer
 to hard reference values, guards all seven landed language ports and wraps the
 whole research program in CI-friendly form; the mini-repositories
-[`polyvortex/tests/`](polyvortex/tests/) and
-[`cycloring/tests/`](cycloring/tests/) add 26 and 37 more (the N-vortex bench
-and the Gamma-period ring laboratory, both self-contained). Together:
-**126 tests** in ≈ 30 s, only `numpy`, `scipy` and `pytest` required.
+[`polyvortex/tests/`](polyvortex/tests/),
+[`cycloring/tests/`](cycloring/tests/) and
+[`planetvortex/tests/`](planetvortex/tests/) add 26, 37 and 80 more (the
+N-vortex bench, the Gamma-period ring laboratory and the planetary
+gravity–geometry bench, all self-contained). Together:
+**206 tests** in ≈ 75 s, only `numpy`, `scipy` and `pytest` required.
 
 | Suite | Tests | What they guard |
 |---|---|---|
@@ -375,6 +378,7 @@ and the Gamma-period ring laboratory, both self-contained). Together:
 | `test_research_smoke.py` — library | 1 | the reading room: 28 PDFs + 28 DOCX + HTML sources + build system |
 | `test_cr_*.py` (cycloring) | 37 | the Gamma-period ring laboratory: the reflection and sine-product identities, the defect chain and the transducer, the root system, the polygon flow, the transport identity, the synchronous closure, the transducer table of the levels 7/9/15/30 |
 | `test_*` (polyvortex) | 26 | the N-vortex extension bench: ω_N for N = 2..8, the π ln 2 admissibility threshold, the H1 registers, the Havelock spectra, cross-pins against the parent ladder |
+| `test_*` (planetvortex) | 80 | the planetary gravity–geometry bench: the Fano axioms and the 168-element group in two models, the exact heptagonal closed forms, Kepler III certified in the two-body dynamics, the Sun + 8-planets conservation, the seven congruent vortex cells, the hardcore X-register (the brute-force PSL(2,7) enumeration, both actions with the S₇ bridge, the (2,3,7) generation, the hyperbolic {7,3} figure with the disk witness, the integrator certification, the 1PN Mercury anchor), the spatial V-register (the SO(3) tilt algebra of the real J2000 sky in 3D, the coset geometry of the Klein map {7,3}₈ with the 24-heptagon closed gravifigure, the 12 antipodal registers and the exact 8π curvature closure), cross-pins against the polyvortex ladder |
 
 ---
 
@@ -667,20 +671,20 @@ each study README.
 | TRX-11 period T | 6.3259140 ± 1e-7 | 1.2e-8 | PASS |
 | TRX-12 L4 hold | ≤ 1e-5 | 7.5e-7 | PASS |
 
-### The mini-research programs — CYCLORING and POLYVORTEX
+### The mini-research programs — CYCLORING, POLYVORTEX and PLANETVORTEX
 
-Beyond the twelve studies, the program grows through two self-contained
-**mini-research programs** — full laboratories with their own W-ladders
+Beyond the twelve studies, the program grows through three self-contained
+**mini-research programs** — full laboratories with their own W/P-ladders
 (seven registered stages each), their own bilingual monograph stacks,
 their own committed protocols and their own pytest guards:
 
-| | [**CYCLORING**](cycloring/README.md) | [**POLYVORTEX**](polyvortex/README.md) |
-|---|---|---|
-| scope | the regular N-vortex ring as the root system of one binomial — Γ-periods, the defect chain, the synchronous breathing | lifting Theorem 3.1 to arbitrary N — Layer K (Kirchhoff numeric) against Layer G (the closed form) |
-| headline | the algebraic boundary Ω(a, N−a) = π/sin(πa/N) at 5.1e−49; the breathing closes exactly at 3.1e−16 | the admissibility threshold **C_Ch > π ln 2**; the Havelock threshold N ≤ 7 stable / N ≥ 8 unstable (+0.4502) |
-| ladder | W1–W7, all PASS | W1–W7, all PASS |
-| guard | 37 tests | 26 tests |
-| publication stack | the big monograph + Theorems 1–5 × RU/EN × PDF/DOCX | the big monograph + Theorems A/B/E, Lemmas C/D × RU/EN × PDF/DOCX |
+| | [**CYCLORING**](cycloring/README.md) | [**POLYVORTEX**](polyvortex/README.md) | [**PLANETVORTEX**](planetvortex/README.md) |
+|---|---|---|---|
+| scope | the regular N-vortex ring as the root system of one binomial — Γ-periods, the defect chain, the synchronous breathing | lifting Theorem 3.1 to arbitrary N — Layer K (Kirchhoff numeric) against Layer G (the closed form) | the solar system as a PSL(2,7) figure — the seven wandering planets on the Fano heptagon, exact dimensions bound to the gravity ladder |
+| headline | the algebraic boundary Ω(a, N−a) = π/sin(πa/N) at 5.1e−49; the breathing closes exactly at 3.1e−16 | the admissibility threshold **C_Ch > π ln 2**; the Havelock threshold N ≤ 7 stable / N ≥ 8 unstable (+0.4502) | every Fano line is the congruent triangle (π/7, 2π/7, 4π/7) of area **√7/4·R²**; the seven cells' shape cycles agree with spread 0.0; Kepler III corrected to 6.2e−13; **Mercury 42.982″/century** against the textbook 42.98 (X6) |
+| ladder | W1–W7, all PASS | W1–W7, all PASS | P1–P7 + X1–X6, all PASS |
+| guard | 37 tests | 26 tests | 59 tests |
+| publication stack | the big monograph + Theorems 1–5 × RU/EN × PDF/DOCX | the big monograph + Theorems A/B/E, Lemmas C/D × RU/EN × PDF/DOCX | the big monograph + Theorems A/B/C, Lemmas D/E × RU/EN × PDF/DOCX |
 
 <div align="center">
 
@@ -692,10 +696,16 @@ their own committed protocols and their own pytest guards:
 
 <img src="polyvortex/figures/fig03_stability_scan.png" width="78%" alt="POLYVORTEX: the Havelock stability scan and the threshold spectra"/>
 
+**PLANETVORTEX — the gravity figure: PSL(2,7) on the heptagon, and the closed gravifigure**
+
+<img src="planetvortex/figures/fig01_fano_gravity_figure.png" width="78%" alt="PLANETVORTEX: the heptagonal gravity figure with the Fano lines and the exact cell"/>
+
+<img src="planetvortex/figures/600dpi/V2_klein_tiling/v2_01_disk_patch_gravifigure.png" width="78%" alt="PLANETVORTEX V2: the 24-heptagon closed gravifigure of the Klein quartic in the Poincare disk, 600 dpi"/>
+
 </div>
 
-Both mini-programs are covered by the same CI that guards the parent:
-syntax checks, the pytest guard and their W-ladders run on every push.
+All three mini-programs are covered by the same CI that guards the parent:
+syntax checks, the pytest guard and their W/P-ladders run on every push.
 
 ---
 
@@ -851,6 +861,31 @@ Trivortex/
 │   ├── tests/                       ← 26 tests, cross-pinned to the parent
 │   └── results/protocols/           ← seven committed JSON protocols
 │
+├── planetvortex/                    ← ★ THE PLANETARY GRAVITY–GEOMETRY BENCH (mini-repo)
+│   ├── README.md · README_RU.md · CHANGELOG.md · Makefile
+│   ├── docs/monograph/              ← THE BIG MONOGRAPH: RU+EN × md+docx+pdf
+│   ├── docs/monographs/             ← THEOREM EDITIONS: Theorems A, B, C, F, G;
+│   │                                  Lemmas D, E, F, G — RU+EN × docx+pdf
+│   ├── docs/monographs/stages/      ← focused per-stage monographs: all 15
+│   │                                  stages (P, X, V) × RU+EN
+│   ├── docs/theorems/               ← the formal theorems corpus (EN + RU)
+│   ├── c/                           ← the C99 oracle gravikernel (make -C c run)
+│   ├── js/                          ← the zero-dependency browser verifier
+│   ├── tools/                       ← crosslang_diff · editions_v · stage_monographs
+│   ├── figures/                     ← fig01–fig05 (300 dpi PNG) + scheme SVG
+│   │                                  generated by `make figures`, bound to protocols
+│   ├── figures/600dpi/              ← the 600 dpi ultra-resolution gallery per
+│   │                                  stage + three animations (GIF)
+│   ├── python/planetvortex/         ← classical (NASA register, Kepler) · fano
+│   │                                  (PSL(2,7)) · model · nbody · ladder · hardcore
+│   │                                  (X1–X6) · spatial (V1) · klein (V2) · vregister
+│   │                                  · runner · figures · pubfigures · monograph_gen
+│   │                                  · cli (the self-check: arbitrary planets → DOCX+PDF)
+│   ├── tests/                       ← 80 tests, cross-pinned to the polyvortex ladder
+│   └── results/protocols/           ← fifteen committed JSON protocols (P + X + V)
+│       results/crosslang/           ← the three-language agreement report
+│       results/generated/           ← the self-check monograph samples
+│
 ├── cycloring/                       ← ★ THE GAMMA-PERIOD RING LABORATORY (mini-research)
 │   ├── README.md · README_RU.md · CHANGELOG.md · Makefile
 │   ├── docs/monograph/              ← THE BIG MONOGRAPH: RU+EN × md+docx+pdf
@@ -900,8 +935,13 @@ python3 verification/trivortex/python/verify.py --preset full      # ~35 s
 
 # ── the pytest guard ─────────────────────────────────────
 python -m pytest verification/tests/ -v                            # 63 tests
-python -m pytest polyvortex/tests/ cycloring/tests/ -v             # 63 mini-repo tests
-python -m pytest -v                                                # all 126 from the root
+python -m pytest polyvortex/tests/ cycloring/tests/ planetvortex/tests/ -v   # 143 mini-repo tests
+python -m pytest -v                                                # all 206 from the root
+
+# ── the planetvortex self-check: arbitrary planets → monograph ─
+cd planetvortex
+PYTHONPATH=python python3 -m planetvortex.cli monograph \
+    --bodies "Sun,Earth,Kepler-452b#3.29e24*1.63" --lang en --format all   # md + docx + pdf
 
 # ── the extended research program (12 executable studies) ─
 python3 research/TRX-01-laser-radiation-pressure/code/trx01_laser_radiation_pressure.py
