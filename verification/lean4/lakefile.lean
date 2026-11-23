@@ -1,7 +1,7 @@
 import Lake
 open Lake DSL
 
-/- TRIVORTEX Lean 4 verification package (milestone M1).
+/- TRIVORTEX Lean 4 verification package (milestone M4, v2.0).
    SPDX-FileCopyrightText: 2026 Isaev Iskhak Khamzatovich
    SPDX-License-Identifier: LicenseRef-Proprietary-Wild8Highlander-1.0 -/
 
@@ -13,9 +13,8 @@ lean_lib «Trivortex» where
   -- the artifact is the single file Trivortex.lean at the package root
   roots := #[`Trivortex]
 
--- Mathlib supplies Real.cos_period, Real.exp_pos, Real.sq_sqrt and the
--- tactic suite (field_simp, positivity, norm_num) used by Trivortex.lean.
--- The Docker image (docker/lean4/Dockerfile) resolves and caches Mathlib;
--- see verification/lean4/README.md for the pinned-revision note.
+-- Mathlib is pinned to an exact revision for reproducibility
+-- (verification/README.md §8: never rely on a moving target).
+-- Pair: lean-toolchain v4.6.0 + mathlib4 @ tag v4.6.0 (2024-06).
 require mathlib from git
-  "https://github.com/leanprover-community/mathlib4.git" @ "master"
+  "https://github.com/leanprover-community/mathlib4.git" @ "v4.6.0"
