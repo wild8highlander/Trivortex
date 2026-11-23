@@ -15,6 +15,7 @@ KS-критерий против эталона, гистограммы.
 сравнивает спектры нашей лаборатории (например, линеаризованные кольца
 Хавелока) с универсальными ансамблями случайных матриц.
 """
+
 from __future__ import annotations
 
 import math
@@ -29,8 +30,7 @@ R_POISSON = 0.3863
 # ═══════════════════════════════════════════════════════════════════════════
 # Развёртка (unfolding)
 # ═══════════════════════════════════════════════════════════════════════════
-def unfold_spacings(eigenvalues: Sequence[float], degree: int = 3
-                    ) -> list[float]:
+def unfold_spacings(eigenvalues: Sequence[float], degree: int = 3) -> list[float]:
     """Полиномиальная развёртка спектра → нормированные интервалы.
 
     Подгоняет полином степени degree к накопленному числу уровней,
@@ -46,7 +46,7 @@ def unfold_spacings(eigenvalues: Sequence[float], degree: int = 3
     # метод наименьших квадратов для полинома (нормальные уравнения)
     m = degree + 1
     A = [[sum(x ** (i + j) for x in xs) for j in range(m)] for i in range(m)]
-    b = [sum(y * x ** i for x, y in zip(xs, ys)) for i in range(m)]
+    b = [sum(y * x**i for x, y in zip(xs, ys)) for i in range(m)]
     # Гаусс
     for col in range(m):
         piv = max(range(col, m), key=lambda r: abs(A[r][col]))
@@ -61,12 +61,12 @@ def unfold_spacings(eigenvalues: Sequence[float], degree: int = 3
             for c in range(col, m):
                 A[r][c] -= f * A[col][c]
             b[r] -= f * b[col]
-    coef = [b[i] / A[i][i] if abs(A[i][i]) > 1e-30 else 0.0
-            for i in range(m - 1, -1, -1)]
+    coef = [b[i] / A[i][i] if abs(A[i][i]) > 1e-30 else 0.0 for i in range(m - 1, -1, -1)]
+
     # coef[i] при x^? — порядок после обратного хода: пересоберём правильно
     # (проще пересчитать напрямую через numpy-подобный ход выше)
     def poly(x: float) -> float:
-        return sum(coef[m - 1 - k] * x ** k for k in range(m))
+        return sum(coef[m - 1 - k] * x**k for k in range(m))
 
     unfolded = [poly(x) for x in xs]
     spacings = [unfolded[i + 1] - unfolded[i] for i in range(n - 1)]
@@ -97,8 +97,7 @@ def classify(r_value: float) -> str:
     """Ближайший ансамбль по ⟨r⟩."""
     if r_value != r_value:
         return "не определён"
-    candidates = [("GUE", R_GUE), ("GOE", R_GOE),
-                  ("GSE", R_GSE), ("Poisson", R_POISSON)]
+    candidates = [("GUE", R_GUE), ("GOE", R_GOE), ("GSE", R_GSE), ("Poisson", R_POISSON)]
     name, _ = min(candidates, key=lambda kv: abs(kv[1] - r_value))
     return name
 
@@ -138,8 +137,7 @@ def ks_test(spacings: Sequence[float], cdf) -> float:
 # ═══════════════════════════════════════════════════════════════════════════
 # Полный анализ спектра
 # ═══════════════════════════════════════════════════════════════════════════
-def analyze_spectrum(eigenvalues: Sequence[float],
-                     degree: int = 3) -> dict:
+def analyze_spectrum(eigenvalues: Sequence[float], degree: int = 3) -> dict:
     """Развёртка → ⟨r⟩ → классификация → KS-тесты против всех ансамблей."""
     sp = unfold_spacings(eigenvalues, degree)
     if len(sp) < 5:
@@ -150,8 +148,7 @@ def analyze_spectrum(eigenvalues: Sequence[float],
         n_spacings=len(sp),
         r_mean=r,
         ensemble=classify(r),
-        reference=dict(GUE=R_GUE, GOE=R_GOE, GSE=R_GSE,
-                       Poisson=R_POISSON),
+        reference=dict(GUE=R_GUE, GOE=R_GOE, GSE=R_GSE, Poisson=R_POISSON),
         ks=dict(
             gue=ks_test(sp, gue_cdf),
             goe=ks_test(sp, goe_cdf),
@@ -161,8 +158,7 @@ def analyze_spectrum(eigenvalues: Sequence[float],
     )
 
 
-def synthetic_ensemble(kind: str = "gue", n: int = 60, seed: int = 42
-                       ) -> list[float]:
+def synthetic_ensemble(kind: str = "gue", n: int = 60, seed: int = 42) -> list[float]:
     """Синтетический эталон: собственные значения случайной матрицы.
 
     GUE: H = (A + A†)/2, A — комплексная гауссова; GOE: H = (A + Aᵀ)/2.
@@ -170,6 +166,7 @@ def synthetic_ensemble(kind: str = "gue", n: int = 60, seed: int = 42
     достаточно якобиевых вращений над симметризованной матрицей.
     """
     import random
+
     rng = random.Random(seed)
     n_dim = n
     if kind == "gue":
@@ -196,14 +193,12 @@ def synthetic_ensemble(kind: str = "gue", n: int = 60, seed: int = 42
     return eigs
 
 
-def jacobi_eigenvalues(H: list[list[float]], sweeps: int = 40,
-                       tol: float = 1e-10) -> list[float]:
+def jacobi_eigenvalues(H: list[list[float]], sweeps: int = 40, tol: float = 1e-10) -> list[float]:
     """Классический якобиев метод: вращения зануляют внедиагональ."""
     n = len(H)
     A = [row[:] for row in H]
     for _ in range(sweeps):
-        off = math.sqrt(sum(A[i][j] ** 2 for i in range(n)
-                            for j in range(i + 1, n)))
+        off = math.sqrt(sum(A[i][j] ** 2 for i in range(n) for j in range(i + 1, n)))
         if off < tol:
             break
         for p in range(n - 1):
@@ -211,8 +206,7 @@ def jacobi_eigenvalues(H: list[list[float]], sweeps: int = 40,
                 if abs(A[p][q]) < 1e-300:
                     continue
                 theta = (A[q][q] - A[p][p]) / (2.0 * A[p][q])
-                t = math.copysign(1.0, theta) / \
-                    (abs(theta) + math.sqrt(theta * theta + 1.0))
+                t = math.copysign(1.0, theta) / (abs(theta) + math.sqrt(theta * theta + 1.0))
                 c = 1.0 / math.sqrt(t * t + 1.0)
                 s = t * c
                 for k in range(n):

@@ -17,6 +17,7 @@ TRIVORTEX MASTER — параметр Тиссерана и динамическ
 
 Самопроверка по реальным элементам двух комет.
 """
+
 from __future__ import annotations
 
 import math
@@ -26,14 +27,14 @@ from dataclasses import dataclass
 @dataclass
 class SmallBody:
     """Элементы малой планеты/кометы (а.е., градусы)."""
+
     name: str
     a: float
     e: float
     i_deg: float
 
 
-def tisserand(a: float, e: float, i_deg: float, a_planet: float = 5.2038
-              ) -> float:
+def tisserand(a: float, e: float, i_deg: float, a_planet: float = 5.2038) -> float:
     """Параметр Тиссерана относительно планеты (а.е.)."""
     cos_i = math.cos(math.radians(i_deg))
     return a_planet / a + 2.0 * math.sqrt(a_planet / a * (1 - e * e)) * cos_i
@@ -48,8 +49,7 @@ def classify_jupiter(T_j: float) -> dict:
         cls = "комета семейства Юпитера (JFC)"
     else:
         cls = "тип Галлея / долгопериодическая (HTC/LPC)"
-    return dict(class_name=cls,
-                reference="Levison 1996, ASPC 149, 171")
+    return dict(class_name=cls, reference="Levison 1996, ASPC 149, 171")
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -63,32 +63,43 @@ HALDA = SmallBody("2P/Энке", a=2.2157, e=0.84833, i_deg=11.78)
 def halley_check() -> dict:
     """1P/Галлея: T_J ≈ −0.61 (ретроградная, i>90° → cos i < 0)."""
     t = tisserand(HALLEY.a, HALLEY.e, HALLEY.i_deg)
-    return dict(name=HALLEY.name, T_j=round(t, 3), expected=-0.61,
-                ok=abs(t - (-0.61)) < 0.1,
-                **classify_jupiter(t))
+    return dict(
+        name=HALLEY.name,
+        T_j=round(t, 3),
+        expected=-0.61,
+        ok=abs(t - (-0.61)) < 0.1,
+        **classify_jupiter(t),
+    )
 
 
 def jfc_check() -> dict:
     """67P: T_J ≈ 2.75 — типичная комета семейства Юпитера."""
     t = tisserand(P67.a, P67.e, P67.i_deg)
-    return dict(name=P67.name, T_j=round(t, 3), expected=2.75,
-                ok=abs(t - 2.75) < 0.15,
-                **classify_jupiter(t))
+    return dict(
+        name=P67.name,
+        T_j=round(t, 3),
+        expected=2.75,
+        ok=abs(t - 2.75) < 0.15,
+        **classify_jupiter(t),
+    )
 
 
 def encke_check() -> dict:
     """2P/Энке: T_J ≈ 3.03 — «комета-астроид», на границе."""
     t = tisserand(HALDA.a, HALDA.e, HALDA.i_deg)
-    return dict(name=HALDA.name, T_j=round(t, 3), expected=3.03,
-                ok=abs(t - 3.03) < 0.1,
-                **classify_jupiter(t))
+    return dict(
+        name=HALDA.name,
+        T_j=round(t, 3),
+        expected=3.03,
+        ok=abs(t - 3.03) < 0.1,
+        **classify_jupiter(t),
+    )
 
 
 # ═══════════════════════════════════════════════════════════════════════════
 # Пойнтинг-Робертсон и Тиссеран
 # ═══════════════════════════════════════════════════════════════════════════
-def tisserand_under_pr(a0: float, t_pr_s: float, t_s: float,
-                       a_planet: float = 5.2038) -> dict:
+def tisserand_under_pr(a0: float, t_pr_s: float, t_s: float, a_planet: float = 5.2038) -> dict:
     """Эволюция Тиссерана пылинки под Пойнтингом-Робертсоном.
 
     Wyatt & Whipple 1950: сначала быстрая циркуляризация (e → 0 за
@@ -100,11 +111,10 @@ def tisserand_under_pr(a0: float, t_pr_s: float, t_s: float,
         return dict(T=tisserand(a0, 0.0, 0.0, a_planet), dT_dt=0.0)
     a_t = a0 * math.exp(-t_s / max(t_pr_s, 1e-9))
     T_now = a_planet / a_t
-    dT_da = -a_planet / a_t ** 2
+    dT_da = -a_planet / a_t**2
     da_dt = -a_t / t_pr_s
     dT_dt = dT_da * da_dt
-    return dict(a_now_au=a_t, T=T_now, dT_dt=dT_dt,
-                note="Wyatt & Whipple 1950: a = a₀e^{−t/t_PR}")
+    return dict(a_now_au=a_t, T=T_now, dT_dt=dT_dt, note="Wyatt & Whipple 1950: a = a₀e^{−t/t_PR}")
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -133,11 +143,15 @@ def self_check() -> dict:
     j = jfc_check()
     e = encke_check()
     return dict(
-        T_ceres=round(t_ceres, 4), ceres_ok=ceres_ok,
-        T_coorbital=t_coorbital, coorbital_ok=coorbital_ok,
-        halley_T=h["T_j"], halley_class_ok=halley_class_ok,
-        p67_T=j["T_j"], encke_T=e["T_j"],
+        T_ceres=round(t_ceres, 4),
+        ceres_ok=ceres_ok,
+        T_coorbital=t_coorbital,
+        coorbital_ok=coorbital_ok,
+        halley_T=h["T_j"],
+        halley_class_ok=halley_class_ok,
+        p67_T=j["T_j"],
+        encke_T=e["T_j"],
         note="67P/Энке: вычисленные T_J возвращаются без равенства — "
-             "памятные значения не воспроизвелись, SBDB недоступен",
+        "памятные значения не воспроизвелись, SBDB недоступен",
         all_ok=ceres_ok and coorbital_ok and halley_class_ok,
     )

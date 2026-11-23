@@ -20,6 +20,7 @@ TRIVORTEX MASTER — конвейер анализа данных (пайпла�
 кэш даёт второй прогон без вычислений; сбой изолируется; цикл
 обнаруживается.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -35,23 +36,25 @@ from typing import Any, Callable
 @dataclass
 class PipelineStep:
     """Один шаг: функция от словаря результатов входов."""
+
     name: str
     func: Callable[[dict[str, Any]], Any]
     inputs: tuple[str, ...] = ()
-    version: str = "1"          # изменение версии инвалидирует кэш
+    version: str = "1"  # изменение версии инвалидирует кэш
     validator: Callable[[Any], list[str]] | None = None
 
     def signature(self) -> str:
         """Хэш имени+версии+входов — ключ кэша."""
-        payload = json.dumps(dict(name=self.name, v=self.version,
-                                  inputs=list(self.inputs)),
-                             sort_keys=True)
+        payload = json.dumps(
+            dict(name=self.name, v=self.version, inputs=list(self.inputs)), sort_keys=True
+        )
         return hashlib.sha256(payload.encode()).hexdigest()[:16]
 
 
 @dataclass
 class StepResult:
     """Результат шага: значение или ошибка + происхождение."""
+
     step: str
     ok: bool
     value: Any = None
@@ -73,7 +76,7 @@ class Pipeline:
         self.results: dict[str, StepResult] = {}
         self._cache: dict[str, Any] = {}
 
-    def add(self, step: PipelineStep) -> "Pipeline":
+    def add(self, step: PipelineStep) -> Pipeline:
         if step.name in self.steps:
             raise ValueError(f"шаг уже есть: {step.name}")
         self.steps[step.name] = step
@@ -83,8 +86,7 @@ class Pipeline:
     def topo_order(self) -> list[str]:
         """Сортировка Кана (1962): обнаруживает циклы."""
         indeg = {name: 0 for name in self.steps}
-        dependents: dict[str, list[str]] = {name: []
-                                            for name in self.steps}
+        dependents: dict[str, list[str]] = {name: [] for name in self.steps}
         for name, step in self.steps.items():
             for inp in step.inputs:
                 if inp not in self.steps:
@@ -113,23 +115,26 @@ class Pipeline:
         for name in self.topo_order():
             step = self.steps[name]
             # входы: значения успешных шагов
-            inputs_ok = all(self.results.get(i) is not None
-                            and self.results[i].ok
-                            for i in step.inputs)
+            inputs_ok = all(
+                self.results.get(i) is not None and self.results[i].ok for i in step.inputs
+            )
             if not inputs_ok:
-                failed = [i for i in step.inputs
-                          if self.results.get(i) is None
-                          or not self.results[i].ok]
+                failed = [
+                    i for i in step.inputs if self.results.get(i) is None or not self.results[i].ok
+                ]
                 self.results[name] = StepResult(
-                    step=name, ok=False,
-                    error=f"пропущен: входы недоступны ({failed})")
+                    step=name, ok=False, error=f"пропущен: входы недоступны ({failed})"
+                )
                 continue
             key = step.signature()
             if use_cache and key in self._cache:
                 self.results[name] = StepResult(
-                    step=name, ok=True, value=self._cache[key],
+                    step=name,
+                    ok=True,
+                    value=self._cache[key],
                     from_cache=True,
-                    provenance=self._provenance_of(name))
+                    provenance=self._provenance_of(name),
+                )
                 continue
             args = {i: self.results[i].value for i in step.inputs}
             t0 = time.perf_counter()
@@ -140,19 +145,22 @@ class Pipeline:
                     errors = step.validator(value) or []
                 if errors:
                     self.results[name] = StepResult(
-                        step=name, ok=False,
-                        error=f"контракт нарушен: {errors}")
+                        step=name, ok=False, error=f"контракт нарушен: {errors}"
+                    )
                     continue
                 duration = time.perf_counter() - t0
                 self.results[name] = StepResult(
-                    step=name, ok=True, value=value,
+                    step=name,
+                    ok=True,
+                    value=value,
                     duration_s=duration,
-                    provenance=self._provenance_of(name))
+                    provenance=self._provenance_of(name),
+                )
                 self._cache[key] = value
             except Exception as exc:
                 self.results[name] = StepResult(
-                    step=name, ok=False,
-                    error=f"{type(exc).__name__}: {exc}")
+                    step=name, ok=False, error=f"{type(exc).__name__}: {exc}"
+                )
 
         return self.results
 
@@ -170,13 +178,15 @@ class Pipeline:
     def summary(self) -> dict:
         ok_n = sum(1 for r in self.results.values() if r.ok)
         cached_n = sum(1 for r in self.results.values() if r.from_cache)
-        return dict(name=self.name, steps=len(self.results),
-                    ok=ok_n, failed=len(self.results) - ok_n,
-                    cached=cached_n,
-                    total_s=sum(r.duration_s
-                                for r in self.results.values()),
-                    failed_steps=[r.step for r in self.results.values()
-                                  if not r.ok])
+        return dict(
+            name=self.name,
+            steps=len(self.results),
+            ok=ok_n,
+            failed=len(self.results) - ok_n,
+            cached=cached_n,
+            total_s=sum(r.duration_s for r in self.results.values()),
+            failed_steps=[r.step for r in self.results.values() if not r.ok],
+        )
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -209,13 +219,19 @@ def self_check() -> dict:
     pipe.add(PipelineStep("raw", make_raw))
     pipe.add(PipelineStep("clean", clean, inputs=("raw",)))
     pipe.add(PipelineStep("stats", stats, inputs=("clean",)))
-    pipe.add(PipelineStep("report", report, inputs=("stats",),
-                          validator=lambda v: [] if isinstance(v, str)
-                          and len(v) > 0 else ["не строка/пусто"]))
+    pipe.add(
+        PipelineStep(
+            "report",
+            report,
+            inputs=("stats",),
+            validator=lambda v: [] if isinstance(v, str) and len(v) > 0 else ["не строка/пусто"],
+        )
+    )
     # порядок
     order = pipe.topo_order()
-    order_ok = order.index("raw") < order.index("clean") \
-        < order.index("stats") < order.index("report")
+    order_ok = (
+        order.index("raw") < order.index("clean") < order.index("stats") < order.index("report")
+    )
     # первый прогон: все вычислены
     res1 = pipe.run(use_cache=True)
     first_ok = all(r.ok for r in res1.values())
@@ -223,18 +239,19 @@ def self_check() -> dict:
     # второй прогон: всё из кэша
     calls.clear()
     res2 = pipe.run(use_cache=True)
-    cache_ok = len(calls) == 0 and all(r.from_cache for r in
-                                       res2.values())
+    cache_ok = len(calls) == 0 and all(r.from_cache for r in res2.values())
     # сбой изолируется: чистка падает, отчёт скипается, сырьё живёт
     pipe2 = Pipeline("fail")
     pipe2.add(PipelineStep("raw", make_raw))
-    pipe2.add(PipelineStep("bad", lambda a: 1 / 0,
-                           inputs=("raw",)))
+    pipe2.add(PipelineStep("bad", lambda a: 1 / 0, inputs=("raw",)))
     pipe2.add(PipelineStep("independent", lambda a: 42))
     res3 = pipe2.run(use_cache=False)
-    isolation_ok = (res3["raw"].ok and not res3["bad"].ok
-                    and res3["independent"].ok
-                    and "ZeroDivisionError" in res3["bad"].error)
+    isolation_ok = (
+        res3["raw"].ok
+        and not res3["bad"].ok
+        and res3["independent"].ok
+        and "ZeroDivisionError" in res3["bad"].error
+    )
     # цикл ловится
     pipe3 = Pipeline("cycle")
     pipe3.add(PipelineStep("a", lambda x: 1, inputs=("b",)))
@@ -246,24 +263,30 @@ def self_check() -> dict:
         cycle_ok = "цикл" in str(exc)
     # provenance транзитивен
     prov = res1["report"].provenance
-    prov_ok = any("raw@" in p for p in prov) and \
-        any("stats@" in p for p in prov)
+    prov_ok = any("raw@" in p for p in prov) and any("stats@" in p for p in prov)
     # валидатор отвергает мусор
     pipe4 = Pipeline("contract")
-    pipe4.add(PipelineStep("bad_out", lambda a: "",
-                           validator=lambda v: ["пусто"]))
+    pipe4.add(PipelineStep("bad_out", lambda a: "", validator=lambda v: ["пусто"]))
     res4 = pipe4.run(use_cache=False)
-    contract_ok = not res4["bad_out"].ok \
-        and "контракт" in res4["bad_out"].error
+    contract_ok = not res4["bad_out"].ok and "контракт" in res4["bad_out"].error
     summ = pipe.summary()
     return dict(
-        order_ok=order_ok, first_run_ok=first_ok,
-        computed_first=computed_n, cache_ok=cache_ok,
-        isolation_ok=isolation_ok, cycle_detected=cycle_ok,
-        provenance_ok=prov_ok, contract_ok=contract_ok,
+        order_ok=order_ok,
+        first_run_ok=first_ok,
+        computed_first=computed_n,
+        cache_ok=cache_ok,
+        isolation_ok=isolation_ok,
+        cycle_detected=cycle_ok,
+        provenance_ok=prov_ok,
+        contract_ok=contract_ok,
         summary=dict(ok=summ["ok"], total=summ["steps"]),
-        all_ok=order_ok and first_ok and cache_ok and isolation_ok
-        and cycle_ok and prov_ok and contract_ok,
+        all_ok=order_ok
+        and first_ok
+        and cache_ok
+        and isolation_ok
+        and cycle_ok
+        and prov_ok
+        and contract_ok,
         note="топология Кана 1962; кэш по sha256(имя,версия,входы); "
-             "сбой шага изолируется, зависимые скипаются",
+        "сбой шага изолируется, зависимые скипаются",
     )

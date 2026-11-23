@@ -7,6 +7,7 @@ TRIVORTEX MASTER — мост к ядру репозитория Trivortex.
 API правился только этот файл. Если копия репозитория не найдена — мастер
 работает в автономном режиме (CoreStatus.available = False).
 """
+
 from __future__ import annotations
 
 import importlib.util
@@ -23,12 +24,12 @@ from dataclasses import dataclass, field
 # репозитория исправлено 2026-11-23 на 2.6680737914285615 (ранее стояло
 # 0.7276…, что не согласовалось с формулой) — мастер следует коду.
 THEOREM31_REF = {
-    "omega": 1.3748022274393588,       # ω = (2π/T)·e^(1/π)
-    "epsilon": 2.6680737914285615,     # ε = 1/(e^(1/π) − 1)
-    "angular_separation_tol": 1e-12,   # V1: разделение 2π/3
-    "periodicity_tol": 1e-12,          # V1: периодичность
+    "omega": 1.3748022274393588,  # ω = (2π/T)·e^(1/π)
+    "epsilon": 2.6680737914285615,  # ε = 1/(e^(1/π) − 1)
+    "angular_separation_tol": 1e-12,  # V1: разделение 2π/3
+    "periodicity_tol": 1e-12,  # V1: периодичность
     "readme_eps_erratum": "README §11: ε исправлено 2026-11-23 на "
-                          "2.6680737914285615 (ранее 0.7276379117656014)",
+    "2.6680737914285615 (ранее 0.7276379117656014)",
 }
 
 # Порог Хавелока (POLYVORTEX, стадия W4)
@@ -42,10 +43,8 @@ LADDER_LEVELS = ["V1", "V2", "V3", "V4"]
 
 _TRIVORTEX_CANDIDATES = [
     os.environ.get("TRIVORTEX_HOME", ""),
-    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                 "Trivortex"),
-    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                 ".trivortex"),
+    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "Trivortex"),
+    os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".trivortex"),
     os.path.expanduser("~/Trivortex"),
 ]
 
@@ -53,6 +52,7 @@ _TRIVORTEX_CANDIDATES = [
 @dataclass
 class CoreStatus:
     """Снимок доступности ядра."""
+
     available: bool = False
     core_path: str | None = None
     verification_path: str | None = None
@@ -67,6 +67,7 @@ class CoreStatus:
 @dataclass
 class VerificationResult:
     """Результат прогона лестницы verify.py."""
+
     level: str = ""
     passed: bool = False
     metrics: dict = field(default_factory=dict)
@@ -80,8 +81,9 @@ def find_trivortex() -> str | None:
     for cand in _TRIVORTEX_CANDIDATES:
         if not cand:
             continue
-        if (os.path.isfile(os.path.join(cand, "code", "trivortex_core_en.py"))
-                or os.path.isfile(os.path.join(cand, "code", "trivortex_core.py"))):
+        if os.path.isfile(os.path.join(cand, "code", "trivortex_core_en.py")) or os.path.isfile(
+            os.path.join(cand, "code", "trivortex_core.py")
+        ):
             return os.path.abspath(cand)
     return None
 
@@ -96,11 +98,12 @@ def load_core():
         return _CORE_MODULE
     root = find_trivortex()
     if root is None:
-        raise ImportError("локальная копия Trivortex не найдена; "
-                          "задайте TRIVORTEX_HOME или склонируйте репозиторий "
-                          "рядом с trivortex_master/")
-    for name in ("trivortex_core_en.py", "trivortex_core.py",
-                 "trivortex_core_ru.py"):
+        raise ImportError(
+            "локальная копия Trivortex не найдена; "
+            "задайте TRIVORTEX_HOME или склонируйте репозиторий "
+            "рядом с trivortex_master/"
+        )
+    for name in ("trivortex_core_en.py", "trivortex_core.py", "trivortex_core_ru.py"):
         path = os.path.join(root, "code", name)
         if os.path.isfile(path):
             spec = importlib.util.spec_from_file_location("trv_core", path)
@@ -165,24 +168,23 @@ def run_verification(mode: str = "quick", timeout: float = 300.0) -> Verificatio
     root = find_trivortex()
     if root is None:
         return VerificationResult(
-            passed=False, log="репозиторий Trivortex не найден — "
-                              "верификация недоступна в автономном режиме")
+            passed=False,
+            log="репозиторий Trivortex не найден — " "верификация недоступна в автономном режиме",
+        )
     script = os.path.join(root, "verification", "trivortex", "python", "verify.py")
     if not os.path.isfile(script):
-        return VerificationResult(passed=False,
-                                  log=f"verify.py не найден: {script}")
+        return VerificationResult(passed=False, log=f"verify.py не найден: {script}")
     cmd = [sys.executable, script, "--preset", mode]
     try:
-        proc = subprocess.run(cmd, capture_output=True, text=True,
-                              timeout=timeout, cwd=os.path.dirname(script))
+        proc = subprocess.run(
+            cmd, capture_output=True, text=True, timeout=timeout, cwd=os.path.dirname(script)
+        )
     except subprocess.TimeoutExpired:
-        return VerificationResult(passed=False,
-                                  log=f"таймаут {timeout:.0f} с")
+        return VerificationResult(passed=False, log=f"таймаут {timeout:.0f} с")
     except OSError as exc:
         return VerificationResult(passed=False, log=str(exc))
 
-    result = VerificationResult(level="V1-V4", preset=mode,
-                                log=(proc.stdout or "")[-4000:])
+    result = VerificationResult(level="V1-V4", preset=mode, log=(proc.stdout or "")[-4000:])
     # парсинг JSON-протокола из вывода (последний {...}-блок)
     if proc.returncode == 0:
         result.passed = True
@@ -234,15 +236,16 @@ def load_research_protocol(trx_id: str) -> dict | None:
     readme = os.path.join(path, "README.md")
     if os.path.isfile(readme):
         try:
-            with open(readme, "r", encoding="utf-8") as fh:
+            with open(readme, encoding="utf-8") as fh:
                 info["readme_head"] = fh.read(2000)
         except OSError:
             pass
     return info
 
 
-def theorem31_series(n_points: int = 200, C_Ch: float = 1.0,
-                     T: float = 2 * 3.141592653589793) -> list[dict]:
+def theorem31_series(
+    n_points: int = 200, C_Ch: float = 1.0, T: float = 2 * 3.141592653589793
+) -> list[dict]:
     """
     Замкнутая форма Теоремы 3.1 — собственная реализация моста
     (используется планировщиком AnalyticPlanner без импорта ядра):
@@ -252,6 +255,7 @@ def theorem31_series(n_points: int = 200, C_Ch: float = 1.0,
         ω        = (2π/T)·e^(C_Ch/π),  ε = 1/(e^(C_Ch/π) − 1)
     """
     import math
+
     ratio = math.exp(C_Ch / math.pi)
     omega = (2 * math.pi / T) * ratio
     # guard ядра: при C_Ch <= 0.01 амплитуда фиксируется на 1

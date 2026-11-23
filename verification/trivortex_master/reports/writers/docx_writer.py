@@ -10,6 +10,7 @@ word/_rels/document.xml.rels). Экранирование — xml.sax.saxutils.e
 Поддержка: заголовки (стили Heading1/2), абзацы (жирный/курсив/цвет),
 таблицы, изображения PNG (base64 → media/), метаданные.
 """
+
 from __future__ import annotations
 
 import base64
@@ -57,21 +58,27 @@ class DocxBuilder:
     def __init__(self, title: str = "Отчёт TRIVORTEX MASTER"):
         self.title = title
         self.body: list[str] = []
-        self.rels: list[str] = []     # rId изображений
+        self.rels: list[str] = []  # rId изображений
         self.media: list[tuple[str, bytes]] = []
         self._img_counter = 0
 
     # ── элементы ──
-    def heading(self, text: str, level: int = 1) -> "DocxBuilder":
+    def heading(self, text: str, level: int = 1) -> DocxBuilder:
         style = f"Heading{min(level, 2)}"
         self.body.append(
             f'<w:p><w:pPr><w:pStyle w:val="{style}"/></w:pPr>'
-            f'<w:r><w:t xml:space="preserve">{escape(text)}</w:t></w:r></w:p>')
+            f'<w:r><w:t xml:space="preserve">{escape(text)}</w:t></w:r></w:p>'
+        )
         return self
 
-    def paragraph(self, text: str, bold: bool = False, italic: bool = False,
-                  color: str | None = None, size_half_pt: int = 22
-                  ) -> "DocxBuilder":
+    def paragraph(
+        self,
+        text: str,
+        bold: bool = False,
+        italic: bool = False,
+        color: str | None = None,
+        size_half_pt: int = 22,
+    ) -> DocxBuilder:
         rpr = ""
         if bold:
             rpr += "<w:b/>"
@@ -81,61 +88,69 @@ class DocxBuilder:
             rpr += f'<w:color w:val="{color.lstrip("#")}"/>'
         rpr += f'<w:sz w:val="{size_half_pt}"/>'
         self.body.append(
-            f'<w:p><w:r><w:rPr>{rpr}</w:rPr>'
-            f'<w:t xml:space="preserve">{escape(text)}</w:t></w:r></w:p>')
+            f"<w:p><w:r><w:rPr>{rpr}</w:rPr>"
+            f'<w:t xml:space="preserve">{escape(text)}</w:t></w:r></w:p>'
+        )
         return self
 
-    def bullet(self, text: str) -> "DocxBuilder":
+    def bullet(self, text: str) -> DocxBuilder:
         self.body.append(
             '<w:p><w:pPr><w:ind w:left="360" w:hanging="180"/></w:pPr>'
-            '<w:r><w:t xml:space="preserve">• {0}</w:t></w:r></w:p>'.format(
-                escape(text)))
+            f'<w:r><w:t xml:space="preserve">• {escape(text)}</w:t></w:r></w:p>'
+        )
         return self
 
-    def table(self, headers: Sequence[str], rows: Sequence[Sequence[str]],
-              widths: Sequence[int] | None = None) -> "DocxBuilder":
+    def table(
+        self,
+        headers: Sequence[str],
+        rows: Sequence[Sequence[str]],
+        widths: Sequence[int] | None = None,
+    ) -> DocxBuilder:
         """Таблица с заливкой шапки и зеброй строк."""
         ncols = len(headers)
         if widths is None:
             widths = [int(9000 / ncols)] * ncols
         # границы
-        borders = ('<w:tblBorders>'
-                   '<w:top w:val="single" w:sz="4" w:color="1B6B7A"/>'
-                   '<w:left w:val="none" w:sz="0" w:color="auto"/>'
-                   '<w:bottom w:val="single" w:sz="4" w:color="1B6B7A"/>'
-                   '<w:right w:val="none" w:sz="0" w:color="auto"/>'
-                   '<w:insideH w:val="single" w:sz="2" w:color="C8DDE2"/>'
-                   '<w:insideV w:val="none" w:sz="0" w:color="auto"/>'
-                   '</w:tblBorders>')
-        xml = [f'<w:tbl><w:tblPr>{borders}'
-               f'<w:tblW w:w="9000" w:type="dxa"/></w:tblPr>']
+        borders = (
+            "<w:tblBorders>"
+            '<w:top w:val="single" w:sz="4" w:color="1B6B7A"/>'
+            '<w:left w:val="none" w:sz="0" w:color="auto"/>'
+            '<w:bottom w:val="single" w:sz="4" w:color="1B6B7A"/>'
+            '<w:right w:val="none" w:sz="0" w:color="auto"/>'
+            '<w:insideH w:val="single" w:sz="2" w:color="C8DDE2"/>'
+            '<w:insideV w:val="none" w:sz="0" w:color="auto"/>'
+            "</w:tblBorders>"
+        )
+        xml = [f"<w:tbl><w:tblPr>{borders}" f'<w:tblW w:w="9000" w:type="dxa"/></w:tblPr>']
         # шапка
-        xml.append('<w:tr><w:trPr><w:tblHeader/></w:trPr>')
+        xml.append("<w:tr><w:trPr><w:tblHeader/></w:trPr>")
         for h, w in zip(headers, widths):
             xml.append(
                 f'<w:tc><w:tcPr><w:tcW w:w="{w}" w:type="dxa"/>'
                 f'<w:shd w:val="clear" w:fill="1B6B7A"/></w:tcPr>'
                 f'<w:p><w:r><w:rPr><w:b/><w:color w:val="FFFFFF"/><w:sz w:val="19"/></w:rPr>'
-                f'<w:t xml:space="preserve">{escape(str(h))}</w:t></w:r></w:p></w:tc>')
-        xml.append('</w:tr>')
+                f'<w:t xml:space="preserve">{escape(str(h))}</w:t></w:r></w:p></w:tc>'
+            )
+        xml.append("</w:tr>")
         # строки
         for i, row in enumerate(rows):
             fill = "EDF3F5" if i % 2 else "FFFFFF"
-            xml.append('<w:tr>')
+            xml.append("<w:tr>")
             for cell in row:
                 xml.append(
                     f'<w:tc><w:tcPr><w:tcW w:w="0" w:type="auto"/>'
                     f'<w:shd w:val="clear" w:fill="{fill}"/></w:tcPr>'
                     f'<w:p><w:r><w:rPr><w:sz w:val="19"/></w:rPr>'
-                    f'<w:t xml:space="preserve">{escape(str(cell))}</w:t></w:r></w:p></w:tc>')
-            xml.append('</w:tr>')
-        xml.append('</w:tbl>')
+                    f'<w:t xml:space="preserve">{escape(str(cell))}</w:t></w:r></w:p></w:tc>'
+                )
+            xml.append("</w:tr>")
+        xml.append("</w:tbl>")
         # пустой абзац после таблицы (иначе Word склеивает)
-        xml.append('<w:p/>')
+        xml.append("<w:p/>")
         self.body.append("".join(xml))
         return self
 
-    def image(self, png_path: str, width_emu: int = 5200000) -> "DocxBuilder":
+    def image(self, png_path: str, width_emu: int = 5200000) -> DocxBuilder:
         """Вставить PNG. width_emu — ширина в EMU (914400 = 1 дюйм)."""
         with open(png_path, "rb") as fh:
             data = fh.read()
@@ -146,12 +161,13 @@ class DocxBuilder:
         self.rels.append(
             f'<Relationship Id="{rid}" '
             f'Type="http://schemas.openxmlformats.org/drawingml/2006/relationships/image" '
-            f'Target="media/{name}"/>')
+            f'Target="media/{name}"/>'
+        )
         # размер: читаем из PNG-заголовка
         w_px = int.from_bytes(data[16:20], "big")
         h_px = int.from_bytes(data[20:24], "big")
         h_emu = int(width_emu * h_px / max(w_px, 1))
-        self.body.append(f'''<w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:drawing>
+        self.body.append(f"""<w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:drawing>
 <wp:inline xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" distT="0" distB="0" distL="0" distR="0">
 <wp:extent cx="{width_emu}" cy="{h_emu}"/>
 <wp:docPr id="{self._img_counter}" name="{name}"/>
@@ -162,29 +178,36 @@ class DocxBuilder:
 <pic:blipFill><a:blip r:embed="{rid}" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>
 <pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="{width_emu}" cy="{h_emu}"/></a:xfrm>
 <a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr>
-</pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>''')
+</pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>""")
         return self
 
-    def spacer(self) -> "DocxBuilder":
+    def spacer(self) -> DocxBuilder:
         self.body.append('<w:p><w:pPr><w:spacing w:after="120"/></w:pPr></w:p>')
         return self
 
     # ── сборка ──
     def _document_xml(self) -> str:
-        core_props = (f'<w:p><w:pPr><w:jc w:val="center"/></w:pPr>'
-                      f'<w:r><w:rPr><w:b/><w:sz w:val="40"/><w:color w:val="0A1628"/></w:rPr>'
-                      f'<w:t xml:space="preserve">{escape(self.title)}</w:t></w:r></w:p>')
-        return (f'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
-                f'<w:document xmlns:w="{W_NS}">'
-                f'<w:body>{core_props}{"".join(self.body)}'
-                f'<w:sectPr><w:pgSz w:w="11906" w:h="16838"/>'
-                f'<w:pgMar w:top="1440" w:right="1417" w:bottom="1440" w:left="1701"/>'
-                f'</w:sectPr></w:body></w:document>')
+        core_props = (
+            f'<w:p><w:pPr><w:jc w:val="center"/></w:pPr>'
+            f'<w:r><w:rPr><w:b/><w:sz w:val="40"/><w:color w:val="0A1628"/></w:rPr>'
+            f'<w:t xml:space="preserve">{escape(self.title)}</w:t></w:r></w:p>'
+        )
+        return (
+            f'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            f'<w:document xmlns:w="{W_NS}">'
+            f'<w:body>{core_props}{"".join(self.body)}'
+            f'<w:sectPr><w:pgSz w:w="11906" w:h="16838"/>'
+            f'<w:pgMar w:top="1440" w:right="1417" w:bottom="1440" w:left="1701"/>'
+            f"</w:sectPr></w:body></w:document>"
+        )
 
     def _document_rels(self) -> str:
-        return ('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
-                '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
-                + "".join(self.rels) + '</Relationships>')
+        return (
+            '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+            + "".join(self.rels)
+            + "</Relationships>"
+        )
 
     def save(self, path: str) -> int:
         doc_rels_needed = bool(self.rels)
@@ -208,8 +231,7 @@ def validate_docx(path: str) -> list[str]:
             if zf.testzip() is not None:
                 problems.append("битые CRC в zip")
             names = set(zf.namelist())
-            for req in ("[Content_Types].xml", "_rels/.rels",
-                        "word/document.xml"):
+            for req in ("[Content_Types].xml", "_rels/.rels", "word/document.xml"):
                 if req not in names:
                     problems.append(f"нет части {req}")
             doc = zf.read("word/document.xml").decode("utf-8")

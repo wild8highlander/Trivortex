@@ -15,6 +15,7 @@ https://ssd.jpl.nasa.gov/api/horizons.api (Giorgini et al. 1996+):
 
 Использование: пресет «планеты на сегодняшнюю дату» в лаборатории.
 """
+
 from __future__ import annotations
 
 import datetime as _dt
@@ -32,31 +33,49 @@ SOURCE = "https://ssd.jpl.nasa.gov/api/horizons.api (JPL SSD)"
 
 # id тел в Horizons (major bodies)
 BODIES = {
-    "mercury": "199", "venus": "299", "earth": "399", "mars": "499",
-    "jupiter": "599", "saturn": "699", "uranus": "799", "neptune": "899",
-    "sun": "10", "moon": "301",
+    "mercury": "199",
+    "venus": "299",
+    "earth": "399",
+    "mars": "499",
+    "jupiter": "599",
+    "saturn": "699",
+    "uranus": "799",
+    "neptune": "899",
+    "sun": "10",
+    "moon": "301",
 }
 
 # массы (кг) и радиусы (м) для сборки Body — NSSDC
 BODIES_PHYS = {
-    "mercury": (3.301e23, 2.4397e6), "venus": (4.867e24, 6.0518e6),
-    "earth": (5.9722e24, 6.371e6), "mars": (6.417e23, 3.3895e6),
-    "jupiter": (1.898e27, 6.9911e7), "saturn": (5.683e26, 5.8232e7),
-    "uranus": (8.681e25, 2.5362e7), "neptune": (1.024e26, 2.4622e7),
-    "sun": (1.9884e30, 6.957e8), "moon": (7.342e22, 1.7375e6),
+    "mercury": (3.301e23, 2.4397e6),
+    "venus": (4.867e24, 6.0518e6),
+    "earth": (5.9722e24, 6.371e6),
+    "mars": (6.417e23, 3.3895e6),
+    "jupiter": (1.898e27, 6.9911e7),
+    "saturn": (5.683e26, 5.8232e7),
+    "uranus": (8.681e25, 2.5362e7),
+    "neptune": (1.024e26, 2.4622e7),
+    "sun": (1.9884e30, 6.957e8),
+    "moon": (7.342e22, 1.7375e6),
 }
 
 
 def _cache() -> Any:
     from realism.data_fetchers.cache import TTLCache
-    root = os.path.dirname(os.path.dirname(os.path.dirname(
-        os.path.abspath(__file__))))
+
+    root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     return TTLCache(os.path.join(root, "data", "cache"))
 
 
-def fetch_ephemeris(body_id: str, start: str, stop: str, step: str = "1d",
-                    format: str = "json", use_cache: bool = True,
-                    timeout: float = 30.0) -> dict[str, Any]:
+def fetch_ephemeris(
+    body_id: str,
+    start: str,
+    stop: str,
+    step: str = "1d",
+    format: str = "json",
+    use_cache: bool = True,
+    timeout: float = 30.0,
+) -> dict[str, Any]:
     """Запросить вектор состояния тела из Horizons.
 
     body_id: '599' (Юпитер), '399' (Земля)…; start/stop: 'YYYY-MM-DD'.
@@ -69,17 +88,22 @@ def fetch_ephemeris(body_id: str, start: str, stop: str, step: str = "1d",
         if cached is not None:
             return cached
     params = {
-        "format": format, "COMMAND": f"'{body_id}'",
-        "EPHEM_TYPE": "VECTORS", "CENTER": "'500@0'",
-        "START_TIME": f"'{start}'", "STOP_TIME": f"'{stop}'",
-        "STEP_SIZE": f"'{step}'", "REF_PLANE": "ECLIPTIC",
-        "REF_SYSTEM": "J2000", "OUT_UNITS": "KM-S",
-        "CSV_FORMAT": "'YES'", "VEC_TABLE": "'2'",
+        "format": format,
+        "COMMAND": f"'{body_id}'",
+        "EPHEM_TYPE": "VECTORS",
+        "CENTER": "'500@0'",
+        "START_TIME": f"'{start}'",
+        "STOP_TIME": f"'{stop}'",
+        "STEP_SIZE": f"'{step}'",
+        "REF_PLANE": "ECLIPTIC",
+        "REF_SYSTEM": "J2000",
+        "OUT_UNITS": "KM-S",
+        "CSV_FORMAT": "'YES'",
+        "VEC_TABLE": "'2'",
     }
     url = HORIZONS_URL + "?" + urllib.parse.urlencode(params)
     try:
-        req = urllib.request.Request(url, headers={
-            "User-Agent": "trivortex-master/2.0"})
+        req = urllib.request.Request(url, headers={"User-Agent": "trivortex-master/2.0"})
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             payload = json.loads(resp.read().decode("utf-8"))
     except Exception as exc:
@@ -114,20 +138,26 @@ def parse_vector_table(payload: dict[str, Any]) -> list[dict[str, Any]]:
         if len(parts) < 7:
             continue
         try:
-            rows.append(dict(
-                jd=float(parts[0]),
-                x=float(parts[2]), y=float(parts[3]), z=float(parts[4]),
-                vx=float(parts[5]), vy=float(parts[6]), vz=float(parts[7])
-                if len(parts) > 7 else 0.0))
+            rows.append(
+                dict(
+                    jd=float(parts[0]),
+                    x=float(parts[2]),
+                    y=float(parts[3]),
+                    z=float(parts[4]),
+                    vx=float(parts[5]),
+                    vy=float(parts[6]),
+                    vz=float(parts[7]) if len(parts) > 7 else 0.0,
+                )
+            )
         except ValueError:
             continue
     return rows
 
 
-def build_body_from_horizons(name: str, rows: list[dict[str, Any]],
-                             at_index: int = 0):
+def build_body_from_horizons(name: str, rows: list[dict[str, Any]], at_index: int = 0):
     """Собрать Body лаборатории из строки эфемерид (м, м/с)."""
     from lab.body import Body
+
     if name not in BODIES_PHYS:
         raise KeyError(f"нет физических параметров для {name}")
     mass, radius = BODIES_PHYS[name]
@@ -135,20 +165,28 @@ def build_body_from_horizons(name: str, rows: list[dict[str, Any]],
         raise ValueError("пустые эфемериды")
     row = rows[min(at_index, len(rows) - 1)]
     return Body(
-        id=f"hor_{name}", name=name.capitalize(),
-        mass=mass, radius=radius,
-        position=(row["x"] * 1000.0, row["y"] * 1000.0,
-                  row["z"] * 1000.0),
-        velocity=(row["vx"] * 1000.0, row["vy"] * 1000.0,
-                  row["vz"] * 1000.0),
-        color=dict(mercury="#8C8C8C", venus="#E6C27A", earth="#4FD1C5",
-                   mars="#C1440E", jupiter="#D8A47F", saturn="#E3C98F",
-                   uranus="#A5E3E0", neptune="#4B70DD", sun="#FDB813",
-                   moon="#B0B0B0").get(name, "#4FD1C5"),
-        type="planet" if name not in ("sun", "moon") else
-             ("star" if name == "sun" else "moon"),
+        id=f"hor_{name}",
+        name=name.capitalize(),
+        mass=mass,
+        radius=radius,
+        position=(row["x"] * 1000.0, row["y"] * 1000.0, row["z"] * 1000.0),
+        velocity=(row["vx"] * 1000.0, row["vy"] * 1000.0, row["vz"] * 1000.0),
+        color=dict(
+            mercury="#8C8C8C",
+            venus="#E6C27A",
+            earth="#4FD1C5",
+            mars="#C1440E",
+            jupiter="#D8A47F",
+            saturn="#E3C98F",
+            uranus="#A5E3E0",
+            neptune="#4B70DD",
+            sun="#FDB813",
+            moon="#B0B0B0",
+        ).get(name, "#4FD1C5"),
+        type="planet" if name not in ("sun", "moon") else ("star" if name == "sun" else "moon"),
         source=SOURCE,
-        metadata=dict(jd=row["jd"], source_system="JPL Horizons"))
+        metadata=dict(jd=row["jd"], source_system="JPL Horizons"),
+    )
 
 
 def synthetic_circular_orbit(name: str, reference_date=None):
@@ -158,14 +196,19 @@ def synthetic_circular_orbit(name: str, reference_date=None):
     средней долготе на дату; используется в metadata флаг approximate.
     """
     from lab.body import Body
+
     if reference_date is None:
         reference_date = _dt.date(2000, 1, 1)
     # средние элементы J2000 (a а.е., период лет, L₀ град — NASA fact sheet)
     elems = dict(
-        mercury=(0.387, 0.2408, 252.25), venus=(0.723, 0.6152, 181.98),
-        earth=(1.000, 1.0000, 100.46), mars=(1.524, 1.8808, 355.45),
-        jupiter=(5.203, 11.862, 34.40), saturn=(9.537, 29.457, 49.94),
-        uranus=(19.191, 84.017, 313.23), neptune=(30.069, 164.79, 304.88),
+        mercury=(0.387, 0.2408, 252.25),
+        venus=(0.723, 0.6152, 181.98),
+        earth=(1.000, 1.0000, 100.46),
+        mars=(1.524, 1.8808, 355.45),
+        jupiter=(5.203, 11.862, 34.40),
+        saturn=(9.537, 29.457, 49.94),
+        uranus=(19.191, 84.017, 313.23),
+        neptune=(30.069, 164.79, 304.88),
     )
     if name not in elems:
         raise KeyError(f"нет элементов для {name}")
@@ -177,17 +220,20 @@ def synthetic_circular_orbit(name: str, reference_date=None):
     v = math.sqrt(mu / r)
     mass, radius = BODIES_PHYS[name]
     return Body(
-        id=f"syn_{name}", name=name.capitalize(),
-        mass=mass, radius=radius,
+        id=f"syn_{name}",
+        name=name.capitalize(),
+        mass=mass,
+        radius=radius,
         position=(r * math.cos(lon), r * math.sin(lon), 0.0),
         velocity=(-v * math.sin(lon), v * math.cos(lon), 0.0),
-        color="#4FD1C5", type="planet",
+        color="#4FD1C5",
+        type="planet",
         source="synthetic (offline-приближение, средние элементы J2000)",
-        metadata=dict(approximate=True, a_au=a_au))
+        metadata=dict(approximate=True, a_au=a_au),
+    )
 
 
-def fetch_planets_today(names: list[str] | None = None,
-                        use_cache: bool = True) -> dict[str, Any]:
+def fetch_planets_today(names: list[str] | None = None, use_cache: bool = True) -> dict[str, Any]:
     """Собрать текущие векторы планет: онлайн Horizons или offline-режим.
 
     Возвращает {name: Body} + флаг режима (online/offline).
@@ -201,8 +247,7 @@ def fetch_planets_today(names: list[str] | None = None,
         hid = BODIES.get(name)
         if hid is None:
             continue
-        payload = fetch_ephemeris(hid, today, stop, "1d",
-                                  use_cache=use_cache)
+        payload = fetch_ephemeris(hid, today, stop, "1d", use_cache=use_cache)
         if "error" in payload:
             body = synthetic_circular_orbit(name)
         else:
@@ -238,6 +283,5 @@ def self_check() -> dict:
     checks["mars_syn_ok"] = 1.4 < r_mars / AU_M < 1.7
     checks["mode"] = res["mode"]
     checks["date"] = res["date"]
-    checks["ok"] = all(v for k, v in checks.items()
-                       if k.endswith("_ok")) and len(bodies) == 2
+    checks["ok"] = all(v for k, v in checks.items() if k.endswith("_ok")) and len(bodies) == 2
     return checks

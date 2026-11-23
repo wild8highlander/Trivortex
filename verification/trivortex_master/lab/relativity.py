@@ -20,13 +20,14 @@ TRIVORTEX MASTER — постньютоновская динамика: 1PN и 2
 
 Все функции работают в СИ; скорости света c = 299792458 м/с (точно).
 """
+
 from __future__ import annotations
 
 import math
 from dataclasses import dataclass
 from typing import Sequence, Tuple
 
-C_LIGHT = 299792458.0            # м/с (точно, SI 2019)
+C_LIGHT = 299792458.0  # м/с (точно, SI 2019)
 C2 = C_LIGHT * C_LIGHT
 G_SI = 6.67430e-11
 
@@ -37,10 +38,11 @@ G_SI = 6.67430e-11
 @dataclass
 class TwoBodyPN:
     """Задача двух тел с постньютоновскими поправками (СИ)."""
-    m1: float                     # масса центрального тела, кг
-    m2: float                     # масса орбитального, кг
-    a: float                      # большая полуось, м
-    e: float                      # эксцентриситет
+
+    m1: float  # масса центрального тела, кг
+    m2: float  # масса орбитального, кг
+    a: float  # большая полуось, м
+    e: float  # эксцентриситет
 
     @property
     def M(self) -> float:
@@ -49,20 +51,20 @@ class TwoBodyPN:
     @property
     def eta(self) -> float:
         """Симметричная массовая доля η = m1·m2/M²."""
-        return self.m1 * self.m2 / (self.M ** 2)
+        return self.m1 * self.m2 / (self.M**2)
 
     @property
     def period(self) -> float:
         """Кеплеров период (нулевой ПН-порядок)."""
-        return 2.0 * math.pi * math.sqrt(self.a ** 3 / (G_SI * self.M))
+        return 2.0 * math.pi * math.sqrt(self.a**3 / (G_SI * self.M))
 
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 1PN: ускорение Эйнштейна-Инфельда-Хоффмана (относительное движение)
 # ═══════════════════════════════════════════════════════════════════════════
-def eih_acceleration(r: Sequence[float], v: Sequence[float],
-                     M: float, eta: float = 0.0,
-                     G: float = G_SI) -> Tuple[float, float, float]:
+def eih_acceleration(
+    r: Sequence[float], v: Sequence[float], M: float, eta: float = 0.0, G: float = G_SI
+) -> Tuple[float, float, float]:
     """Относительное 1PN-ускорение (гармоническая калибровка, Wagoner-Will).
 
     r, v — относительные позиция и скорость (м, м/с); M — суммарная масса;
@@ -77,7 +79,7 @@ def eih_acceleration(r: Sequence[float], v: Sequence[float],
         return (0.0, 0.0, 0.0)
     GM = G * M
     # ньютоновская часть
-    newton = -GM / (r_norm ** 3)
+    newton = -GM / (r_norm**3)
     ax = newton * r[0]
     ay = newton * r[1]
     az = newton * r[2]
@@ -86,44 +88,43 @@ def eih_acceleration(r: Sequence[float], v: Sequence[float],
     #   A = −4GM/r + (1+3η)v² − 1.5η·(n·v)²  (знаки по Blanchet)
     #   B = (4 − 2η)·(n·v)
     inv_c2 = 1.0 / C2
-    A_coef = (-4.0 * GM / r_norm
-              + (1.0 + 3.0 * eta) * v2
-              - 1.5 * eta * (nv / r_norm) ** 2 * r_norm * r_norm / r_norm)
+    A_coef = (
+        -4.0 * GM / r_norm
+        + (1.0 + 3.0 * eta) * v2
+        - 1.5 * eta * (nv / r_norm) ** 2 * r_norm * r_norm / r_norm
+    )
     # аккуратно: A — размерная комбинация; используем канонический вид:
     # a_i^1PN = (GM/(c² r³)) · r_i · (−4GM/r + (1+3η)v²) − ... ; ниже —
     # точное выражение в форме «ускорение = r-член + v-член»
-    r_term = (-4.0 * GM / r_norm + (1.0 + 3.0 * eta) * v2)
+    r_term = -4.0 * GM / r_norm + (1.0 + 3.0 * eta) * v2
     v_coef = (4.0 - 2.0 * eta) * nv / r_norm
-    pref = GM * inv_c2 / (r_norm ** 3)
+    pref = GM * inv_c2 / (r_norm**3)
     for i in range(3):
         pn = pref * (r_term * r[i] - v_coef * r_norm * v[i] * 0.0)
         # v-член в канонической записи:
-        pn += pref * (-(4.0 - 2.0 * eta) * nv * v[i] / (r_norm ** 1))
+        pn += pref * (-(4.0 - 2.0 * eta) * nv * v[i] / (r_norm**1))
         # нормировка v-члена требует деления на r²·? — см. self_check:
         # для проверки используем интеграл прецессии, а не поэлементно
         pass
     # Каноническое 1PN-ускорение (проверяемая форма):
     #   a = −GM/r² · { n·(1 + A) + (4−2η)·(v·n)/c² · v̂ } , где
     #   A = [ −(4+2η)GM/r + (1+3η)v² + 1.5η(v·n)² ] / c²
-    A_canon = (-(4.0 + 2.0 * eta) * GM / r_norm
-               + (1.0 + 3.0 * eta) * v2
-               + 1.5 * eta * (nv / r_norm) ** 2) * inv_c2
+    A_canon = (
+        -(4.0 + 2.0 * eta) * GM / r_norm + (1.0 + 3.0 * eta) * v2 + 1.5 * eta * (nv / r_norm) ** 2
+    ) * inv_c2
     v_fac = (4.0 - 2.0 * eta) * (nv / r_norm) * inv_c2
-    ax = -GM / r_norm ** 2 * (r[0] / r_norm * (1.0 + A_canon)
-                              - v_fac * v[0])
-    ay = -GM / r_norm ** 2 * (r[1] / r_norm * (1.0 + A_canon)
-                              - v_fac * v[1])
-    az = -GM / r_norm ** 2 * (r[2] / r_norm * (1.0 + A_canon)
-                              - v_fac * v[2])
+    ax = -GM / r_norm**2 * (r[0] / r_norm * (1.0 + A_canon) - v_fac * v[0])
+    ay = -GM / r_norm**2 * (r[1] / r_norm * (1.0 + A_canon) - v_fac * v[1])
+    az = -GM / r_norm**2 * (r[2] / r_norm * (1.0 + A_canon) - v_fac * v[2])
     return (ax, ay, az)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 2PN-поправка (Blanchet-Iyer 2003, относительное движение)
 # ═══════════════════════════════════════════════════════════════════════════
-def pn2_acceleration(r: Sequence[float], v: Sequence[float],
-                     M: float, eta: float,
-                     G: float = G_SI) -> Tuple[float, float, float]:
+def pn2_acceleration(
+    r: Sequence[float], v: Sequence[float], M: float, eta: float, G: float = G_SI
+) -> Tuple[float, float, float]:
     """2PN-ускорение (порядок v⁴/c⁴), Blanchet & Iyer, CQG 20, 757 (2003).
 
     Точная структура для круговых орбит; для общих эллиптических —
@@ -140,10 +141,12 @@ def pn2_acceleration(r: Sequence[float], v: Sequence[float],
     # ведущие 2PN-коэффициенты (круговой предел, общая структура)
     # a_2PN ≈ −GM/r² · n · γ · [ (18 + ¾η)·v²/c²·γ⁰ − ... ] — используем
     # компактную форму через инварианты:
-    pref = GM / (r_norm ** 2)
-    term = (gamma * ((9.0 - 1.5 * eta) * v2 / C2
-                     - (12.0 + 3.0 * eta) * gamma
-                     + 3.0 * (nv / r_norm) ** 2 / C2 * 0.5))
+    pref = GM / (r_norm**2)
+    term = gamma * (
+        (9.0 - 1.5 * eta) * v2 / C2
+        - (12.0 + 3.0 * eta) * gamma
+        + 3.0 * (nv / r_norm) ** 2 / C2 * 0.5
+    )
     # r-направление с 2PN-коэффициентом
     factor = 1.0 + term
     ax = -pref * factor * r[0] / r_norm
@@ -152,8 +155,7 @@ def pn2_acceleration(r: Sequence[float], v: Sequence[float],
     return (ax, ay, az)
 
 
-def total_pn_acceleration(r, v, M, eta, order: int = 1,
-                          G: float = G_SI):
+def total_pn_acceleration(r, v, M, eta, order: int = 1, G: float = G_SI):
     """Полное ПН-ускорение до заданного порядка (1 или 2)."""
     a1 = eih_acceleration(r, v, M, eta, G)
     if order < 2:
@@ -171,7 +173,7 @@ def perihelion_precession(tb: TwoBodyPN, order: int = 1) -> float:
     1PN (Шварцшильд): Δϖ = 6πGM / (a(1−e²)c²) за оборот.
     2PN-добавка: Δϖ_2PN = (45π/… )·(GM/(a(1−e²)c²))² — малый вклад.
     """
-    factor = G_SI * tb.M / (tb.a * (1.0 - tb.e ** 2) * C2)
+    factor = G_SI * tb.M / (tb.a * (1.0 - tb.e**2) * C2)
     delta_per_orbit_1pn = 6.0 * math.pi * factor
     delta = delta_per_orbit_1pn
     if order >= 2:
@@ -179,7 +181,7 @@ def perihelion_precession(tb: TwoBodyPN, order: int = 1) -> float:
         # для тестовой частицы: Δϖ_2PN = (45π/4)·π? — используем
         # известный коэффициент: Δϖ_2PN = (3π/2)·η_t·χ² с χ = GM/(pc²);
         # для эксцентричной орбиты ведущий член:
-        delta_2 = (3.0 * math.pi / 2.0) * (7.0 - tb.eta) * factor ** 2
+        delta_2 = (3.0 * math.pi / 2.0) * (7.0 - tb.eta) * factor**2
         delta += delta_2
     # за столетие: n_orbits = 100 лет / P
     n_orbits = 100.0 * 365.25 * 86400.0 / tb.period
@@ -190,9 +192,7 @@ def perihelion_precession(tb: TwoBodyPN, order: int = 1) -> float:
 
 def mercury_precession() -> dict:
     """Классический тест ОТО: Меркурий, 42.98″/век."""
-    mercury = TwoBodyPN(
-        m1=1.9884e30, m2=3.301e23,
-        a=5.7909e10, e=0.205630)
+    mercury = TwoBodyPN(m1=1.9884e30, m2=3.301e23, a=5.7909e10, e=0.205630)
     value = perihelion_precession(mercury, order=1)
     value_2pn = perihelion_precession(mercury, order=2)
     return dict(
@@ -202,16 +202,16 @@ def mercury_precession() -> dict:
         gr_reference=42.98,
         # вклад от Солнца (J2) и планет не входит — чистая ОТО
         note="1PN (Шварцшильд) — сравнение с наблюдаемым излишком "
-             "43″/век (Le Verrier 1859; объяснено Эйнштейном 1915)",
+        "43″/век (Le Verrier 1859; объяснено Эйнштейном 1915)",
     )
 
 
 # ═══════════════════════════════════════════════════════════════════════════
 # Лензе-Тирринг (frame dragging) — оценка
 # ═══════════════════════════════════════════════════════════════════════════
-def lense_thirring_precession(M: float, R: float, spin_period: float,
-                              a: float, e: float = 0.0,
-                              incl: float = math.pi / 2) -> dict:
+def lense_thirring_precession(
+    M: float, R: float, spin_period: float, a: float, e: float = 0.0, incl: float = math.pi / 2
+) -> dict:
     """Прецессия Лензе-Тирринга узла орбиты (де Ситтер/оценка).
 
     Ω_LT = 2GJ/(c²a³(1−e²)^{3/2}), J = k·M·R²·ω_spin (k≈0.06 для Солнца,
@@ -221,15 +221,16 @@ def lense_thirring_precession(M: float, R: float, spin_period: float,
     # момент инерции центрального тела (коэффициент структуры k)
     k_struct = 0.06 if M > 1e29 else 0.33
     J = k_struct * M * R * R * omega_spin
-    Omega_LT = 2.0 * G_SI * J / (C2 * a ** 3 * (1 - e ** 2) ** 1.5)
+    Omega_LT = 2.0 * G_SI * J / (C2 * a**3 * (1 - e**2) ** 1.5)
     # проекция на плоскость орбиты (максимальна для полярной)
     Omega_eff = Omega_LT * math.cos(incl)
-    arcsec_century = Omega_eff * (100 * 365.25 * 86400) \
-        * (180 / math.pi) * 3600
-    return dict(Omega_rad_s=Omega_eff, arcsec_per_century=arcsec_century,
-                angular_momentum=J,
-                note="Frame-dragging: Gravity Probe B подтвердил "
-                     "для Земли ≈ 39 mas/год (2011)")
+    arcsec_century = Omega_eff * (100 * 365.25 * 86400) * (180 / math.pi) * 3600
+    return dict(
+        Omega_rad_s=Omega_eff,
+        arcsec_per_century=arcsec_century,
+        angular_momentum=J,
+        note="Frame-dragging: Gravity Probe B подтвердил " "для Земли ≈ 39 mas/год (2011)",
+    )
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -245,15 +246,15 @@ def isco_radius(M: float, spin: float = 0.0) -> float:
     if abs(spin) > 0.9999:
         spin = math.copysign(0.9999, spin)
     Z1 = 1.0 + (1.0 - spin * spin) ** (1.0 / 3.0) * (
-        (1.0 + spin) ** (1.0 / 3.0) + (1.0 - spin) ** (1.0 / 3.0))
+        (1.0 + spin) ** (1.0 / 3.0) + (1.0 - spin) ** (1.0 / 3.0)
+    )
     Z2 = math.sqrt(3.0 * spin * spin + Z1 * Z1)
     sgn = 1.0 if spin >= 0 else -1.0
     r_over_m = 3.0 + Z2 - sgn * math.sqrt((3.0 - Z1) * (3.0 + Z1 + 2.0 * Z2))
     return r_over_m * G_SI * M / C2
 
 
-def tidal_disruption_radius(m_bh: float, m_star: float,
-                            r_star: float) -> float:
+def tidal_disruption_radius(m_bh: float, m_star: float, r_star: float) -> float:
     """Радиус приливного разрушения: r_t ≈ R_star·(M_bh/m_star)^{1/3}."""
     return r_star * (m_bh / m_star) ** (1.0 / 3.0)
 
@@ -261,34 +262,35 @@ def tidal_disruption_radius(m_bh: float, m_star: float,
 # ═══════════════════════════════════════════════════════════════════════════
 # Гравитационные волны: квадрупольная оценка
 # ═══════════════════════════════════════════════════════════════════════════
-def gw_quadrupole_loss(m1: float, m2: float, a: float, e: float = 0.0
-                       ) -> dict:
+def gw_quadrupole_loss(m1: float, m2: float, a: float, e: float = 0.0) -> dict:
     """Потеря энергии и слияние по Питерсону (1964).
 
     dE/dt = −(32/5)·G⁴m1²m2²(m1+m2)/(c⁵a⁵) · f(e), f(e) — усиление
     эксцентриситетом; da/dt по Питерсону; время слияния t_merge.
     """
     M = m1 + m2
-    pref = 32.0 / 5.0 * G_SI ** 4 * m1 ** 2 * m2 ** 2 * M / (C2 ** 2.5 * a ** 5)
+    pref = 32.0 / 5.0 * G_SI**4 * m1**2 * m2**2 * M / (C2**2.5 * a**5)
     # Питерсон: f(e) = (1 + 73/24 e² + 37/96 e⁴)/(1−e²)^{7/2}
-    f_e = (1.0 + 73.0 / 24.0 * e ** 2 + 37.0 / 96.0 * e ** 4) \
-        / (1.0 - e ** 2) ** 3.5
+    f_e = (1.0 + 73.0 / 24.0 * e**2 + 37.0 / 96.0 * e**4) / (1.0 - e**2) ** 3.5
     dE_dt = -pref * f_e
     # da/dt = −(64/5)·G³m1m2M/(c⁵a³)·f(e)
-    da_dt = -(64.0 / 5.0) * G_SI ** 3 * m1 * m2 * M / (C2 ** 2.5 * a ** 3) * f_e
+    da_dt = -(64.0 / 5.0) * G_SI**3 * m1 * m2 * M / (C2**2.5 * a**3) * f_e
     # время слияния (круговая оценка, Питерсон для e=0):
-    t_merge = a ** 4 / (4.0 * (64.0 / 5.0) * G_SI ** 3 * m1 * m2 * M
-                        / (C2 ** 2.5))
+    t_merge = a**4 / (4.0 * (64.0 / 5.0) * G_SI**3 * m1 * m2 * M / (C2**2.5))
     if e > 0:
         # поправка Питерсона для эксцентричных (приближённо):
-        t_merge *= (1.0 - e ** 2) ** 3.5 / (
-            1.0 + 0.27 * e ** 10) if e < 0.9 else 0.1
+        t_merge *= (1.0 - e**2) ** 3.5 / (1.0 + 0.27 * e**10) if e < 0.9 else 0.1
     # частота ГВ на круговой орбите (вдвое больше орбитальной)
-    omega_orb = math.sqrt(G_SI * M / a ** 3)
+    omega_orb = math.sqrt(G_SI * M / a**3)
     f_gw = omega_orb / math.pi
-    return dict(dE_dt=dE_dt, da_dt=da_dt, t_merge=t_merge,
-                f_gw=f_gw, peters_factor=f_e,
-                reference="Peters 1964, Phys. Rev. 136, B1224")
+    return dict(
+        dE_dt=dE_dt,
+        da_dt=da_dt,
+        t_merge=t_merge,
+        f_gw=f_gw,
+        peters_factor=f_e,
+        reference="Peters 1964, Phys. Rev. 136, B1224",
+    )
 
 
 def hubble_luminosity_distance_gw(f_gw: float) -> float:
@@ -310,7 +312,10 @@ def self_check() -> dict:
     rs = schwarzschild_radius(1.9884e30)
     ok_rs = abs(rs - 2953.4) / 2953.4 < 0.01
     return dict(
-        mercury_1pn=m["pn1_arcsec_century"], mercury_ok=ok_mercury,
-        isco_ok=ok_isco, sun_rs_m=rs, sun_rs_ok=ok_rs,
+        mercury_1pn=m["pn1_arcsec_century"],
+        mercury_ok=ok_mercury,
+        isco_ok=ok_isco,
+        sun_rs_m=rs,
+        sun_rs_ok=ok_rs,
         all_ok=ok_mercury and ok_isco and ok_rs,
     )

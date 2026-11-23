@@ -18,6 +18,7 @@ TRIVORTEX MASTER — вейвлет-анализ: Морле, скалограм
 Самопроверка: chirp-сигнал (частота 2 Гц → 5 Гц) — гребень
 отслеживает частоту с ошибкой <10%.
 """
+
 from __future__ import annotations
 
 import math
@@ -27,13 +28,11 @@ from typing import Sequence
 # ═══════════════════════════════════════════════════════════════════════════
 # Вспомогательные: МНК-полином для детренда
 # ═══════════════════════════════════════════════════════════════════════════
-def polyfit_least_squares(x: Sequence[float], y: Sequence[float],
-                          degree: int = 1) -> list[float]:
+def polyfit_least_squares(x: Sequence[float], y: Sequence[float], degree: int = 1) -> list[float]:
     """Полиномиальная аппроксимация (нормальные уравнения, Гаусс)."""
     n = degree + 1
-    A = [[sum(xi ** (i + j) for xi in x) for j in range(n)]
-         for i in range(n)]
-    b = [sum(yi * xi ** i for xi, yi in zip(x, y)) for i in range(n)]
+    A = [[sum(xi ** (i + j) for xi in x) for j in range(n)] for i in range(n)]
+    b = [sum(yi * xi**i for xi, yi in zip(x, y)) for i in range(n)]
     # Гауссово исключение с выбором главного элемента
     for col in range(n):
         piv = max(range(col, n), key=lambda r: abs(A[r][col]))
@@ -48,8 +47,7 @@ def polyfit_least_squares(x: Sequence[float], y: Sequence[float],
             for c in range(col, n):
                 A[r][c] -= f * A[col][c]
             b[r] -= f * b[col]
-    return [b[i] / A[i][i] if abs(A[i][i]) > 1e-30 else 0.0
-            for i in range(n - 1, -1, -1)]
+    return [b[i] / A[i][i] if abs(A[i][i]) > 1e-30 else 0.0 for i in range(n - 1, -1, -1)]
 
 
 def polyval(coeffs: Sequence[float], x: float) -> float:
@@ -71,20 +69,19 @@ def detrend(y: Sequence[float], degree: int = 1) -> list[float]:
 # ═══════════════════════════════════════════════════════════════════════════
 # Вейвлет Морле и CWT
 # ═══════════════════════════════════════════════════════════════════════════
-W_0 = 6.0                     # параметр Морле (ω₀=6: баланс локальности)
+W_0 = 6.0  # параметр Морле (ω₀=6: баланс локальности)
 
 
 def morlet_psi_norm(t: float, w0: float = W_0) -> tuple[float, float]:
     """Нормированный Морле: (Re ψ, Im ψ) с ψ(0)=нормировка π^{-1/4}."""
-    norm = math.pi ** -0.25
+    norm = math.pi**-0.25
     gauss = math.exp(-t * t / 2.0)
-    return (norm * gauss * math.cos(w0 * t),
-            norm * gauss * math.sin(w0 * t))
+    return (norm * gauss * math.cos(w0 * t), norm * gauss * math.sin(w0 * t))
 
 
-def cwt_morlet(y: Sequence[float], dt: float,
-               freqs: Sequence[float] | None = None,
-               w0: float = W_0) -> dict:
+def cwt_morlet(
+    y: Sequence[float], dt: float, freqs: Sequence[float] | None = None, w0: float = W_0
+) -> dict:
     """Continuous Wavelet Transform (Морле) на сетке частот.
 
     Возвращает dict(freqs, times, power[n_freq][n_time], W_re, W_im).
@@ -97,8 +94,7 @@ def cwt_morlet(y: Sequence[float], dt: float,
     if freqs is None:
         f_min = max(1.0 / (n * dt), 1e-6)
         f_max = nyquist * 0.95
-        freqs = [f_min * (f_max / f_min) ** (i / 23.0)
-                 for i in range(24)]
+        freqs = [f_min * (f_max / f_min) ** (i / 23.0) for i in range(24)]
     # центрирование
     mean = sum(y) / n
     centered = [v - mean for v in y]
@@ -131,8 +127,7 @@ def cwt_morlet(y: Sequence[float], dt: float,
             w_re_row.append(re_sum)
         power.append(row)
         w_re_all.append(w_re_row)
-    return dict(freqs=freqs, times=times, power=power, W_re=w_re_all,
-                w0=w0, dt=dt)
+    return dict(freqs=freqs, times=times, power=power, W_re=w_re_all, w0=w0, dt=dt)
 
 
 def scalogram_to_rows(cwt: dict) -> list[list[float]]:
@@ -160,8 +155,7 @@ def dominant_ridge(cwt: dict) -> list[tuple[float, float]]:
     return ridge
 
 
-def ridge_frequency_error(ridge: Sequence[tuple[float, float]],
-                          true_fn: callable) -> float:
+def ridge_frequency_error(ridge: Sequence[tuple[float, float]], true_fn: callable) -> float:
     """Средняя относительная ошибка гребня против истинной частоты."""
     if not ridge:
         return float("nan")
@@ -179,6 +173,7 @@ def ridge_frequency_error(ridge: Sequence[tuple[float, float]],
 def ar1_noise(n: int, alpha: float = 0.7, seed: int = 5) -> list[float]:
     """Красный шум AR(1): x_{t+1} = αx_t + ε."""
     import random
+
     rng = random.Random(seed)
     out = [0.0]
     for _ in range(n - 1):
@@ -186,8 +181,7 @@ def ar1_noise(n: int, alpha: float = 0.7, seed: int = 5) -> list[float]:
     return out
 
 
-def significance_threshold(n: int, dt: float, alpha: float = 0.7
-                           ) -> float:
+def significance_threshold(n: int, dt: float, alpha: float = 0.7) -> float:
     """Порог мощности 95% для AR(1)-шума (упрощённый χ²₁).
 
     По Torrence & Compo (1998): P_95 = σ²(1−α²)·χ²₁(0.95)/2 в
@@ -207,9 +201,11 @@ def self_check() -> dict:
     dt = 0.01
     n = 600
     t_end = n * dt
+
     # частота линейно 2 → 5 Гц
     def f_true(t):
         return 2.0 + 3.0 * t / t_end
+
     y = []
     phase = 0.0
     for i in range(n):
@@ -222,8 +218,7 @@ def self_check() -> dict:
     ridge = dominant_ridge(cwt)
     err = ridge_frequency_error(ridge, f_true)
     # детренд: линейный тренд + синус
-    trend_y = [0.5 * i / n + math.sin(2 * math.pi * i / 100)
-               for i in range(300)]
+    trend_y = [0.5 * i / n + math.sin(2 * math.pi * i / 100) for i in range(300)]
     resid = detrend(trend_y, degree=1)
     resid_mean = sum(resid) / len(resid)
     # после детренда остаток ~ чистый синус (среднее ~0)

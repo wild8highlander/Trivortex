@@ -5,14 +5,14 @@
 Грид-вычисления на чистом Python: потенциальные ямы (direct summation
 O(N·G)), эквипотенциали для рендера, оценка сферизации Роха для спутников.
 """
+
 from __future__ import annotations
 
 import math
 from typing import Sequence
 
 
-def potential_at(point, bodies, G: float = 6.67430e-11,
-                 softening: float = 0.0) -> float:
+def potential_at(point, bodies, G: float = 6.67430e-11, softening: float = 0.0) -> float:
     """Потенциал Σ −Gm/max(r, soft)."""
     phi = 0.0
     for b in bodies:
@@ -35,8 +35,7 @@ def potential_grid(bodies, half: float, n: int = 32, G: float = 6.67430e-11):
     return out
 
 
-def roche_radius(primary_mass: float, satellite_mass: float,
-                 R_primary: float) -> float:
+def roche_radius(primary_mass: float, satellite_mass: float, R_primary: float) -> float:
     """Предел Роха (жидкий спутник): d ≈ 2.44·R·(M/m)^{1/3}."""
     return 2.44 * R_primary * (primary_mass / max(satellite_mass, 1e-30)) ** (1.0 / 3.0)
 
@@ -46,9 +45,13 @@ def hill_sphere(m_primary: float, m_perturber: float, a: float) -> float:
     return a * (m_perturber / (3.0 * m_primary)) ** (1.0 / 3.0)
 
 
-def jeans_length(temperature: float, density: float,
-                 mass_per_particle: float = 1.67e-27,
-                 G: float = 6.67430e-11, k_B: float = 1.381e-23) -> float:
+def jeans_length(
+    temperature: float,
+    density: float,
+    mass_per_particle: float = 1.67e-27,
+    G: float = 6.67430e-11,
+    k_B: float = 1.381e-23,
+) -> float:
     """Длина Джинса: λ_J = c_s·√(π/(Gρ))."""
     c_s = math.sqrt(k_B * temperature / mass_per_particle)
     return c_s * math.sqrt(math.pi / (G * max(density, 1e-30)))

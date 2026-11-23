@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 ╔══════════════════════════════════════════════════════════════════════════╗
-║  TRIVORTEX MASTER — лабораторный комплекс N тел · v1.0.0 · AURORA       ║
+║  TRIVORTEX MASTER — лабораторный комплекс N тел · v2.0.0 · AURORA       ║
 ║  лаборатория N тел · планирование траекторий · 2D/3D/4D · отчёты 7 fmt  ║
 ╚══════════════════════════════════════════════════════════════════════════╝
 
@@ -15,6 +15,7 @@ numpy/matplotlib/imageio/REBOUND/Dedalus/fpdf2 — опциональные ус
     python3 trivortex_master.py --preset inner_solar --simulate --render --report
     python3 trivortex_master.py --profile quick --banner-only
 """
+
 from __future__ import annotations
 
 import argparse
@@ -33,16 +34,46 @@ if ROOT not in sys.path:
 import realism  # noqa: F401  (регистрирует движки при импорте)
 import modes_extra  # noqa: F401  (34 доп. режима меню)
 
-import core.registry as R
 from core.registry import REGISTRY, register_mode
-from core.config import MasterConfig, UnphysicalConfiguration, from_profile, \
-    resolve_paths, PROFILES
-from render.hud import (banner, print_banner, orn, kv, colorize, gry, wht,
-                        cyn, ylw, grn, red, mag, org, verdict_icon,
-                        warn_plate, ProgressBar, Monitor, detect_color_mode,
-                        color_off, RESET)
+from core.config import MasterConfig, UnphysicalConfiguration, from_profile, resolve_paths, PROFILES
+from render.hud import (
+    banner,
+    print_banner,
+    orn,
+    kv,
+    colorize,
+    gry,
+    wht,
+    cyn,
+    ylw,
+    grn,
+    red,
+    mag,
+    org,
+    verdict_icon,
+    warn_plate,
+    ProgressBar,
+    Monitor,
+    detect_color_mode,
+    color_off,
+    RESET,
+)
 
 VERSION = "2.0.0"
+
+
+def ask(prompt: str) -> str:
+    """input() без EOF-риска: закрытый stdin = пустой ответ (значение [по умолчанию]).
+
+    Батч-режим (python3 trivortex_master.py --preset ... --report < /dev/null,
+    cron, CI) не должен падать на интерактивном вопросе — EOF трактуется как
+    выбор в скобках, как и пустая строка.
+    """
+    try:
+        return input(prompt).strip()
+    except EOFError:
+        print()  # закрытый stdin: молча берём умолчание
+        return ""
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -60,28 +91,25 @@ class App:
         self.runs_dir = os.path.join(ROOT, "runs")
         os.makedirs(self.runs_dir, exist_ok=True)
         self.session_log = os.path.join(
-            self.runs_dir,
-            f"session_{_dt.datetime.now().strftime('%Y%m%d_%H%M%S')}.log")
+            self.runs_dir, f"session_{_dt.datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+        )
         self._log("сессия начата")
 
     def _log(self, msg: str) -> None:
         try:
             with open(self.session_log, "a", encoding="utf-8") as fh:
-                fh.write(f"{_dt.datetime.now().isoformat(timespec='seconds')}"
-                         f"  {msg}\n")
+                fh.write(f"{_dt.datetime.now().isoformat(timespec='seconds')}" f"  {msg}\n")
         except OSError:
             pass
 
     def new_run_dir(self, tag: str) -> str:
-        d = os.path.join(self.runs_dir,
-                         f"run_{tag}_{_dt.datetime.now().strftime('%Y%m%d_%H%M%S')}")
+        d = os.path.join(self.runs_dir, f"run_{tag}_{_dt.datetime.now().strftime('%Y%m%d_%H%M%S')}")
         os.makedirs(d, exist_ok=True)
         return d
 
     def require_scene(self):
         if self.scene is None:
-            print(colorize("\n  сцена не создана — сначала пункт 1 (Лаборатория)",
-                           org))
+            print(colorize("\n  сцена не создана — сначала пункт 1 (Лаборатория)", org))
             return None
         return self.scene
 
@@ -93,12 +121,19 @@ APP = App()
 # Меню: категории
 # ═══════════════════════════════════════════════════════════════════════════
 
+
 # ── 1. ЛАБОРАТОРИЯ ──────────────────────────────────────────────────────────
-@register_mode(name="scene_create", title="Создать сцену из пресета",
-               category="Лаборатория", icon="◈", order=10,
-               description="Пресеты: Солнечная система, Лагранж, вихревые кольца…")
+@register_mode(
+    name="scene_create",
+    title="Создать сцену из пресета",
+    category="Лаборатория",
+    icon="◈",
+    order=10,
+    description="Пресеты: Солнечная система, Лагранж, вихревые кольца…",
+)
 def mode_scene_create(app: App):
     from lab.presets import load_presets, build_preset
+
     presets = load_presets()
     print(colorize("\n  ПРЕСЕТЫ СЦЕН", cyn, True))
     for i, p in enumerate(presets, 1):
@@ -116,21 +151,39 @@ def mode_scene_create(app: App):
     preset = presets[idx]
     try:
         if preset.get("unphysical"):
-            ok = input(colorize(
-                "  пресет вне физической вселенной (N>8); включить "
-                "allow_unphysical? y/n: ", ylw)).strip().lower()
+            ok = (
+                input(
+                    colorize(
+                        "  пресет вне физической вселенной (N>8); включить "
+                        "allow_unphysical? y/n: ",
+                        ylw,
+                    )
+                )
+                .strip()
+                .lower()
+            )
             if ok != "y":
                 print("  отмена")
                 return
             app.config.allow_unphysical = True
         app.scene = build_preset(preset["id"], app.config)
         app._log(f"сцена создана: {preset['id']} N={app.scene.n}")
-        print(colorize(f"\n  ✓ сцена «{app.scene.name}»: N={app.scene.n}, "
-                       f"dt={app.scene.dt:.3g}", grn, True))
+        print(
+            colorize(
+                f"\n  ✓ сцена «{app.scene.name}»: N={app.scene.n}, " f"dt={app.scene.dt:.3g}",
+                grn,
+                True,
+            )
+        )
         if app.scene.unphysical_flag:
-            print(colorize(
-                "  ⚠ N вне физической вселенной модели (порог Хавелока: "
-                "кольцо устойчиво при N≤7; N=8 → max Re λ = +0.4502)", red, True))
+            print(
+                colorize(
+                    "  ⚠ N вне физической вселенной модели (порог Хавелока: "
+                    "кольцо устойчиво при N≤7; N=8 → max Re λ = +0.4502)",
+                    red,
+                    True,
+                )
+            )
         rep = app.scene.validate()
         for w in rep.warnings[:5]:
             print(colorize(f"  ⚠ {w}", ylw))
@@ -138,16 +191,28 @@ def mode_scene_create(app: App):
         print(colorize(f"\n  ✗ {exc}", red))
 
 
-@register_mode(name="scene_custom", title="Своя сцена (N тел вручную)",
-               category="Лаборатория", icon="◇", order=20,
-               description="Задать тела по одному: масса, радиус, позиция, скорость")
+@register_mode(
+    name="scene_custom",
+    title="Своя сцена (N тел вручную)",
+    category="Лаборатория",
+    icon="◇",
+    order=20,
+    description="Задать тела по одному: масса, радиус, позиция, скорость",
+)
 def mode_scene_custom(app: App):
     from lab.body import Body
     from lab.scene import Scene
+
     sc = Scene(app.config, name="custom")
     print(colorize("\n  СБОРКА СЦЕНЫ ВРУЧНУЮ (пустой ввод — закончить)", cyn, True))
-    print(f"  допустимо N = 3…{app.config.max_bodies}"
-          + (colorize(" (8 — только с allow_unphysical)", gry) if not app.config.allow_unphysical else ""))
+    print(
+        f"  допустимо N = 3…{app.config.max_bodies}"
+        + (
+            colorize(" (8 — только с allow_unphysical)", gry)
+            if not app.config.allow_unphysical
+            else ""
+        )
+    )
     n = 0
     while True:
         if n >= 3:
@@ -167,12 +232,26 @@ def mode_scene_custom(app: App):
             vel = input("    скорость vx,vy,vz (м/с) [0,0,0]: ").strip() or "0,0,0"
             pos_t = tuple(float(x) for x in pos.split(","))
             vel_t = tuple(float(x) for x in vel.split(","))
-            b = Body(id=name.lower().replace(" ", "_"), name=name,
-                     mass=mass, radius=radius,
-                     position=pos_t, velocity=vel_t,
-                     color=["#4FD1C5", "#E8C766", "#A78BFA", "#7DD3FC",
-                            "#FB7185", "#34D399", "#FF9A76", "#C8D8D8"][n % 8],
-                     type="synthetic", source="custom")
+            b = Body(
+                id=name.lower().replace(" ", "_"),
+                name=name,
+                mass=mass,
+                radius=radius,
+                position=pos_t,
+                velocity=vel_t,
+                color=[
+                    "#4FD1C5",
+                    "#E8C766",
+                    "#A78BFA",
+                    "#7DD3FC",
+                    "#FB7185",
+                    "#34D399",
+                    "#FF9A76",
+                    "#C8D8D8",
+                ][n % 8],
+                type="synthetic",
+                source="custom",
+            )
             sc.add_body(b)
             n += 1
         except UnphysicalConfiguration as exc:
@@ -181,8 +260,7 @@ def mode_scene_custom(app: App):
         except ValueError as exc:
             print(colorize(f"  ✗ неверное число: {exc}", red))
     if n >= 3:
-        sc.dt = max(1e-3, 1e-7 * max(abs(c) for b in sc.bodies
-                                      for c in b.position) or 1e-3)
+        sc.dt = max(1e-3, 1e-7 * max(abs(c) for b in sc.bodies for c in b.position) or 1e-3)
         app.scene = sc
         app._log(f"своя сцена: N={n}")
         print(colorize(f"\n  ✓ сцена собрана: N={n}, dt={sc.dt:.3g}", grn, True))
@@ -190,60 +268,83 @@ def mode_scene_custom(app: App):
         print(colorize("  нужно минимум 3 тела — сцена отброшена", ylw))
 
 
-@register_mode(name="scene_info", title="Показать текущую сцену",
-               category="Лаборатория", icon="☰", order=30,
-               description="Тела, массы, энергии, предупреждения валидатора")
+@register_mode(
+    name="scene_info",
+    title="Показать текущую сцену",
+    category="Лаборатория",
+    icon="☰",
+    order=30,
+    description="Тела, массы, энергии, предупреждения валидатора",
+)
 def mode_scene_info(app: App):
     sc = app.require_scene()
     if not sc:
         return
     from realism.validator import realism_report
+
     print(colorize(f"\n  СЦЕНА «{sc.name}» (N={sc.n}, t={sc.t:.3g})", cyn, True))
     for b in sc.bodies:
-        print(kv(b.name, f"m={b.mass:.3g} кг  r={b.radius:.3g} м  "
-                         f"v={b.speed():.3g}"))
+        print(kv(b.name, f"m={b.mass:.3g} кг  r={b.radius:.3g} м  " f"v={b.speed():.3g}"))
     print(kv("полная масса", f"{sc.total_mass():.4g} кг"))
     print(kv("энергия", f"{sc.total_energy():.4g} Дж"))
     rep = realism_report(sc)
-    print(kv("физичность", "да" if rep["physical"] else "НЕТ",
-             ) + ("" if rep["physical"] else colorize("  ⚠", red)))
+    print(
+        kv(
+            "физичность",
+            "да" if rep["physical"] else "НЕТ",
+        )
+        + ("" if rep["physical"] else colorize("  ⚠", red))
+    )
     for w in rep["warnings"][:6]:
         print(colorize(f"  ⚠ {w['message']}", ylw))
 
 
-@register_mode(name="scene_catalog", title="Каталог объектов (поиск)",
-               category="Лаборатория", icon="★", order=40,
-               description="258 объектов с источниками: планеты, луны, экзопланеты…")
+@register_mode(
+    name="scene_catalog",
+    title="Каталог объектов (поиск)",
+    category="Лаборатория",
+    icon="★",
+    order=40,
+    description="258 объектов с источниками: планеты, луны, экзопланеты…",
+)
 def mode_scene_catalog(app: App):
     from lab.presets import search_catalog, catalog_summary, load_catalog
+
     cat = load_catalog()
-    print(colorize("\n  КАТАЛОГ: " + ", ".join(
-        f"{k}: {v}" for k, v in catalog_summary(cat).items()), gry))
+    print(
+        colorize(
+            "\n  КАТАЛОГ: " + ", ".join(f"{k}: {v}" for k, v in catalog_summary(cat).items()), gry
+        )
+    )
     q = input("  поиск (часть имени/тип/host; пусто — первые 15): ").strip()
     from lab.presets import catalog_objects
+
     recs = search_catalog(q) if q else catalog_objects(cat)[:15]
     for rec in recs[:20]:
-        print(f"  {rec['id']:<28} {rec['name']:<26} {rec['type']:<12} "
-              f"{rec['mass_kg']:.2g} кг")
+        print(f"  {rec['id']:<28} {rec['name']:<26} {rec['type']:<12} " f"{rec['mass_kg']:.2g} кг")
 
 
 # ── 2. ВИЗУАЛИЗАЦИЯ ────────────────────────────────────────────────────────
-@register_mode(name="viz_render", title="Визуализировать (2D/3D/4D)",
-               category="Визуализация", icon="◐", order=10,
-               description="Графики траекторий выбранным бэкендом")
+@register_mode(
+    name="viz_render",
+    title="Визуализировать (2D/3D/4D)",
+    category="Визуализация",
+    icon="◐",
+    order=10,
+    description="Графики траекторий выбранным бэкендом",
+)
 def mode_viz_render(app: App):
     sc = app.require_scene()
     if not sc:
         return
     if not sc.trajectory_history:
-        print(colorize("  у сцены нет истории — сначала прогоните симуляцию",
-                       ylw))
+        print(colorize("  у сцены нет истории — сначала прогоните симуляцию", ylw))
         return
     from render.engine import available_backends, get_backend
+
     backends = available_backends()
     print(colorize("\n  бэкенды: ", cyn) + ", ".join(backends))
-    b = input(f"  бэкенд [{app.config.render_backend}]: ").strip() \
-        or app.config.render_backend
+    b = ask(f"  бэкенд [{app.config.render_backend}]: ") or app.config.render_backend
     run_dir = app.new_run_dir("viz")
     try:
         eng = get_backend(b, app.config)
@@ -260,79 +361,114 @@ def mode_viz_render(app: App):
         app._log(f"визуализация {b}: {len(outs)} файлов")
         print(colorize(f"\n  ✓ создано {len(outs)} файлов в {run_dir}", grn, True))
         for p in outs:
-            print(f"    {os.path.basename(p)}  "
-                  f"({os.path.getsize(p)} байт)")
+            print(f"    {os.path.basename(p)}  " f"({os.path.getsize(p)} байт)")
     except Exception as exc:
         print(colorize(f"  ✗ {type(exc).__name__}: {exc}", red))
 
 
-@register_mode(name="viz_ascii", title="ASCII-кадр в терминал",
-               category="Визуализация", icon="▚", order=20,
-               description="Мгновенный терминальный рендер текущего состояния")
+@register_mode(
+    name="viz_ascii",
+    title="ASCII-кадр в терминал",
+    category="Визуализация",
+    icon="▚",
+    order=20,
+    description="Мгновенный терминальный рендер текущего состояния",
+)
 def mode_viz_ascii(app: App):
     sc = app.require_scene()
     if not sc:
         return
     from render.backend_ascii import render_ascii, print_ascii
-    bodies = [dict(position=b.position, radius=max(b.radius / 1e9, 0.05),
-                   color=b.color, label=b.name) for b in sc.bodies]
+
+    bodies = [
+        dict(position=b.position, radius=max(b.radius / 1e9, 0.05), color=b.color, label=b.name)
+        for b in sc.bodies
+    ]
     trails = None
     if sc.trajectory_history:
-        trails = [[(s[i][0], s[i][1], s[i][2])
-                   for s in sc.trajectory_history[::max(1, len(sc.trajectory_history)//12)]]
-                  for i in range(len(sc.bodies))]
+        trails = [
+            [
+                (s[i][0], s[i][1], s[i][2])
+                for s in sc.trajectory_history[:: max(1, len(sc.trajectory_history) // 12)]
+            ]
+            for i in range(len(sc.bodies))
+        ]
     lines = render_ascii(bodies, width=78, height=24, trails=trails)
     print_ascii(lines)
 
 
 # ── 3. СИМУЛЯЦИИ ───────────────────────────────────────────────────────────
-@register_mode(name="sim_run", title="Прогнать симуляцию",
-               category="Симуляции", icon="▶", order=10,
-               description="Движок, шаги, прогресс-бар, детекторы событий")
+@register_mode(
+    name="sim_run",
+    title="Прогнать симуляцию",
+    category="Симуляции",
+    icon="▶",
+    order=10,
+    description="Движок, шаги, прогресс-бар, детекторы событий",
+)
 def mode_sim_run(app: App):
     sc = app.require_scene()
     if not sc:
         return
     from lab.physics import run_simulation, engine_registry
+
     engines = sorted(engine_registry().keys())
     print(colorize("\n  движки: ", cyn) + ", ".join(engines))
-    eng = input(f"  движок [{app.config.physics_engine}]: ").strip() \
-        or app.config.physics_engine
+    eng = input(f"  движок [{app.config.physics_engine}]: ").strip() or app.config.physics_engine
     steps_s = input(f"  шагов [{app.config.n_steps}]: ").strip()
     steps = int(steps_s) if steps_s.isdigit() else app.config.n_steps
     try:
         sc.apply_engine(eng)
     except (ValueError, Exception) as exc:
-        print(colorize(f"  движок недоступен: {exc} — используется native",
-                       ylw))
-    bar = ProgressBar(f"симуляция «{sc.name}»", steps,
-                      monitor=Monitor() if app.config.monitor_inline else None)
+        print(colorize(f"  движок недоступен: {exc} — используется native", ylw))
+    bar = ProgressBar(
+        f"симуляция «{sc.name}»", steps, monitor=Monitor() if app.config.monitor_inline else None
+    )
     sim = run_simulation(sc, n_steps=steps, progress=bar)
     app.last_sim = sim
-    app._log(f"симуляция {sim['engine']}: {steps} шагов, "
-             f"дрейф {sim['energy_drift_rel']:.1e}")
+    app._log(f"симуляция {sim['engine']}: {steps} шагов, " f"дрейф {sim['energy_drift_rel']:.1e}")
     bar.finish(f"t={sim['t_final']:.3g}")
-    print(colorize(f"\n  ✓ движок {sim['engine']}, t={sim['t_final']:.4g}, "
-                   f"дрейф энергии {sim['energy_drift_rel']:.1e}", grn, True))
+    print(
+        colorize(
+            f"\n  ✓ движок {sim['engine']}, t={sim['t_final']:.4g}, "
+            f"дрейф энергии {sim['energy_drift_rel']:.1e}",
+            grn,
+            True,
+        )
+    )
     if sim["new_events"]:
         print(colorize(f"  события ({len(sim['new_events'])}):", ylw))
         for e in sim["new_events"][:6]:
             print(f"    {e['kind']}: {e['detail'][:70]}")
     if sc.unphysical_flag:
-        print(colorize("  ⚠ конфигурация вне физической вселенной модели "
-                       "(порог Хавелока, N=8: max Re λ = +0.4502)", red, True))
+        print(
+            colorize(
+                "  ⚠ конфигурация вне физической вселенной модели "
+                "(порог Хавелока, N=8: max Re λ = +0.4502)",
+                red,
+                True,
+            )
+        )
 
 
-@register_mode(name="sim_trajectory", title="Запланировать траекторию",
-               category="Симуляции", icon="✳", order=20,
-               description="Теорема 3.1, Лагранж, figure-eight, Кеплер, waypoints")
+@register_mode(
+    name="sim_trajectory",
+    title="Запланировать траекторию",
+    category="Симуляции",
+    icon="✳",
+    order=20,
+    description="Теорема 3.1, Лагранж, figure-eight, Кеплер, waypoints",
+)
 def mode_sim_trajectory(app: App):
     from lab.trajectory import get_planner
-    planners = ["theorem31 (Теорема 3.1: дышащее кольцо)",
-                "lagrange (равносторонний треугольник)",
-                "figure_eight (Ченшинер–Монтгомери)",
-                "ring (вихревое кольцо N=2..8, Кирхгоф)",
-                "orbit (кеплерова орбита)"]
+
+    planners = [
+        "theorem31 (Теорема 3.1: дышащее кольцо)",
+        "lagrange (равносторонний треугольник)",
+        "figure_eight (Ченшинер–Монтгомери)",
+        "ring (вихревое кольцо N=2..8, Кирхгоф)",
+        "orbit (кеплерова орбита)",
+    ]
     print(colorize("\n  ПЛАНИРОВЩИКИ", cyn, True))
     for p in planners:
         print(f"  • {p}")
@@ -360,14 +496,13 @@ def mode_sim_trajectory(app: App):
         traj.to_json(os.path.join(run_dir, "trajectory.json"))
         traj.to_csv(os.path.join(run_dir, "trajectory.csv"))
         app._log(f"траектория {choice}: {len(traj.times)} кадров")
-        print(colorize(f"\n  ✓ {choice}: {len(traj.times)} кадров → {run_dir}",
-                       grn, True))
+        print(colorize(f"\n  ✓ {choice}: {len(traj.times)} кадров → {run_dir}", grn, True))
         # сразу покажем график, если mpl есть
         try:
             from render.backend_mpl import plot_2d, HAVE_MPL
+
             if HAVE_MPL:
-                plot_2d(traj, os.path.join(run_dir, "traj_2d.png"),
-                        style="neon_dark", title=choice)
+                plot_2d(traj, os.path.join(run_dir, "traj_2d.png"), style="neon_dark", title=choice)
                 app.last_charts = [os.path.join(run_dir, "traj_2d.png")]
                 print(colorize("  график: traj_2d.png", grn))
         except ImportError:
@@ -377,9 +512,14 @@ def mode_sim_trajectory(app: App):
 
 
 # ── 4. АНИМАЦИИ ────────────────────────────────────────────────────────────
-@register_mode(name="anim_gif", title="Собрать GIF-анимацию",
-               category="Анимации", icon="🎞", order=10,
-               description="Собственный LZW-кодер GIF89a, без зависимостей")
+@register_mode(
+    name="anim_gif",
+    title="Собрать GIF-анимацию",
+    category="Анимации",
+    icon="🎞",
+    order=10,
+    description="Собственный LZW-кодер GIF89a, без зависимостей",
+)
 def mode_anim_gif(app: App):
     sc = app.require_scene()
     if not sc:
@@ -388,26 +528,34 @@ def mode_anim_gif(app: App):
         print(colorize("  нет истории — прогоните симуляцию", ylw))
         return
     from render.animator import animate_scene
-    frames_s = input("  кадров [36]: ").strip()
+
+    frames_s = ask("  кадров [36]: ")
     frames = int(frames_s) if frames_s.isdigit() else 36
-    w_s = input("  ширина [480]: ").strip()
+    w_s = ask("  ширина [480]: ")
     w = int(w_s) if w_s.isdigit() else 480
     h = int(w * 0.75)
     run_dir = app.new_run_dir("anim")
     out = os.path.join(run_dir, "animation.gif")
     try:
-        res = animate_scene(sc, out, n_frames=frames, fps=12,
-                            backend="pure", width=w, height=h)
+        res = animate_scene(sc, out, n_frames=frames, fps=12, backend="pure", width=w, height=h)
         app._log(f"gif: {res['bytes']} байт, {res['frames']} кадров")
-        print(colorize(f"\n  ✓ GIF: {res['frames']} кадров, {res['bytes']} "
-                       f"байт → {out}", grn, True))
+        print(
+            colorize(
+                f"\n  ✓ GIF: {res['frames']} кадров, {res['bytes']} " f"байт → {out}", grn, True
+            )
+        )
     except Exception as exc:
         print(colorize(f"  ✗ {type(exc).__name__}: {exc}", red))
 
 
-@register_mode(name="anim_mp4", title="Собрать MP4-видео",
-               category="Анимации", icon="🎬", order=20,
-               description="ffmpeg или imageio (при наличии)")
+@register_mode(
+    name="anim_mp4",
+    title="Собрать MP4-видео",
+    category="Анимации",
+    icon="🎬",
+    order=20,
+    description="ffmpeg или imageio (при наличии)",
+)
 def mode_anim_mp4(app: App):
     sc = app.require_scene()
     if not sc:
@@ -416,11 +564,13 @@ def mode_anim_mp4(app: App):
         print(colorize("  нет истории — прогоните симуляцию", ylw))
         return
     from render.animator import animate_scene
+
     run_dir = app.new_run_dir("anim")
     out = os.path.join(run_dir, "animation.mp4")
     try:
-        res = animate_scene(sc, out, n_frames=24, fps=10, backend="pure",
-                            width=480, height=360, format="mp4")
+        res = animate_scene(
+            sc, out, n_frames=24, fps=10, backend="pure", width=480, height=360, format="mp4"
+        )
         app._log(f"mp4: {res['bytes']} байт")
         print(colorize(f"\n  ✓ MP4: {res['bytes']} байт → {out}", grn, True))
     except Exception as exc:
@@ -428,37 +578,45 @@ def mode_anim_mp4(app: App):
 
 
 # ── 5. АНАЛИЗ ──────────────────────────────────────────────────────────────
-@register_mode(name="analysis_selftest", title="Структурные тесты S1–S12",
-               category="Анализ", icon="🧪", order=10,
-               description="Структуры, направления, зависимости, интегралы V3/V4")
+@register_mode(
+    name="analysis_selftest",
+    title="Структурные тесты S1–S12",
+    category="Анализ",
+    icon="🧪",
+    order=10,
+    description="Структуры, направления, зависимости, интегралы V3/V4",
+)
 def mode_analysis_selftest(app: App):
     from analysis.tests import run_all
+
     print(colorize("\n  СТРУКТУРНЫЕ ТЕСТЫ S1–S12", cyn, True))
     summary = run_all()
     mark = verdict_icon(summary["all_pass"])
     print(f"\n  {mark} {summary['passed']}/{summary['total']} пройдено")
     run_dir = app.new_run_dir("selftest")
-    with open(os.path.join(run_dir, "selftest.json"), "w",
-              encoding="utf-8") as fh:
+    with open(os.path.join(run_dir, "selftest.json"), "w", encoding="utf-8") as fh:
         json.dump(summary, fh, ensure_ascii=False, indent=1)
     print(f"  протокол: {run_dir}/selftest.json")
 
 
-@register_mode(name="analysis_metrics", title="Метрики текущей сцены",
-               category="Анализ", icon="📐", order=20,
-               description="Ляпунов, интегралы, расстояния, периоды")
+@register_mode(
+    name="analysis_metrics",
+    title="Метрики текущей сцены",
+    category="Анализ",
+    icon="📐",
+    order=20,
+    description="Ляпунов, интегралы, расстояния, периоды",
+)
 def mode_analysis_metrics(app: App):
     sc = app.require_scene()
     if not sc:
         return
-    from analysis.metrics import lyapunov_exponent, integral_drifts, \
-        scene_summary_metrics
+    from analysis.metrics import lyapunov_exponent, integral_drifts, scene_summary_metrics
+
     print(colorize("\n  МЕТРИКИ", cyn, True))
     lam = lyapunov_exponent(sc, n_steps=min(150, app.config.n_steps))
-    verdict = colorize("ХАОС", red, True) if lam["chaotic"] else \
-        colorize("регулярно", grn, True)
-    print(kv("ляпуновский показатель",
-             f"{lam['lyapunov']:.3e} 1/t — {verdict}"))
+    verdict = colorize("ХАОС", red, True) if lam["chaotic"] else colorize("регулярно", grn, True)
+    print(kv("ляпуновский показатель", f"{lam['lyapunov']:.3e} 1/t — {verdict}"))
     drifts = integral_drifts(sc)
     for k, v in drifts.items():
         if isinstance(v, float):
@@ -468,15 +626,25 @@ def mode_analysis_metrics(app: App):
     summ = scene_summary_metrics(sc)
     if "distances" in summ:
         d = summ["distances"]
-        print(kv("межтелные расстояния",
-                 f"min {d['min']:.3g} / max {d['max']:.3g} / mean {d['mean']:.3g}"))
+        print(
+            kv(
+                "межтелные расстояния",
+                f"min {d['min']:.3g} / max {d['max']:.3g} / mean {d['mean']:.3g}",
+            )
+        )
 
 
-@register_mode(name="analysis_field", title="Полевые исследования",
-               category="Анализ", icon="🔬", order=30,
-               description="Сканы масса×скорость, кольца Хавелока, бифуркации")
+@register_mode(
+    name="analysis_field",
+    title="Полевые исследования",
+    category="Анализ",
+    icon="🔬",
+    order=30,
+    description="Сканы масса×скорость, кольца Хавелока, бифуркации",
+)
 def mode_analysis_field(app: App):
     from analysis import field
+
     print(colorize("\n  ПОЛЕВЫЕ ИССЛЕДОВАНИЯ", cyn, True))
     print("  1. скан масса × скорость (ньютоновский)")
     print("  2. кольца Хавелока N=2..8 (вихревая устойчивость)")
@@ -486,20 +654,30 @@ def mode_analysis_field(app: App):
     bar = ProgressBar("полевые исследования", 100)
     try:
         if choice in ("1", "оба"):
-            results.append(field.scan_mass_velocity(
-                progress=bar,
-                output_json=os.path.join(run_dir, "scan_mass_velocity.json")))
-            print(colorize(f"  ✓ скан 1: {len(results[-1]['grid'])} узлов, "
-                           f"бифуркаций: {len(results[-1]['bifurcations'])}",
-                           grn))
+            results.append(
+                field.scan_mass_velocity(
+                    progress=bar, output_json=os.path.join(run_dir, "scan_mass_velocity.json")
+                )
+            )
+            print(
+                colorize(
+                    f"  ✓ скан 1: {len(results[-1]['grid'])} узлов, "
+                    f"бифуркаций: {len(results[-1]['bifurcations'])}",
+                    grn,
+                )
+            )
         if choice in ("2", "оба"):
             res = field.scan_havelock(
-                progress=bar,
-                output_json=os.path.join(run_dir, "scan_havelock.json"))
+                progress=bar, output_json=os.path.join(run_dir, "scan_havelock.json")
+            )
             results.append(res)
-            print(colorize(
-                f"  ✓ Хавелок: согласие динамики с прогнозом W4 — "
-                f"{res['havelock_matches']}/{res['havelock_total']}", grn))
+            print(
+                colorize(
+                    f"  ✓ Хавелок: согласие динамики с прогнозом W4 — "
+                    f"{res['havelock_matches']}/{res['havelock_total']}",
+                    grn,
+                )
+            )
         bar.finish()
     except Exception as exc:
         bar.finish()
@@ -508,19 +686,27 @@ def mode_analysis_field(app: App):
     app._log(f"полевые исследования: {len(results)} сканов")
     # таблицы в терминал
     from analysis.field import field_tables
+
     for name, headers, rows in field_tables(results):
         print(colorize(f"\n  {name}", cyn, True))
         from reports.charts import ascii_table
+
         for line in ascii_table(headers, rows).splitlines():
             print("  " + line)
 
 
-@register_mode(name="analysis_rmt", title="RMT-статистика спектров",
-               category="Анализ", icon="∑", order=40,
-               description="⟨r⟩ Джиролами: GUE/GOE/GSE/Poisson (наследие ядра)")
+@register_mode(
+    name="analysis_rmt",
+    title="RMT-статистика спектров",
+    category="Анализ",
+    icon="∑",
+    order=40,
+    description="⟨r⟩ Джиролами: GUE/GOE/GSE/Poisson (наследие ядра)",
+)
 def mode_analysis_rmt(app: App):
     from analysis.rmt import synthetic_ensemble, analyze_spectrum
     import json
+
     print(colorize("\n  RMT-АНАЛИЗ (наследие trivortex_core, секция 7)", cyn, True))
     kind = input("  ансамбль (goe/gue) [goe]: ").strip() or "goe"
     evs = synthetic_ensemble(kind, n=50, seed=7)
@@ -536,27 +722,34 @@ def mode_analysis_rmt(app: App):
 
 
 # ── 6. ОТЧЁТЫ ──────────────────────────────────────────────────────────────
-@register_mode(name="reports_generate", title="Сгенерировать отчёты",
-               category="Отчёты", icon="📄", order=10,
-               description="TXT · MD · HTML · CSV · JSON · DOCX · PDF")
+@register_mode(
+    name="reports_generate",
+    title="Сгенерировать отчёты",
+    category="Отчёты",
+    icon="📄",
+    order=10,
+    description="TXT · MD · HTML · CSV · JSON · DOCX · PDF",
+)
 def mode_reports_generate(app: App):
     sc = app.require_scene()
     if not sc:
         return
     from reports.engine import ReportData, generate_reports, validate_outputs
+
     print(colorize("\n  форматы: txt md html csv json docx pdf", cyn))
-    fmts_s = input("  форматы через пробел [все]: ").strip()
-    fmts = fmts_s.split() if fmts_s else ["txt", "md", "html", "csv",
-                                          "json", "docx", "pdf"]
+    fmts_s = ask("  форматы через пробел [все]: ")
+    fmts = fmts_s.split() if fmts_s else ["txt", "md", "html", "csv", "json", "docx", "pdf"]
     theme = app.config.report_theme
     run_dir = app.new_run_dir("report")
-    data = ReportData(f"Отчёт по сцене «{sc.name}»", scene=sc,
-                      sim_summary=app.last_sim or {}, config=app.config)
+    data = ReportData(
+        f"Отчёт по сцене «{sc.name}»", scene=sc, sim_summary=app.last_sim or {}, config=app.config
+    )
     data.fill_from_scene()
     # графики, если есть
     if sc.trajectory_history:
         try:
             from render.engine import get_backend
+
             eng = get_backend("mpl", app.config)
             eng.setup(sc)
             charts = eng.render_trajectory(run_dir, prefix="chart")
@@ -567,9 +760,9 @@ def mode_reports_generate(app: App):
             pass
     # метрики
     from analysis.metrics import scene_summary_metrics
+
     m = scene_summary_metrics(sc)
-    data.extra_sections.append(("Метрики", json.dumps(
-        m, ensure_ascii=False, default=str)[:800]))
+    data.extra_sections.append(("Метрики", json.dumps(m, ensure_ascii=False, default=str)[:800]))
     written = generate_reports(data, run_dir, formats=fmts, theme=theme)
     problems = validate_outputs(written)
     app.last_reports = written
@@ -583,14 +776,18 @@ def mode_reports_generate(app: App):
 
 
 # ── 7. НАСТРОЙКИ ───────────────────────────────────────────────────────────
-@register_mode(name="settings_profile", title="Профиль конфигурации",
-               category="Настройки", icon="⚙", order=10,
-               description="quick / standard / realistic / research / cinematic / pure_stdlib")
+@register_mode(
+    name="settings_profile",
+    title="Профиль конфигурации",
+    category="Настройки",
+    icon="⚙",
+    order=10,
+    description="quick / standard / realistic / research / cinematic / pure_stdlib",
+)
 def mode_settings_profile(app: App):
     print(colorize("\n  ПРОФИЛИ", cyn, True))
     for name, params in PROFILES.items():
-        print(f"  • {name:<12} " + ", ".join(f"{k}={v}" for k, v in
-                                             list(params.items())[:3]))
+        print(f"  • {name:<12} " + ", ".join(f"{k}={v}" for k, v in list(params.items())[:3]))
     choice = input("  профиль [standard]: ").strip() or "standard"
     try:
         allow = app.config.allow_unphysical
@@ -602,9 +799,14 @@ def mode_settings_profile(app: App):
         print(colorize(f"  ✗ {exc}", red))
 
 
-@register_mode(name="settings_physics", title="Физика реальности",
-               category="Настройки", icon="🜨", order=20,
-               description="G, dt, шаги, релятивизм 1PN, диссипация, лимиты N")
+@register_mode(
+    name="settings_physics",
+    title="Физика реальности",
+    category="Настройки",
+    icon="🜨",
+    order=20,
+    description="G, dt, шаги, релятивизм 1PN, диссипация, лимиты N",
+)
 def mode_settings_physics(app: App):
     c = app.config
     print(colorize("\n  ФИЗИКА РЕАЛЬНОСТИ", cyn, True))
@@ -613,8 +815,9 @@ def mode_settings_physics(app: App):
     print(kv("шагов", str(c.n_steps)))
     print(kv("релятивизм 1PN", "вкл" if c.enable_relativity else "выкл"))
     print(kv("диссипация", "вкл" if c.enable_dissipation else "выкл"))
-    print(kv("диапазон N", f"{c.min_bodies}…{c.max_bodies}"
-                           f" (жёсткий лимит {c.hard_max_bodies})"))
+    print(
+        kv("диапазон N", f"{c.min_bodies}…{c.max_bodies}" f" (жёсткий лимит {c.hard_max_bodies})")
+    )
     print(kv("allow_unphysical", "вкл" if c.allow_unphysical else "выкл"))
     what = input("\n  изменить (G/dt/steps/rel/diss/allow/пусто-выход): ").strip()
     try:
@@ -631,8 +834,14 @@ def mode_settings_physics(app: App):
         elif what == "allow":
             c.allow_unphysical = not c.allow_unphysical
             if c.allow_unphysical:
-                print(colorize("  ⚠ N=8 теперь разрешён — конфигурации будут "
-                               "помечаться «вне физической вселенной»", ylw, True))
+                print(
+                    colorize(
+                        "  ⚠ N=8 теперь разрешён — конфигурации будут "
+                        "помечаться «вне физической вселенной»",
+                        ylw,
+                        True,
+                    )
+                )
         else:
             return
         app._log(f"физика: {what} изменён")
@@ -641,9 +850,14 @@ def mode_settings_physics(app: App):
         print(colorize(f"  ✗ {exc}", red))
 
 
-@register_mode(name="settings_save", title="Сохранить/загрузить конфиг",
-               category="Настройки", icon="💾", order=30,
-               description="JSON-снимок конфигурации сессии")
+@register_mode(
+    name="settings_save",
+    title="Сохранить/загрузить конфиг",
+    category="Настройки",
+    icon="💾",
+    order=30,
+    description="JSON-снимок конфигурации сессии",
+)
 def mode_settings_save(app: App):
     what = input("  save/load [save]: ").strip() or "save"
     path = os.path.join(ROOT, "runs", "config.json")
@@ -659,13 +873,19 @@ def mode_settings_save(app: App):
 
 
 # ── 8. СПРАВКА ─────────────────────────────────────────────────────────────
-@register_mode(name="help_engines", title="Статус движков и зависимостей",
-               category="Справка", icon="♥", order=10,
-               description="Что доступно, что опционально, что сделать")
+@register_mode(
+    name="help_engines",
+    title="Статус движков и зависимостей",
+    category="Справка",
+    icon="♥",
+    order=10,
+    description="Что доступно, что опционально, что сделать",
+)
 def mode_help_engines(app: App):
     from core.registry import engine_status_lines
     from render.engine import available_backends
     from core import bridge
+
     print(colorize("\n  СТАТУС ДВИЖКОВ", cyn, True))
     for mark, label, why in engine_status_lines():
         color = grn if mark == "✓" else gry
@@ -673,18 +893,29 @@ def mode_help_engines(app: App):
         if why:
             line += colorize(f" — {why}", gry)
         print(colorize(line, color))
-    print(colorize(f"\n  графические бэкенды: {', '.join(available_backends())}",
-                   wht))
+    print(colorize(f"\n  графические бэкенды: {', '.join(available_backends())}", wht))
     st = bridge.health_check()
-    print(colorize(f"  ядро Trivortex: "
-                   + ("найдено — лестница V1–V4 доступна" if st.available
-                      else "не найдено (автономный режим)"),
-                   grn if st.available else ylw))
+    print(
+        colorize(
+            f"  ядро Trivortex: "
+            + (
+                "найдено — лестница V1–V4 доступна"
+                if st.available
+                else "не найдено (автономный режим)"
+            ),
+            grn if st.available else ylw,
+        )
+    )
 
 
-@register_mode(name="help_literature", title="Литература и источники",
-               category="Справка", icon="📚", order=20,
-               description="Аннотированный список: ядро, движки, данные, классика")
+@register_mode(
+    name="help_literature",
+    title="Литература и источники",
+    category="Справка",
+    icon="📚",
+    order=20,
+    description="Аннотированный список: ядро, движки, данные, классика",
+)
 def mode_help_literature(app: App):
     path = os.path.join(ROOT, "data", "literature.md")
     if os.path.isfile(path):
@@ -705,9 +936,14 @@ def mode_help_literature(app: App):
         print(colorize("  literature.md не найден", ylw))
 
 
-@register_mode(name="help_about", title="О комплексе",
-               category="Справка", icon="ℹ", order=30,
-               description="Версия, объём, философия stdlib-first")
+@register_mode(
+    name="help_about",
+    title="О комплексе",
+    category="Справка",
+    icon="ℹ",
+    order=30,
+    description="Версия, объём, философия stdlib-first",
+)
 def mode_help_about(app: App):
     total_lines = 0
     for base, _dirs, files in os.walk(ROOT):
@@ -747,9 +983,9 @@ def print_menu() -> None:
             icon = item["icon"]
             title = item["title"]
             if not item["available"]:
-                title += colorize("  (недоступно: "
-                                  + "; ".join(item["blocked_reasons"])[:40]
-                                  + ")", gry)
+                title += colorize(
+                    "  (недоступно: " + "; ".join(item["blocked_reasons"])[:40] + ")", gry
+                )
             print(f"│  {colorize(key, ylw, True)}  {icon} {title}")
             counter += 1
     print(colorize("│  " + colorize("0", ylw, True) + "  ✖ Выход", wht))
@@ -762,15 +998,15 @@ _MENU_INDEX: dict[str, str] = {}
 def interactive() -> int:
     """Главный интерактивный цикл; EOF-safe, Ctrl-C-safe."""
     detect_color_mode()
-    print_banner(VERSION, "лаборатория N тел · траектории · 2D/3D/4D · "
-                          "отчёты 7 форматов · stdlib-first")
+    print_banner(
+        VERSION, "лаборатория N тел · траектории · 2D/3D/4D · " "отчёты 7 форматов · stdlib-first"
+    )
     from core.registry import engine_status_lines
-    marks = "  ".join(f"[{m}]{lbl[:12]}" for m, lbl, _w
-                      in engine_status_lines()[:6])
+
+    marks = "  ".join(f"[{m}]{lbl[:12]}" for m, lbl, _w in engine_status_lines()[:6])
     print(colorize("  движки: " + marks, gry))
     if APP.config.allow_unphysical:
-        print(colorize("  ⚠ allow_unphysical: ВКЛ — конфигурации N=8 помечаются",
-                       ylw, True))
+        print(colorize("  ⚠ allow_unphysical: ВКЛ — конфигурации N=8 помечаются", ylw, True))
     empty_reads = 0
     while True:
         print_menu()
@@ -800,8 +1036,7 @@ def interactive() -> int:
         except KeyboardInterrupt:
             print(colorize("\n  прервано — возврат в меню", ylw))
         except Exception as exc:
-            print(colorize(f"\n  ✗ ошибка режима: {type(exc).__name__}: {exc}",
-                           red))
+            print(colorize(f"\n  ✗ ошибка режима: {type(exc).__name__}: {exc}", red))
             traceback.print_exc(file=sys.stderr)
             APP._log(f"ошибка в {mode_name}: {exc}")
         # пауза, чтобы прочитать вывод
@@ -820,25 +1055,22 @@ def interactive() -> int:
 # ═══════════════════════════════════════════════════════════════════════════
 def cli(args: list[str]) -> int:
     parser = argparse.ArgumentParser(
-        prog="trivortex_master",
-        description="TRIVORTEX MASTER — лабораторный комплекс N тел")
-    parser.add_argument("--selftest", action="store_true",
-                        help="структурные тесты S1–S12")
-    parser.add_argument("--profile", default="standard",
-                        choices=list(PROFILES), help="профиль конфигурации")
+        prog="trivortex_master", description="TRIVORTEX MASTER — лабораторный комплекс N тел"
+    )
+    parser.add_argument("--selftest", action="store_true", help="структурные тесты S1–S12")
+    parser.add_argument(
+        "--profile", default="standard", choices=list(PROFILES), help="профиль конфигурации"
+    )
     parser.add_argument("--preset", help="пресет сцены (id)")
-    parser.add_argument("--simulate", action="store_true",
-                        help="прогнать симуляцию")
+    parser.add_argument("--simulate", action="store_true", help="прогнать симуляцию")
     parser.add_argument("--steps", type=int, default=None)
-    parser.add_argument("--render", action="store_true",
-                        help="визуализировать (mpl при наличии)")
-    parser.add_argument("--gif", action="store_true",
-                        help="собрать GIF")
-    parser.add_argument("--report", action="store_true",
-                        help="отчёты во всех форматах")
+    parser.add_argument("--render", action="store_true", help="визуализировать (mpl при наличии)")
+    parser.add_argument("--gif", action="store_true", help="собрать GIF")
+    parser.add_argument("--report", action="store_true", help="отчёты во всех форматах")
     parser.add_argument("--banner-only", action="store_true")
-    parser.add_argument("--allow-unphysical", action="store_true",
-                        help="разрешить N=8 (вне физической вселенной)")
+    parser.add_argument(
+        "--allow-unphysical", action="store_true", help="разрешить N=8 (вне физической вселенной)"
+    )
     parser.add_argument("--no-color", action="store_true")
     ns = parser.parse_args(args)
 
@@ -847,6 +1079,7 @@ def cli(args: list[str]) -> int:
 
     if ns.selftest:
         from analysis.tests import run_all
+
         summary = run_all()
         return 0 if summary["all_pass"] else 1
 
@@ -865,6 +1098,7 @@ def cli(args: list[str]) -> int:
         APP.config.n_steps = ns.steps
     if ns.preset:
         from lab.presets import build_preset
+
         try:
             APP.scene = build_preset(ns.preset, APP.config)
             print(f"сцена: {APP.scene.name} (N={APP.scene.n})")
@@ -873,6 +1107,7 @@ def cli(args: list[str]) -> int:
             return 1
     if ns.simulate:
         from lab.physics import run_simulation
+
         bar = ProgressBar("симуляция", APP.config.n_steps)
         APP.last_sim = run_simulation(APP.scene, progress=bar)
         bar.finish(f"t={APP.last_sim['t_final']:.3g}")

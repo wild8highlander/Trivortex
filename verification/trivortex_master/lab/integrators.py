@@ -21,6 +21,7 @@ TRIVORTEX MASTER — интеграторы: симплектические и �
 и правой частью вида deriv(y, t) -> dy/dt — без привязки к конкретной
 физике (гравитация подключается снаружи).
 """
+
 from __future__ import annotations
 
 import math
@@ -33,8 +34,7 @@ Deriv = Callable[[Sequence[float], float], list[float]]
 # ═══════════════════════════════════════════════════════════════════════════
 # Классический RK4 (для сравнения и как внутренний шаг)
 # ═══════════════════════════════════════════════════════════════════════════
-def rk4_step(deriv: Deriv, y: list[float], t: float, dt: float
-             ) -> tuple[list[float], float]:
+def rk4_step(deriv: Deriv, y: list[float], t: float, dt: float) -> tuple[list[float], float]:
     """Один шаг RK4; возвращает (новое y, новое t)."""
     n = len(y)
     k1 = deriv(y, t)
@@ -44,8 +44,7 @@ def rk4_step(deriv: Deriv, y: list[float], t: float, dt: float
     k3 = deriv(y3, t + 0.5 * dt)
     y4 = [y[i] + dt * k3[i] for i in range(n)]
     k4 = deriv(y4, t + dt)
-    y_new = [y[i] + (dt / 6.0) * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i])
-             for i in range(n)]
+    y_new = [y[i] + (dt / 6.0) * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]) for i in range(n)]
     return y_new, t + dt
 
 
@@ -55,6 +54,7 @@ def rk4_step(deriv: Deriv, y: list[float], t: float, dt: float
 @dataclass
 class LeapfrogStats:
     """Статистика прогона симплектического интегратора."""
+
     steps: int = 0
     rejected: int = 0
     e_min: float = float("inf")
@@ -80,8 +80,7 @@ class Leapfrog:
         self.n = n_bodies
         self.stats = LeapfrogStats()
 
-    def step(self, y: list[float], t: float, dt: float
-             ) -> tuple[list[float], float]:
+    def step(self, y: list[float], t: float, dt: float) -> tuple[list[float], float]:
         """y = [x,y,z,vx,vy,vz]*N; KDK-схема."""
         n6 = self.n * 6
         pos = [y[i] * 1.0 for i in range(n6)]
@@ -90,16 +89,13 @@ class Leapfrog:
         vs = [y[6 * i + 3 + j] for i in range(self.n) for j in range(3)]
         # half-kick по текущим ускорениям
         acc = self.accel(_to_positions(y, self.n), t)
-        vs2 = [vs[3 * i + j] + 0.5 * dt * acc[i][j]
-               for i in range(self.n) for j in range(3)]
+        vs2 = [vs[3 * i + j] + 0.5 * dt * acc[i][j] for i in range(self.n) for j in range(3)]
         # drift
-        xs2 = [xs[3 * i + j] + dt * vs2[3 * i + j]
-               for i in range(self.n) for j in range(3)]
+        xs2 = [xs[3 * i + j] + dt * vs2[3 * i + j] for i in range(self.n) for j in range(3)]
         # half-kick по новым ускорениям
         y_mid = _pack(xs2, vs2, self.n)
         acc2 = self.accel(_to_positions(y_mid, self.n), t + dt)
-        vs3 = [vs2[3 * i + j] + 0.5 * dt * acc2[i][j]
-               for i in range(self.n) for j in range(3)]
+        vs3 = [vs2[3 * i + j] + 0.5 * dt * acc2[i][j] for i in range(self.n) for j in range(3)]
         y_new = _pack(xs2, vs3, self.n)
         self.stats.steps += 1
         return y_new, t + dt
@@ -110,15 +106,14 @@ class VelocityVerlet(Leapfrog):
 
     name = "velocity_verlet"
 
-    def step(self, y: list[float], t: float, dt: float
-             ) -> tuple[list[float], float]:
+    def step(self, y: list[float], t: float, dt: float) -> tuple[list[float], float]:
         # алгебраически эквивалентен KDK; отдельный класс для ясности API
         return super().step(y, t, dt)
 
 
 # коэффициенты Йосиды 4-го порядка (композиция симплектических шагов)
 _W1 = 1.0 / (2.0 - 2.0 ** (1.0 / 3.0))
-_W0 = -2.0 ** (1.0 / 3.0) / (2.0 - 2.0 ** (1.0 / 3.0))
+_W0 = -(2.0 ** (1.0 / 3.0)) / (2.0 - 2.0 ** (1.0 / 3.0))
 
 
 class Yoshida4:
@@ -133,8 +128,7 @@ class Yoshida4:
     def __init__(self, accel: Callable[[list, float], list], n_bodies: int):
         self.lf = Leapfrog(accel, n_bodies)
 
-    def step(self, y: list[float], t: float, dt: float
-             ) -> tuple[list[float], float]:
+    def step(self, y: list[float], t: float, dt: float) -> tuple[list[float], float]:
         # композиция: dt1 = w1*dt, dt2 = w0*dt, dt3 = w1*dt
         y1, t1 = self.lf.step(y, t, _W1 * dt)
         y2, t2 = self.lf.step(y1, t1, _W0 * dt)
@@ -144,14 +138,14 @@ class Yoshida4:
 
 
 def _to_positions(y: Sequence[float], n: int) -> list[tuple[float, ...]]:
-    return [tuple(y[6 * i:6 * i + 3]) for i in range(n)]
+    return [tuple(y[6 * i : 6 * i + 3]) for i in range(n)]
 
 
 def _pack(xs: Sequence[float], vs: Sequence[float], n: int) -> list[float]:
     out = []
     for i in range(n):
-        out.extend(xs[3 * i:3 * i + 3])
-        out.extend(vs[3 * i:3 * i + 3])
+        out.extend(xs[3 * i : 3 * i + 3])
+        out.extend(vs[3 * i : 3 * i + 3])
     return out
 
 
@@ -168,8 +162,7 @@ _A = [
     [-8.0 / 27.0, 2.0, -3544.0 / 2565.0, 1859.0 / 4104.0, -11.0 / 40.0],
 ]
 _C = [0.0, 1.0 / 4.0, 3.0 / 8.0, 12.0 / 13.0, 1.0, 1.0 / 2.0]
-_B5 = [16.0 / 135.0, 0.0, 6656.0 / 12825.0, 28561.0 / 56430.0, -9.0 / 50.0,
-       2.0 / 55.0]
+_B5 = [16.0 / 135.0, 0.0, 6656.0 / 12825.0, 28561.0 / 56430.0, -9.0 / 50.0, 2.0 / 55.0]
 _B4 = [25.0 / 216.0, 0.0, 1408.0 / 2565.0, 2197.0 / 4104.0, -1.0 / 5.0, 0.0]
 
 
@@ -203,38 +196,32 @@ class RK45Adaptive:
         self.tol = tol
         self.stats = AdaptiveStats()
 
-    def _stages(self, y: Sequence[float], t: float, dt: float
-                ) -> list[list[float]]:
+    def _stages(self, y: Sequence[float], t: float, dt: float) -> list[list[float]]:
         n = len(y)
         ks: list[list[float]] = []
         for s in range(6):
             if s == 0:
                 ys = list(y)
             else:
-                ys = [y[i] + dt * sum(_A[s][j] * ks[j][i]
-                                      for j in range(s) if _A[s][j])
-                      for i in range(n)]
+                ys = [
+                    y[i] + dt * sum(_A[s][j] * ks[j][i] for j in range(s) if _A[s][j])
+                    for i in range(n)
+                ]
             ks.append(self.deriv(ys, t + _C[s] * dt))
         return ks
 
-    def step(self, y: list[float], t: float, dt: float
-             ) -> tuple[list[float], float, float]:
+    def step(self, y: list[float], t: float, dt: float) -> tuple[list[float], float, float]:
         """Возвращает (y_new, t_new, err); err — оценка локальной ошибки."""
         ks = self._stages(y, t, dt)
         n = len(y)
-        y5 = [y[i] + dt * sum(_B5[j] * ks[j][i] for j in range(6))
-              for i in range(n)]
-        y4 = [y[i] + dt * sum(_B4[j] * ks[j][i]
-                              for j in range(5) if _B4[j])
-              for i in range(n)]
-        err = max(abs(y5[i] - y4[i]) /
-                  max(self.tol * (1.0 + abs(y[i])), 1e-30)
-                  for i in range(n))
+        y5 = [y[i] + dt * sum(_B5[j] * ks[j][i] for j in range(6)) for i in range(n)]
+        y4 = [y[i] + dt * sum(_B4[j] * ks[j][i] for j in range(5) if _B4[j]) for i in range(n)]
+        err = max(abs(y5[i] - y4[i]) / max(self.tol * (1.0 + abs(y[i])), 1e-30) for i in range(n))
         return y5, t + dt, err
 
-    def integrate(self, y: list[float], t: float, dt: float,
-                  duration: float, callback=None
-                  ) -> tuple[list[float], float]:
+    def integrate(
+        self, y: list[float], t: float, dt: float, duration: float, callback=None
+    ) -> tuple[list[float], float]:
         """Прогон с адаптацией шага до t+duration."""
         t_end = t + duration
         while t < t_end - 1e-15:
@@ -263,16 +250,20 @@ class EnergyGuard:
     порога возвращает состояние до шага и уменьшает dt.
     """
 
-    def __init__(self, stepper, energy_of: Callable[[Sequence[float]], float],
-                 rel_threshold: float = 0.02, dt_min: float = 1e-12):
-        self.stepper = stepper          # любой объект с .step(y, t, dt)
+    def __init__(
+        self,
+        stepper,
+        energy_of: Callable[[Sequence[float]], float],
+        rel_threshold: float = 0.02,
+        dt_min: float = 1e-12,
+    ):
+        self.stepper = stepper  # любой объект с .step(y, t, dt)
         self.energy_of = energy_of
         self.rel_threshold = rel_threshold
         self.dt_min = dt_min
         self.n_rejected = 0
 
-    def step(self, y: list[float], t: float, dt: float
-             ) -> tuple[list[float], float, float]:
+    def step(self, y: list[float], t: float, dt: float) -> tuple[list[float], float, float]:
         """Возвращает (y_new, t_new, dt_used)."""
         e0 = self.energy_of(y)
         while dt >= self.dt_min:
@@ -291,10 +282,16 @@ class EnergyGuard:
 # ═══════════════════════════════════════════════════════════════════════════
 # Сравнение интеграторов (для тестов и отчётов)
 # ═══════════════════════════════════════════════════════════════════════════
-def compare_integrators(deriv: Deriv, accel: Callable[[list, float], list],
-                        energy_of, y0: list[float],
-                        t0: float, dt: float, n_steps: int,
-                        n_bodies: int) -> dict:
+def compare_integrators(
+    deriv: Deriv,
+    accel: Callable[[list, float], list],
+    energy_of,
+    y0: list[float],
+    t0: float,
+    dt: float,
+    n_steps: int,
+    n_bodies: int,
+) -> dict:
     """Прогнать RK4/leapfrog/Yoshida4/RK45 на одной задаче.
 
     deriv  — полная правая часть (для RK4/RK45);
@@ -311,8 +308,7 @@ def compare_integrators(deriv: Deriv, accel: Callable[[list, float], list],
     t = t0
     for _ in range(n_steps):
         y, t = rk4_step(deriv, y, t, dt)
-    results["rk4"] = dict(energy_drift=abs(energy_of(y) - e0)
-                          / max(abs(e0), 1e-30))
+    results["rk4"] = dict(energy_drift=abs(energy_of(y) - e0) / max(abs(e0), 1e-30))
 
     # leapfrog
     lf = Leapfrog(accel, n_bodies)
@@ -320,8 +316,7 @@ def compare_integrators(deriv: Deriv, accel: Callable[[list, float], list],
     t = t0
     for _ in range(n_steps):
         y, t = lf.step(y, t, dt)
-    results["leapfrog"] = dict(
-        energy_drift=abs(energy_of(y) - e0) / max(abs(e0), 1e-30))
+    results["leapfrog"] = dict(energy_drift=abs(energy_of(y) - e0) / max(abs(e0), 1e-30))
 
     # Yoshida4
     yo = Yoshida4(accel, n_bodies)
@@ -329,13 +324,14 @@ def compare_integrators(deriv: Deriv, accel: Callable[[list, float], list],
     t = t0
     for _ in range(n_steps):
         y, t = yo.step(y, t, dt)
-    results["yoshida4"] = dict(
-        energy_drift=abs(energy_of(y) - e0) / max(abs(e0), 1e-30))
+    results["yoshida4"] = dict(energy_drift=abs(energy_of(y) - e0) / max(abs(e0), 1e-30))
 
     # RK45 адаптивный
     rk = RK45Adaptive(deriv, tol=1e-9)
     y, t = rk.integrate(list(y0), t0, dt, n_steps * dt)
     results["rk45"] = dict(
         energy_drift=abs(energy_of(y) - e0) / max(abs(e0), 1e-30),
-        accepted=rk.stats.accepted, rejected=rk.stats.rejected)
+        accepted=rk.stats.accepted,
+        rejected=rk.stats.rejected,
+    )
     return results

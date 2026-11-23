@@ -15,6 +15,7 @@ TRIVORTEX MASTER — Barnes-Hut O(N log N) гравитация на чисто�
 для N ≤ нескольких тысяч, а внешние ускорители REBOUND подключаются
 отдельно (realism/adapters).
 """
+
 from __future__ import annotations
 
 import math
@@ -31,6 +32,7 @@ G_SI = 6.67430e-11
 @dataclass
 class BodyLite:
     """Лёгкое тело для дерева (позиция, масса)."""
+
     x: float
     y: float
     z: float
@@ -41,13 +43,14 @@ class BodyLite:
 @dataclass
 class OctNode:
     """Узел октодерева: либо внутренний (8 детей), либо лист (1 тело)."""
-    cx: float                     # центр куба
+
+    cx: float  # центр куба
     cy: float
     cz: float
-    half: float                   # половина стороны
+    half: float  # половина стороны
     # агрегаты
     mass: float = 0.0
-    com_x: float = 0.0            # центр масс
+    com_x: float = 0.0  # центр масс
     com_y: float = 0.0
     com_z: float = 0.0
     # квадруполь (диагональ тензора для апскейла)
@@ -69,9 +72,13 @@ class OctNode:
 class BarnesHutTree:
     """Октодерево с θ-критерием."""
 
-    def __init__(self, theta: float = 0.7,
-                 use_quadrupole: bool = False,
-                 G: float = G_SI, softening: float = 0.0):
+    def __init__(
+        self,
+        theta: float = 0.7,
+        use_quadrupole: bool = False,
+        G: float = G_SI,
+        softening: float = 0.0,
+    ):
         self.theta = theta
         self.use_quadrupole = use_quadrupole
         self.G = G
@@ -91,8 +98,7 @@ class BarnesHutTree:
         cx = (min(xs) + max(xs)) / 2.0
         cy = (min(ys) + max(ys)) / 2.0
         cz = (min(zs) + max(zs)) / 2.0
-        half = max(max(xs) - min(xs), max(ys) - min(ys),
-                   max(zs) - min(zs)) / 2.0 * 1.01 + 1e-9
+        half = max(max(xs) - min(xs), max(ys) - min(ys), max(zs) - min(zs)) / 2.0 * 1.01 + 1e-9
         self.root = OctNode(cx=cx, cy=cy, cz=cz, half=half)
         self.n_nodes = 1
         for b in bodies:
@@ -112,8 +118,7 @@ class BarnesHutTree:
         dx = node.half / 2.0 * (1 if idx & 1 else -1)
         dy = node.half / 2.0 * (1 if idx & 2 else -1)
         dz = node.half / 2.0 * (1 if idx & 4 else -1)
-        child = OctNode(cx=node.cx + dx, cy=node.cy + dy,
-                        cz=node.cz + dz, half=node.half / 2.0)
+        child = OctNode(cx=node.cx + dx, cy=node.cy + dy, cz=node.cz + dz, half=node.half / 2.0)
         self.n_nodes += 1
         return child
 
@@ -158,16 +163,14 @@ class BarnesHutTree:
             node.qzz += b.mass * (b.z - node.com_z) ** 2
 
     # ── силы ──
-    def acceleration(self, b: BodyLite,
-                     eps2: float | None = None) -> tuple[float, float, float]:
+    def acceleration(self, b: BodyLite, eps2: float | None = None) -> tuple[float, float, float]:
         """Ускорение тела b от дерева (обход с θ-критерием)."""
         if self.root is None:
             return (0.0, 0.0, 0.0)
-        eps2 = self.softening ** 2 if eps2 is None else eps2
+        eps2 = self.softening**2 if eps2 is None else eps2
         return self._acc_node(self.root, b, eps2)
 
-    def _acc_node(self, node: OctNode, b: BodyLite,
-                  eps2: float) -> tuple[float, float, float]:
+    def _acc_node(self, node: OctNode, b: BodyLite, eps2: float) -> tuple[float, float, float]:
         ax = ay = az = 0.0
         if node.is_empty():
             return (0.0, 0.0, 0.0)
@@ -202,12 +205,11 @@ class BarnesHutTree:
                 if self.use_quadrupole:
                     # квадрупольная поправка ~ (Q/r²)·(3(n·Q·n)−trQ)/r⁵
                     # упрощённая диагональная версия
-                    q = (node.qxx * dx * dx + node.qyy * dy * dy
-                         + node.qzz * dz * dz) / (r2 * r2)
+                    q = (node.qxx * dx * dx + node.qyy * dy * dy + node.qzz * dz * dz) / (r2 * r2)
                     corr = 1.5 * q / (r2 * max(node.mass, 1e-30))
-                    ax *= (1.0 - corr)
-                    ay *= (1.0 - corr)
-                    az *= (1.0 - corr)
+                    ax *= 1.0 - corr
+                    ay *= 1.0 - corr
+                    az *= 1.0 - corr
             return (ax, ay, az)
         # близко: рекурсивно в детей
         for child in node.children:
@@ -245,19 +247,20 @@ class BarnesHutTree:
 
         if self.root is not None:
             measure(self.root, 1)
-        return dict(nodes=self.n_nodes, max_depth=depth,
-                    theta=self.theta, quadrupole=self.use_quadrupole)
+        return dict(
+            nodes=self.n_nodes, max_depth=depth, theta=self.theta, quadrupole=self.use_quadrupole
+        )
 
 
 # ═══════════════════════════════════════════════════════════════════════════
 # Прямое суммирование (эталон)
 # ═══════════════════════════════════════════════════════════════════════════
-def direct_accelerations(bodies: Sequence[BodyLite], G: float = G_SI,
-                         softening: float = 0.0
-                         ) -> list[tuple[float, float, float]]:
+def direct_accelerations(
+    bodies: Sequence[BodyLite], G: float = G_SI, softening: float = 0.0
+) -> list[tuple[float, float, float]]:
     """O(N²) точные ускорения (эталон для сравнения точности)."""
     n = len(bodies)
-    eps2 = softening ** 2
+    eps2 = softening**2
     acc = [(0.0, 0.0, 0.0)] * n
     for i in range(n):
         ax = ay = az = 0.0
@@ -294,36 +297,34 @@ class BarnesHutEngineMixin:
         self.theta = theta
         self.softening = softening
 
-    def step_all(self, bodies: list[BodyLite], dt: float,
-                 G: float = G_SI) -> None:
+    def step_all(self, bodies: list[BodyLite], dt: float, G: float = G_SI) -> None:
         """Один leapfrog-шаг всех тел (на месте)."""
-        tree = BarnesHutTree(theta=self.theta, G=G,
-                             softening=self.softening)
+        tree = BarnesHutTree(theta=self.theta, G=G, softening=self.softening)
         tree.build(bodies)
         # half-kick
         for b in bodies:
             ax, ay, az = tree.acceleration(b)
-            b.vx += 0.5 * dt * ax          # type: ignore[attr-defined]
-            b.vy += 0.5 * dt * ay          # type: ignore[attr-defined]
-            b.vz += 0.5 * dt * az          # type: ignore[attr-defined]
+            b.vx += 0.5 * dt * ax  # type: ignore[attr-defined]
+            b.vy += 0.5 * dt * ay  # type: ignore[attr-defined]
+            b.vz += 0.5 * dt * az  # type: ignore[attr-defined]
         # drift
         for b in bodies:
-            b.x += dt * b.vx               # type: ignore[attr-defined]
-            b.y += dt * b.vy               # type: ignore[attr-defined]
-            b.z += dt * b.vz               # type: ignore[attr-defined]
+            b.x += dt * b.vx  # type: ignore[attr-defined]
+            b.y += dt * b.vy  # type: ignore[attr-defined]
+            b.z += dt * b.vz  # type: ignore[attr-defined]
         # half-kick
-        tree2 = BarnesHutTree(theta=self.theta, G=G,
-                              softening=self.softening)
+        tree2 = BarnesHutTree(theta=self.theta, G=G, softening=self.softening)
         tree2.build(bodies)
         for b in bodies:
             ax, ay, az = tree2.acceleration(b)
-            b.vx += 0.5 * dt * ax          # type: ignore[attr-defined]
-            b.vy += 0.5 * dt * ay          # type: ignore[attr-defined]
-            b.vz += 0.5 * dt * az          # type: ignore[attr-defined]
+            b.vx += 0.5 * dt * ax  # type: ignore[attr-defined]
+            b.vy += 0.5 * dt * ay  # type: ignore[attr-defined]
+            b.vz += 0.5 * dt * az  # type: ignore[attr-defined]
 
 
 class SimBody(BodyLite):
     """Тело с скоростями для полноценного прогона Barnes-Hut."""
+
     vx: float = 0.0
     vy: float = 0.0
     vz: float = 0.0
@@ -338,18 +339,22 @@ class SimBody(BodyLite):
 # ═══════════════════════════════════════════════════════════════════════════
 # Тесты производительности и точности
 # ═══════════════════════════════════════════════════════════════════════════
-def benchmark(n_bodies: int = 500, seed: int = 42,
-              theta: float = 0.7) -> dict:
+def benchmark(n_bodies: int = 500, seed: int = 42, theta: float = 0.7) -> dict:
     """Сравнить Barnes-Hut с direct: время и относительная ошибка."""
     import random
+
     rng = random.Random(seed)
     bodies = []
     for i in range(n_bodies):
-        bodies.append(BodyLite(
-            x=rng.uniform(-1, 1) * 1e9,
-            y=rng.uniform(-1, 1) * 1e9,
-            z=rng.uniform(-1, 1) * 1e9,
-            mass=rng.uniform(1e18, 1e22), id=i))
+        bodies.append(
+            BodyLite(
+                x=rng.uniform(-1, 1) * 1e9,
+                y=rng.uniform(-1, 1) * 1e9,
+                z=rng.uniform(-1, 1) * 1e9,
+                mass=rng.uniform(1e18, 1e22),
+                id=i,
+            )
+        )
     # direct
     t0 = time.perf_counter()
     acc_direct = direct_accelerations(bodies)
@@ -370,10 +375,13 @@ def benchmark(n_bodies: int = 500, seed: int = 42,
         err_rms += (diff / norm_d) ** 2
     err_rms = math.sqrt(err_rms / len(acc_direct))
     return dict(
-        n=n_bodies, theta_opening=theta,
-        t_direct=t_direct, t_tree=t_tree,
+        n=n_bodies,
+        theta_opening=theta,
+        t_direct=t_direct,
+        t_tree=t_tree,
         speedup=t_direct / max(t_tree, 1e-12),
-        err_max=err_max, err_rms=err_rms,
+        err_max=err_max,
+        err_rms=err_rms,
         **tree.stats(),
     )
 
@@ -381,33 +389,39 @@ def benchmark(n_bodies: int = 500, seed: int = 42,
 def self_check() -> dict:
     """Плаккеровский кластер: сохранение энергии leapfrog на дереве."""
     import random
+
     rng = random.Random(7)
     n = 120
     bodies = []
     for i in range(n):
-        bodies.append(SimBody(
-            x=rng.uniform(-1, 1), y=rng.uniform(-1, 1),
-            z=rng.uniform(-0.1, 0.1), mass=1.0 / n,
-            vx=rng.uniform(-0.2, 0.2), vy=rng.uniform(-0.2, 0.2),
-            vz=0.0, id=i))
+        bodies.append(
+            SimBody(
+                x=rng.uniform(-1, 1),
+                y=rng.uniform(-1, 1),
+                z=rng.uniform(-0.1, 0.1),
+                mass=1.0 / n,
+                vx=rng.uniform(-0.2, 0.2),
+                vy=rng.uniform(-0.2, 0.2),
+                vz=0.0,
+                id=i,
+            )
+        )
     # G=1, безразмерные единицы
     eng = BarnesHutEngineMixin(theta=0.6, softening=0.02)
 
     def energy(bs):
-        ke = sum(0.5 * b.mass * (b.vx ** 2 + b.vy ** 2) for b in bs)
+        ke = sum(0.5 * b.mass * (b.vx**2 + b.vy**2) for b in bs)
         pe = 0.0
         for i in range(len(bs)):
             for j in range(i + 1, len(bs)):
-                d = math.sqrt((bs[i].x - bs[j].x) ** 2
-                              + (bs[i].y - bs[j].y) ** 2
-                              + 0.02 ** 2)
+                d = math.sqrt((bs[i].x - bs[j].x) ** 2 + (bs[i].y - bs[j].y) ** 2 + 0.02**2)
                 pe -= bs[i].mass * bs[j].mass / d
         return ke + pe
 
     e0 = energy(bodies)
     dt = 0.01
     for _ in range(50):
-        eng.step_all(bodies, dt, G=1.0)      # type: ignore[arg-type]
+        eng.step_all(bodies, dt, G=1.0)  # type: ignore[arg-type]
     e1 = energy(bodies)
     drift = abs(e1 - e0) / max(abs(e0), 1e-12)
     bench = benchmark(n_bodies=300)

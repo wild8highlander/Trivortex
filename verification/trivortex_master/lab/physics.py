@@ -14,14 +14,18 @@ lab/engine_base.py — его импортируют и адаптеры realism
 Диспетчер get_engine(name, scene) ловит EngineUnavailable и откатывается
 на нативный движок, фиксируя смену в events сцены.
 """
+
 from __future__ import annotations
 
 import math
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from lab.engine_base import (BodyState, EngineUnavailable,
-                             PhysicsEngine as PhysicsEngineBase,
-                             Vector3)
+from lab.engine_base import (
+    BodyState,
+    EngineUnavailable,
+    PhysicsEngine as PhysicsEngineBase,
+    Vector3,
+)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -57,12 +61,11 @@ class NewtonianEngine(PhysicsEngine):
         return "native_newton"
 
     # ── правая часть: y = [x,y,z,vx,vy,vz]*N → dy/dt ──
-    def _accelerations(self, pos: list[Vector3],
-                       vel: list[Vector3]) -> list[Vector3]:
+    def _accelerations(self, pos: list[Vector3], vel: list[Vector3]) -> list[Vector3]:
         n = len(pos)
         masses = [b.mass for b in self.scene.bodies]
         G = self.cfg.G
-        eps2 = self.cfg.softening ** 2
+        eps2 = self.cfg.softening**2
         acc = [[0.0, 0.0, 0.0] for _ in range(n)]
         for i in range(n):
             xi, yi, zi = pos[i]
@@ -162,16 +165,18 @@ class VortexEngine(PhysicsEngine):
                 dy = bodies[i].position[1] - bodies[j].position[1]
                 r2 = dx * dx + dy * dy
                 if r2 > 0:
-                    H -= (bodies[i].circulation * bodies[j].circulation
-                          / (4.0 * math.pi)) * 0.5 * math.log(r2)
+                    H -= (
+                        (bodies[i].circulation * bodies[j].circulation / (4.0 * math.pi))
+                        * 0.5
+                        * math.log(r2)
+                    )
         return H
 
     def integrals(self) -> dict[str, float]:
         bodies = self.scene.bodies
         P = sum(b.circulation * b.position[0] for b in bodies)
         Q = sum(b.circulation * b.position[1] for b in bodies)
-        I = sum(b.circulation * (b.position[0] ** 2 + b.position[1] ** 2)
-                for b in bodies)
+        I = sum(b.circulation * (b.position[0] ** 2 + b.position[1] ** 2) for b in bodies)
         return dict(H=self.hamiltonian(), P=P, Q=Q, I=I)
 
     # ── правая часть ──
@@ -199,6 +204,7 @@ class VortexEngine(PhysicsEngine):
         bodies = self.scene.bodies
         if not bodies:
             return
+
         # RK4 по (x, y) с массами-«циркуляциями» в знаменателе
         def deriv(state: list[float]) -> list[float]:
             saved = [(b.position[0], b.position[1]) for b in bodies]
@@ -211,7 +217,7 @@ class VortexEngine(PhysicsEngine):
             for i in range(len(bodies)):
                 g = bodies[i].circulation
                 if abs(g) < 1e-15:
-                    out.extend((0.0, 0.0))   # невихревое тело неподвижно
+                    out.extend((0.0, 0.0))  # невихревое тело неподвижно
                 else:
                     out.extend((vels[i][0], vels[i][1]))
             return out
@@ -234,9 +240,10 @@ class VortexEngine(PhysicsEngine):
         self.scene.t += dt
 
     def get_states(self) -> list[BodyState]:
-        return [BodyState(b.id, b.position, b.velocity,
-                          extra=dict(circulation=b.circulation))
-                for b in self.scene.bodies]
+        return [
+            BodyState(b.id, b.position, b.velocity, extra=dict(circulation=b.circulation))
+            for b in self.scene.bodies
+        ]
 
     def energy(self) -> float:
         return self.hamiltonian()
@@ -278,14 +285,17 @@ def resolve_auto(scene) -> str:
     return "native_newton"
 
 
+if TYPE_CHECKING:
+    from lab.scene import Scene
+
+
 def get_engine(name: str, scene) -> PhysicsEngine:
     """Получить движок с fallback-цепочкой при недоступности."""
     if name == "auto":
         name = resolve_auto(scene)
     reg = engine_registry()
     if name not in reg:
-        raise ValueError(f"неизвестный движок: {name}; "
-                         f"доступны: {', '.join(reg)}")
+        raise ValueError(f"неизвестный движок: {name}; " f"доступны: {', '.join(reg)}")
     try:
         eng = reg[name](scene)
         # прогрев (адаптеры могут упасть здесь)
@@ -294,19 +304,27 @@ def get_engine(name: str, scene) -> PhysicsEngine:
         return eng
     except EngineUnavailable as exc:
         fallback = exc.fallback if exc.fallback in reg else "native_newton"
-        scene.events.append(dict(
-            kind="engine_fallback",
-            detail=f"движок {exc.name} недоступен ({exc.reason}); "
-                   f"переключение на {fallback}"))
+        scene.events.append(
+            dict(
+                kind="engine_fallback",
+                detail=f"движок {exc.name} недоступен ({exc.reason}); "
+                f"переключение на {fallback}",
+            )
+        )
         return reg[fallback](scene)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
 # Прогон симуляции с детекторами событий
 # ═══════════════════════════════════════════════════════════════════════════
-def run_simulation(scene: Scene, n_steps: int | None = None,
-                   dt: float | None = None, record_every: int = 1,
-                   progress=None, stop_on_collision: bool = False) -> dict[str, Any]:
+def run_simulation(
+    scene: Scene,
+    n_steps: int | None = None,
+    dt: float | None = None,
+    record_every: int = 1,
+    progress=None,
+    stop_on_collision: bool = False,
+) -> dict[str, Any]:
     """
     Прогнать сцену вперёд. Возвращает сводку: шаги, время, энергия-дрейф,
     события (столкновения, вылеты, потеря энергии).
@@ -318,12 +336,12 @@ def run_simulation(scene: Scene, n_steps: int | None = None,
     n_steps = n_steps or scene.config.n_steps
     dt = dt if dt is not None else scene.dt
     from lab.scene import BoundingBox
+
     scene.bounds = BoundingBox.from_scene(scene.bodies)
     # граница с запасом ×4: орбиты могут выходить за стартовый габарит
     scene.bounds.half = max(scene.bounds.half, 1.0) * 4.0
 
-    e0 = scene.total_energy() if scene.engine.name() == "native_newton" \
-        else scene.engine.energy()
+    e0 = scene.total_energy() if scene.engine.name() == "native_newton" else scene.engine.energy()
     energy_drift = 0.0
     n_events0 = len(scene.events)
 
@@ -337,15 +355,12 @@ def run_simulation(scene: Scene, n_steps: int | None = None,
         if progress is not None:
             progress.update(i + 1, tag=f"шаг {i + 1}/{n_steps}")
         # предохранитель по времени
-        if i % 500 == 0 and (scene.events[-1]["kind"] == "wall_limit"
-                             if scene.events else False):
+        if i % 500 == 0 and (scene.events[-1]["kind"] == "wall_limit" if scene.events else False):
             break
-        if stop_on_collision and any(
-                ev["kind"] == "collision" for ev in scene.events[n_events0:]):
+        if stop_on_collision and any(ev["kind"] == "collision" for ev in scene.events[n_events0:]):
             break
 
-    e1 = scene.total_energy() if scene.engine.name() == "native_newton" \
-        else scene.engine.energy()
+    e1 = scene.total_energy() if scene.engine.name() == "native_newton" else scene.engine.energy()
     if abs(e0) > 1e-30:
         energy_drift = abs(e1 - e0) / abs(e0)
     elif abs(e1) > 1e-30:
@@ -353,9 +368,12 @@ def run_simulation(scene: Scene, n_steps: int | None = None,
 
     return dict(
         engine=scene.engine_name or (scene.engine.name() if scene.engine else ""),
-        n_steps=n_steps, dt=dt,
+        n_steps=n_steps,
+        dt=dt,
         t_final=scene.t,
-        energy_start=e0, energy_end=e1, energy_drift_rel=energy_drift,
+        energy_start=e0,
+        energy_end=e1,
+        energy_drift_rel=energy_drift,
         new_events=scene.events[n_events0:],
         total_events=len(scene.events),
         unphysical=scene.unphysical_flag,
@@ -371,26 +389,39 @@ def _run_detectors(scene: Scene, dt: float) -> None:
             d = bodies[i].distance_to(bodies[j])
             rsum = bodies[i].radius + bodies[j].radius
             if d < rsum:
-                scene.events.append(dict(
-                    kind="collision",
-                    detail=(f"{bodies[i].id} ↔ {bodies[j].id}: "
-                            f"d={d:.3g} < Σr={rsum:.3g} при t={scene.t:.3g}"),
-                    t=scene.t, pair=(bodies[i].id, bodies[j].id)))
+                scene.events.append(
+                    dict(
+                        kind="collision",
+                        detail=(
+                            f"{bodies[i].id} ↔ {bodies[j].id}: "
+                            f"d={d:.3g} < Σr={rsum:.3g} при t={scene.t:.3g}"
+                        ),
+                        t=scene.t,
+                        pair=(bodies[i].id, bodies[j].id),
+                    )
+                )
     # вылет за границы
     for b in bodies:
         if not scene.bounds.contains(b.position):
-            scene.events.append(dict(
-                kind="escape",
-                detail=f"{b.id} покинул границы сцены (|r|>{scene.bounds.half:.3g})",
-                t=scene.t, body=b.id))
+            scene.events.append(
+                dict(
+                    kind="escape",
+                    detail=f"{b.id} покинул границы сцены (|r|>{scene.bounds.half:.3g})",
+                    t=scene.t,
+                    body=b.id,
+                )
+            )
     # потеря энергии (только для ньютоновского)
-    if scene.engine and scene.engine.name() == "native_newton" \
-            and len(scene.energy_history) >= 2:
+    if scene.engine and scene.engine.name() == "native_newton" and len(scene.energy_history) >= 2:
         e_prev = scene.energy_history[-2]
         e_now = scene.energy_history[-1] if scene.energy_history else e_prev
         if abs(e_prev) > 1e-30 and abs(e_now - e_prev) / abs(e_prev) > 0.10:
-            scene.events.append(dict(
-                kind="energy_loss",
-                detail=(f"потеря энергии >10% за шаг "
-                        f"({(e_now - e_prev) / e_prev * 100:.1f}%)"),
-                t=scene.t))
+            scene.events.append(
+                dict(
+                    kind="energy_loss",
+                    detail=(
+                        f"потеря энергии >10% за шаг " f"({(e_now - e_prev) / e_prev * 100:.1f}%)"
+                    ),
+                    t=scene.t,
+                )
+            )

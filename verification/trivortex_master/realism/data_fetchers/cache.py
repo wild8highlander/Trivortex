@@ -6,6 +6,7 @@ TRIVORTEX MASTER — TTL-кэш на JSON + mtime.
 get(key) / put(key, data, ttl) / invalidate(key). Формат — файл JSON,
 свежесть по mtime + ttl. Используется TAP-запросами NASA.
 """
+
 from __future__ import annotations
 
 import datetime as _dt
@@ -22,8 +23,7 @@ class TTLCache:
         os.makedirs(cache_dir, exist_ok=True)
 
     def _path(self, key: str) -> str:
-        safe = "".join(c if c.isalnum() or c in "-_." else "_"
-                       for c in key)
+        safe = "".join(c if c.isalnum() or c in "-_." else "_" for c in key)
         return os.path.join(self.dir, safe + ".json")
 
     def put(self, key: str, data: Any, ttl: int | None = None) -> None:
@@ -47,7 +47,7 @@ class TTLCache:
             limit = max_age if max_age is not None else self.ttl
             if age > limit:
                 return None
-            with open(path, "r", encoding="utf-8") as fh:
+            with open(path, encoding="utf-8") as fh:
                 payload = json.load(fh)
             return payload.get("data")
         except (OSError, ValueError):
@@ -59,7 +59,7 @@ class TTLCache:
         if not os.path.isfile(path):
             return None
         try:
-            with open(path, "r", encoding="utf-8") as fh:
+            with open(path, encoding="utf-8") as fh:
                 payload = json.load(fh)
             return payload.get("data")
         except (OSError, ValueError):
@@ -80,8 +80,7 @@ class TTLCache:
                     pass
 
     def keys(self) -> list[str]:
-        return sorted(f[:-5] for f in os.listdir(self.dir)
-                      if f.endswith(".json"))
+        return sorted(f[:-5] for f in os.listdir(self.dir) if f.endswith(".json"))
 
     def status(self) -> list[dict[str, Any]]:
         out = []
@@ -89,9 +88,14 @@ class TTLCache:
             path = self._path(key)
             try:
                 age = time.time() - os.path.getmtime(path)
-                out.append(dict(key=key, age_seconds=int(age),
-                                fresh=age <= self.ttl,
-                                size=os.path.getsize(path)))
+                out.append(
+                    dict(
+                        key=key,
+                        age_seconds=int(age),
+                        fresh=age <= self.ttl,
+                        size=os.path.getsize(path),
+                    )
+                )
             except OSError:
                 continue
         return out

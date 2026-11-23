@@ -17,6 +17,7 @@ TRIVORTEX MASTER — гамильтоновы сплит-интеграторы.
 Канонический тестбед: гармонический осциллятор (точное решение) и
 Хеньон-Хейлес (lab.chaos.henon_heiles_deriv-совместимая форма).
 """
+
 from __future__ import annotations
 
 import math
@@ -39,15 +40,17 @@ class SplitHamiltonian:
     или список — нормализуем к списку в конструкторе.
     """
 
-    def __init__(self, deriv_q: Callable, deriv_p: Callable,
-                 dim: int):
+    def __init__(self, deriv_q: Callable, deriv_p: Callable, dim: int):
         def wrap(fn: Callable) -> Callable:
             out = fn
             if dim == 1:
+
                 def out(y):
                     v = fn(y)
                     return [v] if not isinstance(v, (list, tuple)) else v
+
             return out
+
         self.dq = wrap(deriv_q)
         self.dp = wrap(deriv_p)
         self.dim = dim
@@ -93,11 +96,11 @@ class SplitHamiltonian:
                 pass
         return y
 
-    def integrate(self, y0: list[float], dt: float, n_steps: int,
-                  method: str = "kdk") -> list[list[float]]:
+    def integrate(
+        self, y0: list[float], dt: float, n_steps: int, method: str = "kdk"
+    ) -> list[list[float]]:
         """Прогнать n_steps; вернуть траекторию."""
-        steppers = dict(kdk=self.step_kdk, y4=self.step_yoshida4,
-                        s6=self.step_suzuki6)
+        steppers = dict(kdk=self.step_kdk, y4=self.step_yoshida4, s6=self.step_suzuki6)
         step_fn = steppers[method]
         y = list(y0)
         traj = [list(y)]
@@ -113,19 +116,19 @@ class SplitHamiltonian:
 def harmonic_h(omega: float = 1.0) -> SplitHamiltonian:
     """Осциллятор H = p²/2 + ω²q²/2 (точное решение известно)."""
     return SplitHamiltonian(
-        deriv_q=lambda y: y[1],            # dq/dt = p
-        deriv_p=lambda y: -omega ** 2 * y[0],
-        dim=1)
+        deriv_q=lambda y: y[1], deriv_p=lambda y: -(omega**2) * y[0], dim=1  # dq/dt = p
+    )
 
 
 def energy_harmonic(y: list[float], omega: float = 1.0) -> float:
-    return 0.5 * y[1] ** 2 + 0.5 * omega ** 2 * y[0] ** 2
+    return 0.5 * y[1] ** 2 + 0.5 * omega**2 * y[0] ** 2
 
 
 def henon_heiles_h() -> SplitHamiltonian:
     """Хеньон-Хейлес: T = (px²+py²)/2, V = (x²+y²)/2 + x²y − y³/3."""
+
     def dq(y):
-        return [y[2], y[3]]                # d(x,y)/dt = (px,py)
+        return [y[2], y[3]]  # d(x,y)/dt = (px,py)
 
     def dp(y):
         x, yy, px, py = y
@@ -136,33 +139,35 @@ def henon_heiles_h() -> SplitHamiltonian:
 
 def energy_henon_heiles(y: list[float]) -> float:
     x, yy, px, py = y
-    return 0.5 * (px * px + py * py) + 0.5 * (x * x + yy * yy) \
-        + x * x * yy - yy ** 3 / 3.0
+    return 0.5 * (px * px + py * py) + 0.5 * (x * x + yy * yy) + x * x * yy - yy**3 / 3.0
 
 
 # ═══════════════════════════════════════════════════════════════════════════
 # Тесты сходимости
 # ═══════════════════════════════════════════════════════════════════════════
-def energy_drift_order(h: SplitHamiltonian, energy_fn: Callable,
-                       y0: list[float], dt: float, n_steps: int,
-                       method: str = "kdk") -> float:
+def energy_drift_order(
+    h: SplitHamiltonian,
+    energy_fn: Callable,
+    y0: list[float],
+    dt: float,
+    n_steps: int,
+    method: str = "kdk",
+) -> float:
     """Дрейф энергии |E(t) − E(0)|/E(0) после n_steps."""
     traj = h.integrate(y0, dt, n_steps, method)
     e0 = energy_fn(y0)
-    drift = max(abs(energy_fn(y) - e0) / max(abs(e0), 1e-12)
-                for y in traj)
+    drift = max(abs(energy_fn(y) - e0) / max(abs(e0), 1e-12) for y in traj)
     return drift
 
 
-def convergence_order(h: SplitHamiltonian, energy_fn: Callable,
-                      y0: list[float], dt: float = 0.05,
-                      n_steps: int = 2000) -> dict:
+def convergence_order(
+    h: SplitHamiltonian, energy_fn: Callable, y0: list[float], dt: float = 0.05, n_steps: int = 2000
+) -> dict:
     """Порядок метода по скорости падения дрейфа при dt/2.
 
     Ожидание: kdk → ~2² = 4; y4 → ~2⁴ = 16."""
     d_coarse = energy_drift_order(h, energy_fn, y0, dt, n_steps)
-    d_fine = energy_drift_order(h, energy_fn, y0, dt / 2.0,
-                                2 * n_steps)
+    d_fine = energy_drift_order(h, energy_fn, y0, dt / 2.0, 2 * n_steps)
     ratio = d_coarse / max(d_fine, 1e-300)
     return dict(drift_coarse=d_coarse, drift_fine=d_fine, ratio=ratio)
 
@@ -172,14 +177,10 @@ def self_check() -> dict:
     ХХ: y4 дрейф меньше kdk."""
     osc = harmonic_h()
     y0 = [1.0, 0.0]
-    conv2 = convergence_order(osc, energy_harmonic, y0,
-                              dt=0.1, n_steps=800)
-    conv4 = convergence_order(osc, energy_harmonic, y0,
-                              dt=0.1, n_steps=800)
-    d2 = energy_drift_order(osc, energy_harmonic, y0, 0.1, 800,
-                            method="kdk")
-    d4 = energy_drift_order(osc, energy_harmonic, y0, 0.1, 800,
-                            method="y4")
+    conv2 = convergence_order(osc, energy_harmonic, y0, dt=0.1, n_steps=800)
+    conv4 = convergence_order(osc, energy_harmonic, y0, dt=0.1, n_steps=800)
+    d2 = energy_drift_order(osc, energy_harmonic, y0, 0.1, 800, method="kdk")
+    d4 = energy_drift_order(osc, energy_harmonic, y0, 0.1, 800, method="y4")
     # kdk: дрейф ~dt²  → дрейф(0.1) значителен; y4: дрейф ~dt⁴ → на
     # 3 порядка меньше
     order_ok = d4 < d2 / 100.0
@@ -190,16 +191,18 @@ def self_check() -> dict:
     # Хеньон-Хейлес: y4 лучше kdk на длинном прогоне
     hh = henon_heiles_h()
     hh0 = [0.1, 0.0, 0.0, 0.05]
-    d_hh_kdk = energy_drift_order(hh, energy_henon_heiles, hh0,
-                                  0.02, 1500, method="kdk")
-    d_hh_y4 = energy_drift_order(hh, energy_henon_heiles, hh0,
-                                 0.02, 1500, method="y4")
+    d_hh_kdk = energy_drift_order(hh, energy_henon_heiles, hh0, 0.02, 1500, method="kdk")
+    d_hh_y4 = energy_drift_order(hh, energy_henon_heiles, hh0, 0.02, 1500, method="y4")
     hh_ok = d_hh_y4 < d_hh_kdk
     return dict(
-        osc_drift_kdk=d2, osc_drift_y4=d4, order_ok=order_ok,
-        osc_closure=closure, period_ok=period_ok,
-        hh_kdk=d_hh_kdk, hh_y4=d_hh_y4, hh_ok=hh_ok,
+        osc_drift_kdk=d2,
+        osc_drift_y4=d4,
+        order_ok=order_ok,
+        osc_closure=closure,
+        period_ok=period_ok,
+        hh_kdk=d_hh_kdk,
+        hh_y4=d_hh_y4,
+        hh_ok=hh_ok,
         all_ok=order_ok and period_ok and hh_ok,
-        note="Yoshida 1990 (PTEP/Waseda): 4-й порядок из тройного KDK; "
-             "Suzuki 1991: 6-й порядок",
+        note="Yoshida 1990 (PTEP/Waseda): 4-й порядок из тройного KDK; " "Suzuki 1991: 6-й порядок",
     )

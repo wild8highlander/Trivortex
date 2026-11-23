@@ -323,6 +323,41 @@ class RepoDoctor:
             if changed:
                 self.write_back(path, "".join(lines))
 
+    # ── CT-002: the stale ε pin wherever prose carries it ──────────────────
+    # CT-001 only sees pins written as "ε = <number>" inside verification/;
+    # the table layout (formula in one cell, the number in the next — root
+    # README, the RU/EN monograph sources, the published site) hides from
+    # that regex. The wrong float64 literal itself is unambiguous, so hunt
+    # the documentation surfaces (markdown + site HTML) repo-wide by value.
+    def check_stale_epsilon_occurrences(self) -> None:
+        skip_dirs = {".git", "outputs", "__pycache__", "node_modules", ".venv"}
+        for dirpath, dirnames, filenames in os.walk(self.root):
+            dirnames[:] = sorted(d for d in dirnames if d not in skip_dirs)
+            for name in filenames:
+                if not name.endswith((".md", ".html")):
+                    continue
+                path = os.path.join(dirpath, name)
+                with open(path, encoding="utf-8") as handle:
+                    text = handle.read()
+                if STALE_EPSILON not in text:
+                    continue
+                lines = text.splitlines(keepends=True)
+                changed = False
+                for index, raw in enumerate(lines, start=1):
+                    if STALE_EPSILON not in raw:
+                        continue
+                    message = (
+                        "stale ε pin outside the ε-adjacent scan — the true "
+                        f"closed form 1/(e^(1/π)−1) = {EPSILON_31!r}"
+                    )
+                    self.report("CT-002", path, index, message, fixable=True)
+                    if self.fix:
+                        lines[index - 1] = raw.replace(STALE_EPSILON, repr(EPSILON_31))
+                        changed = True
+                        self.findings[-1].fixed = True
+                if changed:
+                    self.write_back(path, "".join(lines))
+
     # ── MF: Makefile recipe indentation ──────────────────────────────────
     # A recipe line indented with eight spaces instead of a tab is the one
     # decay class that turns `make verify-quick` into
@@ -430,6 +465,7 @@ class RepoDoctor:
         self.check_action_pins()
         self.check_dependabot()
         self.check_theorem31_pins()
+        self.check_stale_epsilon_occurrences()
         self.check_makefile_indentation()
         self.check_nested_duplicates()
         self.check_hygiene()

@@ -16,6 +16,7 @@ TRIVORTEX MASTER — цвет излучения: чёрное тело → RGB,
 Самопроверки: Солнце (5772 К) — почти белый (r≈g≈b, r>b);
 M-карлик (3200 К) — заметно красный; O-звезда (30000 К) — голубая.
 """
+
 from __future__ import annotations
 
 import math
@@ -23,7 +24,7 @@ import math
 H_PLANCK = 6.62607015e-34
 C_LIGHT = 2.99792458e8
 K_B = 1.380649e-23
-WIEN_B = 2.897771955e-3       # м·К
+WIEN_B = 2.897771955e-3  # м·К
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -34,13 +35,13 @@ def planck_curve(T: float, wavelengths_nm: list[float]) -> list[float]:
     out = []
     for lam_nm in wavelengths_nm:
         lam = lam_nm * 1e-9
-        c1 = 2 * H_PLANCK * C_LIGHT ** 2 / lam ** 5
+        c1 = 2 * H_PLANCK * C_LIGHT**2 / lam**5
         x = H_PLANCK * C_LIGHT / (lam * K_B * T)
         # защита от переполнения при большом x
         if x > 700:
             out.append(0.0)
         else:
-            out.append(c1 / (math.expm1(x)) / 1e9)   # пер-нм
+            out.append(c1 / (math.expm1(x)) / 1e9)  # пер-нм
     return out
 
 
@@ -63,13 +64,17 @@ def _gauss_piece(x: float, mu: float, s1: float, s2: float) -> float:
 
 def cie_xyz(lam_nm: float) -> tuple[float, float, float]:
     """Функции сложения цветов x̄, ȳ, z̄ на длине волны λ (нм)."""
-    xbar = (1.056 * _gauss_piece(lam_nm, 599.8, 37.1, 31.0)
-            + 0.362 * _gauss_piece(lam_nm, 442.0, 16.0, 26.7)
-            - 0.065 * _gauss_piece(lam_nm, 501.1, 20.4, 26.2))
-    ybar = (0.821 * _gauss_piece(lam_nm, 568.8, 46.9, 40.5)
-            + 0.286 * _gauss_piece(lam_nm, 530.9, 16.3, 31.1))
-    zbar = (1.217 * _gauss_piece(lam_nm, 437.0, 11.8, 36.0)
-            + 0.842 * _gauss_piece(lam_nm, 459.0, 26.0, 13.8))
+    xbar = (
+        1.056 * _gauss_piece(lam_nm, 599.8, 37.1, 31.0)
+        + 0.362 * _gauss_piece(lam_nm, 442.0, 16.0, 26.7)
+        - 0.065 * _gauss_piece(lam_nm, 501.1, 20.4, 26.2)
+    )
+    ybar = 0.821 * _gauss_piece(lam_nm, 568.8, 46.9, 40.5) + 0.286 * _gauss_piece(
+        lam_nm, 530.9, 16.3, 31.1
+    )
+    zbar = 1.217 * _gauss_piece(lam_nm, 437.0, 11.8, 36.0) + 0.842 * _gauss_piece(
+        lam_nm, 459.0, 26.0, 13.8
+    )
     return (xbar, ybar, zbar)
 
 
@@ -111,8 +116,13 @@ def blackbody_rgb(T: float) -> tuple[float, float, float]:
 # Спектральные классы
 # ═══════════════════════════════════════════════════════════════════════════
 SPECTRAL_TEFF = {
-    "O": 30000.0, "B": 18000.0, "A": 9000.0, "F": 7000.0,
-    "G": 5700.0, "K": 4500.0, "M": 3200.0,
+    "O": 30000.0,
+    "B": 18000.0,
+    "A": 9000.0,
+    "F": 7000.0,
+    "G": 5700.0,
+    "K": 4500.0,
+    "M": 3200.0,
 }
 
 
@@ -144,8 +154,11 @@ def self_check() -> dict:
         m_dwarf_rgb=tuple(round(c, 3) for c in m_dwarf),
         o_star_rgb=tuple(round(c, 3) for c in o_star),
         sun_hex=rgb_to_hex(sun),
-        sun_white=sun_white, m_red=m_red, o_blue=o_blue,
-        wien_peak_nm=lam_peak, wien_ok=wien_ok,
+        sun_white=sun_white,
+        m_red=m_red,
+        o_blue=o_blue,
+        wien_peak_nm=lam_peak,
+        wien_ok=wien_ok,
         all_ok=sun_white and m_red and o_blue and wien_ok,
         note="CIE 1931 2°, sRGB D65, γ=2.2; таблица огрублена до 3 цифр",
     )

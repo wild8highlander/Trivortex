@@ -1,6 +1,6 @@
 # TRIVORTEX MASTER v2.0.0 — справочник API
 
-_Автогенерация из AST: всё, что здесь описано, существует в коде._
+*Автогенерация из AST: всё, что здесь описано, существует в коде.*
 
 **96 модулей · 115 классов · 629 функций · документировано 687/1037 (66%)**
 
@@ -1132,7 +1132,7 @@ _Автогенерация из AST: всё, что здесь описано, 
 
 **Классы:**
 
-- `Warning_` — Предупреждение валидации: severity = info|warn|error.
+- `ValidatorWarning` — Предупреждение валидации: severity = info|warn|error.
 
 **Функции:**
 
@@ -1277,7 +1277,7 @@ _Автогенерация из AST: всё, что здесь описано, 
 
 - `plot_2d(traj, output, style='neon_dark', plane='xy', title='', dpi=150, body_names=None, body_colors=None)` — traj: lab.trajectory.Trajectory (или dict с times/states).
 - `plot_3d(traj, output, style='neon_dark', title='', dpi=150, elev=22, azim=36, body_names=None, body_colors=None, sphere_scale=None)`
-- `plot_4d(traj, w_values, output, style='neon_dark', title='', dpi=150, body_names=None)` — w_values[t][body] — четвёртая координата каждого тела в каждый момент.
+- `plot_4d(traj, w_values, output, style='neon_dark', title='', dpi=150, body_names=None)` — `w_values[t][body]` — четвёртая координата каждого тела в каждый момент.
 - `plot_energy(times, energies, output, style='neon_dark', title='Сохранение энергии', dpi=150)`
 - `plot_distances(traj, output, style='neon_dark', reference_index=0, dpi=150, names=None)` — Расстояния всех тел до опорного (индекс) по времени.
 - `plot_havelock_scan(output, style='neon_dark', dpi=150)` — Иллюстрация порога Хавелока N≤7/N=8 (значения POLYVORTEX W4).

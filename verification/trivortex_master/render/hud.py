@@ -13,6 +13,7 @@ TRIVORTEX MASTER — HUD: палитра AURORA, баннер ACLL, динами
 
 Любой вывод в отчёты идёт через color_off() / с COLOR=False — чистый текст.
 """
+
 from __future__ import annotations
 
 import math
@@ -25,25 +26,25 @@ import time
 # ═══════════════════════════════════════════════════════════════════════════
 # 1. Палитра AURORA (адаптация под бренд ACLL: лёд + золото)
 # ═══════════════════════════════════════════════════════════════════════════
-ICE = (125, 211, 252)     # ледяной голубой — заголовки, прогресс
-SKY = (91, 141, 255)      # синь — вторичный
-GOLD = (232, 199, 102)    # золото — акценты, ETA, WARN
-GRN = (52, 211, 153)      # полярная зелень — PASS
-RED = (255, 95, 110)      # алый — FAIL, плашка N=8
-VIO = (167, 139, 250)     # фиолетовое сияние — категории, 4D
-GRY = (139, 152, 178)     # серый — вторичный текст
-WHT = (235, 240, 255)     # белый — основной текст
-ORG = (255, 159, 90)      # оранжевый — предупреждения
+ICE = (125, 211, 252)  # ледяной голубой — заголовки, прогресс
+SKY = (91, 141, 255)  # синь — вторичный
+GOLD = (232, 199, 102)  # золото — акценты, ETA, WARN
+GRN = (52, 211, 153)  # полярная зелень — PASS
+RED = (255, 95, 110)  # алый — FAIL, плашка N=8
+VIO = (167, 139, 250)  # фиолетовое сияние — категории, 4D
+GRY = (139, 152, 178)  # серый — вторичный текст
+WHT = (235, 240, 255)  # белый — основной текст
+ORG = (255, 159, 90)  # оранжевый — предупреждения
 
-PALETTE_RGB = dict(ice=ICE, sky=SKY, gold=GOLD, grn=GRN, red=RED,
-                   vio=VIO, gry=GRY, wht=WHT, org=ORG)
+PALETTE_RGB = dict(
+    ice=ICE, sky=SKY, gold=GOLD, grn=GRN, red=RED, vio=VIO, gry=GRY, wht=WHT, org=ORG
+)
 
 # 16-цветные аналоги (деградация)
-PALETTE_16 = dict(ice=6, sky=4, gold=3, grn=2, red=1, vio=5,
-                  gry=7, wht=7, org=3)
+PALETTE_16 = dict(ice=6, sky=4, gold=3, grn=2, red=1, vio=5, gry=7, wht=7, org=3)
 
-_COLOR_MODE = "truecolor"   # truecolor | 256 | 16 | none
-COLOR = True                # цветовой шлюз: отчёты всегда получают чистый текст
+_COLOR_MODE = "truecolor"  # truecolor | 256 | 16 | none
+COLOR = True  # цветовой шлюз: отчёты всегда получают чистый текст
 
 
 def detect_color_mode(stream=None) -> str:
@@ -133,16 +134,44 @@ def _col(rgb, bold=False):
     return s
 
 
-def cyn(bold=False): return _col(ICE, bold)
-def grn(bold=False): return _col(GRN, bold)
-def red(bold=False): return _col(RED, bold)
-def ylw(bold=False): return _col(GOLD, bold)
-def mag(bold=False): return _col(VIO, bold)
-def blu(bold=False): return _col(SKY, bold)
-def gry(bold=False): return _col(GRY, bold)
-def wht(bold=False): return _col(WHT, bold)
-def org(bold=False): return _col(ORG, bold)
-def gold(bold=False): return _col(GOLD, bold)
+def cyn(bold=False):
+    return _col(ICE, bold)
+
+
+def grn(bold=False):
+    return _col(GRN, bold)
+
+
+def red(bold=False):
+    return _col(RED, bold)
+
+
+def ylw(bold=False):
+    return _col(GOLD, bold)
+
+
+def mag(bold=False):
+    return _col(VIO, bold)
+
+
+def blu(bold=False):
+    return _col(SKY, bold)
+
+
+def gry(bold=False):
+    return _col(GRY, bold)
+
+
+def wht(bold=False):
+    return _col(WHT, bold)
+
+
+def org(bold=False):
+    return _col(ORG, bold)
+
+
+def gold(bold=False):
+    return _col(GOLD, bold)
 
 
 def reset() -> str:
@@ -180,6 +209,7 @@ def _strip_ansi(s: str) -> str:
     global _ANSI_RE
     if _ANSI_RE is None:
         import re
+
         _ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
     return _ANSI_RE.sub("", s)
 
@@ -198,7 +228,7 @@ def pad_to(s: str, width: int) -> str:
 def trunc_to(s: str, width: int) -> str:
     if visible_width(s) <= width:
         return s
-    return _strip_ansi(s)[:max(width - 1, 0)] + "…"
+    return _strip_ansi(s)[: max(width - 1, 0)] + "…"
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -216,12 +246,14 @@ def hr(char: str = "─", width: int = 72) -> str:
     return char * width
 
 
-def box(lines: list[str], title: str = "", color: tuple = ICE,
-        width: int = 74) -> list[str]:
+def box(lines: list[str], title: str = "", color: tuple = ICE, width: int = 74) -> list[str]:
     """Рамочный бокс ╔═╗ вокруг уже готовых (может быть раскрашенных) строк."""
     w = width - 2
-    top = "╔" + ("═" * (w + 2)) + "╗" if not title else \
-          "╔═" + f" {title} " + "═" * max(w - len(title) - 1, 0) + "╗"
+    top = (
+        "╔" + ("═" * (w + 2)) + "╗"
+        if not title
+        else "╔═" + f" {title} " + "═" * max(w - len(title) - 1, 0) + "╗"
+    )
     out = [colorize(top, color, True)]
     for ln in lines:
         for piece in (ln if isinstance(ln, list) else [ln]):
@@ -244,15 +276,15 @@ BANNER_ACLL = [
 BANNER_PLAIN = [
     "+=====================================================+",
     "|   A C L L   ·   T R I V O R T E X   M A S T E R    |",
-    "|            лаборатория N тел · v1.0.0              |",
+    "|            лаборатория N тел · v{version}              |",
     "+=====================================================+",
 ]
 
 
-def banner(version: str = "1.0.0", subtitle: str = "") -> list[str]:
+def banner(version: str = "2.0.0", subtitle: str = "") -> list[str]:
     """Баннер ACLL: truecolor-градиент лёд→золото, при Non-TTY — плоский."""
     if _COLOR_MODE == "none" or not COLOR:
-        lines = list(BANNER_PLAIN)
+        lines = [ln.format(version=version) for ln in BANNER_PLAIN]
     else:
         lines = [gradient_text(ln, ICE, GOLD) for ln in BANNER_ACLL]
     title = f"T R I V O R T E X   M A S T E R   ·   v{version}   ·   AURORA EDITION"
@@ -262,7 +294,7 @@ def banner(version: str = "1.0.0", subtitle: str = "") -> list[str]:
     return lines
 
 
-def print_banner(version: str = "1.0.0", subtitle: str = "", stream=None) -> None:
+def print_banner(version: str = "2.0.0", subtitle: str = "", stream=None) -> None:
     stream = stream or sys.stdout
     for ln in banner(version, subtitle):
         stream.write(ln + "\n")
@@ -327,6 +359,7 @@ class Monitor:
         self._psutil = None
         try:
             import psutil  # noqa: F401
+
             self._psutil = psutil
         except ImportError:
             pass
@@ -337,7 +370,7 @@ class Monitor:
     @staticmethod
     def _read_proc_stat() -> tuple[int, int] | None:
         try:
-            with open("/proc/stat", "r", encoding="utf-8") as fh:
+            with open("/proc/stat", encoding="utf-8") as fh:
                 parts = fh.readline().split()[1:]
             vals = [int(x) for x in parts]
             idle = vals[3] + (vals[4] if len(vals) > 4 else 0)
@@ -369,7 +402,7 @@ class Monitor:
     def _read_meminfo() -> tuple[float, float]:
         try:
             info = {}
-            with open("/proc/meminfo", "r", encoding="utf-8") as fh:
+            with open("/proc/meminfo", encoding="utf-8") as fh:
                 for line in fh:
                     k, _, v = line.partition(":")
                     info[k.strip()] = float(v.split()[0])  # кБ
@@ -393,13 +426,13 @@ class Monitor:
     def temp_c() -> float:
         for zone in sorted(_list_dir("/sys/class/thermal")):
             try:
-                with open(f"/sys/class/thermal/{zone}/temp", "r") as fh:
+                with open(f"/sys/class/thermal/{zone}/temp") as fh:
                     return int(fh.read().strip()) / 1000.0
             except (OSError, ValueError):
                 continue
         for hw in sorted(_list_dir("/sys/class/hwmon")):
             try:
-                with open(f"/sys/class/hwmon/{hw}/temp1_input", "r") as fh:
+                with open(f"/sys/class/hwmon/{hw}/temp1_input") as fh:
                     return int(fh.read().strip()) / 1000.0
             except (OSError, ValueError):
                 continue
@@ -408,6 +441,7 @@ class Monitor:
     # ── латентность пустого I/O-цикла ──
     def _probe_io_latency(self) -> None:
         import tempfile
+
         try:
             t0 = time.perf_counter()
             with tempfile.NamedTemporaryFile(mode="w+", delete=True) as fh:
@@ -463,21 +497,28 @@ class ProgressBar:
     * thread-safe: один фоновый поток-насос на все обновления.
     """
 
-    def __init__(self, label: str = "", total: float = 100.0,
-                 stream=None, monitor: Monitor | None = None,
-                 eta_alpha: float = 0.22):
+    def __init__(
+        self,
+        label: str = "",
+        total: float = 100.0,
+        stream=None,
+        monitor: Monitor | None = None,
+        eta_alpha: float = 0.22,
+    ):
         self.label = label
         self.total = max(total, 1e-12)
         self.stream = stream or sys.stderr
         self.monitor = monitor
         self.eta_alpha = eta_alpha
-        self.enabled = (os.environ.get("TRIVORTEX_NO_PROGRESS", "") not in ("1", "true", "yes")
-                        and self.stream.isatty())
+        self.enabled = (
+            os.environ.get("TRIVORTEX_NO_PROGRESS", "") not in ("1", "true", "yes")
+            and self.stream.isatty()
+        )
         self.frac = 0.0
         self.tag = ""
         self._t0 = time.time()
         self._last_t = self._t0
-        self._ema_rate = None       # доли/сек, EMA
+        self._ema_rate = None  # доли/сек, EMA
         self._last_w = 0
         self._spin = Spinner("", stream=self.stream, braille=False)
         self._last_milestone = -1
@@ -495,8 +536,7 @@ class ProgressBar:
                 if self._ema_rate is None:
                     self._ema_rate = rate
                 else:
-                    self._ema_rate = (self.eta_alpha * rate
-                                      + (1 - self.eta_alpha) * self._ema_rate)
+                    self._ema_rate = self.eta_alpha * rate + (1 - self.eta_alpha) * self._ema_rate
             self.frac = frac
             if tag:
                 self.tag = tag
@@ -522,13 +562,11 @@ class ProgressBar:
     def finish(self, message: str = "") -> None:
         with self._lock:
             if self.enabled:
-                line = colorize(f"  ✓ {self.label}", GRN, True) if COLOR else \
-                       f"  [ok] {self.label}"
+                line = colorize(f"  ✓ {self.label}", GRN, True) if COLOR else f"  [ok] {self.label}"
                 if message:
                     line += " — " + message
                 line += f"  ({self._fmt(time.time() - self._t0)})"
-                self.stream.write("\r" + " " * self._last_w + "\r"
-                                  + line + "\n")
+                self.stream.write("\r" + " " * self._last_w + "\r" + line + "\n")
                 self.stream.flush()
             else:
                 milestone = 10
@@ -587,6 +625,7 @@ class BarQueue:
 
     def __init__(self, maxsize: int = 256):
         import queue
+
         self.q: queue.Queue = queue.Queue(maxsize=maxsize)
         self._thread = None
 
@@ -624,7 +663,7 @@ def ctl_command(run_dir: str) -> str | None:
     """Читает команды pause/resume/snapshot из <run_dir>/.tv_ctl."""
     path = os.path.join(run_dir, ".tv_ctl")
     try:
-        with open(path, "r", encoding="utf-8") as fh:
+        with open(path, encoding="utf-8") as fh:
             cmd = fh.read().strip().lower()
         if cmd in ("pause", "resume", "snapshot"):
             os.remove(path)

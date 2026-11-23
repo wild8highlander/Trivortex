@@ -11,6 +11,7 @@ search_catalog()    — поиск по имени/типу/идентифика
 Орбитальные скорости расставляются кеплеровыми: v = √(GM/r) вокруг
 родительского тела (планеты — вокруг Солнца/звезды, луны — вокруг планеты).
 """
+
 from __future__ import annotations
 
 import json
@@ -33,7 +34,7 @@ AU_M = 1.495978707e11
 # ═══════════════════════════════════════════════════════════════════════════
 def load_catalog(path: str | None = None) -> dict[str, Any]:
     path = path or _CATALOG_PATH
-    with open(path, "r", encoding="utf-8") as fh:
+    with open(path, encoding="utf-8") as fh:
         return json.load(fh)
 
 
@@ -49,14 +50,20 @@ def catalog_summary(catalog: dict[str, Any] | None = None) -> dict[str, int]:
     return dict(sorted(out.items(), key=lambda kv: -kv[1]))
 
 
-def search_catalog(query: str, catalog: dict[str, Any] | None = None,
-                   limit: int = 20) -> list[dict]:
+def search_catalog(
+    query: str, catalog: dict[str, Any] | None = None, limit: int = 20
+) -> list[dict]:
     q = query.strip().lower()
     hits = []
     for rec in catalog_objects(catalog):
-        hay = " ".join([rec.get("id", ""), rec.get("name", ""),
-                        rec.get("type", ""),
-                        rec.get("metadata", {}).get("host_star", "")]).lower()
+        hay = " ".join(
+            [
+                rec.get("id", ""),
+                rec.get("name", ""),
+                rec.get("type", ""),
+                rec.get("metadata", {}).get("host_star", ""),
+            ]
+        ).lower()
         if q in hay:
             hits.append(rec)
             if len(hits) >= limit:
@@ -87,7 +94,7 @@ def validate_catalog(catalog: dict[str, Any] | None = None) -> list[str]:
 # ═══════════════════════════════════════════════════════════════════════════
 def load_presets(path: str | None = None) -> list[dict[str, Any]]:
     path = path or _PRESETS_PATH
-    with open(path, "r", encoding="utf-8") as fh:
+    with open(path, encoding="utf-8") as fh:
         data = json.load(fh)
     return data.get("presets", [])
 
@@ -99,8 +106,9 @@ def get_preset(preset_id: str, path: str | None = None) -> dict[str, Any] | None
     return None
 
 
-def _orbit_radius_for(record: dict[str, Any], parent_record: dict[str, Any],
-                      override: float | None = None) -> float:
+def _orbit_radius_for(
+    record: dict[str, Any], parent_record: dict[str, Any], override: float | None = None
+) -> float:
     """Радиус орбиты в метрах: override > orbit_au > orbit_km."""
     if override is not None:
         return override
@@ -119,8 +127,9 @@ def _orbit_radius_for(record: dict[str, Any], parent_record: dict[str, Any],
     return 1e9
 
 
-def build_preset(preset_id: str, config: MasterConfig,
-                 catalog: dict[str, Any] | None = None) -> Scene:
+def build_preset(
+    preset_id: str, config: MasterConfig, catalog: dict[str, Any] | None = None
+) -> Scene:
     """Собрать сцену из пресета по id."""
     preset = get_preset(preset_id)
     if preset is None:
@@ -180,13 +189,22 @@ def build_preset(preset_id: str, config: MasterConfig,
             parent_body = scene.bodies[0] if scene.bodies else body
             central_record = by_id.get(parent_body.id)
 
-        r = _orbit_radius_for(rec, central_record or {},
-                              override=spec.get("orbit_km") or
-                              (spec.get("orbit_au", None) and
-                               spec["orbit_au"] * AU_M) or None)
+        r = _orbit_radius_for(
+            rec,
+            central_record or {},
+            override=spec.get("orbit_km")
+            or (spec.get("orbit_au", None) and spec["orbit_au"] * AU_M)
+            or None,
+        )
         phase = spec.get("phase_deg", 30.0 * (orbit_index + 1))
-        place_on_orbit(parent_body, body, r, phase_deg=phase,
-                       inclination_deg=spec.get("inclination_deg", 0.0), G=G)
+        place_on_orbit(
+            parent_body,
+            body,
+            r,
+            phase_deg=phase,
+            inclination_deg=spec.get("inclination_deg", 0.0),
+            G=G,
+        )
         orbit_index += 1
         scene.add_body(body)
 
@@ -206,14 +224,22 @@ def _build_model_preset(preset_id: str, preset: dict, config: MasterConfig) -> S
     vortex_ring_5/7   — вихревые кольца Кирхгофа N=5/7 (движок native_vortex).
     """
     import copy as _copy
+
     cfg = _copy.deepcopy(config)
     cfg.G = 1.0
-    cfg.physics_engine = "native_vortex" if preset_id.startswith("vortex") \
-        else "native_newton"
+    cfg.physics_engine = "native_vortex" if preset_id.startswith("vortex") else "native_newton"
     scene = Scene(cfg, name=preset["name"])
     n = len(preset["bodies"])
-    colors = ["#4FD1C5", "#E8C766", "#A78BFA", "#7DD3FC", "#FB7185",
-              "#34D399", "#FF9A76", "#C8D8D8"]
+    colors = [
+        "#4FD1C5",
+        "#E8C766",
+        "#A78BFA",
+        "#7DD3FC",
+        "#FB7185",
+        "#34D399",
+        "#FF9A76",
+        "#C8D8D8",
+    ]
 
     if preset_id == "lagrange_triangle":
         side = 1.0
@@ -221,16 +247,24 @@ def _build_model_preset(preset_id: str, preset: dict, config: MasterConfig) -> S
         total_mass = 3.0
         # ω Лагранжа: центростремительная сила от двух соседей компенсируется
         # вращением: m·ω²·R = Σ F_к центру ⇒ ω² = G·M_total/a³
-        omega = math.sqrt(total_mass / side ** 3)
+        omega = math.sqrt(total_mass / side**3)
         for k in range(n):
             phi = 2 * math.pi * k / n
             x, y = R * math.cos(phi), R * math.sin(phi)
             vx, vy = -omega * R * math.sin(phi), omega * R * math.cos(phi)
-            scene.add_body(Body(
-                id=f"lagrange_{k}", name=f"Лагранж {k + 1}",
-                mass=1.0, radius=0.02, position=(x, y, 0.0),
-                velocity=(vx, vy, 0.0), color=colors[k % len(colors)],
-                type="synthetic", source="Lagrange 1772"))
+            scene.add_body(
+                Body(
+                    id=f"lagrange_{k}",
+                    name=f"Лагранж {k + 1}",
+                    mass=1.0,
+                    radius=0.02,
+                    position=(x, y, 0.0),
+                    velocity=(vx, vy, 0.0),
+                    color=colors[k % len(colors)],
+                    type="synthetic",
+                    source="Lagrange 1772",
+                )
+            )
         scene.dt = 0.01
         return scene
 
@@ -253,13 +287,21 @@ def _build_model_preset(preset_id: str, preset: dict, config: MasterConfig) -> S
             if r2 > 0:
                 vx += -gamma * (-dy) / (2 * math.pi * r2)
                 vy += gamma * (-dx) / (2 * math.pi * r2)
-        scene.add_body(Body(
-            id=f"ring_{k}", name=f"Вихрь {k + 1}",
-            mass=1.0, radius=0.03, position=(x, y, 0.0),
-            velocity=(0.0, 0.0, 0.0), circulation=gamma,
-            color=colors[k % len(colors)], type="synthetic",
-            source="Kirchhoff; Havelock 1931; POLYVORTEX W2/W4",
-            metadata=dict(omega_N=omega_N)))
+        scene.add_body(
+            Body(
+                id=f"ring_{k}",
+                name=f"Вихрь {k + 1}",
+                mass=1.0,
+                radius=0.03,
+                position=(x, y, 0.0),
+                velocity=(0.0, 0.0, 0.0),
+                circulation=gamma,
+                color=colors[k % len(colors)],
+                type="synthetic",
+                source="Kirchhoff; Havelock 1931; POLYVORTEX W2/W4",
+                metadata=dict(omega_N=omega_N),
+            )
+        )
     # период кольца T = 2π/ω_N; dt = T/240
     scene.dt = (2 * math.pi / abs(omega_N)) / 240.0 if omega_N else 0.01
     return scene
@@ -271,7 +313,7 @@ def _fix_binary(scene: Scene, G: float) -> None:
     total = a.mass + b.mass
     # большая полуось из данных Проксимы ~ 1.3e13 м
     sep = 1.3e13
-    omega = math.sqrt(G * total / sep ** 3)
+    omega = math.sqrt(G * total / sep**3)
     ra = sep * b.mass / total
     rb = sep * a.mass / total
     a.position = (-ra, 0.0, 0.0)
@@ -289,17 +331,23 @@ def _fix_binary(scene: Scene, G: float) -> None:
 
 def _build_figure_eight(config: MasterConfig, preset: dict) -> Scene:
     from lab.trajectory import AnalyticPlanner
+
     scene = Scene(config, name=preset["name"])
     planner = AnalyticPlanner()
     traj = planner.figure_eight(n_steps=8)
     for k, bid in enumerate(traj.body_ids):
         s = traj.states[0][k]
-        body = Body(id=bid, name=f"Figure-eight {k + 1}",
-                    mass=1.0, radius=0.03,
-                    position=(s[0], s[1], s[2]),
-                    velocity=(s[3], s[4], s[5]),
-                    color=("#4FD1C5", "#E8C766", "#A78BFA")[k % 3],
-                    type="synthetic", source="Chenciner & Montgomery 2000")
+        body = Body(
+            id=bid,
+            name=f"Figure-eight {k + 1}",
+            mass=1.0,
+            radius=0.03,
+            position=(s[0], s[1], s[2]),
+            velocity=(s[3], s[4], s[5]),
+            color=("#4FD1C5", "#E8C766", "#A78BFA")[k % 3],
+            type="synthetic",
+            source="Chenciner & Montgomery 2000",
+        )
         scene.add_body(body)
     scene.dt = 0.005
     return scene
@@ -335,6 +383,5 @@ def preset_list_description() -> list[tuple[str, str, str]]:
     out = []
     for p in load_presets():
         n = len(p.get("bodies", []))
-        out.append((p["id"], p["name"],
-                    f"N={n}" + (" ⚠" if p.get("unphysical") else "")))
+        out.append((p["id"], p["name"], f"N={n}" + (" ⚠" if p.get("unphysical") else "")))
     return out

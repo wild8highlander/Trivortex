@@ -19,14 +19,15 @@ TRIVORTEX MASTER — затмения: геометрия, циклы, пред�
 расстоянии (длиннее/короче геоцентрического расстояния → полное или
 кольцевое).
 """
+
 from __future__ import annotations
 
 import math
 
-SYNODIC_D = 29.530588            # синодический месяц (сут)
-DRACONIC_D = 27.212221           # драконический месяц (сут)
+SYNODIC_D = 29.530588  # синодический месяц (сут)
+DRACONIC_D = 27.212221  # драконический месяц (сут)
 TROPICAL_YEAR_D = 365.2422
-NODAL_REGRESSION_Y = 18.61       # прецессия узлов лунной орбиты (лет)
+NODAL_REGRESSION_Y = 18.61  # прецессия узлов лунной орбиты (лет)
 NODE_REGRESSION_D = NODAL_REGRESSION_Y * 365.25
 
 
@@ -46,8 +47,7 @@ def eclipse_season_spacing() -> float:
     return eclipse_year_days() / 2.0
 
 
-def shadow_cone_length(r_body_km: float, d_body_sun_km: float,
-                       r_sun_km: float = 6.957e5) -> float:
+def shadow_cone_length(r_body_km: float, d_body_sun_km: float, r_sun_km: float = 6.957e5) -> float:
     """Длина конуса тени: L = R_b·D/(R_s − R_b) (км).
 
     Для Луны (R=1737, D≈149 млн км): L ≈ 375 000 км — сравнение с
@@ -63,11 +63,15 @@ def moon_shadow_check() -> dict:
     доходит до Земли → кольцевое затмение; в перигее (356 500) —
     доходит (полное/гибридное)."""
     L = shadow_cone_length(1737.4, 1.496e8)
-    return dict(cone_km=L, mean_distance_km=384400.0,
-                perigee_km=356500.0, apogee_km=406700.0,
-                reaches_earth_at_mean=L > 384400.0,
-                note="L = R_b·D/(R_s−R_b); доля кольцевых затмений "
-                     "выше, чем полных, именно из-за этого соотношения")
+    return dict(
+        cone_km=L,
+        mean_distance_km=384400.0,
+        perigee_km=356500.0,
+        apogee_km=406700.0,
+        reaches_earth_at_mean=L > 384400.0,
+        note="L = R_b·D/(R_s−R_b); доля кольцевых затмений "
+        "выше, чем полных, именно из-за этого соотношения",
+    )
 
 
 def eclipse_width_beta(kind: str = "solar") -> dict:
@@ -76,16 +80,15 @@ def eclipse_width_beta(kind: str = "solar") -> dict:
     Солнечное: полоса зависит от параллакса; типичные лимиты:
     центральное ~1.55°, частное ~1.85° (Meeus, «Elements of Solar
     Eclipses»); лунное: полутень до ~1.0° от узла."""
-    limits = dict(solar_central=1.55, solar_partial=1.85,
-                  lunar=1.00)
+    limits = dict(solar_central=1.55, solar_partial=1.85, lunar=1.00)
     if kind not in limits:
         raise KeyError(f"тип {kind} не в solar/lunar")
-    return dict(beta_limit_deg=limits[kind],
-                reference="Meeus, Mathematical Astronomy Morsels, гл. 54")
+    return dict(
+        beta_limit_deg=limits[kind], reference="Meeus, Mathematical Astronomy Morsels, гл. 54"
+    )
 
 
-def upcoming_window(days_since_new_moon: float,
-                    beta_deg: float) -> dict:
+def upcoming_window(days_since_new_moon: float, beta_deg: float) -> dict:
     """Оценка окна затмения: фаза близка к новолунию и |β| в лимите.
 
     Честная пометка: точное предсказание требует эфемерид
@@ -94,8 +97,12 @@ def upcoming_window(days_since_new_moon: float,
     near_new = abs(phase_frac) < 0.03 or abs(phase_frac - 1.0) < 0.03
     lim = eclipse_width_beta("solar_partial")["beta_limit_deg"]
     beta_ok = abs(beta_deg) < lim
-    return dict(phase_frac=phase_frac, near_new_moon=near_new,
-                beta_ok=beta_ok, possible=(near_new and beta_ok))
+    return dict(
+        phase_frac=phase_frac,
+        near_new_moon=near_new,
+        beta_ok=beta_ok,
+        possible=(near_new and beta_ok),
+    )
 
 
 def self_check() -> dict:
@@ -113,13 +120,17 @@ def self_check() -> dict:
     draconic_implied = 6585.32 / 242.0
     drac_ok = abs(draconic_implied - DRACONIC_D) < 0.01
     return dict(
-        saros_days=sar, saros_ok=saros_ok,
-        eclipse_year=round(ey, 3), ey_ok=ey_ok,
-        season_spacing=round(season, 3), season_ok=season_ok,
-        shadow_km=round(shadow["cone_km"]), shadow_ok=shadow_ok,
-        draconic_implied=round(draconic_implied, 6), drac_ok=drac_ok,
-        all_ok=saros_ok and ey_ok and season_ok and shadow_ok
-        and drac_ok,
+        saros_days=sar,
+        saros_ok=saros_ok,
+        eclipse_year=round(ey, 3),
+        ey_ok=ey_ok,
+        season_spacing=round(season, 3),
+        season_ok=season_ok,
+        shadow_km=round(shadow["cone_km"]),
+        shadow_ok=shadow_ok,
+        draconic_implied=round(draconic_implied, 6),
+        drac_ok=drac_ok,
+        all_ok=saros_ok and ey_ok and season_ok and shadow_ok and drac_ok,
         note="Сарос: 223 синодич. ≈ 242 драконич. ≈ 239 аномалистич.; "
-             "затменный год из регрессии узлов (18.61 лет)",
+        "затменный год из регрессии узлов (18.61 лет)",
     )

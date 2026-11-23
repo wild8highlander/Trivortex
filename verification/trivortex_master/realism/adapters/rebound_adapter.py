@@ -11,12 +11,14 @@ IAS15 (Rein & Spiegel 2015), WHFast, MERCURIUS и др.
 диспетчер lab.physics.get_engine ловит и переключается, фиксируя смену
 в events сцены и HUD.
 """
+
 from __future__ import annotations
 
 from typing import Any
 
 try:
     import rebound  # noqa: F401
+
     HAVE_REBOUND = True
 except ImportError:
     HAVE_REBOUND = False
@@ -30,8 +32,10 @@ class REBOUNDAdapter(PhysicsEngine):
     def __init__(self, scene, integrator: str = "ias15"):
         if not HAVE_REBOUND:
             raise EngineUnavailable(
-                "rebound", fallback="native_newton",
-                reason="пакет rebound не установлен (pip install rebound)")
+                "rebound",
+                fallback="native_newton",
+                reason="пакет rebound не установлен (pip install rebound)",
+            )
         super().__init__(scene)
         self.integrator = integrator
         self.sim = None
@@ -46,23 +50,27 @@ class REBOUNDAdapter(PhysicsEngine):
 
     def _setup(self) -> None:
         import rebound
+
         sim = rebound.Simulation()
         sim.G = self.cfg.G
         sim.integrator = self.integrator
         # единицы: REBOUND работает в симметричных единицах; тела сцены
         # могут быть в СИ — масштабируем массы/расстояния для точности IAS15
         self._scale = 1.0
-        max_r = max((max(abs(c) for c in b.position)
-                     for b in self.scene.bodies), default=1.0)
+        max_r = max((max(abs(c) for c in b.position) for b in self.scene.bodies), default=1.0)
         if max_r > 0:
             self._scale = max_r  # нормировка расстояний к ~1
         for b in self.scene.bodies:
-            sim.add(m=b.mass,
-                    x=b.position[0] / self._scale,
-                    y=b.position[1] / self._scale,
-                    z=b.position[2] / self._scale,
-                    vx=b.velocity[0], vy=b.velocity[1], vz=b.velocity[2],
-                    r=b.radius / self._scale)
+            sim.add(
+                m=b.mass,
+                x=b.position[0] / self._scale,
+                y=b.position[1] / self._scale,
+                z=b.position[2] / self._scale,
+                vx=b.velocity[0],
+                vy=b.velocity[1],
+                vz=b.velocity[2],
+                r=b.radius / self._scale,
+            )
         sim.move_to_com()
         self.sim = sim
 
@@ -85,10 +93,13 @@ class REBOUNDAdapter(PhysicsEngine):
             return []
         out = []
         for p, body in zip(self.sim.particles, self.scene.bodies):
-            out.append(BodyState(
-                body.id,
-                (p.x * self._scale, p.y * self._scale, p.z * self._scale),
-                (p.vx, p.vy, p.vz)))
+            out.append(
+                BodyState(
+                    body.id,
+                    (p.x * self._scale, p.y * self._scale, p.z * self._scale),
+                    (p.vx, p.vy, p.vz),
+                )
+            )
         return out
 
     def energy(self) -> float:
@@ -111,15 +122,20 @@ class REBOUNDAdapter(PhysicsEngine):
 
     def to_dict(self) -> dict[str, Any]:
         """Сериализация для воспроизводимости в отчётах."""
-        return dict(engine="rebound", integrator=self.integrator,
-                    have_rebound=HAVE_REBOUND,
-                    G=self.cfg.G, n_bodies=len(self.scene.bodies),
-                    citation="Rein & Liu 2012, A&A 537, A128 "
-                             "(doi:10.1051/0004-6361/201118085)")
+        return dict(
+            engine="rebound",
+            integrator=self.integrator,
+            have_rebound=HAVE_REBOUND,
+            G=self.cfg.G,
+            n_bodies=len(self.scene.bodies),
+            citation="Rein & Liu 2012, A&A 537, A128 " "(doi:10.1051/0004-6361/201118085)",
+        )
 
 
 def availability() -> dict[str, Any]:
     """Статус адаптера для HUD."""
-    return dict(name="rebound", available=HAVE_REBOUND,
-                reason="" if HAVE_REBOUND else
-                "pip install rebound — интеграторы IAS15/WHFast/MERCURIUS")
+    return dict(
+        name="rebound",
+        available=HAVE_REBOUND,
+        reason="" if HAVE_REBOUND else "pip install rebound — интеграторы IAS15/WHFast/MERCURIUS",
+    )

@@ -1,11 +1,11 @@
 {
- "generated": "2026-11-23T11:21:43",
+ "generated": "2026-11-23T16:59:12",
  "api": {
   "modules": 96,
   "classes": 115,
-  "functions": 629,
-  "docstring_coverage": 0.662,
-  "lines": 25527
+  "functions": 630,
+  "docstring_coverage": 0.663,
+  "lines": 28986
  },
  "catalog": {
   "objects": 538,

@@ -16,6 +16,7 @@ TRIVORTEX MASTER — транзитные вариации моментов (TTV
 Самопроверка: синтетический ряд TTV с заданной амплитудой/периодом
 восстанавливается точно; линейная эфемерида даёт нулевые O−C.
 """
+
 from __future__ import annotations
 
 import math
@@ -39,8 +40,7 @@ def linear_ephemeris(t_obs: Sequence[float]) -> tuple[float, float]:
         n_mean = sum(n_list) / len(n_list)
         t_mean = sum(t_obs) / len(t_obs)
         sxx = sum((n - n_mean) ** 2 for n in n_list)
-        sxy = sum((n - n_mean) * (t - t_mean)
-                  for n, t in zip(n_list, t_obs))
+        sxy = sum((n - n_mean) * (t - t_mean) for n, t in zip(n_list, t_obs))
         p_fit = sxy / max(sxx, 1e-12)
         t0_fit = t_mean - p_fit * n_mean
         if abs(p_fit - p_guess) < 1e-12:
@@ -57,12 +57,14 @@ def oc_residuals(t_obs: Sequence[float]) -> dict:
     oc = [t - (t0 + p * n) for t, n in zip(t_obs, n_list)]
     mean_oc = sum(oc) / len(oc)
     oc_centered = [v - mean_oc for v in oc]
-    return dict(T0=t0, P=p, oc=oc_centered,
-                rms=math.sqrt(sum(v * v for v in oc_centered)
-                              / max(len(oc_centered), 1)),
-                max_abs=max(abs(v) for v in oc_centered)
-                if oc_centered else 0.0,
-                n_transits=len(t_obs))
+    return dict(
+        T0=t0,
+        P=p,
+        oc=oc_centered,
+        rms=math.sqrt(sum(v * v for v in oc_centered) / max(len(oc_centered), 1)),
+        max_abs=max(abs(v) for v in oc_centered) if oc_centered else 0.0,
+        n_transits=len(t_obs),
+    )
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -87,17 +89,16 @@ def ttv_amplitude(t_obs: Sequence[float]) -> dict:
     if var <= 0:
         return dict(amplitude=0.0, period=None, rms=0.0)
     for lag in range(2, max(n // 2, 3)):
-        cov = sum((oc[i] - mean) * (oc[i + lag] - mean)
-                  for i in range(n - lag)) / (n - lag)
+        cov = sum((oc[i] - mean) * (oc[i + lag] - mean) for i in range(n - lag)) / (n - lag)
         corr = cov / var
         if corr > best_corr:
             best_corr, best_lag = corr, lag
     p_ttv = best_lag * res["P"]
     # амплитуда: полуразмах остатков (устойчивая оценка)
     amp = (max(oc) - min(oc)) / 2.0
-    return dict(amplitude=amp, period=p_ttv, rms=res["rms"],
-                autocorr_peak=best_corr,
-                period_days=p_ttv)
+    return dict(
+        amplitude=amp, period=p_ttv, rms=res["rms"], autocorr_peak=best_corr, period_days=p_ttv
+    )
 
 
 def super_period(p_inner: float, p_outer: float, j: int) -> float:
@@ -125,6 +126,7 @@ def self_check() -> dict:
     100 сут — восстановление амплитуды/периода; круговая орбита без
     возмущений — нулевые O−C."""
     import random
+
     rng = random.Random(21)
     # ── без TTV: идеальные моменты ──
     p_true, t0_true = 3.5, 100.0
@@ -135,23 +137,30 @@ def self_check() -> dict:
     # 120 транзитов = 420 сут ≈ 4 периода TTV (иначе автокорреляции
     # не хватает базы для оценки периода)
     a_true, p_ttv_true = 0.02, 100.0
-    t_ttv = [t0_true + p_true * k
-             + a_true * math.sin(2 * math.pi * (t0_true + p_true * k
-                                                - t0_true) / p_ttv_true)
-             + rng.gauss(0, 1e-6) for k in range(120)]
+    t_ttv = [
+        t0_true
+        + p_true * k
+        + a_true * math.sin(2 * math.pi * (t0_true + p_true * k - t0_true) / p_ttv_true)
+        + rng.gauss(0, 1e-6)
+        for k in range(120)
+    ]
     res = oc_residuals(t_ttv)
     meas = ttv_amplitude(t_ttv)
     amp_ok = abs(meas["amplitude"] - a_true) < 0.004
-    period_ok = meas["period"] is not None and \
-        abs(meas["period"] - p_ttv_true) < 25.0
+    period_ok = meas["period"] is not None and abs(meas["period"] - p_ttv_true) < 25.0
     # super-period: у точного 2:1 → бесконечность; у 2.01:1 — большой
     sp_exact = super_period(10.0, 20.0, 2)
     sp_off = super_period(10.0, 20.1, 2)
     sp_ok = sp_exact == float("inf") and sp_off > 200.0
     return dict(
-        clean_max_oc=res_clean["max_abs"], clean_ok=clean_ok,
-        ttv_amp_measured=meas["amplitude"], amp_ok=amp_ok,
-        ttv_period=meas["period"], period_ok=period_ok,
-        super_exact_inf=sp_exact, super_off=sp_off, sp_ok=sp_ok,
+        clean_max_oc=res_clean["max_abs"],
+        clean_ok=clean_ok,
+        ttv_amp_measured=meas["amplitude"],
+        amp_ok=amp_ok,
+        ttv_period=meas["period"],
+        period_ok=period_ok,
+        super_exact_inf=sp_exact,
+        super_off=sp_off,
+        sp_ok=sp_ok,
         all_ok=clean_ok and amp_ok and period_ok and sp_ok,
     )

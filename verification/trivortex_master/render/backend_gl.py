@@ -7,6 +7,7 @@ TRIVORTEX MASTER — опциональный GL-бэкенд (pyrender / modern
 mpl / pure / ascii. GL даёт аппаратное ускорение и тени, но не является
 обязательным: лаборатория полностью работает и без него.
 """
+
 from __future__ import annotations
 
 import math
@@ -15,12 +16,14 @@ from typing import Sequence
 
 try:
     import moderngl  # noqa: F401
+
     HAVE_MODERNGL = True
 except ImportError:
     HAVE_MODERNGL = False
 
 try:
     import pyrender  # noqa: F401
+
     HAVE_PYRENDER = True
 except ImportError:
     HAVE_PYRENDER = False
@@ -35,8 +38,7 @@ def availability() -> dict:
         reasons.append("pip install moderngl")
     if not HAVE_PYRENDER:
         reasons.append("pip install pyrender")
-    return dict(name="gl", available=HAVE_GL,
-                reason="" if HAVE_GL else "; ".join(reasons))
+    return dict(name="gl", available=HAVE_GL, reason="" if HAVE_GL else "; ".join(reasons))
 
 
 # ── шейдеры для moderngl (минимальный Lambert) ──
@@ -72,8 +74,7 @@ void main() {
 """
 
 
-def sphere_mesh(radius: float, seg: int = 24, rings: int = 16
-                ) -> tuple[list[float], list[int]]:
+def sphere_mesh(radius: float, seg: int = 24, rings: int = 16) -> tuple[list[float], list[int]]:
     """Вершины (x,y,z,nx,ny,nz) и индексы UV-сферы для GL."""
     verts: list[float] = []
     for r in range(rings + 1):
@@ -99,10 +100,13 @@ def sphere_mesh(radius: float, seg: int = 24, rings: int = 16
     return verts, idx
 
 
-def render_gl(bodies: list[dict], width: int = 640, height: int = 480,
-              output: str = "frame_gl.png",
-              bg: tuple[float, float, float] = (0.05, 0.09, 0.16)
-              ) -> str:
+def render_gl(
+    bodies: list[dict],
+    width: int = 640,
+    height: int = 480,
+    output: str = "frame_gl.png",
+    bg: tuple[float, float, float] = (0.05, 0.09, 0.16),
+) -> str:
     """Рендер сфер через moderngl (offscreen) → PNG (через собственный кодер).
 
     bodies: [{position, radius, color:'#rrggbb'}]
@@ -111,11 +115,16 @@ def render_gl(bodies: list[dict], width: int = 640, height: int = 480,
         raise ImportError("moderngl не установлен: " + availability()["reason"])
     import moderngl
     import numpy as np
-    from render.pure_raster import mat_look_at, mat_perspective, mat_mul, \
-        mat_translate, mat_scale, mat_apply
+    from render.pure_raster import (
+        mat_look_at,
+        mat_perspective,
+        mat_mul,
+        mat_translate,
+        mat_scale,
+        mat_apply,
+    )
 
-    ctx = moderngl.create_context(standalone=True,
-                                  backend="egl")  # offscreen без X-сервера
+    ctx = moderngl.create_context(standalone=True, backend="egl")  # offscreen без X-сервера
     prog = ctx.program(vertex_shader=_VERTEX, fragment_shader=_FRAGMENT)
     fbo = ctx.simple_framebuffer((width, height))
     fbo.use()
@@ -140,16 +149,13 @@ def render_gl(bodies: list[dict], width: int = 640, height: int = 480,
         verts, idx = sphere_mesh(b["radius"])
         vbo = ctx.buffer(np.array(verts, dtype="f4").tobytes())
         ibo = ctx.buffer(np.array(idx, dtype="i4").tobytes())
-        vao = ctx.vertex_array(prog, [(vbo, "3f 3f", "in_position", "in_normal")],
-                               ibo)
-        model = mat_mul(mat_translate(*b["position"]),
-                        mat_scale(1.0, 1.0, 1.0))
+        vao = ctx.vertex_array(prog, [(vbo, "3f 3f", "in_position", "in_normal")], ibo)
+        model = mat_mul(mat_translate(*b["position"]), mat_scale(1.0, 1.0, 1.0))
         mvp = mat_mul(vp, model)
         mvp_np = np.array(mvp, dtype="f4").T.tobytes()
         model_np = np.array(model, dtype="f4").T.tobytes()
         h = b.get("color", "#4fd1c5").lstrip("#")
-        color = (int(h[0:2], 16) / 255, int(h[2:4], 16) / 255,
-                 int(h[4:6], 16) / 255)
+        color = (int(h[0:2], 16) / 255, int(h[2:4], 16) / 255, int(h[4:6], 16) / 255)
         prog["mvp"].write(mvp_np)
         prog["model"].write(model_np)
         prog["u_color"].value = tuple(color)
@@ -162,7 +168,8 @@ def render_gl(bodies: list[dict], width: int = 640, height: int = 480,
     row = width * 3
     flipped = bytearray()
     for y in range(height - 1, -1, -1):
-        flipped += raw[y * row:(y + 1) * row]
+        flipped += raw[y * row : (y + 1) * row]
     from render.png_codec import write_png
+
     write_png(output, flipped, width, height)
     return output

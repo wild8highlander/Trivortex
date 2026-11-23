@@ -5,6 +5,7 @@
 Запускается build_zip.py перед сборкой, чтобы в поставке были живые
 примеры работы комплекса. Всё на stdlib + matplotlib при наличии.
 """
+
 from __future__ import annotations
 
 import os
@@ -30,9 +31,15 @@ def make_examples(out_dir: str | None = None) -> dict:
     # 1) figure-eight: GIF
     scene = build_preset("figure_eight", from_profile("quick", n_steps=240))
     run_simulation(scene, n_steps=240)
-    res = animate_scene(scene, os.path.join(out, "figure_eight.gif"),
-                        n_frames=24, fps=10, backend="pure",
-                        width=320, height=240)
+    res = animate_scene(
+        scene,
+        os.path.join(out, "figure_eight.gif"),
+        n_frames=24,
+        fps=10,
+        backend="pure",
+        width=320,
+        height=240,
+    )
     made["gif"] = res["bytes"]
 
     # 2) Лагранж: полный набор графиков + отчёты 7 форматов
@@ -41,13 +48,17 @@ def make_examples(out_dir: str | None = None) -> dict:
     eng = get_backend("mpl", scene2.config)
     eng.setup(scene2)
     charts = eng.render_trajectory(out, prefix="lagrange")
-    data = ReportData("Демонстрация: треугольник Лагранжа", scene=scene2,
-                      sim_summary={k: str(v)[:28] for k, v in sim.items()})
+    data = ReportData(
+        "Демонстрация: треугольник Лагранжа",
+        scene=scene2,
+        sim_summary={k: str(v)[:28] for k, v in sim.items()},
+    )
     data.fill_from_scene()
     for p in charts:
         data.add_chart(p, os.path.basename(p))
-    written = generate_reports(data, out, formats=[
-        "txt", "md", "html", "csv", "json", "docx", "pdf"])
+    written = generate_reports(
+        data, out, formats=["txt", "md", "html", "csv", "json", "docx", "pdf"]
+    )
     problems = validate_outputs(written)
     made["reports"] = {k: os.path.getsize(v) for k, v in written.items()}
     made["problems"] = problems
@@ -55,9 +66,15 @@ def make_examples(out_dir: str | None = None) -> dict:
     # 3) вихревое кольцо N=7: GIF
     scene3 = build_preset("vortex_ring_7", from_profile("quick", n_steps=240))
     run_simulation(scene3, n_steps=240)
-    res3 = animate_scene(scene3, os.path.join(out, "vortex_ring7.gif"),
-                         n_frames=24, fps=10, backend="pure",
-                         width=320, height=240)
+    res3 = animate_scene(
+        scene3,
+        os.path.join(out, "vortex_ring7.gif"),
+        n_frames=24,
+        fps=10,
+        backend="pure",
+        width=320,
+        height=240,
+    )
     made["gif_ring7"] = res3["bytes"]
     return made
 

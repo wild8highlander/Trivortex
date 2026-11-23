@@ -14,6 +14,7 @@ strings вместо shared — проще и валидно).
 
 Формулы пишутся как <f>…</f> и вычисляются при открытии в Excel/LibreOffice.
 """
+
 from __future__ import annotations
 
 import datetime as _dt
@@ -43,34 +44,33 @@ class Worksheet:
     """Один лист: сетка ячеек + параметры."""
 
     def __init__(self, name: str, freeze_header: bool = True):
-        self.name = name[:31]          # лимит Excel
+        self.name = name[:31]  # лимит Excel
         self.freeze_header = freeze_header
         self.rows: list[list[dict[str, Any]]] = []
         self.col_widths: dict[int, float] = {}
 
-    def _cell(self, value: Any, style: str = "normal",
-              fmt: str | None = None) -> dict[str, Any]:
+    def _cell(self, value: Any, style: str = "normal", fmt: str | None = None) -> dict[str, Any]:
         cell: dict[str, Any] = {"value": value, "style": style, "fmt": fmt}
         return cell
 
-    def header(self, values: Sequence[str]) -> "Worksheet":
+    def header(self, values: Sequence[str]) -> Worksheet:
         row = [self._cell(v, style="header") for v in values]
         self.rows.append(row)
         return self
 
-    def row(self, values: Sequence[Any], style: str = "normal",
-            fmt: str | None = None) -> "Worksheet":
+    def row(
+        self, values: Sequence[Any], style: str = "normal", fmt: str | None = None
+    ) -> Worksheet:
         row = [self._cell(v, style=style, fmt=fmt) for v in values]
         self.rows.append(row)
         return self
 
-    def formula_row(self, formulas: Sequence[str],
-                    style: str = "normal") -> "Worksheet":
+    def formula_row(self, formulas: Sequence[str], style: str = "normal") -> Worksheet:
         row = [self._cell(("=", f), style=style) for f in formulas]
         self.rows.append(row)
         return self
 
-    def autosize(self, samples: int = 200) -> "Worksheet":
+    def autosize(self, samples: int = 200) -> Worksheet:
         """Оценить ширины столбцов по содержимому."""
         ncols = max((len(r) for r in self.rows), default=0)
         for c in range(ncols):
@@ -88,14 +88,17 @@ class Worksheet:
 
     # ── сериализация листа ──
     def to_xml(self) -> str:
-        parts = ['<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
-                 f'<worksheet xmlns="{_NS_MAIN}">']
+        parts = [
+            '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
+            f'<worksheet xmlns="{_NS_MAIN}">',
+        ]
         # ширины
         if self.col_widths:
             parts.append("<cols>")
             for c, w in sorted(self.col_widths.items()):
-                parts.append(f'<col min="{c + 1}" max="{c + 1}" '
-                             f'width="{w:.1f}" customWidth="1"/>')
+                parts.append(
+                    f'<col min="{c + 1}" max="{c + 1}" ' f'width="{w:.1f}" customWidth="1"/>'
+                )
             parts.append("</cols>")
         parts.append("<sheetData>")
         for r_idx, row in enumerate(self.rows, start=1):
@@ -110,30 +113,30 @@ class Worksheet:
                     style_idx = 2
                 if isinstance(v, tuple) and v and v[0] == "=":
                     # формула
-                    parts.append(
-                        f'<c r="{ref}" s="{style_idx}">'
-                        f'<f>{escape(str(v[1]))}</f></c>')
+                    parts.append(f'<c r="{ref}" s="{style_idx}">' f"<f>{escape(str(v[1]))}</f></c>")
                 elif isinstance(v, bool):
-                    parts.append(f'<c r="{ref}" s="{style_idx}" t="b">'
-                                 f'<v>{1 if v else 0}</v></c>')
+                    parts.append(
+                        f'<c r="{ref}" s="{style_idx}" t="b">' f"<v>{1 if v else 0}</v></c>"
+                    )
                 elif isinstance(v, (int, float)):
-                    if v != v:      # NaN
-                        parts.append(f'<c r="{ref}" s="{style_idx}" t="e">'
-                                     f'<v>#NUM!</v></c>')
+                    if v != v:  # NaN
+                        parts.append(f'<c r="{ref}" s="{style_idx}" t="e">' f"<v>#NUM!</v></c>")
                     else:
-                        parts.append(f'<c r="{ref}" s="{style_idx}">'
-                                     f'<v>{v!r}</v></c>')
+                        parts.append(f'<c r="{ref}" s="{style_idx}">' f"<v>{v!r}</v></c>")
                 elif v is None:
                     parts.append(f'<c r="{ref}" s="{style_idx}"/>')
                 else:
-                    parts.append(f'<c r="{ref}" s="{style_idx}" t="inlineStr">'
-                                 f'<is><t xml:space="preserve">'
-                                 f'{escape(str(v))}</t></is></c>')
+                    parts.append(
+                        f'<c r="{ref}" s="{style_idx}" t="inlineStr">'
+                        f'<is><t xml:space="preserve">'
+                        f"{escape(str(v))}</t></is></c>"
+                    )
             parts.append("</row>")
         parts.append("</sheetData>")
         if self.freeze_header and self.rows:
-            parts.append('<pane ySplit="1" topLeftCell="A2" '
-                         'activePane="bottomLeft" state="frozen"/>')
+            parts.append(
+                '<pane ySplit="1" topLeftCell="A2" ' 'activePane="bottomLeft" state="frozen"/>'
+            )
         parts.append("</worksheet>")
         return "".join(parts)
 
@@ -156,55 +159,64 @@ class XlsxBuilder:
             f'<Override PartName="/xl/worksheets/sheet{i + 1}.xml" '
             f'ContentType="application/vnd.openxmlformats-officedocument.'
             f'spreadsheetml.worksheet+xml"/>'
-            for i in range(len(self.sheets)))
-        return ('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
-                '<Types xmlns="http://schemas.openxmlformats.org/package/'
-                '2006/content-types">'
-                '<Default Extension="rels" ContentType="application/'
-                'vnd.openxmlformats-package.relationships+xml"/>'
-                '<Default Extension="xml" ContentType="application/xml"/>'
-                '<Override PartName="/xl/workbook.xml" ContentType='
-                '"application/vnd.openxmlformats-officedocument.'
-                'spreadsheetml.sheet.main+xml"/>'
-                '<Override PartName="/xl/styles.xml" ContentType='
-                '"application/vnd.openxmlformats-officedocument.'
-                'spreadsheetml.styles+xml"/>'
-                + overrides + '</Types>')
+            for i in range(len(self.sheets))
+        )
+        return (
+            '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            '<Types xmlns="http://schemas.openxmlformats.org/package/'
+            '2006/content-types">'
+            '<Default Extension="rels" ContentType="application/'
+            'vnd.openxmlformats-package.relationships+xml"/>'
+            '<Default Extension="xml" ContentType="application/xml"/>'
+            '<Override PartName="/xl/workbook.xml" ContentType='
+            '"application/vnd.openxmlformats-officedocument.'
+            'spreadsheetml.sheet.main+xml"/>'
+            '<Override PartName="/xl/styles.xml" ContentType='
+            '"application/vnd.openxmlformats-officedocument.'
+            'spreadsheetml.styles+xml"/>' + overrides + "</Types>"
+        )
 
     def _root_rels(self) -> str:
-        return ('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
-                '<Relationships xmlns="http://schemas.openxmlformats.org/'
-                'package/2006/relationships">'
-                '<Relationship Id="rId1" Type="http://schemas.openxmlformats.'
-                'org/officeDocument/2006/relationships/officeDocument" '
-                'Target="xl/workbook.xml"/></Relationships>')
+        return (
+            '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            '<Relationships xmlns="http://schemas.openxmlformats.org/'
+            'package/2006/relationships">'
+            '<Relationship Id="rId1" Type="http://schemas.openxmlformats.'
+            'org/officeDocument/2006/relationships/officeDocument" '
+            'Target="xl/workbook.xml"/></Relationships>'
+        )
 
     def _workbook(self) -> str:
         sheets = "".join(
-            f'<sheet name="{escape(s.name)}" sheetId="{i + 1}" '
-            f'r:id="rId{i + 1}"/>'
-            for i, s in enumerate(self.sheets))
-        return (f'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
-                f'<workbook xmlns="{_NS_MAIN}" '
-                f'xmlns:r="{_NS_REL}"><sheets>{sheets}</sheets></workbook>')
+            f'<sheet name="{escape(s.name)}" sheetId="{i + 1}" ' f'r:id="rId{i + 1}"/>'
+            for i, s in enumerate(self.sheets)
+        )
+        return (
+            f'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            f'<workbook xmlns="{_NS_MAIN}" '
+            f'xmlns:r="{_NS_REL}"><sheets>{sheets}</sheets></workbook>'
+        )
 
     def _workbook_rels(self) -> str:
         rels = "".join(
             f'<Relationship Id="rId{i + 1}" Type="http://schemas.'
-            f'openxmlformats.org/officeDocument/2006/relationships/'
+            f"openxmlformats.org/officeDocument/2006/relationships/"
             f'worksheet" Target="worksheets/sheet{i + 1}.xml"/>'
-            for i in range(len(self.sheets)))
-        return ('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
-                '<Relationships xmlns="http://schemas.openxmlformats.org/'
-                'package/2006/relationships">'
-                f'<Relationship Id="rIdStyle" Type="http://schemas.'
-                f'openxmlformats.org/officeDocument/2006/relationships/'
-                f'styles" Target="styles.xml"/>' + rels + '</Relationships>')
+            for i in range(len(self.sheets))
+        )
+        return (
+            '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            '<Relationships xmlns="http://schemas.openxmlformats.org/'
+            'package/2006/relationships">'
+            f'<Relationship Id="rIdStyle" Type="http://schemas.'
+            f"openxmlformats.org/officeDocument/2006/relationships/"
+            f'styles" Target="styles.xml"/>' + rels + "</Relationships>"
+        )
 
     def _styles(self) -> str:
         """Минимальная таблица стилей: 0 normal, 1 header (жирный+заливка),
         2 bold."""
-        return f'''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        return f"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <styleSheet xmlns="{_NS_MAIN}">
 <fonts count="3">
 <font><sz val="11"/><name val="Calibri"/></font>
@@ -230,7 +242,7 @@ class XlsxBuilder:
 <xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"/>
 <xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"/>
 </cellXfs>
-</styleSheet>'''
+</styleSheet>"""
 
     # ── сохранение ──
     def save(self, path: str) -> int:
@@ -251,14 +263,14 @@ class XlsxBuilder:
 def validate_xlsx(path: str) -> list[str]:
     """Структурная валидация (zip + обязательные части + parse XML)."""
     import xml.dom.minidom as minidom
+
     problems = []
     try:
         with zipfile.ZipFile(path) as zf:
             if zf.testzip() is not None:
                 problems.append("битые CRC")
             names = set(zf.namelist())
-            for req in ("[Content_Types].xml", "_rels/.rels",
-                        "xl/workbook.xml"):
+            for req in ("[Content_Types].xml", "_rels/.rels", "xl/workbook.xml"):
                 if req not in names:
                     problems.append(f"нет {req}")
             # все листы парсятся
@@ -300,12 +312,17 @@ def self_check() -> dict:
     n_sheets = 0
     try:
         import openpyxl
+
         wb = openpyxl.load_workbook(path)
         n_sheets = len(wb.sheetnames)
         v = wb["Сводка"]["B2"].value
-        read_ok = (v == 7 and n_sheets == 2)
+        read_ok = v == 7 and n_sheets == 2
     except ImportError:
         pass
-    return dict(size_bytes=size, problems=problems,
-                openpyxl_read_ok=read_ok, n_sheets=n_sheets,
-                ok=not problems and (read_ok in (None, True)))
+    return dict(
+        size_bytes=size,
+        problems=problems,
+        openpyxl_read_ok=read_ok,
+        n_sheets=n_sheets,
+        ok=not problems and (read_ok in (None, True)),
+    )

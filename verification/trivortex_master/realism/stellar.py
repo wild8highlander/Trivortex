@@ -17,6 +17,7 @@ TRIVORTEX MASTER — звёздная физика: ГП-соотношения,
 Самопроверки: Солнце (L=R=T=1 по построению), время жизни 1 M☉=10 Gyr,
 красный карлик 0.2 M☉ живёт >трлн лет (Whyte 2002? — оценка).
 """
+
 from __future__ import annotations
 
 import math
@@ -32,6 +33,7 @@ G_SI = 6.67430e-11
 @dataclass
 class MainSequenceStar:
     """Звезда главной последовательности (параметризация по массе)."""
+
     mass_solar: float
 
     # ── масс-светимость (кусочная, классика) ──
@@ -39,11 +41,11 @@ class MainSequenceStar:
         """L/L☉: α=1.5 (M<0.43), 4 (0.43–2), 3.25 (2–20), 1 (M>55)."""
         m = self.mass_solar
         if m < 0.43:
-            return 0.23 * m ** 2.3
+            return 0.23 * m**2.3
         if m < 2.0:
-            return m ** 4.0
+            return m**4.0
         if m < 55.0:
-            return 1.4 * m ** 3.5
+            return 1.4 * m**3.5
         return 32000.0 * m
 
     # ── масс-радиус ──
@@ -51,8 +53,8 @@ class MainSequenceStar:
         """R/R☉: ~M^0.8 (M<1), ~M^0.57 (M>1)."""
         m = self.mass_solar
         if m < 1.0:
-            return m ** 0.8
-        return m ** 0.57
+            return m**0.8
+        return m**0.57
 
     # ── температура по Стефану-Больцману ──
     def teff(self) -> float:
@@ -64,7 +66,7 @@ class MainSequenceStar:
         """τ_MS ≈ 10·M/L Gyr (топливо/светимость), насыщение для малых M."""
         m = self.mass_solar
         if m < 0.08:
-            return 1e4              # коричневый карлик — практически вечен
+            return 1e4  # коричневый карлик — практически вечен
         # для M<0.43 α=2.3 → τ ~ M^{-0.3}? нет: τ = M/L = M^{-1.3};
         # физически малые звёзды живут ДОЛЬШЕ (до ~10¹³ лет при 0.1 M☉)
         l = self.luminosity()
@@ -108,14 +110,14 @@ def habets81(mass_solar: float) -> dict:
     R/R☉ = ..., T_eff — вторичная калибровка.
     """
     import math as _m
+
     x = _m.log10(mass_solar)
-    log_l = 0.042 + 0.703 * x - 0.334 * x ** 2 + 0.050 * x ** 3
-    L = 10 ** log_l
+    log_l = 0.042 + 0.703 * x - 0.334 * x**2 + 0.050 * x**3
+    L = 10**log_l
     # радиус из соотношения (их таб. 6 в среднем R ~ M^0.9 для M>0.5)
-    R = mass_solar ** 0.9 if mass_solar > 0.5 else mass_solar ** 0.8
-    T = T_SUN * (L / R ** 2) ** 0.25
-    return dict(L_solar=L, R_solar=R, teff=T,
-                source="Habets & Heintze 1981, A&AS 46, 193")
+    R = mass_solar**0.9 if mass_solar > 0.5 else mass_solar**0.8
+    T = T_SUN * (L / R**2) ** 0.25
+    return dict(L_solar=L, R_solar=R, teff=T, source="Habets & Heintze 1981, A&AS 46, 193")
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -130,8 +132,7 @@ def roche_lobe_eggleton(q: float) -> float:
     return 0.49 * q23 / (0.6 * q23 + math.log(1.0 + q ** (1.0 / 3.0)))
 
 
-def mass_transfer_stability(q_donor: float, donor_convective: bool = True
-                            ) -> dict:
+def mass_transfer_stability(q_donor: float, donor_convective: bool = True) -> dict:
     """Устойчивость переноса массы по ζ-критерию (Hurley et al. 2002).
 
     Для конвективного донора: устойчиво при q < q_crit ≈ 2/3·(для
@@ -146,8 +147,13 @@ def mass_transfer_stability(q_donor: float, donor_convective: bool = True
         q_crit = 3.0
         stable = q_donor < q_crit
         regime = "радиативный донор: терм. неуст. при q>q_crit"
-    return dict(q=q_donor, q_crit=q_crit, stable=stable, regime=regime,
-                note="Hurley, Tout & Pols 2002, MNRAS 329, 897")
+    return dict(
+        q=q_donor,
+        q_crit=q_crit,
+        stable=stable,
+        regime=regime,
+        note="Hurley, Tout & Pols 2002, MNRAS 329, 897",
+    )
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -166,26 +172,23 @@ def isochrone_age_gyr(L_solar: float, teff: float) -> dict:
     l_zams = zams.luminosity()
     tau_ms = zams.main_sequence_lifetime_gyr()
     if L_solar <= l_zams:
-        return dict(age_gyr=0.0, method="L ≤ L_ZAMS: молодая (ZAMS)",
-                    L_zams=l_zams, tau_ms=tau_ms)
+        return dict(age_gyr=0.0, method="L ≤ L_ZAMS: молодая (ZAMS)", L_zams=l_zams, tau_ms=tau_ms)
     frac = min((L_solar / max(l_zams, 1e-8) - 1.0), 1.0)
     age = frac * tau_ms * 0.7
-    return dict(age_gyr=age, L_zams=l_zams, tau_ms=tau_ms,
-                method="ZAMS-смещение (грубая оценка)")
+    return dict(age_gyr=age, L_zams=l_zams, tau_ms=tau_ms, method="ZAMS-смещение (грубая оценка)")
 
 
 # ═══════════════════════════════════════════════════════════════════════════
 # Звёздный ветер и магнитное торможение
 # ═══════════════════════════════════════════════════════════════════════════
-def skumanich_spin_down(age_gyr: float, saturation_gyr: float = 0.1
-                        ) -> float:
+def skumanich_spin_down(age_gyr: float, saturation_gyr: float = 0.1) -> float:
     """Скорость вращения v ∝ t^{1/2} (Skumanich 1972).
 
     До насыщения (~100 млн лет) — быстрое вращение; после — торможение
     как t^{0.5}. Возвращает экваториальную скорость в км/с.
     """
     if age_gyr < saturation_gyr:
-        return 15.0        # насыщение: быстрые ротаторы
+        return 15.0  # насыщение: быстрые ротаторы
     return 15.0 * math.sqrt(age_gyr / saturation_gyr) ** 0.5 * 0.4
 
 
@@ -195,8 +198,7 @@ def gyrochrone_age(v_eq_kms: float) -> dict:
     Barnes 2007, ApJ 669, 1167: t ∝ (P/…)n; здесь по Skumanich.
     """
     if v_eq_kms <= 0.5:
-        return dict(age_gyr=float("inf"),
-                    note="очень медленное вращение — старая звезда")
+        return dict(age_gyr=float("inf"), note="очень медленное вращение — старая звезда")
     # v = 6·(t/0.1)^{0.25}? — из нашей модели: t = 0.1·(v/6)^4
     t = 0.1 * (v_eq_kms / 6.0) ** 4.0
     return dict(age_gyr=t, method="Skumanich-инверсия (грубая)")
@@ -208,10 +210,12 @@ def gyrochrone_age(v_eq_kms: float) -> dict:
 def self_check() -> dict:
     """Солнце: L=R=T=1; жизнь 10 Gyr; красный карлик — триллионы лет."""
     sun = MainSequenceStar(1.0)
-    sun_ok = (abs(sun.luminosity() - 1.0) < 1e-9
-              and abs(sun.radius() - 1.0) < 1e-9
-              and abs(sun.teff() - T_SUN) < 1e-6
-              and abs(sun.main_sequence_lifetime_gyr() - 10.0) < 1e-9)
+    sun_ok = (
+        abs(sun.luminosity() - 1.0) < 1e-9
+        and abs(sun.radius() - 1.0) < 1e-9
+        and abs(sun.teff() - T_SUN) < 1e-6
+        and abs(sun.main_sequence_lifetime_gyr() - 10.0) < 1e-9
+    )
     # O-звезда 30 M☉: живёт ~несколько млн лет
     ostar = MainSequenceStar(30.0)
     o_life = ostar.main_sequence_lifetime_gyr()
@@ -225,8 +229,11 @@ def self_check() -> dict:
     rl_ok = abs(rl - 0.379) < 0.002
     return dict(
         sun_ok=sun_ok,
-        ostar_life_gyr=o_life, ostar_ok=o_ok,
-        red_dwarf_life_gyr=rd_life, red_dwarf_ok=rd_ok,
-        roche_lobe_q1=rl, roche_ok=rl_ok,
+        ostar_life_gyr=o_life,
+        ostar_ok=o_ok,
+        red_dwarf_life_gyr=rd_life,
+        red_dwarf_ok=rd_ok,
+        roche_lobe_q1=rl,
+        roche_ok=rl_ok,
         all_ok=sun_ok and o_ok and rd_ok and rl_ok,
     )

@@ -55,6 +55,8 @@ ignore = [
     "F401",   # re-exported mirrors
     "F841",   # loop bookkeeping variables
     "N802", "N803", "N806",           # physics symbols in names/arguments/variables
+    "N818",                            # documented exception names (UnphysicalConfiguration,
+                                       # EngineUnavailable) are the package's public API
     "N807",                            # dunder-style method names in model classes
     "UP009",                           # UTF-8 coding declarations kept deliberately
     "F541",                            # banner f-strings without placeholders

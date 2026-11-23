@@ -17,6 +17,7 @@ TRIVORTEX MASTER — генератор релизных заметок (CHANGEL
 Самопроверка: заметки содержат фактические ключевые числа и
 генерируются без исключений.
 """
+
 from __future__ import annotations
 
 import datetime as _dt
@@ -42,8 +43,7 @@ def collect_release_facts() -> dict:
         dirs[:] = [d for d in dirs if d != "__pycache__"]
         for fn in files:
             if fn.endswith(".py"):
-                py_lines += sum(1 for _ in open(os.path.join(base, fn),
-                                                encoding="utf-8"))
+                py_lines += sum(1 for _ in open(os.path.join(base, fn), encoding="utf-8"))
     api["lines"] = py_lines
     catalog = load_catalog()
     n_objects = catalog.get("count", len(catalog.get("objects", [])))
@@ -53,6 +53,7 @@ def collect_release_facts() -> dict:
     try:
         import trivortex_master  # noqa: F401
         import modes_extra  # noqa: F401
+
         n_modes = len(trivortex_master.REGISTRY.all_modes())
         categories = trivortex_master.REGISTRY.categories()
     except Exception:
@@ -69,33 +70,39 @@ def collect_release_facts() -> dict:
 
     return dict(
         generated=_dt.datetime.now().isoformat(timespec="seconds"),
-        api=dict(modules=api["modules"], classes=api["classes"],
-                 functions=api["functions"],
-                 docstring_coverage=round(api["docstring_coverage"], 3),
-                 lines=api["lines"]),
+        api=dict(
+            modules=api["modules"],
+            classes=api["classes"],
+            functions=api["functions"],
+            docstring_coverage=round(api["docstring_coverage"], 3),
+            lines=api["lines"],
+        ),
         catalog=dict(objects=n_objects, by_type=type_counts),
         presets=n_presets,
         menu=dict(modes=n_modes, categories=categories),
-        selftest=dict(passed=st["passed"], total=st["total"],
-                      all_pass=st["all_pass"]),
+        selftest=dict(passed=st["passed"], total=st["total"], all_pass=st["all_pass"]),
     )
 
 
 def render_markdown(facts: dict, version: str = "2.0.0") -> str:
     """Markdown-секция CHANGELOG."""
-    L = [f"## v{version} — удвоенный объём ({facts['generated']})", ""]
-    L.append(f"- **{facts['api']['modules']} модулей**, "
-             f"{facts['api']['classes']} классов, "
-             f"{facts['api']['functions']} функций; "
-             f"~{facts['api']['lines']} строк; покрытие docstrings "
-             f"{facts['api']['docstring_coverage']:.0%}")
-    L.append(f"- каталог: **{facts['catalog']['objects']} объектов** "
-             f"(" + ", ".join(f"{t}: {n}" for t, n
-                              in sorted(facts['catalog']['by_type'].items()))
-             + ")")
-    L.append(f"- пресетов сцен: **{facts['presets']}**; режимов меню: "
-             f"**{facts['menu']['modes']}** в "
-             f"{len(facts['menu']['categories'])} категориях")
+    L = [f"# v{version} — удвоенный объём ({facts['generated']})", ""]
+    L.append(
+        f"- **{facts['api']['modules']} модулей**, "
+        f"{facts['api']['classes']} классов, "
+        f"{facts['api']['functions']} функций; "
+        f"~{facts['api']['lines']} строк; покрытие docstrings "
+        f"{facts['api']['docstring_coverage']:.0%}"
+    )
+    L.append(
+        f"- каталог: **{facts['catalog']['objects']} объектов** "
+        f"(" + ", ".join(f"{t}: {n}" for t, n in sorted(facts["catalog"]["by_type"].items())) + ")"
+    )
+    L.append(
+        f"- пресетов сцен: **{facts['presets']}**; режимов меню: "
+        f"**{facts['menu']['modes']}** в "
+        f"{len(facts['menu']['categories'])} категориях"
+    )
     st = facts["selftest"]
     mark = "✓" if st["all_pass"] else "✗"
     L.append(f"- selftest S1–S24: {mark} {st['passed']}/{st['total']}")
@@ -103,28 +110,17 @@ def render_markdown(facts: dict, version: str = "2.0.0") -> str:
     return "\n".join(L)
 
 
-def write_release_notes(path: str | None = None,
-                        version: str = "2.0.0") -> str:
-    """Записать CHANGELOG-секцию (по умолчанию docs/RELEASE_v2.0.md)."""
-    facts = collect_release_facts()
-    path = path or os.path.join(ROOT, "docs",
-                                f"RELEASE_v{version}.md")
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w", encoding="utf-8") as fh:
-        fh.write(render_markdown(facts, version))
-    with open(path + ".json", "w", encoding="utf-8") as fh:
-        json.dump(facts, fh, ensure_ascii=False, indent=1, default=str)
-    return path
-
-
-
-
 # ═══════════════════════════════════════════════════════════════════════════
 # Сравнение с v1.0.0 (факты удвоения объёма)
 # ═══════════════════════════════════════════════════════════════════════════
 V1_FACTS = dict(
-    modules=44, classes=60, functions=250, lines=11776,
-    catalog=258, presets=10, modes=21,
+    modules=44,
+    classes=60,
+    functions=250,
+    lines=11776,
+    catalog=258,
+    presets=10,
+    modes=21,
 )
 
 
@@ -133,36 +129,46 @@ def _v1_ast_facts() -> dict:
 
     Если git-история недоступна — берём оценки V1_FACTS и помечаем."""
     import subprocess
+
     try:
         out = subprocess.run(
             ["git", "show", "HEAD:trivortex_master/../download/manifest_v1.0.0.json"],
-            capture_output=True, text=True, timeout=10)
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
     except Exception:
         return dict(exact=False)
-    return dict(exact=False)   # манифест не хранит AST-статистику
+    return dict(exact=False)  # манифест не хранит AST-статистику
 
 
 # Классы/функции v1: из списка файлов манифеста через git show
 def _v1_code_facts() -> dict:
     """AST-подсчёт классов/функций по каждому .py v1 из git."""
     import subprocess
+
     try:
         manifest = subprocess.run(
             ["git", "show", "a02c266b:download/manifest_v1.0.0.json"],
-            capture_output=True, text=True, timeout=15)
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
         if manifest.returncode != 0:
-            return dict(classes=V1_FACTS["classes"],
-                        functions=V1_FACTS["functions"], exact=False)
+            return dict(classes=V1_FACTS["classes"], functions=V1_FACTS["functions"], exact=False)
         files = json.loads(manifest.stdout).get("files", [])
         classes = functions = 0
         import ast as _ast
+
         for entry in files:
             if not entry["path"].endswith(".py"):
                 continue
             blob = subprocess.run(
-                ["git", "show",
-                 f"a02c266b:download/../{entry['path']}"],
-                capture_output=True, text=True, timeout=10)
+                ["git", "show", f"a02c266b:download/../{entry['path']}"],
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
             if blob.returncode != 0:
                 continue
             try:
@@ -175,12 +181,10 @@ def _v1_code_facts() -> dict:
                 elif isinstance(node, _ast.FunctionDef):
                     functions += 1
         if classes == 0:
-            return dict(classes=V1_FACTS["classes"],
-                        functions=V1_FACTS["functions"], exact=False)
+            return dict(classes=V1_FACTS["classes"], functions=V1_FACTS["functions"], exact=False)
         return dict(classes=classes, functions=functions, exact=True)
     except Exception:
-        return dict(classes=V1_FACTS["classes"],
-                    functions=V1_FACTS["functions"], exact=False)
+        return dict(classes=V1_FACTS["classes"], functions=V1_FACTS["functions"], exact=False)
 
 
 def doubling_report(facts: dict | None = None) -> dict:
@@ -202,45 +206,46 @@ def doubling_report(facts: dict | None = None) -> dict:
     ]
     for name, now, was in pairs:
         ratio = now / max(was, 1)
-        rows.append(dict(metric=name, v1=was, v2=now,
-                         ratio=round(ratio, 2),
-                         doubled=(ratio >= 1.99)))
+        rows.append(
+            dict(metric=name, v1=was, v2=now, ratio=round(ratio, 2), doubled=(ratio >= 1.99))
+        )
     all_doubled = all(r["doubled"] for r in rows)
-    return dict(rows=rows, all_doubled=all_doubled,
-                note="цель — удвоение каждой метрики v1.0.0")
+    return dict(rows=rows, all_doubled=all_doubled, note="цель — удвоение каждой метрики v1.0.0")
 
 
 def render_doubling_markdown(doubling: dict) -> str:
     """Таблица удвоения для CHANGELOG."""
-    L = ["### Удвоение против v1.0.0", "",
-         "| Метрика | v1.0.0 | v2.0.0 | × |", "|---|---|---|---|"]
+    L = [
+        "",
+        "## Удвоение против v1.0.0",
+        "",
+        "| Метрика | v1.0.0 | v2.0.0 | × |",
+        "|---|---|---|---|",
+    ]
     for r in doubling["rows"]:
         mark = " ✓" if r["doubled"] else ""
-        L.append(f"| {r['metric']} | {r['v1']} | {r['v2']} | "
-                 f"×{r['ratio']:.2f}{mark} |")
+        L.append(f"| {r['metric']} | {r['v1']} | {r['v2']} | " f"×{r['ratio']:.2f}{mark} |")
     L.append("")
     if doubling["all_doubled"]:
         L.append("_Все метрики удвоены или превышены._")
     else:
-        L.append("_Не все метрики удвоены — см. таблицу._")
+        L.append("*Не все метрики удвоены — см. таблицу.*")
     return "\n".join(L) + "\n"
 
 
-def write_release_notes(path: str | None = None,
-                        version: str = "2.0.0",
-                        include_doubling: bool = True) -> str:
+def write_release_notes(
+    path: str | None = None, version: str = "2.0.0", include_doubling: bool = True
+) -> str:
     """Записать CHANGELOG-секцию (по умолчанию docs/RELEASE_v2.0.md)."""
     facts = collect_release_facts()
-    path = path or os.path.join(ROOT, "docs",
-                                f"RELEASE_v{version}.md")
+    path = path or os.path.join(ROOT, "docs", f"RELEASE_v{version}.md")
     os.makedirs(os.path.dirname(path), exist_ok=True)
     text = render_markdown(facts, version)
     if include_doubling:
         doubling = doubling_report(facts)
         text += render_doubling_markdown(doubling)
         with open(path + ".doubling.json", "w", encoding="utf-8") as fh:
-            json.dump(doubling, fh, ensure_ascii=False, indent=1,
-                      default=str)
+            json.dump(doubling, fh, ensure_ascii=False, indent=1, default=str)
     with open(path, "w", encoding="utf-8") as fh:
         fh.write(text)
     with open(path + ".json", "w", encoding="utf-8") as fh:
@@ -259,9 +264,12 @@ def self_check() -> dict:
     dbl = doubling_report(facts)
     has_doubling = "Удвоение против v1.0.0" in text
     return dict(
-        path=path, size_bytes=os.path.getsize(path),
-        has_modules=has_modules, has_objects=has_objects,
-        has_selftest=has_selftest, has_doubling=has_doubling,
+        path=path,
+        size_bytes=os.path.getsize(path),
+        has_modules=has_modules,
+        has_objects=has_objects,
+        has_selftest=has_selftest,
+        has_doubling=has_doubling,
         doubling_all=dbl["all_doubled"],
         doubling_rows=dbl["rows"],
         ok=has_modules and has_objects and has_selftest and has_doubling,

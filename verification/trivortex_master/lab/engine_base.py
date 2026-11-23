@@ -7,6 +7,7 @@ TRIVORTEX MASTER — базовые интерфейсы физических д
 адаптеры (realism/adapters/*) наследуют EngineUnavailable/BodyState/
 PhysicsEngine отсюда и НЕ импортируют lab.physics.
 """
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -30,8 +31,7 @@ class BodyState:
 
     __slots__ = ("id", "position", "velocity", "extra")
 
-    def __init__(self, id: str, position: Vector3, velocity: Vector3,
-                 extra: dict | None = None):
+    def __init__(self, id: str, position: Vector3, velocity: Vector3, extra: dict | None = None):
         self.id = id
         self.position = position
         self.velocity = velocity
@@ -44,6 +44,7 @@ class PhysicsEngine(ABC):
     def __init__(self, scene):
         self.scene = scene
         from core.config import MasterConfig  # лениво, чтобы не тянуть цикл
+
         self.cfg: MasterConfig = scene.config
 
     @abstractmethod

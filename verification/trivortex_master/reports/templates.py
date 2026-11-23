@@ -7,6 +7,7 @@ TRIVORTEX MASTER — шаблоны отчётов: string.Template.
 голубые акценты, печать), MINIMAL (ч/б, архивация). PNG-графики встраиваются
 в base64 — HTML самодостаточен для отправки.
 """
+
 from __future__ import annotations
 
 import base64
@@ -176,21 +177,18 @@ IMG = Template("""<img class="chart" src="data:image/png;base64,$b64" alt="$alt"
 # ═══════════════════════════════════════════════════════════════════════════
 # Сборщики
 # ═══════════════════════════════════════════════════════════════════════════
-def html_table(headers: list[str], rows: list[list],
-               classes: list[str] | None = None) -> str:
+def html_table(headers: list[str], rows: list[list], classes: list[str] | None = None) -> str:
     heads = "".join(f"<th>{h}</th>" for h in headers)
     body_rows = []
     for i, row in enumerate(rows):
         cls = f' class="{classes[i]}"' if classes and i < len(classes) and classes[i] else ""
-        body_rows.append(
-            f"<tr{cls}>" + "".join(f"<td>{c}</td>" for c in row) + "</tr>")
+        body_rows.append(f"<tr{cls}>" + "".join(f"<td>{c}</td>" for c in row) + "</tr>")
     return TABLE.substitute(heads=heads, rows="\n".join(body_rows))
 
 
 def html_cards(items: list[tuple[str, str, str]]) -> str:
     """items: [(ключ, значение, css-класс good/warn/bad/info)]."""
-    cards = "\n".join(CARD.substitute(key=k, value=v, cls=c or "info")
-                      for k, v, c in items)
+    cards = "\n".join(CARD.substitute(key=k, value=v, cls=c or "info") for k, v, c in items)
     return CARDS.substitute(cards=cards)
 
 
@@ -202,15 +200,25 @@ def html_image(png_path: str, alt: str = "график") -> str:
     return IMG.substitute(b64=_b64(png_path), alt=alt)
 
 
-def html_page(title: str, subtitle: str, body: str,
-              theme: str = "aurora", version: str = "1.0.0",
-              banner: str = "") -> str:
+def html_page(
+    title: str,
+    subtitle: str,
+    body: str,
+    theme: str = "aurora",
+    version: str = "1.0.0",
+    banner: str = "",
+) -> str:
     css = _CSS.get(theme, _CSS["aurora"])
     return PAGE.substitute(
-        title=title, subtitle=subtitle, css=css, body=body,
-        theme=theme, version=version,
+        title=title,
+        subtitle=subtitle,
+        css=css,
+        body=body,
+        theme=theme,
+        version=version,
         generated=_dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        banner=banner)
+        banner=banner,
+    )
 
 
 def html_plate(title: str, text: str) -> str:

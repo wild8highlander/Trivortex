@@ -9,6 +9,7 @@ TRIVORTEX MASTER — Body: тело лаборатории.
   * источник (URL или DOI) — дисциплина «каждое число привязано к источнику»;
   * полную сериализацию to_dict/from_dict/from_catalog.
 """
+
 from __future__ import annotations
 
 import math
@@ -19,18 +20,19 @@ from typing import Any
 @dataclass
 class Body:
     """Одно тело сцены."""
+
     id: str
     name: str
-    mass: float                     # кг
-    radius: float                   # км
-    position: tuple[float, float, float] = (0.0, 0.0, 0.0)   # м (или единицы модели)
-    velocity: tuple[float, float, float] = (0.0, 0.0, 0.0)   # м/с
-    w: float = 0.0                  # 4-я координата гиперсцен
-    charge: float = 0.0             # электрический заряд (Кл), для custom-сил
-    circulation: float = 0.0        # Γ для вихревого режима Кирхгофа
+    mass: float  # кг
+    radius: float  # км
+    position: tuple[float, float, float] = (0.0, 0.0, 0.0)  # м (или единицы модели)
+    velocity: tuple[float, float, float] = (0.0, 0.0, 0.0)  # м/с
+    w: float = 0.0  # 4-я координата гиперсцен
+    charge: float = 0.0  # электрический заряд (Кл), для custom-сил
+    circulation: float = 0.0  # Γ для вихревого режима Кирхгофа
     color: str = "#4fd1c5"
-    type: str = "generic"           # planet|moon|star|asteroid|comet|exoplanet|synthetic|generic
-    source: str = "synthetic"       # URL или DOI источника параметров
+    type: str = "generic"  # planet|moon|star|asteroid|comet|exoplanet|synthetic|generic
+    source: str = "synthetic"  # URL или DOI источника параметров
     metadata: dict[str, Any] = field(default_factory=dict)
 
     # ══════════════════ валидация ══════════════════
@@ -58,8 +60,9 @@ class Body:
     def kinetic_energy(self) -> float:
         return 0.5 * self.mass * self.speed() ** 2
 
-    def potential_energy(self, other: "Body", G: float = 6.67430e-11,
-                         softening: float = 0.0) -> float:
+    def potential_energy(
+        self, other: Body, G: float = 6.67430e-11, softening: float = 0.0
+    ) -> float:
         """Ньютоновская взаимная потенциальная энергия (отрицательная)."""
         d = self.distance_to(other)
         denom = math.sqrt(d * d + softening * softening)
@@ -67,9 +70,8 @@ class Body:
             return float("-inf")
         return -G * self.mass * other.mass / denom
 
-    def distance_to(self, other: "Body") -> float:
-        return math.sqrt(sum((a - b) ** 2
-                             for a, b in zip(self.position, other.position)))
+    def distance_to(self, other: Body) -> float:
+        return math.sqrt(sum((a - b) ** 2 for a, b in zip(self.position, other.position)))
 
     def momentum(self) -> tuple[float, float, float]:
         return tuple(m * v for m, v in zip((self.mass,) * 3, self.velocity))
@@ -94,18 +96,28 @@ class Body:
     # ══════════════════ сериализация ══════════════════
     def to_dict(self) -> dict[str, Any]:
         return dict(
-            id=self.id, name=self.name, mass=self.mass, radius=self.radius,
-            position=list(self.position), velocity=list(self.velocity),
-            w=self.w, charge=self.charge, circulation=self.circulation,
-            color=self.color, type=self.type, source=self.source,
+            id=self.id,
+            name=self.name,
+            mass=self.mass,
+            radius=self.radius,
+            position=list(self.position),
+            velocity=list(self.velocity),
+            w=self.w,
+            charge=self.charge,
+            circulation=self.circulation,
+            color=self.color,
+            type=self.type,
+            source=self.source,
             metadata=self.metadata,
         )
 
     @classmethod
-    def from_dict(cls, d: dict[str, Any]) -> "Body":
+    def from_dict(cls, d: dict[str, Any]) -> Body:
         return cls(
-            id=d["id"], name=d.get("name", d["id"]),
-            mass=float(d["mass"]), radius=float(d["radius"]),
+            id=d["id"],
+            name=d.get("name", d["id"]),
+            mass=float(d["mass"]),
+            radius=float(d["radius"]),
             position=tuple(float(x) for x in d.get("position", (0, 0, 0))),
             velocity=tuple(float(x) for x in d.get("velocity", (0, 0, 0))),
             w=float(d.get("w", 0.0)),
@@ -118,7 +130,7 @@ class Body:
         )
 
     @classmethod
-    def from_catalog(cls, obj_id: str, catalog: dict[str, Any]) -> "Body":
+    def from_catalog(cls, obj_id: str, catalog: dict[str, Any]) -> Body:
         """Создать тело из записи data/catalog.json."""
         objects = catalog.get("objects", catalog if isinstance(catalog, list) else [])
         rec = None
@@ -130,8 +142,10 @@ class Body:
             raise KeyError(f"объект {obj_id} не найден в каталоге")
         meta = dict(rec.get("metadata", {}))
         body = cls(
-            id=rec["id"], name=rec.get("name", rec["id"]),
-            mass=float(rec["mass_kg"]), radius=float(rec["radius_km"]) * 1000.0,
+            id=rec["id"],
+            name=rec.get("name", rec["id"]),
+            mass=float(rec["mass_kg"]),
+            radius=float(rec["radius_km"]) * 1000.0,
             color=rec.get("color", "#4fd1c5"),
             type=rec.get("type", "generic"),
             source=rec.get("source", "synthetic"),
@@ -147,8 +161,7 @@ class Body:
         return body
 
     def __repr__(self) -> str:  # pragma: no cover
-        return (f"Body({self.id!r}, m={self.mass:.3g}, "
-                f"r={self.position}, v={self.velocity})")
+        return f"Body({self.id!r}, m={self.mass:.3g}, " f"r={self.position}, v={self.velocity})"
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -157,15 +170,20 @@ class Body:
 AU_M = 1.495978707e11
 
 
-def circular_orbit_velocity(central_mass: float, r: float,
-                            G: float = 6.67430e-11) -> float:
+def circular_orbit_velocity(central_mass: float, r: float, G: float = 6.67430e-11) -> float:
     """Скорость круговой орбиты v = √(GM/r)."""
     return math.sqrt(G * central_mass / max(r, 1e-12))
 
 
-def place_on_orbit(central: Body, satellite: Body, orbit_radius: float,
-                   phase_deg: float = 0.0, inclination_deg: float = 0.0,
-                   G: float = 6.67430e-11, retrograde: bool = False) -> Body:
+def place_on_orbit(
+    central: Body,
+    satellite: Body,
+    orbit_radius: float,
+    phase_deg: float = 0.0,
+    inclination_deg: float = 0.0,
+    G: float = 6.67430e-11,
+    retrograde: bool = False,
+) -> Body:
     """Поставить satellite на круговую орбиту вокруг central (в плоскости xy,
     с опциональным наклонением), задав ему кеплерову скорость."""
     phase = math.radians(phase_deg)
@@ -179,10 +197,10 @@ def place_on_orbit(central: Body, satellite: Body, orbit_radius: float,
     vx = -sign * v * math.sin(phase)
     vy = sign * v * math.cos(phase) * math.cos(incl)
     vz = sign * v * math.cos(phase) * math.sin(incl)
-    satellite.position = (central.position[0] + x,
-                          central.position[1] + y,
-                          central.position[2] + z)
-    satellite.velocity = (central.velocity[0] + vx,
-                          central.velocity[1] + vy,
-                          central.velocity[2] + vz)
+    satellite.position = (central.position[0] + x, central.position[1] + y, central.position[2] + z)
+    satellite.velocity = (
+        central.velocity[0] + vx,
+        central.velocity[1] + vy,
+        central.velocity[2] + vz,
+    )
     return satellite

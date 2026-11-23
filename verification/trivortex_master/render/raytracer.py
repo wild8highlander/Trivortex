@@ -15,6 +15,7 @@ TRIVORTEX MASTER — программный рейтрейсер: сферы, п
 Производительность: кадр 160×120 с 3 сферами ~0.3–1 с (анти-алиасинг
 удорожает ×N²). Для больших кадров — pure_raster (scanline).
 """
+
 from __future__ import annotations
 
 import math
@@ -43,9 +44,7 @@ def v_dot(a: Vec3, b: Vec3) -> float:
 
 
 def v_cross(a: Vec3, b: Vec3) -> Vec3:
-    return (a[1] * b[2] - a[2] * b[1],
-            a[2] * b[0] - a[0] * b[2],
-            a[0] * b[1] - a[1] * b[0])
+    return (a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0])
 
 
 def v_norm(a: Vec3) -> Vec3:
@@ -68,15 +67,16 @@ def v_reflect(d: Vec3, n: Vec3) -> Vec3:
 class Sphere:
     center: Vec3
     radius: float
-    color: Vec3                     # альбедо 0..1
-    reflectivity: float = 0.0       # 0 — матовый, 1 — зеркало
-    specular: float = 32.0          # экспонента Фонга
-    ks: float = 0.3                 # доля спекуляра
+    color: Vec3  # альбедо 0..1
+    reflectivity: float = 0.0  # 0 — матовый, 1 — зеркало
+    specular: float = 32.0  # экспонента Фонга
+    ks: float = 0.3  # доля спекуляра
 
 
 @dataclass
 class Plane:
     """Бесконечная плоскость y = height (шахматная клетка)."""
+
     height: float = -1.0
     color1: Vec3 = (0.28, 0.33, 0.42)
     color2: Vec3 = (0.10, 0.13, 0.20)
@@ -112,8 +112,7 @@ class RaytraceScene:
 # ═══════════════════════════════════════════════════════════════════════════
 # Пересечения
 # ═══════════════════════════════════════════════════════════════════════════
-def hit_sphere(origin: Vec3, direction: Vec3, s: Sphere
-               ) -> Optional[float]:
+def hit_sphere(origin: Vec3, direction: Vec3, s: Sphere) -> float | None:
     """Ближайший положительный t пересечения луча со сферой (или None)."""
     oc = v_sub(origin, s.center)
     b = 2.0 * v_dot(oc, direction)
@@ -131,8 +130,7 @@ def hit_sphere(origin: Vec3, direction: Vec3, s: Sphere
     return None
 
 
-def hit_plane(origin: Vec3, direction: Vec3, p: Plane
-              ) -> Optional[float]:
+def hit_plane(origin: Vec3, direction: Vec3, p: Plane) -> float | None:
     """Пересечение с y = p.height (только сверху или снизу — любое)."""
     if abs(direction[1]) < 1e-9:
         return None
@@ -154,18 +152,23 @@ class Hit:
     ks: float
 
 
-def nearest_hit(origin: Vec3, direction: Vec3, scene: RaytraceScene
-                ) -> Optional[Hit]:
-    best: Optional[Hit] = None
+def nearest_hit(origin: Vec3, direction: Vec3, scene: RaytraceScene) -> Hit | None:
+    best: Hit | None = None
     # сферы
     for s in scene.spheres:
         t = hit_sphere(origin, direction, s)
         if t is not None and (best is None or t < best.t):
             point = v_add(origin, v_scale(direction, t))
             normal = v_norm(v_sub(point, s.center))
-            best = Hit(t=t, point=point, normal=normal, color=s.color,
-                       reflectivity=s.reflectivity, specular=s.specular,
-                       ks=s.ks)
+            best = Hit(
+                t=t,
+                point=point,
+                normal=normal,
+                color=s.color,
+                reflectivity=s.reflectivity,
+                specular=s.specular,
+                ks=s.ks,
+            )
     # плоскости
     for p in scene.planes:
         t = hit_plane(origin, direction, p)
@@ -173,12 +176,17 @@ def nearest_hit(origin: Vec3, direction: Vec3, scene: RaytraceScene
             point = v_add(origin, v_scale(direction, t))
             normal = (0.0, 1.0, 0.0)
             # шахматная клетка
-            cell = (math.floor(point[0] / p.cell)
-                    + math.floor(point[2] / p.cell)) % 2
+            cell = (math.floor(point[0] / p.cell) + math.floor(point[2] / p.cell)) % 2
             color = p.color1 if cell == 0 else p.color2
-            best = Hit(t=t, point=point, normal=normal, color=color,
-                       reflectivity=p.reflectivity, specular=8.0,
-                       ks=0.1)
+            best = Hit(
+                t=t,
+                point=point,
+                normal=normal,
+                color=color,
+                reflectivity=p.reflectivity,
+                specular=8.0,
+                ks=0.1,
+            )
     return best
 
 
@@ -200,8 +208,7 @@ def in_shadow(point: Vec3, light: Light, scene: RaytraceScene) -> bool:
     return False
 
 
-def shade(hit: Hit, direction: Vec3, scene: RaytraceScene,
-          depth: int, max_bounce: int = 3) -> Vec3:
+def shade(hit: Hit, direction: Vec3, scene: RaytraceScene, depth: int, max_bounce: int = 3) -> Vec3:
     """Освещение точки + рекурсивные отражения."""
     # ambient
     r = scene.ambient[0] * hit.color[0]
@@ -217,10 +224,9 @@ def shade(hit: Hit, direction: Vec3, scene: RaytraceScene,
         # specular (Фонг, через half-vector)
         half = v_norm(v_add(to_light, view))
         ndh = max(0.0, v_dot(hit.normal, half))
-        spec = hit.ks * (ndh ** hit.specular)
+        spec = hit.ks * (ndh**hit.specular)
         for c_idx in range(3):
-            contrib = (ndl * hit.color[c_idx] + spec) * light.intensity \
-                * light.color[c_idx]
+            contrib = (ndl * hit.color[c_idx] + spec) * light.intensity * light.color[c_idx]
             if c_idx == 0:
                 r += contrib
             elif c_idx == 1:
@@ -234,21 +240,27 @@ def shade(hit: Hit, direction: Vec3, scene: RaytraceScene,
         refl_hit = nearest_hit(refl_origin, refl_dir, scene)
         if refl_hit is not None:
             sub = shade(refl_hit, refl_dir, scene, depth + 1, max_bounce)
-            k = hit.reflectivity * (0.5 ** depth)
+            k = hit.reflectivity * (0.5**depth)
             r = r * (1 - k) + sub[0] * k
             g = g * (1 - k) + sub[1] * k
             b = b * (1 - k) + sub[2] * k
         else:
-            k = hit.reflectivity * (0.5 ** depth)
+            k = hit.reflectivity * (0.5**depth)
             r = r * (1 - k) + scene.bg[0] * k
             g = g * (1 - k) + scene.bg[1] * k
             b = b * (1 - k) + scene.bg[2] * k
     return (r, g, b)
 
 
-def render(scene: RaytraceScene, camera: Camera, width: int, height: int,
-           antialias: int = 1, gamma: float = 2.2,
-           tonemap: bool = True) -> bytearray:
+def render(
+    scene: RaytraceScene,
+    camera: Camera,
+    width: int,
+    height: int,
+    antialias: int = 1,
+    gamma: float = 2.2,
+    tonemap: bool = True,
+) -> bytearray:
     """Кадр RGB (bytes) размером width×height×3."""
     # базис камеры
     forward = v_norm(v_sub(camera.look_at, camera.eye))
@@ -267,9 +279,10 @@ def render(scene: RaytraceScene, camera: Camera, width: int, height: int,
                     u = (px + (sx + 0.5) / antialias) / width * 2.0 - 1.0
                     v = 1.0 - (py + (sy + 0.5) / antialias) / height * 2.0
                     # направление луча
-                    d = v_add(v_add(v_scale(forward, 1.0),
-                                    v_scale(right, u * half_w)),
-                              v_scale(up, v * half_h))
+                    d = v_add(
+                        v_add(v_scale(forward, 1.0), v_scale(right, u * half_w)),
+                        v_scale(up, v * half_h),
+                    )
                     d = v_norm(d)
                     hit = nearest_hit(camera.eye, d, scene)
                     if hit is None:
@@ -298,9 +311,14 @@ def render(scene: RaytraceScene, camera: Camera, width: int, height: int,
     return pixels
 
 
-def render_to_png(scene: RaytraceScene, camera: Camera, path: str,
-                  width: int = 160, height: int = 120,
-                  antialias: int = 1) -> int:
+def render_to_png(
+    scene: RaytraceScene,
+    camera: Camera,
+    path: str,
+    width: int = 160,
+    height: int = 120,
+    antialias: int = 1,
+) -> int:
     """Отрендерить и сохранить PNG (собственный кодер)."""
     px = render(scene, camera, width, height, antialias)
     return write_png(path, px, width, height)
@@ -313,18 +331,26 @@ def demo_scene() -> RaytraceScene:
     """Классическая сцена: 3 сферы (матовая/глянцевая/зеркало) + пол."""
     scene = RaytraceScene()
     scene.spheres = [
-        Sphere(center=(-1.1, 0.0, 0.0), radius=0.7,
-               color=(0.85, 0.30, 0.25), reflectivity=0.05),
-        Sphere(center=(0.0, 0.25, -0.6), radius=0.95,
-               color=(0.25, 0.65, 0.85), reflectivity=0.35, specular=64),
-        Sphere(center=(1.15, -0.1, 0.3), radius=0.6,
-               color=(0.90, 0.80, 0.35), reflectivity=0.85, specular=128),
+        Sphere(center=(-1.1, 0.0, 0.0), radius=0.7, color=(0.85, 0.30, 0.25), reflectivity=0.05),
+        Sphere(
+            center=(0.0, 0.25, -0.6),
+            radius=0.95,
+            color=(0.25, 0.65, 0.85),
+            reflectivity=0.35,
+            specular=64,
+        ),
+        Sphere(
+            center=(1.15, -0.1, 0.3),
+            radius=0.6,
+            color=(0.90, 0.80, 0.35),
+            reflectivity=0.85,
+            specular=128,
+        ),
     ]
     scene.planes = [Plane(height=-0.72)]
     scene.lights = [
         Light(position=(3.0, 4.0, 3.0), intensity=1.05),
-        Light(position=(-4.0, 2.5, 2.0), intensity=0.35,
-              color=(0.7, 0.8, 1.0)),
+        Light(position=(-4.0, 2.5, 2.0), intensity=0.35, color=(0.7, 0.8, 1.0)),
     ]
     return scene
 
@@ -333,17 +359,14 @@ def solar_scene() -> RaytraceScene:
     """Солнце (излучающая) + планеты (матовые) — стилизация."""
     scene = RaytraceScene()
     scene.spheres = [
-        Sphere(center=(0.0, 0.4, 0.0), radius=0.8,
-               color=(1.0, 0.72, 0.1), reflectivity=0.0, ks=0.0),
-        Sphere(center=(-1.6, -0.3, 0.9), radius=0.28,
-               color=(0.3, 0.82, 0.77)),
-        Sphere(center=(1.4, -0.1, 1.1), radius=0.38,
-               color=(0.85, 0.45, 0.25), reflectivity=0.1),
-        Sphere(center=(0.7, 0.9, -1.4), radius=0.5,
-               color=(0.82, 0.65, 0.45), reflectivity=0.2),
+        Sphere(
+            center=(0.0, 0.4, 0.0), radius=0.8, color=(1.0, 0.72, 0.1), reflectivity=0.0, ks=0.0
+        ),
+        Sphere(center=(-1.6, -0.3, 0.9), radius=0.28, color=(0.3, 0.82, 0.77)),
+        Sphere(center=(1.4, -0.1, 1.1), radius=0.38, color=(0.85, 0.45, 0.25), reflectivity=0.1),
+        Sphere(center=(0.7, 0.9, -1.4), radius=0.5, color=(0.82, 0.65, 0.45), reflectivity=0.2),
     ]
-    scene.lights = [Light(position=(0.0, 4.0, 2.0), intensity=1.4,
-                          color=(1.0, 0.95, 0.85))]
+    scene.lights = [Light(position=(0.0, 4.0, 2.0), intensity=1.4, color=(1.0, 0.95, 0.85))]
     scene.ambient = (0.04, 0.05, 0.09)
     return scene
 
@@ -355,6 +378,7 @@ def self_check() -> dict:
     path = "/tmp/tv_raytracer.png"
     size = render_to_png(scene, cam, path, width=120, height=90)
     from PIL import Image
+
     im = Image.open(path).convert("RGB")
     px = im.load()
     # верх (фон) тёмный, центральная сфера светлее фона
@@ -362,11 +386,12 @@ def self_check() -> dict:
     center = px[60, 45]
     # тень под левой сферой темнее освещённого пола
     floor_lit = px[95, 60]
-    nonbg = sum(1 for y in range(0, 90, 3) for x in range(0, 120, 3)
-                if px[x, y] != bg)
+    nonbg = sum(1 for y in range(0, 90, 3) for x in range(0, 120, 3) if px[x, y] != bg)
     return dict(
         size_bytes=size,
-        bg_sample=bg, center_sample=center, floor=floor_lit,
+        bg_sample=bg,
+        center_sample=center,
+        floor=floor_lit,
         nonbg_samples=nonbg,
         scene_visible=nonbg > 150,
         ok=size > 2000 and nonbg > 150 and center[1] > bg[1],

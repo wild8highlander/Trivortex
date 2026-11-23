@@ -13,6 +13,7 @@ TRIVORTEX MASTER — реестр режимов.
 check_requirements() возвращает причины недоступности режима; такие пункты
 меню выводятся приглушённо с пояснением.
 """
+
 from __future__ import annotations
 
 import dataclasses
@@ -22,17 +23,19 @@ from typing import Any, Callable
 # Структуры
 # ═══════════════════════════════════════════════════════════════════════════
 
+
 @dataclasses.dataclass
 class ModeEntry:
     """Один зарегистрированный режим (пункт меню)."""
-    name: str                     # короткое имя-ключ
-    title: str                    # текст пункта меню
-    category: str                 # категория меню
-    callable: Callable            # функция(app) -> None
-    description: str = ""         # пояснение (в справке)
+
+    name: str  # короткое имя-ключ
+    title: str  # текст пункта меню
+    category: str  # категория меню
+    callable: Callable  # функция(app) -> None
+    description: str = ""  # пояснение (в справке)
     requires: tuple[str, ...] = ()  # ("lab", "mpl", "rebound", ...)
-    icon: str = "•"               # иконка пункта
-    order: int = 50               # порядок внутри категории
+    icon: str = "•"  # иконка пункта
+    order: int = 50  # порядок внутри категории
     args_schema: dict[str, Any] = dataclasses.field(default_factory=dict)
 
 
@@ -64,9 +67,10 @@ class Registry:
         return list(self._category_order)
 
     def modes(self, category: str) -> list[ModeEntry]:
-        return sorted((e for e in self._entries.values()
-                       if e.category == category),
-                      key=lambda e: (e.order, e.name))
+        return sorted(
+            (e for e in self._entries.values() if e.category == category),
+            key=lambda e: (e.order, e.name),
+        )
 
     def all_modes(self) -> list[ModeEntry]:
         return list(self._entries.values())
@@ -90,13 +94,17 @@ class Registry:
         for cat in self.categories():
             items = []
             for m in self.modes(cat):
-                items.append(dict(
-                    name=m.name, title=m.title, icon=m.icon,
-                    description=m.description,
-                    available=not self.check_requirements(m),
-                    blocked_reasons=self.check_requirements(m),
-                    requires=list(m.requires),
-                ))
+                items.append(
+                    dict(
+                        name=m.name,
+                        title=m.title,
+                        icon=m.icon,
+                        description=m.description,
+                        available=not self.check_requirements(m),
+                        blocked_reasons=self.check_requirements(m),
+                        requires=list(m.requires),
+                    )
+                )
             if items:
                 spec.append(dict(category=cat, items=items))
         return spec
@@ -108,16 +116,32 @@ class Registry:
 REGISTRY = Registry()
 
 
-def register_mode(name: str, title: str, category: str,
-                  description: str = "", requires: tuple[str, ...] = (),
-                  icon: str = "•", order: int = 50):
+def register_mode(
+    name: str,
+    title: str,
+    category: str,
+    description: str = "",
+    requires: tuple[str, ...] = (),
+    icon: str = "•",
+    order: int = 50,
+):
     """Декоратор регистрации режима в глобальном реестре."""
+
     def deco(fn: Callable) -> Callable:
-        REGISTRY.register(ModeEntry(
-            name=name, title=title, category=category, callable=fn,
-            description=description, requires=requires,
-            icon=icon, order=order))
+        REGISTRY.register(
+            ModeEntry(
+                name=name,
+                title=title,
+                category=category,
+                callable=fn,
+                description=description,
+                requires=requires,
+                icon=icon,
+                order=order,
+            )
+        )
         return fn
+
     return deco
 
 
@@ -131,6 +155,7 @@ def register_capabilities() -> None:
                 return True, ""
             except ImportError:
                 return False, f"{label} не установлен (пакет {module})"
+
         return probe
 
     REGISTRY.capability("mpl", _have("matplotlib", "matplotlib"))
@@ -143,19 +168,23 @@ def register_capabilities() -> None:
     def probe_core():
         try:
             from core import bridge
+
             st = bridge.health_check()
             if st.available:
                 return True, ""
             return False, "локальная копия Trivortex не найдена (автономный режим)"
         except Exception as exc:
             return False, f"мост к ядру недоступен: {exc}"
+
     REGISTRY.capability("core", probe_core)
 
     def probe_ffmpeg():
         import shutil as _sh
+
         if _sh.which("ffmpeg"):
             return True, ""
         return False, "ffmpeg не найден в PATH (MP4 недоступен, GIF работает)"
+
     REGISTRY.capability("ffmpeg", probe_ffmpeg)
 
 
@@ -164,9 +193,15 @@ def engine_status_lines() -> list[str]:
     """Строки статуса движков для баннера и меню справки."""
     register_capabilities()
     lines = []
-    labels = [("numpy", "numpy"), ("mpl", "matplotlib"), ("rebound", "REBOUND"),
-              ("dedalus", "Dedalus"), ("imageio", "imageio"), ("ffmpeg", "ffmpeg"),
-              ("core", "ядро Trivortex")]
+    labels = [
+        ("numpy", "numpy"),
+        ("mpl", "matplotlib"),
+        ("rebound", "REBOUND"),
+        ("dedalus", "Dedalus"),
+        ("imageio", "imageio"),
+        ("ffmpeg", "ffmpeg"),
+        ("core", "ядро Trivortex"),
+    ]
     for key, label in labels:
         probe = REGISTRY._capability_probes.get(key)
         if probe is None:

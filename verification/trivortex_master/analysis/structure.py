@@ -6,6 +6,7 @@
 импорты, самые длинные функции, маркеры задач. Питает пункт меню
 «Справка → О комплексе» и отчёты о качестве кода.
 """
+
 from __future__ import annotations
 
 import ast
@@ -35,8 +36,7 @@ def analyze_module(path: str) -> ModuleInfo:
     except OSError:
         return info
     info.lines = src.count("\n") + 1
-    info.todos = sum(1 for ln in src.splitlines()
-                     if "TODO" in ln or "FIXME" in ln)
+    info.todos = sum(1 for ln in src.splitlines() if "TODO" in ln or "FIXME" in ln)
     try:
         tree = ast.parse(src)
     except SyntaxError:
@@ -61,8 +61,7 @@ def analyze_module(path: str) -> ModuleInfo:
 
 def analyze_all() -> dict:
     infos = []
-    for pkg in ("core", "lab", "realism", "render", "reports", "analysis",
-                "tools"):
+    for pkg in ("core", "lab", "realism", "render", "reports", "analysis", "tools"):
         pdir = os.path.join(ROOT, pkg)
         if not os.path.isdir(pdir):
             continue
@@ -86,6 +85,10 @@ def analyze_all() -> dict:
         classes=total_classes,
         docstring_coverage=documented / max(defs, 1),
         todos=sum(i.todos for i in infos),
-        by_module=[dict(path=i.path, lines=i.lines, functions=i.functions,
-                        classes=i.classes, todos=i.todos) for i in infos],
+        by_module=[
+            dict(
+                path=i.path, lines=i.lines, functions=i.functions, classes=i.classes, todos=i.todos
+            )
+            for i in infos
+        ],
     )

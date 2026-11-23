@@ -17,6 +17,7 @@ TRIVORTEX MASTER — инструменты хаоса: Пуанкаре, FLI, �
 
 Пример: резонансы Хеньона-Хейлеса, Козаи-Лидов, кольца Хавелока.
 """
+
 from __future__ import annotations
 
 import math
@@ -32,7 +33,7 @@ Deriv = Callable[[Sequence[float], float], list[float]]
 @dataclass
 class PoincarePoint:
     t: float
-    coords: tuple[float, ...]    # координаты в сечении (без ведущей)
+    coords: tuple[float, ...]  # координаты в сечении (без ведущей)
 
 
 class PoincareMap:
@@ -43,9 +44,9 @@ class PoincareMap:
     координаты как точку сечения.
     """
 
-    def __init__(self, deriv: Deriv, step_dt: float,
-                 axis: int = 0, level: float = 0.0,
-                 upward: bool = True):
+    def __init__(
+        self, deriv: Deriv, step_dt: float, axis: int = 0, level: float = 0.0, upward: bool = True
+    ):
         self.deriv = deriv
         self.dt = step_dt
         self.axis = axis
@@ -63,11 +64,13 @@ class PoincareMap:
         k4_pre = self.deriv(y3, t + 0.5 * dt)
         y4 = [y[i] + dt * k4_pre[i] for i in range(len(y))]
         k4 = self.deriv(y4, t + dt)
-        return [y[i] + dt / 6.0 * (k1[i] + 2 * k2[i] + 2 * k4_pre[i]
-                                   + k4[i]) for i in range(len(y))]
+        return [
+            y[i] + dt / 6.0 * (k1[i] + 2 * k2[i] + 2 * k4_pre[i] + k4[i]) for i in range(len(y))
+        ]
 
-    def run(self, y0: list[float], t0: float, n_steps: int,
-            max_points: int = 500) -> list[PoincarePoint]:
+    def run(
+        self, y0: list[float], t0: float, n_steps: int, max_points: int = 500
+    ) -> list[PoincarePoint]:
         """Прогнать траекторию и собрать точки сечения."""
         y = list(y0)
         t = t0
@@ -81,16 +84,13 @@ class PoincareMap:
             crossed_down = (not self.upward) and prev_val > 0 >= cur_val
             if crossed_up or crossed_down:
                 # линейная интерполяция момента пересечения
-                alpha = -prev_val / (cur_val - prev_val) \
-                    if abs(cur_val - prev_val) > 1e-30 else 0.5
+                alpha = -prev_val / (cur_val - prev_val) if abs(cur_val - prev_val) > 1e-30 else 0.5
                 alpha = min(max(alpha, 0.0), 1.0)
-                y_cross = [y[k] + alpha * (y_new[k] - y[k])
-                           for k in range(len(y))]
+                y_cross = [y[k] + alpha * (y_new[k] - y[k]) for k in range(len(y))]
                 section = tuple(
-                    y_cross[k] for k in range(len(y_cross))
-                    if k != self.axis and k != self.axis + 0)
-                self.points.append(PoincarePoint(
-                    t=t + alpha * self.dt, coords=section))
+                    y_cross[k] for k in range(len(y_cross)) if k != self.axis and k != self.axis + 0
+                )
+                self.points.append(PoincarePoint(t=t + alpha * self.dt, coords=section))
                 if len(self.points) >= max_points:
                     break
             y = y_new
@@ -105,9 +105,15 @@ class PoincareMap:
 # ═══════════════════════════════════════════════════════════════════════════
 # FLI — быстрый ляпуновский индикатор
 # ═══════════════════════════════════════════════════════════════════════════
-def fli(deriv: Deriv, y0: Sequence[float], t0: float, dt: float,
-        n_steps: int = 1000, delta0: float = 1e-8,
-        renorm_every: int = 10) -> dict:
+def fli(
+    deriv: Deriv,
+    y0: Sequence[float],
+    t0: float,
+    dt: float,
+    n_steps: int = 1000,
+    delta0: float = 1e-8,
+    renorm_every: int = 10,
+) -> dict:
     """Fast Lyapunov Indicator: log‖Δ(t)‖ при фиксированных перенормировках.
 
     Регулярная орбита — линейный рост/насыщение; хаотическая —
@@ -129,8 +135,7 @@ def fli(deriv: Deriv, y0: Sequence[float], t0: float, dt: float,
         k3 = deriv(y3, tv + 0.5 * dt)
         y4 = [yv[i] + dt * k3[i] for i in range(n)]
         k4 = deriv(y4, tv + dt)
-        return [yv[i] + dt / 6.0 * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i])
-                for i in range(n)]
+        return [yv[i] + dt / 6.0 * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]) for i in range(n)]
 
     for i in range(n_steps):
         y = rk4(y, t)
@@ -145,7 +150,7 @@ def fli(deriv: Deriv, y0: Sequence[float], t0: float, dt: float,
                 k = delta0 / d
                 y_p = [a + (b - a) * k for a, b in zip(y, y_p)]
                 dist = delta0
-        if d > 1e10 or d != d:      # насыщение/NaN — стоп
+        if d > 1e10 or d != d:  # насыщение/NaN — стоп
             break
     fli_value = log_sum + math.log(max(dist, 1e-300) / delta0)
     return dict(
@@ -169,10 +174,9 @@ def fli_classify(fli_value: float, dt: float, n_steps: int) -> str:
 # ═══════════════════════════════════════════════════════════════════════════
 # Частотный анализ Ласкара (скользящее окно)
 # ═══════════════════════════════════════════════════════════════════════════
-def sliding_frequency(times: Sequence[float],
-                      signal: Sequence[float],
-                      window: int = 128,
-                      n_windows: int = 8) -> list[dict]:
+def sliding_frequency(
+    times: Sequence[float], signal: Sequence[float], window: int = 128, n_windows: int = 8
+) -> list[dict]:
     """Основная частота в каждом окне (максимум |DFT| без нулевой).
 
     Дрейф частоты между окнами — маркер диффузии (Ласкар 1990).
@@ -186,30 +190,29 @@ def sliding_frequency(times: Sequence[float],
         start = w * stride
         if start + window > n:
             break
-        seg = signal[start:start + window]
-        t_seg = times[start:start + window]
+        seg = signal[start : start + window]
+        t_seg = times[start : start + window]
         dt = (t_seg[-1] - t_seg[0]) / max(window - 1, 1)
         mean_v = sum(seg) / window
         centered = [v - mean_v for v in seg]
         best_freq = 0.0
         best_power = -1.0
         for k in range(1, window // 2):
-            re = sum(centered[i] * math.cos(2 * math.pi * k * i / window)
-                     for i in range(window))
-            im = sum(centered[i] * math.sin(2 * math.pi * k * i / window)
-                     for i in range(window))
+            re = sum(centered[i] * math.cos(2 * math.pi * k * i / window) for i in range(window))
+            im = sum(centered[i] * math.sin(2 * math.pi * k * i / window) for i in range(window))
             power = re * re + im * im
             if power > best_power:
                 best_power = power
                 best_freq = k / (window * dt)
-        results.append(dict(t_center=t_seg[window // 2],
-                            freq=best_freq,
-                            power=best_power / (window * window)))
+        results.append(
+            dict(t_center=t_seg[window // 2], freq=best_freq, power=best_power / (window * window))
+        )
     return results
 
 
-def frequency_drift(times: Sequence[float], signal: Sequence[float],
-                     window: int = 128, n_windows: int = 8) -> dict:
+def frequency_drift(
+    times: Sequence[float], signal: Sequence[float], window: int = 128, n_windows: int = 8
+) -> dict:
     """Относительный дрейф основной частоты по окнам."""
     rows = sliding_frequency(times, signal, window, n_windows)
     if len(rows) < 2:
@@ -224,8 +227,7 @@ def frequency_drift(times: Sequence[float], signal: Sequence[float],
         freqs=freqs,
         n_windows=len(rows),
         stable=drift < 0.05,
-        note="дрейф >5% — диффузия частоты (Ласкар); стабильность — "
-             "квазипериодичность",
+        note="дрейф >5% — диффузия частоты (Ласкар); стабильность — " "квазипериодичность",
     )
 
 
@@ -238,9 +240,7 @@ def henon_heiles_deriv(y: Sequence[float], _t: float) -> list[float]:
     H = ½(px² + py²) + ½(x² + y²) + x²y − y³/3.
     """
     x, yy, px, py = y
-    return [px, py,
-            -x - 2.0 * x * yy,
-            -yy - x * x + yy * yy]
+    return [px, py, -x - 2.0 * x * yy, -yy - x * x + yy * yy]
 
 
 def harmonic_deriv(y: Sequence[float], _t: float) -> list[float]:
@@ -256,11 +256,9 @@ def self_check() -> dict:
     регулярная коробка: (0.1, 0, 0, 0.05) при E≈1/12.
     """
     # регулярная орбита ХХ (E=1/12, коробка)
-    fli_reg = fli(henon_heiles_deriv,
-                  [0.1, 0.0, 0.0, 0.05], 0.0, 0.02, n_steps=2000)
+    fli_reg = fli(henon_heiles_deriv, [0.1, 0.0, 0.0, 0.05], 0.0, 0.02, n_steps=2000)
     # хаотическая (E≈0.149): сильный рост возмущения (×28 за t=30)
-    fli_chaos = fli(henon_heiles_deriv,
-                    [0.1, 0.2, 0.4, 0.3], 0.0, 0.02, n_steps=2000)
+    fli_chaos = fli(henon_heiles_deriv, [0.1, 0.2, 0.4, 0.3], 0.0, 0.02, n_steps=2000)
     # контроль: осциллятор (полностью регулярный)
     fli_osc = fli(harmonic_deriv, [1.0, 0.0], 0.0, 0.02, n_steps=2000)
     ordering_ok = fli_chaos["fli"] > fli_reg["fli"] >= fli_osc["fli"] - 1.0

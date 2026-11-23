@@ -18,6 +18,7 @@ TRIVORTEX MASTER — кривые блеска транзитов (лимбов�
 Самопроверка: глубина = (R_p/R_*)² с точностью < 2% при безлимбовой
 звезде; fit восстанавливает r/R в пределах 3σ.
 """
+
 from __future__ import annotations
 
 import math
@@ -42,10 +43,17 @@ def _mu_of(x: float, y: float, r_star: float) -> float:
     return math.sqrt(1.0 - rr * rr)
 
 
-def transit_flux(t: float, period: float, r_planet: float,
-                 r_star: float, a_au: float = 0.05,
-                 inclination_deg: float = 88.0, u1: float = 0.44,
-                 u2: float = 0.26, n_grid: int = 60) -> float:
+def transit_flux(
+    t: float,
+    period: float,
+    r_planet: float,
+    r_star: float,
+    a_au: float = 0.05,
+    inclination_deg: float = 88.0,
+    u1: float = 0.44,
+    u2: float = 0.26,
+    n_grid: int = 60,
+) -> float:
     """Нормированный поток (1.0 вне транзита) в момент t (сутки).
 
     Геометрия в безразмерных единицах звёздного радиуса R_* (все
@@ -64,7 +72,7 @@ def transit_flux(t: float, period: float, r_planet: float,
     rp_rel = r_planet / r_star
     dist = math.sqrt(x * x + y * y)
     if dist - rp_rel >= 1.0:
-        return 1.0                 # транзита нет
+        return 1.0  # транзита нет
     if dist + rp_rel <= 0.0:
         return 0.0
     # интегрирование по сетке диска (единицы R_*: диск радиуса 1)
@@ -88,8 +96,9 @@ def transit_flux(t: float, period: float, r_planet: float,
     return max(0.0, min(1.0, flux_sum / area_total))
 
 
-def light_curve(t_obs: Sequence[float], period: float, r_planet: float,
-                r_star: float, **kw) -> list[float]:
+def light_curve(
+    t_obs: Sequence[float], period: float, r_planet: float, r_star: float, **kw
+) -> list[float]:
     """Кривая блеска по сетке времён (с кэшем параметров)."""
     return [transit_flux(t, period, r_planet, r_star, **kw) for t in t_obs]
 
@@ -97,9 +106,9 @@ def light_curve(t_obs: Sequence[float], period: float, r_planet: float,
 # ═══════════════════════════════════════════════════════════════════════════
 # Измерение параметров кривой
 # ═══════════════════════════════════════════════════════════════════════════
-def measure_transit(t: Sequence[float], f: Sequence[float],
-                    period_hint: float, threshold: float = 0.995
-                    ) -> dict:
+def measure_transit(
+    t: Sequence[float], f: Sequence[float], period_hint: float, threshold: float = 0.995
+) -> dict:
     """Измерить глубину, длительность, моменты ingress/egress.
 
     Порог потока threshold отделяет транзит от «рогов» лимбового
@@ -117,15 +126,24 @@ def measure_transit(t: Sequence[float], f: Sequence[float],
         dt = (max(t) - min(t)) / max(len(t) - 1, 1)
         duration = span + dt
         ingress, egress = min(in_transit), max(in_transit)
-    return dict(depth=depth, duration_days=duration,
-                baseline=baseline, ingress=ingress, egress=egress,
-                n_in_transit=len(in_transit),
-                depth_from_rp=depth)   # δ ≈ (r_p/r_*)² при малых телах
+    return dict(
+        depth=depth,
+        duration_days=duration,
+        baseline=baseline,
+        ingress=ingress,
+        egress=egress,
+        n_in_transit=len(in_transit),
+        depth_from_rp=depth,
+    )  # δ ≈ (r_p/r_*)² при малых телах
 
 
-def fit_transit(t_obs: Sequence[float], f_obs: Sequence[float],
-                period: float, guess_rp_rel: float = 0.1,
-                r_star_km: float = 6.957e5) -> dict:
+def fit_transit(
+    t_obs: Sequence[float],
+    f_obs: Sequence[float],
+    period: float,
+    guess_rp_rel: float = 0.1,
+    r_star_km: float = 6.957e5,
+) -> dict:
     """Восстановить (r/R) из кривой блеска ЛМ-подгонкой.
 
     Модель линейна по параметру глубины → ЛМ сходится за 3-5 итераций.
@@ -134,28 +152,29 @@ def fit_transit(t_obs: Sequence[float], f_obs: Sequence[float],
 
     def model(theta, tt):
         rp_rel = theta[0]
-        return [transit_flux(t, period, rp_rel * r_star_km, r_star_km,
-                             n_grid=40)
-                for t in tt]
+        return [transit_flux(t, period, rp_rel * r_star_km, r_star_km, n_grid=40) for t in tt]
 
     y_data = list(f_obs)
     sigma = [0.0005] * len(f_obs)
     # h_step крупный: модель дискретна по сетке диска (n_grid),
     # якобиан отличен от нуля только при Δrp ~ cell²/(2π·rp)
-    lm = LevenbergMarquardt(model, list(t_obs), y_data, sigma,
-                            h_step=0.02)
+    lm = LevenbergMarquardt(model, list(t_obs), y_data, sigma, h_step=0.02)
     fit = lm.fit([guess_rp_rel], max_iter=25)
     rp_rel = fit["theta"][0]
     err = (fit["errors"] or [None])[0]
-    return dict(rp_over_rs=rp_rel, err=err,
-                depth_theory=rp_rel ** 2,
-                reduced_chi2=fit["reduced_chi2"],
-                n_iter=fit["n_iter"], converged=fit["converged"])
+    return dict(
+        rp_over_rs=rp_rel,
+        err=err,
+        depth_theory=rp_rel**2,
+        reduced_chi2=fit["reduced_chi2"],
+        n_iter=fit["n_iter"],
+        converged=fit["converged"],
+    )
 
 
-def inject_ttv(t_obs: Sequence[float], period: float,
-               amplitude_days: float, super_period: float
-               ) -> list[float]:
+def inject_ttv(
+    t_obs: Sequence[float], period: float, amplitude_days: float, super_period: float
+) -> list[float]:
     """Внести TTV в сетку времён наблюдений (для синтетических тестов).
 
     Возвращает модифицированные моменты транзитов (только точки у
@@ -164,9 +183,8 @@ def inject_ttv(t_obs: Sequence[float], period: float,
     shifted = []
     for ti in t_obs:
         phase = (ti / period) % 1.0
-        if abs(phase - 0.25) < 0.1:   # транзитная зона (соединение 0.25)
-            shift = amplitude_days * math.sin(
-                2 * math.pi * ti / super_period)
+        if abs(phase - 0.25) < 0.1:  # транзитная зона (соединение 0.25)
+            shift = amplitude_days * math.sin(2 * math.pi * ti / super_period)
             shifted.append(ti + shift)
         else:
             shifted.append(ti)
@@ -189,32 +207,47 @@ def self_check() -> dict:
     # транзит в фазе 0.25 (соединение: cos φ = 0 → x_орб = 0)
     r_rel = 0.1
     t_transit = 0.25 * 3.5
-    f = transit_flux(t_transit, 3.5, r_rel * r_star_km, r_star_km,
-                     a_au=a_au, inclination_deg=90.0, u1=0.0, u2=0.0,
-                     n_grid=120)
-    depth_err = abs((1.0 - f) - r_rel ** 2) / (r_rel ** 2)
-    depth_ok = depth_err < 0.03   # дискретизация сетки ~Δ/r
+    f = transit_flux(
+        t_transit,
+        3.5,
+        r_rel * r_star_km,
+        r_star_km,
+        a_au=a_au,
+        inclination_deg=90.0,
+        u1=0.0,
+        u2=0.0,
+        n_grid=120,
+    )
+    depth_err = abs((1.0 - f) - r_rel**2) / (r_rel**2)
+    depth_ok = depth_err < 0.03  # дискретизация сетки ~Δ/r
     # лимб: I(μ=0) < I(μ=1)
-    lim_ok = limb_darkening(0.0) < limb_darkening(1.0) \
-        and limb_darkening(1.0) == 1.0
+    lim_ok = limb_darkening(0.0) < limb_darkening(1.0) and limb_darkening(1.0) == 1.0
     # fit: синтетическая кривая на той же геометрии
     t_grid = [i * 0.02 for i in range(120)]
-    f_curve = light_curve(t_grid, 3.5, r_rel * r_star_km, r_star_km,
-                          a_au=a_au, inclination_deg=90.0,
-                          u1=0.0, u2=0.0, n_grid=30)
-    fit = fit_transit(t_grid, f_curve, 3.5, guess_rp_rel=0.08,
-                      r_star_km=r_star_km)
-    fit_ok = (fit.get("err") is not None
-              and abs(fit["rp_over_rs"] - r_rel) < 3.0 * fit["err"])
+    f_curve = light_curve(
+        t_grid,
+        3.5,
+        r_rel * r_star_km,
+        r_star_km,
+        a_au=a_au,
+        inclination_deg=90.0,
+        u1=0.0,
+        u2=0.0,
+        n_grid=30,
+    )
+    fit = fit_transit(t_grid, f_curve, 3.5, guess_rp_rel=0.08, r_star_km=r_star_km)
+    fit_ok = fit.get("err") is not None and abs(fit["rp_over_rs"] - r_rel) < 3.0 * fit["err"]
     # TTV: сдвиг применён
     t_ttv = inject_ttv([0.0, 0.875, 3.5], 3.5, 0.01, 100.0)
     ttv_ok = t_ttv[1] != 0.875
     return dict(
-        depth_rel_err=depth_err, depth_ok=depth_ok,
+        depth_rel_err=depth_err,
+        depth_ok=depth_ok,
         limb_ok=lim_ok,
-        rp_fit=fit["rp_over_rs"], fit_ok=fit_ok,
+        rp_fit=fit["rp_over_rs"],
+        fit_ok=fit_ok,
         ttv_applied=ttv_ok,
         all_ok=depth_ok and lim_ok and fit_ok and ttv_ok,
         note="секторная модель Манделя-Аголя (2002); u1,u2 — Claret 2000; "
-             "b = 0.753 (a = 0.0035 а.е. при R☉)",
+        "b = 0.753 (a = 0.0035 а.е. при R☉)",
     )

@@ -18,6 +18,7 @@ TRIVORTEX MASTER — периодограмма Ломба-Скаргла на �
 Самопроверка: синусоида 7.4 сут с пропусками и шумом восстанавливается
 с ошибкой < 0.5%; шумовой ряд — FAP > 5% (ложных открытий нет).
 """
+
 from __future__ import annotations
 
 import math
@@ -36,8 +37,9 @@ def _tau_offset(omega: float, t: Sequence[float], w: Sequence[float]) -> float:
     return math.atan2(num, den) / (2.0 * omega)
 
 
-def lomb_scargle_at(t: Sequence[float], y: Sequence[float],
-                    dy: Sequence[float], omega: float) -> float:
+def lomb_scargle_at(
+    t: Sequence[float], y: Sequence[float], dy: Sequence[float], omega: float
+) -> float:
     """Мощность LS на одной частоте (Press et al., Numerical Recipes §13.8).
 
     Веса W = 1/dy² (dy — истинные погрешности точек). Нормировка /2:
@@ -59,8 +61,9 @@ def lomb_scargle_at(t: Sequence[float], y: Sequence[float],
     return (num_c * num_c / den_c + num_s * num_s / den_s) / 2.0
 
 
-def frequency_grid(t: Sequence[float], oversample: float = 5.0,
-                   f_max: float | None = None) -> list[float]:
+def frequency_grid(
+    t: Sequence[float], oversample: float = 5.0, f_max: float | None = None
+) -> list[float]:
     """Сетка частот: [oversample/T, f_max] с шагом 1/(oversample·T)."""
     t_span = max(t) - min(t)
     f_min = oversample / t_span
@@ -72,9 +75,13 @@ def frequency_grid(t: Sequence[float], oversample: float = 5.0,
     return [f_min + (f_max - f_min) * i / n for i in range(n + 1)]
 
 
-def lomb_scargle(t: Sequence[float], y: Sequence[float],
-                 dy: Sequence[float], oversample: float = 5.0,
-                 f_max: float | None = None) -> dict:
+def lomb_scargle(
+    t: Sequence[float],
+    y: Sequence[float],
+    dy: Sequence[float],
+    oversample: float = 5.0,
+    f_max: float | None = None,
+) -> dict:
     """Полный LS-периодограмм: сетка, мощности, пик, FAP."""
     if len(t) != len(y) or len(t) != len(dy):
         raise ValueError("t, y, dy должны быть одной длины")
@@ -89,7 +96,8 @@ def lomb_scargle(t: Sequence[float], y: Sequence[float],
     fap = min(1.0, m_eff * math.exp(-z_max))
     threshold = math.log(m_eff)
     return dict(
-        freqs=freqs, powers=powers,
+        freqs=freqs,
+        powers=powers,
         best_freq=freqs[f_max_idx],
         best_period=1.0 / freqs[f_max_idx],
         peak_power=z_max,
@@ -103,8 +111,9 @@ def lomb_scargle(t: Sequence[float], y: Sequence[float],
 # ═══════════════════════════════════════════════════════════════════════════
 # Фазовая свёртка и алиасы
 # ═══════════════════════════════════════════════════════════════════════════
-def phase_fold(t: Sequence[float], y: Sequence[float], period: float,
-               t0: float = 0.0, n_bins: int = 20) -> list[dict]:
+def phase_fold(
+    t: Sequence[float], y: Sequence[float], period: float, t0: float = 0.0, n_bins: int = 20
+) -> list[dict]:
     """Сложить ряд по периоду; вернуть среднее y по фазовым бинам."""
     phases = [((ti - t0) / period) % 1.0 for ti in t]
     bins = [[] for _ in range(n_bins)]
@@ -114,14 +123,11 @@ def phase_fold(t: Sequence[float], y: Sequence[float], period: float,
     out = []
     for i, vals in enumerate(bins):
         if vals:
-            out.append(dict(phase=(i + 0.5) / n_bins,
-                            mean=sum(vals) / len(vals),
-                            n=len(vals)))
+            out.append(dict(phase=(i + 0.5) / n_bins, mean=sum(vals) / len(vals), n=len(vals)))
     return out
 
 
-def alias_report(t: Sequence[float], ls: dict,
-                 base_unit: float = 1.0) -> list[dict]:
+def alias_report(t: Sequence[float], ls: dict, base_unit: float = 1.0) -> list[dict]:
     """Сильнейшие боковые пики: кандидаты в алиасы (f ± k·f_window).
 
     Окно наблюдений 1/T_span; алиасы на f ± 1/base_unit (сутки →
@@ -131,13 +137,11 @@ def alias_report(t: Sequence[float], ls: dict,
     f_win = 1.0 / span
     out = []
     # топ-пики вне главного
-    pairs = sorted(zip(ls["freqs"], ls["powers"]),
-                   key=lambda fp: -fp[1])
+    pairs = sorted(zip(ls["freqs"], ls["powers"]), key=lambda fp: -fp[1])
     f_best = ls["best_freq"]
     for f, p in pairs[1:]:
         near_alias = abs(abs(f - f_best) - f_win) < 0.1 * f_win
-        near_daily = any(abs(abs(f - f_best) - k / base_unit)
-                         < 0.02 for k in (1, 2))
+        near_daily = any(abs(abs(f - f_best) - k / base_unit) < 0.02 for k in (1, 2))
         if near_alias or near_daily:
             out.append(dict(freq=f, power=p, kind="alias-candidate"))
         if len(out) >= 3:
@@ -151,14 +155,14 @@ def alias_report(t: Sequence[float], ls: dict,
 def self_check() -> dict:
     """Синусоида с пропусками: период восстановлен; шум не детектируется."""
     import random
+
     rng = random.Random(12)
     # ряд с пропусками: 120 точек на 100 сут, 7.4-суточный сигнал
     t = sorted(rng.uniform(0, 100) for _ in range(120))
     period_true = 7.4
     amp = 1.0
     noise = 0.25
-    y = [amp * math.sin(2 * math.pi * ti / period_true)
-         + rng.gauss(0, noise) for ti in t]
+    y = [amp * math.sin(2 * math.pi * ti / period_true) + rng.gauss(0, noise) for ti in t]
     dy = [noise] * len(t)
     ls = lomb_scargle(t, y, dy)
     err = abs(ls["best_period"] - period_true) / period_true
@@ -167,16 +171,20 @@ def self_check() -> dict:
     ls_noise = lomb_scargle(t, y_noise, dy)
     # фазовая свёртка по истинному периоду: амплитуда сохранена
     folded = phase_fold(t, y, period_true)
-    fold_amp = (max(f["mean"] for f in folded)
-                - min(f["mean"] for f in folded))
+    fold_amp = max(f["mean"] for f in folded) - min(f["mean"] for f in folded)
     return dict(
-        period_est=ls["best_period"], period_err=err,
-        peak_power=ls["peak_power"], fap=ls["false_alarm_prob"],
+        period_est=ls["best_period"],
+        period_err=err,
+        peak_power=ls["peak_power"],
+        fap=ls["false_alarm_prob"],
         detected=ls["detected"],
         noise_power=ls_noise["peak_power"],
         noise_fap=ls_noise["false_alarm_prob"],
         fold_amplitude=fold_amp,
-        ok=(err < 0.005 and ls["detected"]
+        ok=(
+            err < 0.005
+            and ls["detected"]
             and ls_noise["false_alarm_prob"] > 0.05
-            and fold_amp > 0.8),
+            and fold_amp > 0.8
+        ),
     )

@@ -44,7 +44,7 @@ Two structural properties follow from the form itself and are what the ladder ce
 | Quantity | Value (float64) | Verified by |
 |---|---|---|
 | frequency $\omega = (2\pi/T)\,e^{1/\pi}$ | `1.3748022274393588` | pytest pin, exact to float64 |
-| amplitude $\varepsilon = 1/(e^{1/\pi}-1)$ | `0.7276379117656014` | pytest pin, exact to float64 |
+| amplitude $\varepsilon = 1/(e^{1/\pi}-1)$ | `2.6680737914285615` | pytest pin, exact to float64 |
 | angular separation (all probed times) | $2\pi/3 \pm 6.9\times10^{-14}$ | ladder V1 |
 | periodicity residual over $100\,T$ | $\le 9.4\times10^{-14}$ | ladder V1 |
 

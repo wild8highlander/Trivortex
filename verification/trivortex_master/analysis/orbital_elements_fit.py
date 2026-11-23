@@ -12,6 +12,7 @@ TRIVORTEX MASTER — определение орбиты по наблюдени
 Самопроверка: синтетические наблюдения известной эллиптической орбиты
 (3 точки с шумом 0.01°) — восстановленные a, e в пределах 5%.
 """
+
 from __future__ import annotations
 
 import math
@@ -20,15 +21,21 @@ from typing import Sequence
 from analysis.fitting import LevenbergMarquardt
 
 AU_KM = 1.495978707e8
-MU_SUN_KM = 1.32712440018e11     # км³/с²
+MU_SUN_KM = 1.32712440018e11  # км³/с²
 
 
 # ═══════════════════════════════════════════════════════════════════════════
 # Кеплеровы элементы → вектор состояния (гелиоцентрический, эклиптика)
 # ═══════════════════════════════════════════════════════════════════════════
-def elements_to_state(a_au: float, e: float, i_deg: float,
-                      om_deg: float, w_deg: float, M_deg: float,
-                      mu: float = MU_SUN_KM) -> tuple[list, list]:
+def elements_to_state(
+    a_au: float,
+    e: float,
+    i_deg: float,
+    om_deg: float,
+    w_deg: float,
+    M_deg: float,
+    mu: float = MU_SUN_KM,
+) -> tuple[list, list]:
     """Элементы (а.е.) → (r, v) в км, км/с (перигей-ориентированная СК →
     повороты i, Ω, ω)."""
     M = math.radians(M_deg)
@@ -54,7 +61,7 @@ def elements_to_state(a_au: float, e: float, i_deg: float,
     y_final = x_ecl * math.sin(om) + y_ecl * math.cos(om)
     r_km = [x_final * AU_KM, y_final * AU_KM, z_ecl * AU_KM]
     # скорость (численно: производная положения по M × dM/dt = n)
-    n_rad = math.sqrt(mu / (a_au * AU_KM) ** 3)       # рад/с
+    n_rad = math.sqrt(mu / (a_au * AU_KM) ** 3)  # рад/с
     dxdE = -a_au * math.sin(E)
     dydE = a_au * math.sqrt(1 - e * e) * math.cos(E)
     x_orb2 = dxdE * math.cos(w) - dydE * math.sin(w)
@@ -64,18 +71,18 @@ def elements_to_state(a_au: float, e: float, i_deg: float,
     z_ecl2 = y_orb2 * math.sin(i_ang)
     x_fin2 = x_ecl2 * math.cos(om) - y_ecl2 * math.sin(om)
     y_fin2 = x_ecl2 * math.sin(om) + y_ecl2 * math.cos(om)
-    v_km = [x_fin2 * AU_KM * n_rad, y_fin2 * AU_KM * n_rad,
-            z_ecl2 * AU_KM * n_rad]
+    v_km = [x_fin2 * AU_KM * n_rad, y_fin2 * AU_KM * n_rad, z_ecl2 * AU_KM * n_rad]
     return r_km, v_km
 
 
-def propagate_state(r: list, v: list, dt_days: float,
-                    mu: float = MU_SUN_KM) -> list:
+def propagate_state(r: list, v: list, dt_days: float, mu: float = MU_SUN_KM) -> list:
     """Численное продвижение состояния (RK4, шаг 0.5 сут)."""
+
     def deriv(_s, _t):
         x, y, z, vx, vy, vz = _s
         r3 = (x * x + y * y + z * z) ** 1.5
         return [vx, vy, vz, -mu * x / r3, -mu * y / r3, -mu * z / r3]
+
     dt = 0.5 * 86400.0
     s = [r[0], r[1], r[2], v[0], v[1], v[2]]
     n_steps = max(int(round(dt_days * 86400.0 / dt)), 1)
@@ -87,13 +94,11 @@ def propagate_state(r: list, v: list, dt_days: float,
         k3 = deriv(s3, dt / 2)
         s4 = [s[i] + dt * k3[i] for i in range(6)]
         k4 = deriv(s4, dt)
-        s = [s[i] + dt / 6 * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i])
-             for i in range(6)]
+        s = [s[i] + dt / 6 * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]) for i in range(6)]
     return s
 
 
-def geocentric_radec(r_helio_km: list, r_earth_km: list
-                     ) -> tuple[float, float]:
+def geocentric_radec(r_helio_km: list, r_earth_km: list) -> tuple[float, float]:
     """Геоцентрические RA/Dec (градусы) объекта. Земля — гелиоцентрич."""
     dx = [r_helio_km[i] - r_earth_km[i] for i in range(3)]
     d = math.sqrt(sum(c * c for c in dx))
@@ -112,10 +117,13 @@ def earth_position_circular(t_days: float) -> list:
 # ═══════════════════════════════════════════════════════════════════════════
 # IOD подгонкой элементов (Лебенберг-Марквардт по RA/Dec)
 # ═══════════════════════════════════════════════════════════════════════════
-def fit_elements_lm(t_obs_days: Sequence[float],
-                    ra_obs: Sequence[float], dec_obs: Sequence[float],
-                    ra_err_deg: float = 0.01,
-                    guess: Sequence[float] | None = None) -> dict:
+def fit_elements_lm(
+    t_obs_days: Sequence[float],
+    ra_obs: Sequence[float],
+    dec_obs: Sequence[float],
+    ra_err_deg: float = 0.01,
+    guess: Sequence[float] | None = None,
+) -> dict:
     """Определение элементов по трём+ наблюдениям.
 
     Параметры: [a, e, i, Ω, ω, M0]; предсказания RA/Dec через
@@ -128,7 +136,7 @@ def fit_elements_lm(t_obs_days: Sequence[float],
         a, e, i_ang, om, w, M0 = theta
         out = []
         for ti in tt:
-            M = M0 + 360.0 * math.sqrt(1.0 / a ** 3) * ti / 365.256
+            M = M0 + 360.0 * math.sqrt(1.0 / a**3) * ti / 365.256
             r_h, _v = elements_to_state(a, e, i_ang, om, w, M % 360.0)
             ra, dec = geocentric_radec(r_h, earth_position_circular(ti))
             out.extend([ra, dec])
@@ -139,15 +147,16 @@ def fit_elements_lm(t_obs_days: Sequence[float],
         y_data.extend([ra, dec])
     n_pts = len(t_obs_days)
     sigma = [ra_err_deg] * (2 * n_pts)
-    lm = LevenbergMarquardt(model, list(t_obs_days), y_data, sigma,
-                            h_step=1e-7)
+    lm = LevenbergMarquardt(model, list(t_obs_days), y_data, sigma, h_step=1e-7)
     fit = lm.fit(list(guess), max_iter=80)
     return dict(
         elements=list(fit["theta"]),
         errors=(fit["errors"] or [None] * 6),
-        chi2=fit["chi2"], dof=fit["dof"],
+        chi2=fit["chi2"],
+        dof=fit["dof"],
         reduced_chi2=fit["reduced_chi2"],
-        n_iter=fit["n_iter"], converged=fit["converged"],
+        n_iter=fit["n_iter"],
+        converged=fit["converged"],
         method="LM по угловым остаткам (круговая Земля, без св. времени)",
     )
 
@@ -161,6 +170,7 @@ def fit_elements_lm(t_obs_days: Sequence[float],
 def self_check() -> dict:
     """Синтетический объект a=1.8, e=0.25: IOD восстанавливает a, e."""
     import random
+
     rng = random.Random(31)
     a_true, e_true = 1.8, 0.25
     i_t, om_t, w_t, M0_t = 12.0, 80.0, 200.0, 100.0
@@ -169,23 +179,29 @@ def self_check() -> dict:
     t_obs = [0.0, 9.0, 18.0, 27.0, 36.0]
     ra_obs, dec_obs = [], []
     for ti in t_obs:
-        M = M0_t + 360.0 * math.sqrt(1 / a_true ** 3) * ti / 365.256
+        M = M0_t + 360.0 * math.sqrt(1 / a_true**3) * ti / 365.256
         r_h, _ = elements_to_state(a_true, e_true, i_t, om_t, w_t, M % 360)
         ra, dec = geocentric_radec(r_h, earth_position_circular(ti))
         ra_obs.append(ra + rng.gauss(0, 0.01))
         dec_obs.append(dec + rng.gauss(0, 0.01))
-    fit = fit_elements_lm(t_obs, ra_obs, dec_obs, ra_err_deg=0.01,
-                          guess=[1.5, 0.2, 10.0, 70.0, 190.0, 90.0])
+    fit = fit_elements_lm(
+        t_obs, ra_obs, dec_obs, ra_err_deg=0.01, guess=[1.5, 0.2, 10.0, 70.0, 190.0, 90.0]
+    )
     a_fit, e_fit = fit["elements"][0], fit["elements"][1]
     a_ok = abs(a_fit - a_true) / a_true < 0.05
     e_ok = abs(e_fit - e_true) < 0.05
     # остатки предсказаний обязаны быть на уровне шума (χ²_red ≈ 1)
     resid_ok = fit["reduced_chi2"] < 4.0
     return dict(
-        a_fit=round(a_fit, 4), e_fit=round(e_fit, 4),
-        a_true=a_true, e_true=e_true,
-        reduced_chi2=fit["reduced_chi2"], n_iter=fit["n_iter"],
-        a_ok=a_ok, e_ok=e_ok, resid_ok=resid_ok,
+        a_fit=round(a_fit, 4),
+        e_fit=round(e_fit, 4),
+        a_true=a_true,
+        e_true=e_true,
+        reduced_chi2=fit["reduced_chi2"],
+        n_iter=fit["n_iter"],
+        a_ok=a_ok,
+        e_ok=e_ok,
+        resid_ok=resid_ok,
         all_ok=a_ok and e_ok and resid_ok,
         note="IOD: LM по 6 элементам, 5 эпох (dof=4), круговая Земля",
     )

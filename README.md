@@ -305,7 +305,7 @@ Reference values for the canonical configuration `C_Ch = 1`, `T = 2π`:
 | Quantity | Value (float64) | Verified by |
 |---|---|---|
 | frequency `ω = (2π/T)·e^{1/π}` | `1.3748022274393588` | pytest pin, exact to float64 |
-| amplitude `ε = 1/(e^{1/π}−1)` | `0.7276379117656014` | pytest pin, exact to float64 |
+| amplitude `ε = 1/(e^{1/π}−1)` | `2.6680737914285615` | pytest pin, exact to float64 |
 | angular separation (all probed times) | `2π/3 ± 6.9×10⁻¹⁴` | ladder V1 |
 | periodicity residual over `100·T` | `≤ 9.4×10⁻¹⁴` | ladder V1 |
 

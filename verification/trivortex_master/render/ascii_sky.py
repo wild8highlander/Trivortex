@@ -16,6 +16,7 @@ TRIVORTEX MASTER — карта неба в стереографической �
 (конформность); звёзды ниже горизонта не рисуются; длина линий
 Ориона соответствует угловым расстояниям.
 """
+
 from __future__ import annotations
 
 import math
@@ -24,8 +25,7 @@ from realism.bright_stars import BRIGHT_STARS, Star
 from realism.sky_coordinates import equatorial_to_horizontal
 
 
-def stereographic_project(alt_deg: float, az_deg: float,
-                          k: float = 1.0) -> tuple[float, float]:
+def stereographic_project(alt_deg: float, az_deg: float, k: float = 1.0) -> tuple[float, float]:
     """(alt, az) → (x, y) в единицах радиуса карты (зенит = (0,0)).
 
     z = 90° − alt; r = k·tan(z/2); направление — по азимуту от севера
@@ -38,14 +38,11 @@ def stereographic_project(alt_deg: float, az_deg: float,
     return (r * math.sin(az), r * math.cos(az))
 
 
-def visible_stars(lat_deg: float, lst_rad: float) -> list[tuple[Star,
-                                                                  float,
-                                                                  float]]:
+def visible_stars(lat_deg: float, lst_rad: float) -> list[tuple[Star, float, float]]:
     """Звёзды над горизонтом: (звезда, alt, az) для широты и LST."""
     visible = []
     for star in BRIGHT_STARS:
-        az, alt = equatorial_to_horizontal(star.ra_deg, star.dec_deg,
-                                           lat_deg, lst_rad)
+        az, alt = equatorial_to_horizontal(star.ra_deg, star.dec_deg, lat_deg, lst_rad)
         if alt > 0:
             visible.append((star, alt, az))
     return visible
@@ -53,9 +50,8 @@ def visible_stars(lat_deg: float, lst_rad: float) -> list[tuple[Star,
 
 # грубые линии созвездий (пары имён из каталога)
 CONSTELLATION_LINES = {
-    "Большой Ковш": [("Алиот", "Мирфак")],       # упрощённо (2 звезды)
-    "Орион": [("Бетельгейзе", "Ригель"),
-              ("Бетельгейзе", "Беллатрикс")],
+    "Большой Ковш": [("Алиот", "Мирфак")],  # упрощённо (2 звезды)
+    "Орион": [("Бетельгейзе", "Ригель"), ("Бетельгейзе", "Беллатрикс")],
     "Близнецы": [("Кастор", "Поллукс")],
     "Кентавр-Юг": [("α Центавра", "Хадар")],
 }
@@ -64,6 +60,7 @@ CONSTELLATION_LINES = {
 def constellation_lengths(lat_deg: float, lst_rad: float) -> dict:
     """Угловые длины линий созвездий (для проверки масштаба)."""
     from realism.sky_coordinates import angular_separation
+
     out = {}
     for name, pairs in CONSTELLATION_LINES.items():
         total = 0.0
@@ -72,14 +69,12 @@ def constellation_lengths(lat_deg: float, lst_rad: float) -> dict:
             sb = [s for s in BRIGHT_STARS if s.name == b]
             if not sa or not sb:
                 continue
-            total += angular_separation(sa[0].ra_deg, sa[0].dec_deg,
-                                        sb[0].ra_deg, sb[0].dec_deg)
+            total += angular_separation(sa[0].ra_deg, sa[0].dec_deg, sb[0].ra_deg, sb[0].dec_deg)
         out[name] = total
     return out
 
 
-def sky_map_ascii(lat_deg: float, lst_rad: float, width: int = 41,
-                  height: int = 21) -> str:
+def sky_map_ascii(lat_deg: float, lst_rad: float, width: int = 41, height: int = 21) -> str:
     """ASCII-карта полусферы: стереографическая проекция, зенит в центре.
 
     Символ яркости: ярче → плотнее (▓ █); сторона света подписана."""
@@ -132,13 +127,12 @@ def self_check() -> dict:
         radii.append(math.hypot(px, py))
     conformal_ok = max(radii) - min(radii) < 1e-9
     # карта: на широте 55.75 при LST = 6h (Орион на юге) есть яркие
-    lst = math.radians(90.0)      # 6 часов
+    lst = math.radians(90.0)  # 6 часов
     visible = visible_stars(55.75, lst)
     visible_ok = len(visible) >= 8
     # Сириус с юга России (45°) виден, на 60° с.ш. низко
-    lst_sirius = math.radians(101.28 + 0.0)   # RA Сириуса в градусах
-    az_s, alt_s = equatorial_to_horizontal(101.28, -16.72, 55.75,
-                                           lst_sirius)
+    lst_sirius = math.radians(101.28 + 0.0)  # RA Сириуса в градусах
+    az_s, alt_s = equatorial_to_horizontal(101.28, -16.72, 55.75, lst_sirius)
     sirius_up = alt_s > 0
     # карта-строка
     text = sky_map_ascii(55.75, lst)
@@ -149,13 +143,16 @@ def self_check() -> dict:
     gemini_len = lengths.get("Близнецы", 0)
     orion_ok = abs(gemini_len - 4.51) < 0.3
     return dict(
-        zenith_ok=zenith_ok, conformal_ok=conformal_ok,
-        n_visible=len(visible), visible_ok=visible_ok,
-        sirius_alt=round(alt_s, 1), sirius_up=sirius_up,
-        gemini_line_deg=round(gemini_len, 2), orion_ok=orion_ok,
+        zenith_ok=zenith_ok,
+        conformal_ok=conformal_ok,
+        n_visible=len(visible),
+        visible_ok=visible_ok,
+        sirius_alt=round(alt_s, 1),
+        sirius_up=sirius_up,
+        gemini_line_deg=round(gemini_len, 2),
+        orion_ok=orion_ok,
         map_ok=map_ok,
-        all_ok=zenith_ok and conformal_ok and visible_ok and sirius_up
-        and orion_ok and map_ok,
+        all_ok=zenith_ok and conformal_ok and visible_ok and sirius_up and orion_ok and map_ok,
         note="стереографическая проекция — конформная (Snyder 1987); "
-             "символ яркости: █ < 0ᵐ, ▓ < 1ᵐ, ▒ < 2ᵐ, ░ остальные",
+        "символ яркости: █ < 0ᵐ, ▓ < 1ᵐ, ▒ < 2ᵐ, ░ остальные",
     )

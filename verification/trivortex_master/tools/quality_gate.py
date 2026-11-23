@@ -18,6 +18,7 @@ TRIVORTEX MASTER — quality gate: единый CI-контур пакета.
 
 Протокол: JSON + консольная сводка. Ненулевой код выхода при провале.
 """
+
 from __future__ import annotations
 
 import json
@@ -38,8 +39,9 @@ def scan_source_hygiene() -> dict:
     данные, а не заглушки; собственный файл сканера исключается.
     Настоящие заглушки: маркеры вне кавычек + raise NotImplementedError."""
     patterns = re.compile(
-        r"\b(TODO|FIXME|XXX|HACK)\b|待补充|待完成|placeholder\s*$|"
-        r"raise NotImplementedError", re.MULTILINE)
+        r"\b(TODO|FIXME|XXX|HACK)\b|待补充|待完成|placeholder\s*$|" r"raise NotImplementedError",
+        re.MULTILINE,
+    )
     quoted = re.compile(r"[\'\"].{0,3}(?:TODO|FIXME|XXX|HACK).{0,3}[\'\"]")
     self_file = os.path.relpath(os.path.abspath(__file__), ROOT)
     findings = []
@@ -56,10 +58,10 @@ def scan_source_hygiene() -> dict:
                 continue
             src = open(path, encoding="utf-8").read()
             for m in patterns.finditer(src):
-                line_no = src[:m.start()].count("\n") + 1
+                line_no = src[: m.start()].count("\n") + 1
                 line = src.splitlines()[line_no - 1]
                 if quoted.search(line):
-                    continue        # маркер как данные в кавычках
+                    continue  # маркер как данные в кавычках
                 findings.append(f"{rel}:{line_no}: {m.group(0)}")
     return dict(files=n_files, findings=findings, clean=not findings)
 
@@ -75,9 +77,9 @@ def module_selfchecks() -> list[dict]:
             ok = bool(res.get("all_ok", res.get("ok", False)))
             checks.append(dict(module=label, ok=ok, result=res))
         except Exception as exc:
-            checks.append(dict(module=label, ok=False,
-                               result=dict(error=f"{type(exc).__name__}: "
-                                                f"{exc}")))
+            checks.append(
+                dict(module=label, ok=False, result=dict(error=f"{type(exc).__name__}: " f"{exc}"))
+            )
 
     run("relativity", "lab.relativity")
     run("nbody_tree", "lab.nbody_tree")
@@ -139,8 +141,7 @@ def run_full_gate(json_path: str | None = None) -> dict:
 
     st = _run_all(verbose=False)
     acc_raw = run_acceptance()
-    acc = dict(passed=sum(1 for v in acc_raw.values() if v),
-               total=len(acc_raw), details=acc_raw)
+    acc = dict(passed=sum(1 for v in acc_raw.values() if v), total=len(acc_raw), details=acc_raw)
     mods = module_selfchecks()
     hygiene = scan_source_hygiene()
     api = api_stats()
@@ -150,28 +151,31 @@ def run_full_gate(json_path: str | None = None) -> dict:
         dirs[:] = [d for d in dirs if d != "__pycache__"]
         for fn in files:
             if fn.endswith(".py"):
-                py_lines += sum(1 for _ in open(
-                    os.path.join(base, fn), encoding="utf-8"))
+                py_lines += sum(1 for _ in open(os.path.join(base, fn), encoding="utf-8"))
 
     mods_ok = [m for m in mods if m["ok"]]
     gate = dict(
-        selftest=dict(passed=st["passed"], total=st["total"],
-                      details=st.get("details", {})),
-        acceptance=dict(passed=acc["passed"], total=acc["total"],
-                        details=acc.get("details", {})),
-        module_selfchecks=dict(passed=len(mods_ok), total=len(mods),
-                               modules=[dict(module=m["module"], ok=m["ok"])
-                                        for m in mods]),
-        hygiene=dict(files=hygiene["files"], findings=hygiene["findings"],
-                     clean=hygiene["clean"]),
-        api=dict(modules=api["modules"], classes=api["classes"],
-                 functions=api["functions"],
-                 docstring_coverage=api["docstring_coverage"]),
+        selftest=dict(passed=st["passed"], total=st["total"], details=st.get("details", {})),
+        acceptance=dict(passed=acc["passed"], total=acc["total"], details=acc.get("details", {})),
+        module_selfchecks=dict(
+            passed=len(mods_ok),
+            total=len(mods),
+            modules=[dict(module=m["module"], ok=m["ok"]) for m in mods],
+        ),
+        hygiene=dict(files=hygiene["files"], findings=hygiene["findings"], clean=hygiene["clean"]),
+        api=dict(
+            modules=api["modules"],
+            classes=api["classes"],
+            functions=api["functions"],
+            docstring_coverage=api["docstring_coverage"],
+        ),
         code=dict(py_lines=py_lines),
-        passed=(st["passed"] == st["total"]
-                and acc["passed"] == acc["total"]
-                and len(mods_ok) == len(mods)
-                and hygiene["clean"]),
+        passed=(
+            st["passed"] == st["total"]
+            and acc["passed"] == acc["total"]
+            and len(mods_ok) == len(mods)
+            and hygiene["clean"]
+        ),
     )
     if json_path:
         os.makedirs(os.path.dirname(json_path), exist_ok=True)
@@ -185,7 +189,9 @@ def print_gate(gate: dict) -> None:
     print("── QUALITY GATE ──────────────────────────────────")
     print(f"selftest:      {gate['selftest']['passed']}/{gate['selftest']['total']}")
     print(f"acceptance:    {gate['acceptance']['passed']}/{gate['acceptance']['total']}")
-    print(f"module checks: {gate['module_selfchecks']['passed']}/{gate['module_selfchecks']['total']}")
+    print(
+        f"module checks: {gate['module_selfchecks']['passed']}/{gate['module_selfchecks']['total']}"
+    )
     for m in gate["module_selfchecks"]["modules"]:
         if not m["ok"]:
             print(f"  ✗ {m['module']}")
@@ -207,9 +213,9 @@ def print_gate(gate: dict) -> None:
 
 if __name__ == "__main__":
     import argparse
+
     ap = argparse.ArgumentParser()
-    ap.add_argument("--json", default=os.path.join(ROOT, "runs",
-                                                   "quality_gate.json"))
+    ap.add_argument("--json", default=os.path.join(ROOT, "runs", "quality_gate.json"))
     ap.add_argument("--quiet", action="store_true")
     args = ap.parse_args()
     g = run_full_gate(args.json)

@@ -7,6 +7,7 @@ TRIVORTEX MASTER — Scene: сцена лаборатории.
 (порог Хавелока): add_body() при N=8 требует allow_unphysical, ставит
 unphysical_flag и красную плашку в HUD/отчёты.
 """
+
 from __future__ import annotations
 
 import dataclasses
@@ -25,10 +26,11 @@ from lab.body import Body
 @dataclass
 class BoundingBox:
     """Границы сцены (м или единицы модели)."""
+
     half: float = 1e12
 
     @classmethod
-    def from_scene(cls, bodies: list[Body], margin: float = 1.5) -> "BoundingBox":
+    def from_scene(cls, bodies: list[Body], margin: float = 1.5) -> BoundingBox:
         if not bodies:
             return cls()
         m = max(max(abs(c) for c in b.position) for b in bodies)
@@ -41,6 +43,7 @@ class BoundingBox:
 @dataclass
 class ValidationReport:
     """Отчёт валидации сцены."""
+
     ok: bool = True
     problems: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
@@ -59,14 +62,14 @@ class Scene:
         self.name = name or f"scene_{self.id}"
         self.created = _dt.datetime.now().isoformat(timespec="seconds")
         self.bodies: list[Body] = []
-        self.engine = None                # PhysicsEngine (лаб/физика)
+        self.engine = None  # PhysicsEngine (лаб/физика)
         self.engine_name: str = ""
         self.t: float = 0.0
         self.dt: float = config.dt
         self.bounds = BoundingBox()
         self.scale_mode: str = config.scale_mode
         self.unphysical_flag: bool = False
-        self.events: list[dict[str, Any]] = []   # столкновения, вылеты, потери энергии
+        self.events: list[dict[str, Any]] = []  # столкновения, вылеты, потери энергии
         self.trajectory_history: list[list[list[float]]] = []
         self.time_history: list[float] = []
         self.energy_history: list[float] = []
@@ -80,7 +83,9 @@ class Scene:
             raise UnphysicalConfiguration(
                 f"N={n + 1} > hard_max_bodies={cfg.hard_max_bodies}: "
                 "конфигурация не поддерживается ни в каком режиме "
-                "(жёсткий лимит 8)", n_bodies=n + 1)
+                "(жёсткий лимит 8)",
+                n_bodies=n + 1,
+            )
         if n + 1 > cfg.max_bodies:
             if not cfg.allow_unphysical:
                 raise UnphysicalConfiguration(
@@ -88,13 +93,19 @@ class Scene:
                     "(POLYVORTEX W4) — кольцо устойчиво при N≤7, при N=8 "
                     "max Re λ = +0.4502 (резкий скачок неустойчивости). "
                     "Включите allow_unphysical=True, чтобы продолжить с пометкой.",
-                    n_bodies=n + 1)
+                    n_bodies=n + 1,
+                )
             self.unphysical_flag = True
-            self.events.append(dict(
-                kind="unphysical",
-                detail=(f"N={n + 1}: конфигурация вне физической вселенной модели "
-                        f"(порог Хавелока, max Re λ = +0.4502)"),
-                t=self.t))
+            self.events.append(
+                dict(
+                    kind="unphysical",
+                    detail=(
+                        f"N={n + 1}: конфигурация вне физической вселенной модели "
+                        f"(порог Хавелока, max Re λ = +0.4502)"
+                    ),
+                    t=self.t,
+                )
+            )
         # дубликат id
         if any(b.id == body.id for b in self.bodies):
             body.id = f"{body.id}_{n + 1}"
@@ -122,8 +133,8 @@ class Scene:
         if self.n < self.config.min_bodies:
             rep.ok = False
             rep.problems.append(
-                f"тел в сцене {self.n} < минимально допустимых "
-                f"{self.config.min_bodies}")
+                f"тел в сцене {self.n} < минимально допустимых " f"{self.config.min_bodies}"
+            )
         ids = [b.id for b in self.bodies]
         if len(ids) != len(set(ids)):
             rep.ok = False
@@ -139,12 +150,14 @@ class Scene:
                 if d < rsum * 0.5:
                     rep.warnings.append(
                         f"тела {self.bodies[i].id} и {self.bodies[j].id} "
-                        f"перекрываются: d={d:.3g} < Σr/2={rsum * 0.5:.3g}")
+                        f"перекрываются: d={d:.3g} < Σr/2={rsum * 0.5:.3g}"
+                    )
         if self.n > self.config.max_bodies:
             rep.unphysical = True
             rep.warnings.append(
                 f"N={self.n} > {self.config.max_bodies}: вне физической "
-                "вселенной модели (порог Хавелока)")
+                "вселенной модели (порог Хавелока)"
+            )
         return rep
 
     # ══════════════════ физика сцены ══════════════════
@@ -158,7 +171,8 @@ class Scene:
         for i in range(self.n):
             for j in range(i + 1, self.n):
                 pe += self.bodies[i].potential_energy(
-                    self.bodies[j], G=G, softening=self.config.softening)
+                    self.bodies[j], G=G, softening=self.config.softening
+                )
         return ke + pe
 
     def total_momentum(self) -> tuple[float, float, float]:
@@ -186,11 +200,12 @@ class Scene:
         """Выбор и инициализация физического движка (лениво, чтобы не тянуть
         адаптеры при импорте)."""
         from lab.physics import get_engine
+
         self.engine = get_engine(name, self)
         self.engine_name = self.engine.name()
 
     # ══════════════════ служебное ══════════════════
-    def clone(self) -> "Scene":
+    def clone(self) -> Scene:
         sc = Scene(self.config, name=self.name + "_copy")
         for b in self.bodies:
             sc.bodies.append(Body.from_dict(b.to_dict()))
@@ -203,11 +218,24 @@ class Scene:
 
     def summary(self) -> dict[str, Any]:
         return dict(
-            id=self.id, name=self.name, n=self.n,
-            bodies=[dict(id=b.id, name=b.name, mass=b.mass, radius=b.radius,
-                         type=b.type, source=b.source, speed=b.speed())
-                    for b in self.bodies],
-            t=self.t, dt=self.dt, scale_mode=self.scale_mode,
+            id=self.id,
+            name=self.name,
+            n=self.n,
+            bodies=[
+                dict(
+                    id=b.id,
+                    name=b.name,
+                    mass=b.mass,
+                    radius=b.radius,
+                    type=b.type,
+                    source=b.source,
+                    speed=b.speed(),
+                )
+                for b in self.bodies
+            ],
+            t=self.t,
+            dt=self.dt,
+            scale_mode=self.scale_mode,
             engine=self.engine_name,
             unphysical=self.unphysical_flag,
             total_mass=self.total_mass(),
@@ -225,8 +253,12 @@ class Scene:
     # ══════════════════ сериализация ══════════════════
     def to_dict(self, include_history: bool = False) -> dict[str, Any]:
         d = dict(
-            id=self.id, name=self.name, created=self.created,
-            t=self.t, dt=self.dt, scale_mode=self.scale_mode,
+            id=self.id,
+            name=self.name,
+            created=self.created,
+            t=self.t,
+            dt=self.dt,
+            scale_mode=self.scale_mode,
             unphysical_flag=self.unphysical_flag,
             engine=self.engine_name,
             config=self.config.to_dict(),
@@ -241,7 +273,7 @@ class Scene:
         return d
 
     @classmethod
-    def from_dict(cls, d: dict[str, Any]) -> "Scene":
+    def from_dict(cls, d: dict[str, Any]) -> Scene:
         cfg = MasterConfig.from_dict(d["config"])
         sc = cls(cfg, name=d.get("name", ""))
         sc.id = d.get("id", sc.id)
@@ -264,10 +296,9 @@ class Scene:
     def save(self, path: str) -> None:
         os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
         with open(path, "w", encoding="utf-8") as fh:
-            json.dump(self.to_dict(include_history=True), fh,
-                      ensure_ascii=False, indent=1)
+            json.dump(self.to_dict(include_history=True), fh, ensure_ascii=False, indent=1)
 
     @classmethod
-    def load(cls, path: str) -> "Scene":
-        with open(path, "r", encoding="utf-8") as fh:
+    def load(cls, path: str) -> Scene:
+        with open(path, encoding="utf-8") as fh:
             return cls.from_dict(json.load(fh))

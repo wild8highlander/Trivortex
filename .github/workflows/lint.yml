@@ -22,9 +22,13 @@ jobs:
         uses: DavidAnson/markdownlint-cli2-action@v24
         with:
           config: .markdownlint.json
+          # literature.md is excluded: it is a parser-consumed DATA file
+          # (reports/bibliography.py reads "N. **..." lines) — its citation
+          # numbering is semantic, not a markdown list convention.
           globs: |
             **/*.md
             !CHANGELOG.md
+            !verification/trivortex_master/data/literature.md
 
   yaml-lint:
     name: YAML
@@ -32,7 +36,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Install yamllint
-        run: pip install yamllint
+        run: pip install yamllint==1.38.0
       - name: Lint YAML
         run: yamllint -c .yamllint.yml .github/workflows/ .pre-commit-config.yaml environment.yml CITATION.cff
 
@@ -47,7 +51,9 @@ jobs:
           cache: pip
 
       - name: Install linting tools
-        run: pip install ruff black mypy
+        # Pinned: the lint gate must be reproducible — rule drift in floating
+        # ruff/black releases must not break CI by surprise. Bump deliberately.
+        run: pip install ruff==0.17.6 black==26.10.1 mypy
 
       - name: Ruff check
         run: ruff check . --output-format=github

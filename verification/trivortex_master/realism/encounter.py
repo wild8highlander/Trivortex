@@ -15,26 +15,25 @@ TRIVORTEX MASTER — гравитационные манёвры (patched conics
 Самопроверки: δ при v∞=5 км/с и r_p=100 000 км у Юпитера ~ 20–35°;
 Oberth: прирост энергии > Δv²/2 при burn на перицентре.
 """
+
 from __future__ import annotations
 
 import math
 
-MU_JUPITER_KM = 1.26686534e8      # км³/с² (IAU 2015)
+MU_JUPITER_KM = 1.26686534e8  # км³/с² (IAU 2015)
 R_JUPITER_KM = 69911.0
 
 
-def flyby_turning_angle(v_inf_kms: float, rp_km: float,
-                        mu: float = MU_JUPITER_KM) -> float:
+def flyby_turning_angle(v_inf_kms: float, rp_km: float, mu: float = MU_JUPITER_KM) -> float:
     """Угол поворота v∞ (радианы): δ = 2·arcsin(1/(1+e)), e = 1 + rp·v∞²/μ."""
-    e = 1.0 + rp_km * v_inf_kms ** 2 / mu
+    e = 1.0 + rp_km * v_inf_kms**2 / mu
     arg = 1.0 / e
     if arg > 1.0:
-        return math.pi          # захват (r_p внутри тела)
+        return math.pi  # захват (r_p внутри тела)
     return 2.0 * math.asin(arg)
 
 
-def flyby_delta_v(v_inf_kms: float, rp_km: float,
-                  mu: float = MU_JUPITER_KM) -> dict:
+def flyby_delta_v(v_inf_kms: float, rp_km: float, mu: float = MU_JUPITER_KM) -> dict:
     """Максимальный прирост скорости от пролёта (км/с): Δv ≤ 2v∞sin(δ/2).
 
     Достигается, когда вектор v∞ разворачивается на δ в нужной
@@ -42,9 +41,11 @@ def flyby_delta_v(v_inf_kms: float, rp_km: float,
     """
     delta = flyby_turning_angle(v_inf_kms, rp_km, mu)
     dv_max = 2.0 * v_inf_kms * math.sin(delta / 2.0)
-    return dict(turning_angle_deg=math.degrees(delta),
-                dv_max_kms=dv_max,
-                e_hyperbola=1.0 + rp_km * v_inf_kms ** 2 / mu)
+    return dict(
+        turning_angle_deg=math.degrees(delta),
+        dv_max_kms=dv_max,
+        e_hyperbola=1.0 + rp_km * v_inf_kms**2 / mu,
+    )
 
 
 def oberth_effect(v_peri_kms: float, dv_burn_kms: float) -> dict:
@@ -52,14 +53,14 @@ def oberth_effect(v_peri_kms: float, dv_burn_kms: float) -> dict:
 
     Прирост удельной энергии: Δε = v_p·Δv + Δv²/2 (км²/с²) —
     линейный член делает burn на высокой скорости выгоднее."""
-    de = v_peri_kms * dv_burn_kms + dv_burn_kms ** 2 / 2.0
-    de_slow = v_peri_kms * 0.1 * dv_burn_kms \
-        + dv_burn_kms ** 2 / 2.0      # тот же burn на 10% скорости
+    de = v_peri_kms * dv_burn_kms + dv_burn_kms**2 / 2.0
+    de_slow = v_peri_kms * 0.1 * dv_burn_kms + dv_burn_kms**2 / 2.0  # тот же burn на 10% скорости
     return dict(
         delta_energy=de,
         delta_energy_at_10pct_speed=de_slow,
         gain_ratio=de / max(de_slow, 1e-12),
-        reference="Oberth 1929; Curtis «Orbital Mechanics» §8.7")
+        reference="Oberth 1929; Curtis «Orbital Mechanics» §8.7",
+    )
 
 
 def voyager_jupiter_example() -> dict:
@@ -69,9 +70,11 @@ def voyager_jupiter_example() -> dict:
     оценка при оптимальной геометрии (фактически Voyager 2 получил
     ~10.6 км/с; NASA Voyager mission reports)."""
     res = flyby_delta_v(10.0, 721570.0)
-    return dict(**res,
-                note="Voyager 2: сближение 721 570 км; гелиоцентрическая "
-                     "скорость у Сатурна выросла с ~15.5 до ~17.4 км/с")
+    return dict(
+        **res,
+        note="Voyager 2: сближение 721 570 км; гелиоцентрическая "
+        "скорость у Сатурна выросла с ~15.5 до ~17.4 км/с",
+    )
 
 
 def self_check() -> dict:
@@ -89,12 +92,16 @@ def self_check() -> dict:
     ob = oberth_effect(20.0, 2.0)
     oberth_ok = ob["delta_energy"] > ob["delta_energy_at_10pct_speed"]
     return dict(
-        angle_deg=res["turning_angle_deg"], angle_ok=angle_ok,
-        dv_max=res["dv_max_kms"], dv_ok=dv_ok,
-        monotonic_ok=mono_ok, grazing_ok=grazing_ok,
-        oberth_gain=ob["gain_ratio"], oberth_ok=oberth_ok,
+        angle_deg=res["turning_angle_deg"],
+        angle_ok=angle_ok,
+        dv_max=res["dv_max_kms"],
+        dv_ok=dv_ok,
+        monotonic_ok=mono_ok,
+        grazing_ok=grazing_ok,
+        oberth_gain=ob["gain_ratio"],
+        oberth_ok=oberth_ok,
         all_ok=angle_ok and dv_ok and mono_ok and grazing_ok and oberth_ok,
         note="δ = 2arcsin(1/(1+rp·v∞²/μ)) — Curtis §8.3; rp=1e5 км при "
-             "v∞=5 км/с у Юпитера → e≈1.02 → δ≈157° (почти захват, "
-             "физически корректно)",
+        "v∞=5 км/с у Юпитера → e≈1.02 → δ≈157° (почти захват, "
+        "физически корректно)",
     )

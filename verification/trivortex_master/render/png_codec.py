@@ -13,10 +13,12 @@ TRIVORTEX MASTER — собственный PNG-кодер на stdlib.
 Именно этот кодер используется pure_raster и аниматором — изображение
 можно собрать и записать без единого внешнего пакета.
 """
+
 from __future__ import annotations
 
 import struct
 from typing import Sequence
+
 
 # ═══════════════════════════════════════════════════════════════════════════
 # CRC32 (PNG, полином 0xEDB88320)
@@ -92,15 +94,132 @@ def _fixed_lit_code(sym: int) -> tuple[int, int]:
     return 0xC0 + sym - 280, 8
 
 
-_LENGTH_BASE = [3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31,
-                35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258]
-_LENGTH_EXTRA = [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2,
-                 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0]
-_DIST_BASE = [1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193,
-              257, 385, 513, 769, 1025, 1537, 2049, 3073, 4097, 6145,
-              8193, 12289, 16385, 24577]
-_DIST_EXTRA = [0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6,
-               7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13]
+_LENGTH_BASE = [
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    13,
+    15,
+    17,
+    19,
+    23,
+    27,
+    31,
+    35,
+    43,
+    51,
+    59,
+    67,
+    83,
+    99,
+    115,
+    131,
+    163,
+    195,
+    227,
+    258,
+]
+_LENGTH_EXTRA = [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    2,
+    2,
+    2,
+    2,
+    3,
+    3,
+    3,
+    3,
+    4,
+    4,
+    4,
+    4,
+    5,
+    5,
+    5,
+    5,
+    0,
+]
+_DIST_BASE = [
+    1,
+    2,
+    3,
+    4,
+    5,
+    7,
+    9,
+    13,
+    17,
+    25,
+    33,
+    49,
+    65,
+    97,
+    129,
+    193,
+    257,
+    385,
+    513,
+    769,
+    1025,
+    1537,
+    2049,
+    3073,
+    4097,
+    6145,
+    8193,
+    12289,
+    16385,
+    24577,
+]
+_DIST_EXTRA = [
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    2,
+    2,
+    3,
+    3,
+    4,
+    4,
+    5,
+    5,
+    6,
+    6,
+    7,
+    7,
+    8,
+    8,
+    9,
+    9,
+    10,
+    10,
+    11,
+    11,
+    12,
+    12,
+    13,
+    13,
+]
 
 
 def _match_length_code(length: int) -> tuple[int, int, int]:
@@ -128,8 +247,8 @@ def deflate_fixed(data: bytes) -> bytes:
     сжимался бы ~80 с, с ней — доли секунды.
     """
     bw = _BitWriter()
-    bw.write_bits(1, 1)     # BFINAL = 1
-    bw.write_bits(1, 2)     # BTYPE = 01 (fixed)
+    bw.write_bits(1, 1)  # BFINAL = 1
+    bw.write_bits(1, 2)  # BTYPE = 01 (fixed)
     n = len(data)
     if n == 0:
         c, clen = _fixed_lit_code(256)
@@ -144,8 +263,7 @@ def deflate_fixed(data: bytes) -> bytes:
     tail = [-1] * (WMASK + 1)
 
     def h3(pos: int) -> int:
-        return ((data[pos] << 10) ^ (data[pos + 1] << 5)
-                ^ data[pos + 2]) & (HASH_SIZE - 1)
+        return ((data[pos] << 10) ^ (data[pos + 1] << 5) ^ data[pos + 2]) & (HASH_SIZE - 1)
 
     def insert(pos: int) -> None:
         hv = h3(pos)
@@ -153,7 +271,7 @@ def deflate_fixed(data: bytes) -> bytes:
         head[hv] = pos
 
     i = 0
-    MAX_CHAIN = 32            # глубина цепочки (компромисс скорость/сжатие)
+    MAX_CHAIN = 32  # глубина цепочки (компромисс скорость/сжатие)
     while i < n:
         best_len = 0
         best_dist = 0
@@ -235,7 +353,7 @@ def _filter_rows(raw: bytes, width: int, height: int, bpp: int) -> bytes:
     prev = bytes(stride)
     for row in range(height):
         base = row * stride
-        cur = raw[base:base + stride]
+        cur = raw[base : base + stride]
         # все 5 фильтров, берём минимальную сумму
         best_type, best_sum, best_row = 0, 1 << 62, None
         for ftype in range(5):
@@ -265,8 +383,14 @@ def _filter_rows(raw: bytes, width: int, height: int, bpp: int) -> bytes:
     return bytes(out)
 
 
-def write_png(path: str, pixels: Sequence[int], width: int, height: int,
-              alpha: bool = False, level_filter: bool = True) -> int:
+def write_png(
+    path: str,
+    pixels: Sequence[int],
+    width: int,
+    height: int,
+    alpha: bool = False,
+    level_filter: bool = True,
+) -> int:
     """
     Записать PNG. pixels — плоский список/bytes RGB(A): len = w*h*bpp.
     Возвращает размер файла.
@@ -282,15 +406,13 @@ def write_png(path: str, pixels: Sequence[int], width: int, height: int,
         filtered = _filter_rows(raw, width, height, bpp)
     else:
         stride = width * bpp
-        filtered = b"".join(
-            b"\x00" + raw[r * stride:(r + 1) * stride] for r in range(height))
+        filtered = b"".join(b"\x00" + raw[r * stride : (r + 1) * stride] for r in range(height))
 
     compressed = zlib_wrap(deflate_fixed(filtered), original=filtered)
 
     def chunk(tag: bytes, payload: bytes) -> bytes:
         crc = crc32(tag + payload)
-        return struct.pack(">I", len(payload)) + tag + payload + \
-            struct.pack(">I", crc)
+        return struct.pack(">I", len(payload)) + tag + payload + struct.pack(">I", crc)
 
     ihdr = struct.pack(">IIBBBBB", width, height, 8, color_type, 0, 0, 0)
     png = b"\x89PNG\r\n\x1a\n"
@@ -298,7 +420,7 @@ def write_png(path: str, pixels: Sequence[int], width: int, height: int,
     # IDAT порционно по 64 КБ
     step = 65536
     for off in range(0, len(compressed), step):
-        png += chunk(b"IDAT", compressed[off:off + step])
+        png += chunk(b"IDAT", compressed[off : off + step])
     png += chunk(b"IEND", b"")
 
     with open(path, "wb") as fh:
@@ -308,7 +430,7 @@ def write_png(path: str, pixels: Sequence[int], width: int, height: int,
 
 def write_ppm(path: str, pixels: Sequence[int], width: int, height: int) -> int:
     """PPM P6 — дешёвый растровый вывод без кодирования."""
-    raw = bytes(pixels[:width * height * 3])
+    raw = bytes(pixels[: width * height * 3])
     with open(path, "wb") as fh:
         fh.write(f"P6\n{width} {height}\n255\n".encode("ascii"))
         fh.write(raw)

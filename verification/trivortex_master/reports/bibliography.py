@@ -5,6 +5,7 @@
 Парсит 21 позицию по заголовкам-номерам, отдаёт структурированно для
 отчётов (раздел «Источники») и меню справки.
 """
+
 from __future__ import annotations
 
 import os
@@ -26,8 +27,7 @@ def load_entries() -> list[dict]:
             if m:
                 if current:
                     entries.append(current)
-                current = dict(num=int(m.group(1)), text=m.group(2),
-                               rest=m.group(3), url=None)
+                current = dict(num=int(m.group(1)), text=m.group(2), rest=m.group(3), url=None)
                 continue
             if current is not None:
                 mu = re.search(r"<(https?://[^>]+)>", line)
@@ -40,8 +40,7 @@ def load_entries() -> list[dict]:
 
 def as_table_rows() -> list[list[str]]:
     """Строки для ReportData.add_table."""
-    return [[str(e["num"]), e["text"][:60], e["url"] or "—"]
-            for e in load_entries()]
+    return [[str(e["num"]), e["text"][:60], e["url"] or "—"] for e in load_entries()]
 
 
 def count() -> int:

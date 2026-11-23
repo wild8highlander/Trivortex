@@ -17,6 +17,7 @@ TRIVORTEX MASTER — бенчмарк-комплекс: производител
 Итог — сводная таблица + JSON-протокол; сравнение с референсными
 временами (пороги медленных регрессий задаются множителем).
 """
+
 from __future__ import annotations
 
 import json
@@ -57,6 +58,7 @@ def bench_integrators() -> Bench:
     b = Bench("B1 интеграторы", threshold_s=30.0)
     import math
     from lab.integrators import Leapfrog, Yoshida4, rk4_step
+
     G = 1.0
 
     def accel(pos, t):
@@ -70,7 +72,7 @@ def bench_integrators() -> Bench:
                 dy = pos[j][1] - pos[i][1]
                 dz = pos[j][2] - pos[i][2]
                 r = math.sqrt(dx * dx + dy * dy + dz * dz) + 1e-12
-                f = G / (r ** 3)
+                f = G / (r**3)
                 ax += f * dx
                 ay += f * dy
                 az += f * dz
@@ -81,10 +83,10 @@ def bench_integrators() -> Bench:
         n = len(y) // 6
         out = [0.0] * len(y)
         for i in range(n):
-            out[6 * i:6 * i + 3] = y[6 * i + 3:6 * i + 6]
-        acc = accel([tuple(y[6 * i:6 * i + 3]) for i in range(n)], t)
+            out[6 * i : 6 * i + 3] = y[6 * i + 3 : 6 * i + 6]
+        acc = accel([tuple(y[6 * i : 6 * i + 3]) for i in range(n)], t)
         for i in range(n):
-            out[6 * i + 3:6 * i + 6] = acc[i]
+            out[6 * i + 3 : 6 * i + 6] = acc[i]
         return out
 
     v = math.sqrt(0.5)
@@ -107,8 +109,9 @@ def bench_integrators() -> Bench:
         for _ in range(500):
             y, _t = yo.step(y, 0, 0.02)
         t_yo = time.perf_counter() - t_yo
-    b.metrics = dict(rk4_s=t_rk4, leapfrog_s=t_lf, yoshida4_s=t_yo,
-                     yoshida_slower=t_yo / max(t_lf, 1e-9))
+    b.metrics = dict(
+        rk4_s=t_rk4, leapfrog_s=t_lf, yoshida4_s=t_yo, yoshida_slower=t_yo / max(t_lf, 1e-9)
+    )
     b.passed = t_rk4 < 15 and t_lf < 10
     return b
 
@@ -117,6 +120,7 @@ def bench_barnes_hut() -> Bench:
     """B2: дерево на 400 телах."""
     b = Bench("B2 Barnes-Hut", threshold_s=25.0)
     from lab.nbody_tree import BarnesHutTree, BodyLite, benchmark
+
     with b:
         res = benchmark(n_bodies=400, seed=1)
     b.metrics = res
@@ -129,25 +133,32 @@ def bench_render() -> Bench:
     b = Bench("B3 рендер", threshold_s=25.0)
     with b:
         from render.pure_raster import render_bodies
-        bodies = [dict(position=(0, 0, 0), radius=0.3, color="#FDB813"),
-                  dict(position=(1.2, 0.4, 0), radius=0.15, color="#4FD1C5"),
-                  dict(position=(-1, -0.5, 0.6), radius=0.12,
-                       color="#E8C766")]
+
+        bodies = [
+            dict(position=(0, 0, 0), radius=0.3, color="#FDB813"),
+            dict(position=(1.2, 0.4, 0), radius=0.15, color="#4FD1C5"),
+            dict(position=(-1, -0.5, 0.6), radius=0.12, color="#E8C766"),
+        ]
         t0 = time.perf_counter()
         frame = render_bodies(bodies, width=320, height=240)
         t_pure = time.perf_counter() - t0
         # raytracer
         from render.raytracer import demo_scene, render_to_png, Camera
+
         t0 = time.perf_counter()
-        render_to_png(demo_scene(), Camera(aspect=4 / 3),
-                      "/tmp/tv_bench_rt.png", width=100, height=75)
+        render_to_png(
+            demo_scene(), Camera(aspect=4 / 3), "/tmp/tv_bench_rt.png", width=100, height=75
+        )
         t_ray = time.perf_counter() - t0
         # ascii
         from render.backend_ascii import render_ascii
+
         t0 = time.perf_counter()
-        render_ascii([dict(position=p["position"], radius=0.2,
-                            color=p["color"]) for p in bodies],
-                     width=60, height=18)
+        render_ascii(
+            [dict(position=p["position"], radius=0.2, color=p["color"]) for p in bodies],
+            width=60,
+            height=18,
+        )
         t_ascii = time.perf_counter() - t0
     b.metrics = dict(pure_s=t_pure, raytracer_s=t_ray, ascii_s=t_ascii)
     b.passed = frame is not None and t_ascii < 2.0
@@ -159,6 +170,7 @@ def bench_codecs() -> Bench:
     b = Bench("B4 PNG/GIF кодеки", threshold_s=30.0)
     with b:
         from render.png_codec import write_png
+
         px = bytearray()
         for y in range(180):
             for x in range(240):
@@ -167,15 +179,16 @@ def bench_codecs() -> Bench:
         write_png("/tmp/tv_bench.png", px, 240, 180)
         t_png = time.perf_counter() - t0
         from render.animator import write_gif
-        frames = [bytes((i % 256 if (j // 8) % 2 else 0)
-                        for j in range(120 * 90)) for i in range(6)]
+
+        frames = [
+            bytes((i % 256 if (j // 8) % 2 else 0) for j in range(120 * 90)) for i in range(6)
+        ]
         t0 = time.perf_counter()
         write_gif("/tmp/tv_bench.gif", frames, 120, 90, delay_cs=5)
         t_gif = time.perf_counter() - t0
     size_png = os.path.getsize("/tmp/tv_bench.png")
     size_gif = os.path.getsize("/tmp/tv_bench.gif")
-    b.metrics = dict(png_s=t_png, gif_s=t_gif,
-                     png_bytes=size_png, gif_bytes=size_gif)
+    b.metrics = dict(png_s=t_png, gif_s=t_gif, png_bytes=size_png, gif_bytes=size_gif)
     b.passed = size_png > 1000 and size_gif > 500
     return b
 
@@ -189,20 +202,26 @@ def bench_vortex() -> Bench:
         from lab.body import Body
         from lab.physics import run_simulation
         from lab.scene import Scene
-        cfg = from_profile("quick", n_steps=200,
-                           physics_engine="native_vortex")
+
+        cfg = from_profile("quick", n_steps=200, physics_engine="native_vortex")
         sc = Scene(cfg, name="bench_vortex")
         for k in range(7):
             phi = 2 * math.pi * k / 7
-            sc.add_body(Body(id=f"v{k}", name=f"V{k}", mass=1.0,
-                             radius=0.02,
-                             position=(math.cos(phi), math.sin(phi), 0),
-                             circulation=1.0, type="synthetic",
-                             source="bench"))
+            sc.add_body(
+                Body(
+                    id=f"v{k}",
+                    name=f"V{k}",
+                    mass=1.0,
+                    radius=0.02,
+                    position=(math.cos(phi), math.sin(phi), 0),
+                    circulation=1.0,
+                    type="synthetic",
+                    source="bench",
+                )
+            )
         sc.dt = 0.02
         sim = run_simulation(sc, n_steps=200)
-    b.metrics = dict(energy_drift=sim["energy_drift_rel"],
-                     t_final=sc.t)
+    b.metrics = dict(energy_drift=sim["energy_drift_rel"], t_final=sc.t)
     b.passed = sim["energy_drift_rel"] < 1e-8
     return b
 
@@ -211,9 +230,9 @@ def bench_mcmc() -> Bench:
     """B6: MCMC 4×800 итераций."""
     b = Bench("B6 MCMC", threshold_s=60.0)
     with b:
-        from analysis.mcmc import MetropolisSampler, gaussian_loglike, \
-            linear_model, flat_prior
+        from analysis.mcmc import MetropolisSampler, gaussian_loglike, linear_model, flat_prior
         import random as _rnd
+
         rng = _rnd.Random(1)
         x = [i / 8.0 for i in range(40)]
         data = [1.5 + 0.8 * xi + rng.gauss(0, 0.15) for xi in x]
@@ -223,8 +242,8 @@ def bench_mcmc() -> Bench:
             if lp == float("-inf"):
                 return lp
             return lp + gaussian_loglike(
-                lambda th: linear_model(th, x), data,
-                [0.15] * len(x), theta)
+                lambda th: linear_model(th, x), data, [0.15] * len(x), theta
+            )
 
         t0 = time.perf_counter()
         for seed in range(4):
@@ -243,15 +262,17 @@ def bench_reports() -> Bench:
         from core.config import from_profile
         from lab.presets import build_preset
         from lab.physics import run_simulation
-        from reports.engine import (ReportData, generate_reports,
-                                    validate_outputs)
+        from reports.engine import ReportData, generate_reports, validate_outputs
+
         sc = build_preset("earth_moon", from_profile("quick", n_steps=15))
         run_simulation(sc, n_steps=15)
         data = ReportData("Бенчмарк", scene=sc)
         data.fill_from_scene()
-        written = generate_reports(data, "/tmp/tv_bench_reports",
-                                   formats=["txt", "md", "html", "csv",
-                                            "json", "docx", "pdf"])
+        written = generate_reports(
+            data,
+            "/tmp/tv_bench_reports",
+            formats=["txt", "md", "html", "csv", "json", "docx", "pdf"],
+        )
         problems = validate_outputs(written)
     b.metrics = dict(written=len(written), problems=problems)
     b.passed = not problems and len(written) == 7
@@ -264,19 +285,26 @@ def bench_wavelet() -> Bench:
     with b:
         import math as _m
         from analysis.wavelets import cwt_morlet
+
         dt = 0.01
         y = [_m.sin(2 * _m.pi * 3 * i * dt) for i in range(600)]
         freqs = [1 + 5 * i / 23.0 for i in range(24)]
         cwt = cwt_morlet(y, dt, freqs=freqs)
-    b.metrics = dict(n_freqs=len(cwt["freqs"]),
-                     n_times=len(cwt["times"]))
+    b.metrics = dict(n_freqs=len(cwt["freqs"]), n_times=len(cwt["times"]))
     b.passed = len(cwt["freqs"]) == 24
     return b
 
 
-ALL_BENCHES = [bench_integrators, bench_barnes_hut, bench_render,
-               bench_codecs, bench_vortex, bench_mcmc, bench_reports,
-               bench_wavelet]
+ALL_BENCHES = [
+    bench_integrators,
+    bench_barnes_hut,
+    bench_render,
+    bench_codecs,
+    bench_vortex,
+    bench_mcmc,
+    bench_reports,
+    bench_wavelet,
+]
 
 
 def run_all(only: list[str] | None = None) -> dict:
@@ -287,11 +315,19 @@ def run_all(only: list[str] | None = None) -> dict:
         if only and b.name.split()[0] not in only:
             continue
         mark = "✓" if b.passed else "✗"
-        print(f"  [{mark}] {b.name}: {b.elapsed:.2f} с "
-              f"({', '.join(f'{k}={_fmt(v)}' for k, v in list(b.metrics.items())[:3])})")
-        results.append(dict(name=b.name, elapsed_s=b.elapsed,
-                            passed=b.passed, metrics=b.metrics,
-                            threshold_s=b.threshold))
+        print(
+            f"  [{mark}] {b.name}: {b.elapsed:.2f} с "
+            f"({', '.join(f'{k}={_fmt(v)}' for k, v in list(b.metrics.items())[:3])})"
+        )
+        results.append(
+            dict(
+                name=b.name,
+                elapsed_s=b.elapsed,
+                passed=b.passed,
+                metrics=b.metrics,
+                threshold_s=b.threshold,
+            )
+        )
     return dict(
         benches=results,
         total_s=sum(r["elapsed_s"] for r in results),
@@ -315,5 +351,4 @@ def save_protocol(result: dict, path: str) -> None:
 if __name__ == "__main__":
     protocol = run_all()
     save_protocol(protocol, os.path.join(ROOT, "runs", "benchmark.json"))
-    print(f"\nитог: {protocol['passed']}/{protocol['total']} за "
-          f"{protocol['total_s']:.1f} с")
+    print(f"\nитог: {protocol['passed']}/{protocol['total']} за " f"{protocol['total_s']:.1f} с")

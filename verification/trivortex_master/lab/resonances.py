@@ -17,6 +17,7 @@ TRIVORTEX MASTER — орбитальные резонансы: положени
 
 Самопроверки против наблюдаемых величин Солнечной системы.
 """
+
 from __future__ import annotations
 
 import math
@@ -54,18 +55,15 @@ def kirkwood_check(a_jupiter: float = 5.2038) -> dict:
     ok = True
     for name, (a_pub, p, q) in KIRKWOOD_GAPS.items():
         a_calc = resonance_location(a_jupiter, p, q)
-        out[name] = dict(published_au=a_pub, computed_au=a_calc,
-                         err_au=a_calc - a_pub)
+        out[name] = dict(published_au=a_pub, computed_au=a_calc, err_au=a_calc - a_pub)
         ok = ok and abs(a_calc - a_pub) < 0.015
-    return dict(gaps=out, all_ok=ok,
-                note="резонанс p:q с Юпитером: a = a_J·(q/p)^{2/3}")
+    return dict(gaps=out, all_ok=ok, note="резонанс p:q с Юпитером: a = a_J·(q/p)^{2/3}")
 
 
 # ═══════════════════════════════════════════════════════════════════════════
 # Хаотическая зона (Wisdom 1980)
 # ═══════════════════════════════════════════════════════════════════════════
-def wisdom_chaotic_zone(m_planet: float, m_star: float,
-                        a_planet: float) -> dict:
+def wisdom_chaotic_zone(m_planet: float, m_star: float, a_planet: float) -> dict:
     """Полуширина хаотической зоны: δa/a ≈ 1.5·μ^{2/7}, μ = m_p/(3M).
 
     Wisdom 1980 (AJ 85, 1122); для Юпитера даёт ~0.7 а.е. с каждой
@@ -73,11 +71,14 @@ def wisdom_chaotic_zone(m_planet: float, m_star: float,
     """
     mu = m_planet / (3.0 * m_star)
     delta_ratio = 1.5 * mu ** (2.0 / 7.0)
-    return dict(mu=mu, delta_ratio=delta_ratio,
-                delta_au=delta_ratio * a_planet,
-                inner_edge_au=a_planet - delta_ratio * a_planet,
-                outer_edge_au=a_planet + delta_ratio * a_planet,
-                reference="Wisdom 1980, AJ 85, 1122; Murray & Dermott §8.10")
+    return dict(
+        mu=mu,
+        delta_ratio=delta_ratio,
+        delta_au=delta_ratio * a_planet,
+        inner_edge_au=a_planet - delta_ratio * a_planet,
+        outer_edge_au=a_planet + delta_ratio * a_planet,
+        reference="Wisdom 1980, AJ 85, 1122; Murray & Dermott §8.10",
+    )
 
 
 def jupiter_zone_check() -> dict:
@@ -90,32 +91,36 @@ def jupiter_zone_check() -> dict:
 # ═══════════════════════════════════════════════════════════════════════════
 # Лапласов резонанс (Ио-Европа-Ганимед)
 # ═══════════════════════════════════════════════════════════════════════════
-LAPLACE_PERIODS = dict(
-    io=1.769138, europa=3.551181, ganymede=7.154553)   # сутки (NASA)
+LAPLACE_PERIODS = dict(io=1.769138, europa=3.551181, ganymede=7.154553)  # сутки (NASA)
 
 
 def laplace_ratios() -> dict:
     """Отношения периодов тройного лапласова резонанса (2:1, 4:1)."""
-    p_io, p_eu, p_ga = (LAPLACE_PERIODS["io"],
-                        LAPLACE_PERIODS["europa"],
-                        LAPLACE_PERIODS["ganymede"])
-    r1 = p_eu / p_io      # ≈ 2.008
-    r2 = p_ga / p_io      # ≈ 4.044
-    return dict(io_europa=r1, io_ganymede=r2,
-                near_2_1=abs(r1 - 2.0) < 0.02,
-                near_4_1=abs(r2 - 4.0) < 0.05,
-                note="Ио-Европа-Ганимед: Лапласов резонанс 4:2:1; "
-                     "фаза φ = λ₃ − 3λ₂ + 2λ₁ либрирует (Yoder 1979)")
+    p_io, p_eu, p_ga = (
+        LAPLACE_PERIODS["io"],
+        LAPLACE_PERIODS["europa"],
+        LAPLACE_PERIODS["ganymede"],
+    )
+    r1 = p_eu / p_io  # ≈ 2.008
+    r2 = p_ga / p_io  # ≈ 4.044
+    return dict(
+        io_europa=r1,
+        io_ganymede=r2,
+        near_2_1=abs(r1 - 2.0) < 0.02,
+        near_4_1=abs(r2 - 4.0) < 0.05,
+        note="Ио-Европа-Ганимед: Лапласов резонанс 4:2:1; "
+        "фаза φ = λ₃ − 3λ₂ + 2λ₁ либрирует (Yoder 1979)",
+    )
 
 
-def resonance_angle(lam_body: float, lam_perturber: float,
-                    varpi_body: float, p: int, q: int) -> float:
+def resonance_angle(
+    lam_body: float, lam_perturber: float, varpi_body: float, p: int, q: int
+) -> float:
     """Критический аргумент резонанса p:q: φ = p·λ_q − q·λ_p + (q−p)·ϖ.
 
     Либрация φ вокруг 0 (или π) — резонанс захвачен; циркуляция — нет.
     """
-    return math.degrees((p * lam_perturber - q * lam_body
-                         + (q - p) * varpi_body) % (2 * math.pi))
+    return math.degrees((p * lam_perturber - q * lam_body + (q - p) * varpi_body) % (2 * math.pi))
 
 
 def is_librating(angles_deg: list[float], tol: float = 60.0) -> bool:
@@ -163,9 +168,13 @@ def ttv_pair_report(p_inner: float, p_outer: float) -> dict:
             best = (j, delta)
     j = best[0]
     p_super = ttv_super_period(p_inner, p_outer, j)
-    return dict(period_ratio=ratio, resonance=f"{j}:{j - 1}",
-                offset=best[1], super_period_days=p_super,
-                reference="Lithwick, Xie & Wu 2012, ApJ 761, 122")
+    return dict(
+        period_ratio=ratio,
+        resonance=f"{j}:{j - 1}",
+        offset=best[1],
+        super_period_days=p_super,
+        reference="Lithwick, Xie & Wu 2012, ApJ 761, 122",
+    )
 
 
 def kepler_9_check() -> dict:
@@ -198,12 +207,19 @@ def self_check() -> dict:
     # либрация: синус около 0 распознаётся, тренд — нет
     lib = [math.degrees(math.sin(t * 0.1)) for t in range(20)]
     circ = [t * 7.5 % 360 for t in range(20)]
-    ok = (kw["all_ok"] and lap["near_2_1"] and lap["near_4_1"]
-          and jz["ok"] and k9["plausible"]
-          and is_librating(lib) and not is_librating(circ))
+    ok = (
+        kw["all_ok"]
+        and lap["near_2_1"]
+        and lap["near_4_1"]
+        and jz["ok"]
+        and k9["plausible"]
+        and is_librating(lib)
+        and not is_librating(circ)
+    )
     return dict(
         kirkwood_ok=kw["all_ok"],
-        laplace_2_1=lap["io_europa"], laplace_4_1=lap["io_ganymede"],
+        laplace_2_1=lap["io_europa"],
+        laplace_4_1=lap["io_ganymede"],
         wisdom_delta_au=jz["delta_au"],
         k9_super_period=k9["super_period_days"],
         libration_ok=is_librating(lib),

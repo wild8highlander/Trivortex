@@ -16,6 +16,7 @@ TRIVORTEX MASTER — нелинейная аппроксимация: Левен
 Самопроверка: гауссов пик восстанавливается с ошибкой <3σ_шума/√N;
 RV-кривая с K=10 м/с, P=12 дней — K в пределах 2σ.
 """
+
 from __future__ import annotations
 
 import math
@@ -48,8 +49,7 @@ def solve_linear(A: list[list[float]], b: Vector) -> Vector | None:
 def invert_matrix(A: list[list[float]]) -> list[list[float]] | None:
     """Обратная матрица (Гаусс-Жордан)."""
     n = len(A)
-    M = [row[:] + [1.0 if i == j else 0.0 for j in range(n)]
-         for i, row in enumerate(A)]
+    M = [row[:] + [1.0 if i == j else 0.0 for j in range(n)] for i, row in enumerate(A)]
     for col in range(n):
         piv = max(range(col, n), key=lambda r: abs(M[r][col]))
         if abs(M[piv][col]) < 1e-30:
@@ -75,10 +75,14 @@ class LevenbergMarquardt:
     model(theta, x) → предсказания; y, sigma — данные и ошибки.
     """
 
-    def __init__(self, model: Callable[[Vector, Sequence[float]], Vector],
-                 x: Sequence[float], y: Sequence[float],
-                 sigma: Sequence[float],
-                 h_step: float = 1e-6):
+    def __init__(
+        self,
+        model: Callable[[Vector, Sequence[float]], Vector],
+        x: Sequence[float],
+        y: Sequence[float],
+        sigma: Sequence[float],
+        h_step: float = 1e-6,
+    ):
         self.model = model
         self.x = list(x)
         self.y = list(y)
@@ -89,8 +93,7 @@ class LevenbergMarquardt:
 
     def _residuals(self, theta: Vector) -> Vector:
         pred = self.model(theta, self.x)
-        return [(yi - pi) / si for yi, pi, si
-                in zip(self.y, pred, self.sigma)]
+        return [(yi - pi) / si for yi, pi, si in zip(self.y, pred, self.sigma)]
 
     def _chi2(self, residuals: Vector) -> float:
         return sum(r * r for r in residuals)
@@ -112,9 +115,14 @@ class LevenbergMarquardt:
                 J[i][j] = (rp[i] - rm[i]) / (2.0 * h)
         return J
 
-    def fit(self, theta0: Vector, max_iter: int = 100,
-            tol_chi2: float = 1e-10, tol_theta: float = 1e-10,
-            lam0: float = 1e-3) -> dict:
+    def fit(
+        self,
+        theta0: Vector,
+        max_iter: int = 100,
+        tol_chi2: float = 1e-10,
+        tol_theta: float = 1e-10,
+        lam0: float = 1e-3,
+    ) -> dict:
         """Основной цикл LM. Возвращает θ̂, χ², ковариацию, историю."""
         theta = list(theta0)
         res = self._residuals(theta)
@@ -127,15 +135,18 @@ class LevenbergMarquardt:
             self.n_iter = it + 1
             J = self._jacobian(theta)
             # JᵀJ и Jᵀr
-            JtJ = [[sum(J[i][a] * J[i][b] for i in range(len(self.y)))
-                    for b in range(n_par)] for a in range(n_par)]
-            Jtr = [sum(J[i][a] * res[i] for i in range(len(self.y)))
-                   for a in range(n_par)]
+            JtJ = [
+                [sum(J[i][a] * J[i][b] for i in range(len(self.y))) for b in range(n_par)]
+                for a in range(n_par)
+            ]
+            Jtr = [sum(J[i][a] * res[i] for i in range(len(self.y))) for a in range(n_par)]
             # шаг: (JᵀJ + λ·diag)·δ = −Jᵀr
             improved = False
             for _attempt in range(6):
-                A = [[JtJ[a][b] + (lam * JtJ[a][a] if a == b else 0.0)
-                      for b in range(n_par)] for a in range(n_par)]
+                A = [
+                    [JtJ[a][b] + (lam * JtJ[a][a] if a == b else 0.0) for b in range(n_par)]
+                    for a in range(n_par)
+                ]
                 delta = solve_linear(A, [-v for v in Jtr])
                 if delta is None:
                     lam *= 10.0
@@ -165,19 +176,27 @@ class LevenbergMarquardt:
         # ковариация: (JᵀJ)⁻¹ · s², s² = χ²/(N−p)
         dof = max(len(self.y) - n_par, 1)
         s2 = chi2 / dof
-        JtJ = [[sum(J[i][a] * J[i][b] for i in range(len(self.y)))
-                for b in range(n_par)] for a in range(n_par)]
+        JtJ = [
+            [sum(J[i][a] * J[i][b] for i in range(len(self.y))) for b in range(n_par)]
+            for a in range(n_par)
+        ]
         inv = invert_matrix(JtJ)
         cov = None
         errors = None
         if inv is not None:
-            cov = [[inv[a][b] * s2 for b in range(n_par)]
-                   for a in range(n_par)]
+            cov = [[inv[a][b] * s2 for b in range(n_par)] for a in range(n_par)]
             errors = [math.sqrt(max(cov[a][a], 0.0)) for a in range(n_par)]
-        return dict(theta=theta, chi2=chi2, cov=cov, errors=errors,
-                    n_iter=self.n_iter, converged=converged,
-                    dof=dof, reduced_chi2=s2,
-                    history=self.chi2_history)
+        return dict(
+            theta=theta,
+            chi2=chi2,
+            cov=cov,
+            errors=errors,
+            n_iter=self.n_iter,
+            converged=converged,
+            dof=dof,
+            reduced_chi2=s2,
+            history=self.chi2_history,
+        )
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -186,8 +205,7 @@ class LevenbergMarquardt:
 def gaussian_model(theta: Vector, x: Sequence[float]) -> Vector:
     """A·exp(−(x−μ)²/2σ²) + c; theta = [A, mu, sigma, c]."""
     A, mu, sig, c = theta
-    return [A * math.exp(-(xi - mu) ** 2 / (2 * sig * sig)) + c
-            for xi in x]
+    return [A * math.exp(-((xi - mu) ** 2) / (2 * sig * sig)) + c for xi in x]
 
 
 def exponential_decay(theta: Vector, x: Sequence[float]) -> Vector:
@@ -205,6 +223,7 @@ def sine_model(theta: Vector, x: Sequence[float]) -> Vector:
 def rv_model(theta: Vector, t: Sequence[float]) -> Vector:
     """Кеплеровская RV: [K, P, e, omega, gamma] (через lab.kepler)."""
     from lab.kepler import kepler_E, true_anomaly
+
     K, P, e, omega, gamma = theta
     out = []
     for ti in t:
@@ -221,24 +240,24 @@ def rv_model(theta: Vector, t: Sequence[float]) -> Vector:
 def self_check() -> dict:
     """Гаусс: параметры в 3σ; RV: K в 2σ от истины."""
     import random
+
     rng = random.Random(9)
     # ── гауссов пик ──
     A_t, mu_t, sig_t, c_t = 5.0, 2.0, 0.7, 1.0
     x = [i * 0.1 for i in range(60)]
     noise = 0.25
-    y = [v + rng.gauss(0, noise)
-         for v in gaussian_model([A_t, mu_t, sig_t, c_t], x)]
+    y = [v + rng.gauss(0, noise) for v in gaussian_model([A_t, mu_t, sig_t, c_t], x)]
     lm = LevenbergMarquardt(gaussian_model, x, y, [noise] * len(x))
     fit = lm.fit([3.0, 1.5, 1.0, 0.5], max_iter=80)
     errs = fit["errors"] or [1e9] * 4
     in_3sigma = all(
         abs(fit["theta"][i] - t) < 3.0 * max(errs[i], 1e-9)
-        for i, t in enumerate([A_t, mu_t, sig_t, c_t]))
+        for i, t in enumerate([A_t, mu_t, sig_t, c_t])
+    )
     # ── кеплеровская RV ──
     K_t, P_t, e_t, w_t, g_t = 10.0, 12.0, 0.3, 1.0, 2.0
     t_rv = [i * 0.7 for i in range(60)]
-    y_rv = [v + rng.gauss(0, 0.8)
-            for v in rv_model([K_t, P_t, e_t, w_t, g_t], t_rv)]
+    y_rv = [v + rng.gauss(0, 0.8) for v in rv_model([K_t, P_t, e_t, w_t, g_t], t_rv)]
     lm2 = LevenbergMarquardt(rv_model, t_rv, y_rv, [0.8] * len(t_rv))
     fit2 = lm2.fit([8.0, 12.0, 0.2, 0.8, 1.0], max_iter=60)
     errs2 = fit2["errors"] or [1e9] * 5
@@ -248,7 +267,9 @@ def self_check() -> dict:
         gauss_in_3sigma=in_3sigma,
         gauss_reduced_chi2=fit["reduced_chi2"],
         gauss_iterations=fit["n_iter"],
-        rv_K=fit2["theta"][0], rv_K_err=errs2[0], rv_K_ok=k_ok,
+        rv_K=fit2["theta"][0],
+        rv_K_err=errs2[0],
+        rv_K_ok=k_ok,
         rv_reduced_chi2=fit2["reduced_chi2"],
         ok=in_3sigma and k_ok,
         note="LM: якобиан центральными разностями, λ-демпфирование",

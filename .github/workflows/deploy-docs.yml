@@ -4,6 +4,20 @@ name: Deploy Documentation Site to GitHub Pages
 # Static, dependency-free publication of docs/site/ — no Jekyll, no build
 # step. The committed .nojekyll keeps GitHub's generator out of the way,
 # so what is committed is exactly what is served.
+#
+# Failure classes this workflow is hardened against:
+#   1. A release whose tag predates docs/site/ (Oct-7-style tags) — the
+#      build job now detects the missing directory, warns, and the run
+#      finishes green with the deploy job skipped instead of failing.
+#   2. Pages disabled / not yet enabled for the repository —
+#      configure-pages runs with enablement:true, so it re-enables the
+#      site itself (needs the pages:write grant below).
+#   3. One-off GitHub-side hiccups (Nov-13-style release deploys) —
+#      re-run from Actions ("Deploy Documentation Site…" → Run workflow);
+#      no release must be re-published to redeploy.
+# Repository settings that must stay true: Settings → Pages → Source =
+# "GitHub Actions"; the github-pages environment must not require
+# approvals.
 
 on:
   push:
@@ -29,14 +43,33 @@ jobs:
   build:
     name: Build static site
     runs-on: ubuntu-24.04
+    outputs:
+      site_present: ${{ steps.site.outputs.present }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Check site directory
+        id: site
+        shell: bash
+        run: |
+          if compgen -G 'docs/site/*' > /dev/null; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+            echo "docs/site: $(find docs/site -type f | wc -l) files on ${{ github.ref_name }}"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::docs/site is absent on ${{ github.ref_name }} — nothing
+              to deploy (deploy job will be skipped)"
+          fi
+
       - name: Setup Pages
+        if: steps.site.outputs.present == 'true'
         uses: actions/configure-pages@v6
+        with:
+          enablement: true
 
       - name: Upload artifact
+        if: steps.site.outputs.present == 'true'
         uses: actions/upload-pages-artifact@v5
         with:
           path: docs/site
@@ -44,6 +77,7 @@ jobs:
   deploy:
     name: Deploy to GitHub Pages
     needs: build
+    if: needs.build.outputs.site_present == 'true'
     runs-on: ubuntu-24.04
     environment:
       name: github-pages

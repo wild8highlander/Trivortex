@@ -12,6 +12,7 @@ math и параметры (без импортов, без open/exec/eval/__) �
     eng = CustomEngine(scene, force_expr="-0.1*vx")
     eng.step(dt)
 """
+
 from __future__ import annotations
 
 import math
@@ -22,20 +23,61 @@ from lab.engine_base import BodyState, PhysicsEngine
 # что доступно пользовательскому выражению
 SANDBOX_GLOBALS = {
     name: getattr(math, name)
-    for name in ("sin", "cos", "tan", "asin", "acos", "atan", "atan2",
-                 "sinh", "cosh", "tanh", "exp", "log", "log10", "log2",
-                 "sqrt", "pow", "hypot", "floor", "ceil", "fabs",
-                 "pi", "e", "tau", "degrees", "radians", "fmod", "copysign",
-                 "isfinite", "isnan")
+    for name in (
+        "sin",
+        "cos",
+        "tan",
+        "asin",
+        "acos",
+        "atan",
+        "atan2",
+        "sinh",
+        "cosh",
+        "tanh",
+        "exp",
+        "log",
+        "log10",
+        "log2",
+        "sqrt",
+        "pow",
+        "hypot",
+        "floor",
+        "ceil",
+        "fabs",
+        "pi",
+        "e",
+        "tau",
+        "degrees",
+        "radians",
+        "fmod",
+        "copysign",
+        "isfinite",
+        "isnan",
+    )
 }
 SANDBOX_GLOBALS["abs"] = abs
 SANDBOX_GLOBALS["min"] = min
 SANDBOX_GLOBALS["max"] = max
 
 # запрещённые токены в исходнике выражения
-_FORBIDDEN = ("import", "open(", "exec", "eval", "__", "lambda",
-              "globals", "locals", "compile", "getattr", "setattr",
-              "delattr", "input", "yield", "await", "async")
+_FORBIDDEN = (
+    "import",
+    "open(",
+    "exec",
+    "eval",
+    "__",
+    "lambda",
+    "globals",
+    "locals",
+    "compile",
+    "getattr",
+    "setattr",
+    "delattr",
+    "input",
+    "yield",
+    "await",
+    "async",
+)
 
 
 def compile_force(force_expr: str):
@@ -50,12 +92,12 @@ def compile_force(force_expr: str):
     except SyntaxError as exc:
         raise ValueError(f"синтаксическая ошибка в выражении: {exc}") from exc
     # проверка допустимых имён
-    allowed = set(SANDBOX_GLOBALS) | {"x", "y", "z", "vx", "vy", "vz",
-                                      "t", "m", "q", "G", "r"}
+    allowed = set(SANDBOX_GLOBALS) | {"x", "y", "z", "vx", "vy", "vz", "t", "m", "q", "G", "r"}
     for name in code.co_names:
         if name not in allowed:
-            raise ValueError(f"имя {name!r} недоступно в песочнице; "
-                             f"разрешены: {sorted(allowed)}")
+            raise ValueError(
+                f"имя {name!r} недоступно в песочнице; " f"разрешены: {sorted(allowed)}"
+            )
     return code
 
 
@@ -69,12 +111,13 @@ class CustomEngine(PhysicsEngine):
     def __init__(self, scene, force_expr: str = "0.0"):
         super().__init__(scene)
         if isinstance(force_expr, dict):
-            self._codes = {axis: compile_force(expr)
-                           for axis, expr in force_expr.items()}
+            self._codes = {axis: compile_force(expr) for axis, expr in force_expr.items()}
         else:
-            self._codes = {"ax": compile_force(force_expr),
-                           "ay": compile_force("0.0"),
-                           "az": compile_force("0.0")}
+            self._codes = {
+                "ax": compile_force(force_expr),
+                "ay": compile_force("0.0"),
+                "az": compile_force("0.0"),
+            }
         self._expr_src = force_expr
 
     def name(self) -> str:
@@ -82,12 +125,19 @@ class CustomEngine(PhysicsEngine):
 
     def _user_accel(self, body, t: float) -> tuple[float, float, float]:
         env = dict(SANDBOX_GLOBALS)
-        env.update(x=body.position[0], y=body.position[1],
-                   z=body.position[2],
-                   vx=body.velocity[0], vy=body.velocity[1],
-                   vz=body.velocity[2],
-                   t=t, m=body.mass, q=body.charge, G=self.cfg.G,
-                   r=math.sqrt(sum(c * c for c in body.position)) or 1e-12)
+        env.update(
+            x=body.position[0],
+            y=body.position[1],
+            z=body.position[2],
+            vx=body.velocity[0],
+            vy=body.velocity[1],
+            vz=body.velocity[2],
+            t=t,
+            m=body.mass,
+            q=body.charge,
+            G=self.cfg.G,
+            r=math.sqrt(sum(c * c for c in body.position)) or 1e-12,
+        )
         out = []
         for axis in ("ax", "ay", "az"):
             code = self._codes.get(axis)
@@ -104,7 +154,7 @@ class CustomEngine(PhysicsEngine):
         bodies = self.scene.bodies
         n = len(bodies)
         G = self.cfg.G
-        eps2 = self.cfg.softening ** 2
+        eps2 = self.cfg.softening**2
         acc = []
         for i in range(n):
             ax = ay = az = 0.0
@@ -137,18 +187,16 @@ class CustomEngine(PhysicsEngine):
             vy = b.velocity[1] + ay * dt
             vz = b.velocity[2] + az * dt
             b.velocity = (vx, vy, vz)
-            b.position = (b.position[0] + vx * dt,
-                          b.position[1] + vy * dt,
-                          b.position[2] + vz * dt)
+            b.position = (b.position[0] + vx * dt, b.position[1] + vy * dt, b.position[2] + vz * dt)
         self.scene.t += dt
 
     def get_states(self) -> list[BodyState]:
-        return [BodyState(b.id, b.position, b.velocity)
-                for b in self.scene.bodies]
+        return [BodyState(b.id, b.position, b.velocity) for b in self.scene.bodies]
 
     def energy(self) -> float:
         return self.scene.total_energy()
 
     def to_dict(self) -> dict[str, Any]:
-        return dict(engine="custom", force_expr=str(self._expr_src)[:500],
-                    sandbox="math-only, без импортов")
+        return dict(
+            engine="custom", force_expr=str(self._expr_src)[:500], sandbox="math-only, без импортов"
+        )

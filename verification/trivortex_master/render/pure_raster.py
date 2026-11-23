@@ -17,6 +17,7 @@ TRIVORTEX MASTER — собственный программный растер�
 Производительность: кадр 320×240 с 3–8 сферами ~0,5–2 с — осознанный
 выбор в пользу полного отсутствия зависимостей ( mpl включён опционально).
 """
+
 from __future__ import annotations
 
 import math
@@ -37,8 +38,7 @@ def mat_identity() -> Mat4:
 
 
 def mat_mul(a: Mat4, b: Mat4) -> Mat4:
-    return [[sum(a[i][k] * b[k][j] for k in range(4)) for j in range(4)]
-            for i in range(4)]
+    return [[sum(a[i][k] * b[k][j] for k in range(4)) for j in range(4)] for i in range(4)]
 
 
 def mat_translate(tx: float, ty: float, tz: float) -> Mat4:
@@ -97,8 +97,7 @@ def mat_look_at(eye: Vec3, target: Vec3, up: Vec3) -> Mat4:
     ]
 
 
-def mat_perspective(fov_y_deg: float, aspect: float,
-                    near: float, far: float) -> Mat4:
+def mat_perspective(fov_y_deg: float, aspect: float, near: float, far: float) -> Mat4:
     """Перспективная проекция (OpenGL-стиль, z в [-1,1])."""
     f = 1.0 / math.tan(math.radians(fov_y_deg) / 2.0)
     nf = 1.0 / (near - far)
@@ -111,15 +110,17 @@ def mat_perspective(fov_y_deg: float, aspect: float,
 
 
 def mat_apply(m: Mat4, v: Vec4) -> Vec4:
-    return tuple(m[i][0] * v[0] + m[i][1] * v[1] + m[i][2] * v[2]
-                 + m[i][3] * v[3] for i in range(4))  # type: ignore
+    return tuple(
+        m[i][0] * v[0] + m[i][1] * v[1] + m[i][2] * v[2] + m[i][3] * v[3] for i in range(4)
+    )  # type: ignore
 
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 2. Геометрия: UV-сфера
 # ═══════════════════════════════════════════════════════════════════════════
-def uv_sphere(radius: float, seg: int = 12, rings: int = 8
-              ) -> tuple[list[Vec3], list[tuple[int, int, int]]]:
+def uv_sphere(
+    radius: float, seg: int = 12, rings: int = 8
+) -> tuple[list[Vec3], list[tuple[int, int, int]]]:
     """Вершины и треугольники UV-сферы (полюса по y)."""
     verts: list[Vec3] = []
     for r in range(rings + 1):
@@ -157,8 +158,7 @@ def _hex_to_rgb(color: str) -> tuple[int, int, int]:
 class Frame:
     """RGB-кадр с z-буфером."""
 
-    def __init__(self, width: int, height: int,
-                 bg: tuple[int, int, int] = (13, 22, 40)):
+    def __init__(self, width: int, height: int, bg: tuple[int, int, int] = (13, 22, 40)):
         self.w = width
         self.h = height
         self.bg = bg
@@ -179,8 +179,9 @@ class Frame:
                 self.pixels[o + 1] = color[1]
                 self.pixels[o + 2] = color[2]
 
-    def draw_line(self, x0: int, y0: int, x1: int, y1: int,
-                  color: tuple[int, int, int], z: float = 0.0) -> None:
+    def draw_line(
+        self, x0: int, y0: int, x1: int, y1: int, color: tuple[int, int, int], z: float = 0.0
+    ) -> None:
         """Линия Брезенхэма."""
         dx, dy = abs(x1 - x0), abs(y1 - y0)
         sx = 1 if x0 < x1 else -1
@@ -200,13 +201,17 @@ class Frame:
                 y += sy
 
     # ── освещение ──
-    def shade(self, normal: Vec3, base: tuple[int, int, int],
-              light_dir: Vec3, ambient: float = 0.25,
-              specular: float = 0.0, view_dir: Vec3 = (0.0, 0.0, 1.0)
-              ) -> tuple[int, int, int]:
+    def shade(
+        self,
+        normal: Vec3,
+        base: tuple[int, int, int],
+        light_dir: Vec3,
+        ambient: float = 0.25,
+        specular: float = 0.0,
+        view_dir: Vec3 = (0.0, 0.0, 1.0),
+    ) -> tuple[int, int, int]:
         """Ламберт + ambient (+ Блинн-Фонг опционально)."""
-        nl = (normal[0] * light_dir[0] + normal[1] * light_dir[1]
-              + normal[2] * light_dir[2])
+        nl = normal[0] * light_dir[0] + normal[1] * light_dir[1] + normal[2] * light_dir[2]
         nl = max(0.0, min(1.0, nl))
         # свет «сверху-спереди», если направленный не задан явно
         intensity = ambient + (1.0 - ambient) * nl
@@ -216,21 +221,22 @@ class Frame:
             hy = light_dir[1] + view_dir[1]
             hz = light_dir[2] + view_dir[2]
             hl = math.sqrt(hx * hx + hy * hy + hz * hz) or 1.0
-            nh = (normal[0] * hx / hl + normal[1] * hy / hl
-                  + normal[2] * hz / hl)
+            nh = normal[0] * hx / hl + normal[1] * hy / hl + normal[2] * hz / hl
             nh = max(0.0, nh)
-            intensity += specular * (nh ** 32)
+            intensity += specular * (nh**32)
         intensity = min(1.0, intensity)
-        return (int(base[0] * intensity), int(base[1] * intensity),
-                int(base[2] * intensity))
+        return (int(base[0] * intensity), int(base[1] * intensity), int(base[2] * intensity))
 
     # ── треугольник: scanline с z-интерполяцией ──
-    def draw_triangle(self, p0: tuple[float, float, float],
-                      p1: tuple[float, float, float],
-                      p2: tuple[float, float, float],
-                      c0: tuple[int, int, int],
-                      c1: tuple[int, int, int],
-                      c2: tuple[int, int, int]) -> None:
+    def draw_triangle(
+        self,
+        p0: tuple[float, float, float],
+        p1: tuple[float, float, float],
+        p2: tuple[float, float, float],
+        c0: tuple[int, int, int],
+        c1: tuple[int, int, int],
+        c2: tuple[int, int, int],
+    ) -> None:
         """Вершины в экранных координатах (x, y, z-глубина)."""
         # сортировка по y
         pts = sorted([p0, p1, p2], key=lambda p: p[1])
@@ -279,9 +285,11 @@ class Frame:
             for x in range(x_i, x_f + 1):
                 t = (x - x_left) / (x_right - x_left)
                 z = z_left + (z_right - z_left) * t
-                c = (int(c_left[0] + (c_right[0] - c_left[0]) * t),
-                     int(c_left[1] + (c_right[1] - c_left[1]) * t),
-                     int(c_left[2] + (c_right[2] - c_left[2]) * t))
+                c = (
+                    int(c_left[0] + (c_right[0] - c_left[0]) * t),
+                    int(c_left[1] + (c_right[1] - c_left[1]) * t),
+                    int(c_left[2] + (c_right[2] - c_left[2]) * t),
+                )
                 self.set_pixel(x, y, z, c)
 
     def _span(self, y, xa, za, ca, xb, zb, cb):
@@ -306,13 +314,20 @@ class Frame:
 # ═══════════════════════════════════════════════════════════════════════════
 # 4. Рендер сцены тел: сферы + трейлы + подсветка
 # ═══════════════════════════════════════════════════════════════════════════
-def render_bodies(bodies_state: list[dict], width: int = 320, height: int = 240,
-                  trails: list[list[Vec3]] | None = None,
-                  eye: Vec3 | None = None, target: Vec3 = (0.0, 0.0, 0.0),
-                  fov: float = 50.0, seg: int = 10, rings: int = 6,
-                  bg: tuple[int, int, int] = (13, 22, 40),
-                  show_axes: bool = True,
-                  title: str = "") -> Frame:
+def render_bodies(
+    bodies_state: list[dict],
+    width: int = 320,
+    height: int = 240,
+    trails: list[list[Vec3]] | None = None,
+    eye: Vec3 | None = None,
+    target: Vec3 = (0.0, 0.0, 0.0),
+    fov: float = 50.0,
+    seg: int = 10,
+    rings: int = 6,
+    bg: tuple[int, int, int] = (13, 22, 40),
+    show_axes: bool = True,
+    title: str = "",
+) -> Frame:
     """
     bodies_state: [{position: (x,y,z), radius: float, color: '#rrggbb',
                     label: str, glow: bool}]
@@ -322,8 +337,7 @@ def render_bodies(bodies_state: list[dict], width: int = 320, height: int = 240,
 
     # авто-габарит сцены
     if bodies_state:
-        max_r = max(max(abs(c) for c in b["position"])
-                    for b in bodies_state) or 1.0
+        max_r = max(max(abs(c) for c in b["position"]) for b in bodies_state) or 1.0
     else:
         max_r = 1.0
     scale = 2.2 / max_r
@@ -357,13 +371,16 @@ def render_bodies(bodies_state: list[dict], width: int = 320, height: int = 240,
     if show_axes:
         origin = to_screen((0.0, 0.0, 0.0))
         if origin:
-            for axis, color, vec in (("x", (120, 60, 60), (0.8 / scale, 0, 0)),
-                                     ("y", (60, 120, 60), (0, 0.8 / scale, 0)),
-                                     ("z", (60, 60, 120), (0, 0, 0.8 / scale))):
+            for axis, color, vec in (
+                ("x", (120, 60, 60), (0.8 / scale, 0, 0)),
+                ("y", (60, 120, 60), (0, 0.8 / scale, 0)),
+                ("z", (60, 60, 120), (0, 0, 0.8 / scale)),
+            ):
                 tip = to_screen(vec)
                 if tip:
-                    frame.draw_line(int(origin[0]), int(origin[1]),
-                                    int(tip[0]), int(tip[1]), color, z=-1e-6)
+                    frame.draw_line(
+                        int(origin[0]), int(origin[1]), int(tip[0]), int(tip[1]), color, z=-1e-6
+                    )
 
     # трейлы
     if trails:
@@ -374,21 +391,24 @@ def render_bodies(bodies_state: list[dict], width: int = 320, height: int = 240,
             for p in trail[1:]:
                 cur = to_screen(p)
                 if prev and cur:
-                    frame.draw_line(int(prev[0]), int(prev[1]),
-                                    int(cur[0]), int(cur[1]),
-                                    (90, 120, 160), z=-1e-6)
+                    frame.draw_line(
+                        int(prev[0]),
+                        int(prev[1]),
+                        int(cur[0]),
+                        int(cur[1]),
+                        (90, 120, 160),
+                        z=-1e-6,
+                    )
                 prev = cur
 
     # сферы (от дальних к ближним — сортировка по глубине вида)
-    order = sorted(bodies_state,
-                   key=lambda b: -math.dist(eye, b["position"]))  # type: ignore
+    order = sorted(bodies_state, key=lambda b: -math.dist(eye, b["position"]))  # type: ignore
     verts, tris = uv_sphere(1.0, seg=seg, rings=rings)
     for b in order:
         pos: Vec3 = b["position"]
         r_screen = max(b["radius"] * scale, 0.02)
         base = _hex_to_rgb(b.get("color", "#4fd1c5"))
-        model = mat_mul(mat_translate(*pos),
-                        mat_scale(r_screen, r_screen, r_screen))
+        model = mat_mul(mat_translate(*pos), mat_scale(r_screen, r_screen, r_screen))
         mv = mat_mul(view, model)
         # экранные вершины
         scr = []
@@ -397,12 +417,16 @@ def render_bodies(bodies_state: list[dict], width: int = 320, height: int = 240,
             if clip[3] <= 1e-9:
                 scr = []
                 break
-            scr.append(((clip[0] / clip[3] * 0.5 + 0.5) * width,
-                        (1.0 - (clip[1] / clip[3] * 0.5 + 0.5)) * height,
-                        clip[3]))
+            scr.append(
+                (
+                    (clip[0] / clip[3] * 0.5 + 0.5) * width,
+                    (1.0 - (clip[1] / clip[3] * 0.5 + 0.5)) * height,
+                    clip[3],
+                )
+            )
         if not scr:
             continue
-        for (i0, i1, i2) in tris:
+        for i0, i1, i2 in tris:
             # бэкул-фейс culling в экранных координатах
             ax, ay = scr[i0][0], scr[i0][1]
             bx, by = scr[i1][0], scr[i1][1]
@@ -414,9 +438,7 @@ def render_bodies(bodies_state: list[dict], width: int = 320, height: int = 240,
             colors = []
             for idx in (i0, i1, i2):
                 n = verts[idx]
-                colors.append(frame.shade(n, base, light_dir,
-                                          ambient=0.3, specular=0.25))
-            frame.draw_triangle(scr[i0], scr[i1], scr[i2],
-                                colors[0], colors[1], colors[2])
+                colors.append(frame.shade(n, base, light_dir, ambient=0.3, specular=0.25))
+            frame.draw_triangle(scr[i0], scr[i1], scr[i2], colors[0], colors[1], colors[2])
 
     return frame

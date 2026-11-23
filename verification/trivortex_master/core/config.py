@@ -11,6 +11,7 @@ TRIVORTEX MASTER — конфигурация: MasterConfig, профили, в�
                        с пометкой unphysical_flag=True во всех отчётах;
   * N > 8            — жёсткий отказ (hard_max_bodies = 8).
 """
+
 from __future__ import annotations
 
 import copy
@@ -42,27 +43,28 @@ class UnphysicalConfiguration(Exception):
 # MasterConfig
 # ═══════════════════════════════════════════════════════════════════════════
 
+
 @dataclasses.dataclass
 class MasterConfig:
     """Все настраиваемые параметры комплекса."""
 
     # ── общий профиль ──
-    profile: str = "standard"            # quick|standard|realistic|research|cinematic|pure_stdlib
+    profile: str = "standard"  # quick|standard|realistic|research|cinematic|pure_stdlib
 
     # ── рендер ──
-    render_backend: str = "auto"         # auto|ascii|pure|mpl|gl
-    color_scheme: str = "neon_dark"      # neon_dark|scientific|minimal
-    image_width: int = 1280              # ширина кадра чистых растровых движков
+    render_backend: str = "auto"  # auto|ascii|pure|mpl|gl
+    color_scheme: str = "neon_dark"  # neon_dark|scientific|minimal
+    image_width: int = 1280  # ширина кадра чистых растровых движков
     image_height: int = 720
-    ascii_width: int = 78                # ширина ascii-рендера
+    ascii_width: int = 78  # ширина ascii-рендера
 
     # ── физика ──
-    physics_engine: str = "auto"         # auto|native_newton|native_vortex|rebound|dedalus|custom
+    physics_engine: str = "auto"  # auto|native_newton|native_vortex|rebound|dedalus|custom
     G: float = G_SI
-    time_scale: float = 1.0              # множитель модельного времени
-    enable_relativity: bool = False      # 1PN-поправка
-    enable_dissipation: bool = False     # диссипативный член
-    softening: float = 0.0               # сглаживание потенциала (м)
+    time_scale: float = 1.0  # множитель модельного времени
+    enable_relativity: bool = False  # 1PN-поправка
+    enable_dissipation: bool = False  # диссипативный член
+    softening: float = 0.0  # сглаживание потенциала (м)
 
     # ── лимиты тел (порог Хавелока) ──
     min_bodies: int = 3
@@ -71,20 +73,19 @@ class MasterConfig:
     allow_unphysical: bool = False
 
     # ── масштаб ──
-    scale_mode: str = "macro"            # macro|micro
+    scale_mode: str = "macro"  # macro|micro
 
     # ── интегрирование ──
-    dt: float = 1e-3                     # шаг (в единицах модели)
-    n_steps: int = 2000                  # число шагов по умолчанию
-    max_wall_seconds: float = 600.0      # предохранитель по времени
+    dt: float = 1e-3  # шаг (в единицах модели)
+    n_steps: int = 2000  # число шагов по умолчанию
+    max_wall_seconds: float = 600.0  # предохранитель по времени
 
     # ── данные и вывод ──
     data_dir: str = "data"
-    cache_ttl_seconds: int = 86400       # TTL TAP-кэша: сутки
+    cache_ttl_seconds: int = 86400  # TTL TAP-кэша: сутки
     output_dir: str = "runs"
-    report_formats: list[str] = dataclasses.field(
-        default_factory=lambda: ["md", "html", "json"])
-    report_theme: str = "aurora"         # aurora|ice|minimal
+    report_formats: list[str] = dataclasses.field(default_factory=lambda: ["md", "html", "json"])
+    report_theme: str = "aurora"  # aurora|ice|minimal
     log_level: str = "INFO"
     seed: int = 42
 
@@ -105,8 +106,14 @@ class MasterConfig:
             problems.append("max_bodies < min_bodies")
         if self.hard_max_bodies < self.max_bodies:
             problems.append("hard_max_bodies < max_bodies")
-        if self.physics_engine not in ("auto", "native_newton", "native_vortex",
-                                       "rebound", "dedalus", "custom"):
+        if self.physics_engine not in (
+            "auto",
+            "native_newton",
+            "native_vortex",
+            "rebound",
+            "dedalus",
+            "custom",
+        ):
             problems.append(f"неизвестный движок: {self.physics_engine}")
         if self.render_backend not in ("auto", "ascii", "pure", "mpl", "gl"):
             problems.append(f"неизвестный бэкенд рендера: {self.render_backend}")
@@ -126,18 +133,23 @@ class MasterConfig:
             raise UnphysicalConfiguration(
                 f"N={n} < min_bodies={self.min_bodies}: меньше трёх тел — "
                 "нет ни задачи трёх тел, ни вихревого треугольника Теоремы 3.1",
-                n_bodies=n)
+                n_bodies=n,
+            )
         if n > self.hard_max_bodies:
             raise UnphysicalConfiguration(
                 f"N={n} > hard_max_bodies={self.hard_max_bodies}: "
-                "конфигурация не поддерживается ни в каком режиме", n_bodies=n)
+                "конфигурация не поддерживается ни в каком режиме",
+                n_bodies=n,
+            )
         if n > self.max_bodies:
             if not self.allow_unphysical:
                 raise UnphysicalConfiguration(
                     f"N={n} вне физической вселенной модели: порог Хавелока "
                     f"(POLYVORTEX W4) — кольцо устойчиво при N<=7, при N=8 "
                     "max Re λ = +0.4502. Включите allow_unphysical=True, "
-                    "чтобы принудительно продолжить.", n_bodies=n)
+                    "чтобы принудительно продолжить.",
+                    n_bodies=n,
+                )
         if n > self.max_bodies and self.allow_unphysical:
             # допустимо, но помечается при сборке сцены
             pass
@@ -151,7 +163,7 @@ class MasterConfig:
         return dataclasses.asdict(self)
 
     @classmethod
-    def from_dict(cls, d: dict[str, Any]) -> "MasterConfig":
+    def from_dict(cls, d: dict[str, Any]) -> MasterConfig:
         valid = {f.name for f in dataclasses.fields(cls)}
         return cls(**{k: v for k, v in d.items() if k in valid})
 
@@ -160,11 +172,11 @@ class MasterConfig:
             json.dump(self.to_dict(), fh, ensure_ascii=False, indent=1)
 
     @classmethod
-    def load(cls, path: str) -> "MasterConfig":
-        with open(path, "r", encoding="utf-8") as fh:
+    def load(cls, path: str) -> MasterConfig:
+        with open(path, encoding="utf-8") as fh:
             return cls.from_dict(json.load(fh))
 
-    def diff(self, other: "MasterConfig") -> dict[str, tuple[Any, Any]]:
+    def diff(self, other: MasterConfig) -> dict[str, tuple[Any, Any]]:
         """Различия между двумя конфигурациями (для отчётов об изменениях)."""
         out = {}
         for f in dataclasses.fields(self.__class__):
@@ -179,32 +191,47 @@ class MasterConfig:
 # ═══════════════════════════════════════════════════════════════════════════
 PROFILES: dict[str, dict[str, Any]] = {
     "quick": dict(
-        render_backend="ascii", physics_engine="native_newton",
-        n_steps=400, progress=True, report_formats=["md", "json"],
+        render_backend="ascii",
+        physics_engine="native_newton",
+        n_steps=400,
+        progress=True,
+        report_formats=["md", "json"],
     ),
     "standard": dict(
-        render_backend="auto", physics_engine="auto",
-        n_steps=2000, report_formats=["md", "html", "json"],
+        render_backend="auto",
+        physics_engine="auto",
+        n_steps=2000,
+        report_formats=["md", "html", "json"],
     ),
     "realistic": dict(
-        render_backend="auto", physics_engine="auto",
-        G=G_SI, enable_relativity=True, scale_mode="macro",
+        render_backend="auto",
+        physics_engine="auto",
+        G=G_SI,
+        enable_relativity=True,
+        scale_mode="macro",
         report_formats=["md", "html", "json", "csv"],
     ),
     "research": dict(
-        render_backend="mpl", physics_engine="auto",
-        n_steps=6000, report_formats=["txt", "md", "html", "csv", "json",
-                                      "docx", "pdf"],
+        render_backend="mpl",
+        physics_engine="auto",
+        n_steps=6000,
+        report_formats=["txt", "md", "html", "csv", "json", "docx", "pdf"],
         report_theme="aurora",
     ),
     "cinematic": dict(
-        render_backend="mpl", physics_engine="native_newton",
-        time_scale=1e5, n_steps=3000, image_width=1920, image_height=1080,
+        render_backend="mpl",
+        physics_engine="native_newton",
+        time_scale=1e5,
+        n_steps=3000,
+        image_width=1920,
+        image_height=1080,
         report_formats=["html", "pdf"],
     ),
     "pure_stdlib": dict(
-        render_backend="pure", physics_engine="native_newton",
-        n_steps=1500, report_formats=["txt", "md", "json"],
+        render_backend="pure",
+        physics_engine="native_newton",
+        n_steps=1500,
+        report_formats=["txt", "md", "json"],
     ),
 }
 
@@ -212,8 +239,7 @@ PROFILES: dict[str, dict[str, Any]] = {
 def from_profile(name: str, **overrides: Any) -> MasterConfig:
     """Собрать конфигурацию из профиля с переопределениями."""
     if name not in PROFILES:
-        raise ValueError(f"неизвестный профиль: {name} "
-                         f"(доступны: {', '.join(PROFILES)})")
+        raise ValueError(f"неизвестный профиль: {name} " f"(доступны: {', '.join(PROFILES)})")
     cfg = MasterConfig(profile=name)
     for key, val in PROFILES[name].items():
         setattr(cfg, key, val)

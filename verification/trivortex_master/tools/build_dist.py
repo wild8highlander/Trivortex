@@ -12,6 +12,7 @@ TRIVORTEX MASTER — сборка дистрибутива v2.0.0.
 
 Версия: 2.0.0 (удвоенный объём).
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -57,22 +58,28 @@ def collect_files() -> list[str]:
 def preflight() -> dict:
     """Прогон selftest + приёмки; сборка прерывается при провале."""
     from analysis.tests import run_all as run_selftest
+
     st = run_selftest(verbose=False)
     if not st["all_pass"]:
         raise SystemExit(f"selftest провален: {st['passed']}/{st['total']}")
     res = subprocess.run(
         [sys.executable, os.path.join(ROOT, "tools", "verify_package.py")],
-        capture_output=True, text=True, timeout=1200)
+        capture_output=True,
+        text=True,
+        timeout=1200,
+    )
     tail = (res.stdout or "").strip().splitlines()[-1:]
     if res.returncode != 0:
         raise SystemExit(f"приёмка провалена: {tail}")
-    return dict(selftest=st["passed"], selftest_total=st["total"],
-                acceptance=tail[0] if tail else "OK")
+    return dict(
+        selftest=st["passed"], selftest_total=st["total"], acceptance=tail[0] if tail else "OK"
+    )
 
 
 def build_examples() -> dict:
     """Примеры артефактов в runs/examples."""
     from tools.make_examples import make_examples
+
     return make_examples()
 
 
@@ -80,6 +87,7 @@ def build_docs() -> dict:
     """API-справочник + релизные заметки."""
     from analysis.api_reference import write_api_doc
     from tools.release_notes import write_release_notes
+
     api = write_api_doc(version=VERSION)
     rel = write_release_notes(version=VERSION)
     return dict(api_md=api, release_md=rel)
@@ -98,38 +106,41 @@ def build_dist() -> dict:
     for path in files:
         rel = os.path.relpath(path, ROOT)
         size = os.path.getsize(path)
-        manifest["files"].append(dict(path=rel, bytes=size,
-                                      sha256=sha256(path)))
+        manifest["files"].append(dict(path=rel, bytes=size, sha256=sha256(path)))
         if rel.endswith(".py"):
-            manifest["python_lines"] += sum(
-                1 for _ in open(path, encoding="utf-8"))
+            manifest["python_lines"] += sum(1 for _ in open(path, encoding="utf-8"))
 
     os.makedirs(DOWNLOAD, exist_ok=True)
     zip_path = os.path.join(DOWNLOAD, f"trivortex_master_v{VERSION}.zip")
     with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
         for path in files:
-            zf.write(path, os.path.join("trivortex_master", 
-                                        os.path.relpath(path, ROOT)))
-    tgz_path = os.path.join(DOWNLOAD,
-                            f"trivortex_master_v{VERSION}_sources.tar.gz")
+            zf.write(path, os.path.join("trivortex_master", os.path.relpath(path, ROOT)))
+    tgz_path = os.path.join(DOWNLOAD, f"trivortex_master_v{VERSION}_sources.tar.gz")
     with tarfile.open(tgz_path, "w:gz") as tf:
         for path in files:
-            tf.add(path, arcname=os.path.join("trivortex_master",
-                                              os.path.relpath(path, ROOT)))
+            tf.add(path, arcname=os.path.join("trivortex_master", os.path.relpath(path, ROOT)))
     # манифест (включая сами архивы)
     for artifact in (zip_path, tgz_path):
-        manifest["files"].append(dict(
-            path=os.path.basename(artifact),
-            bytes=os.path.getsize(artifact),
-            sha256=sha256(artifact)))
+        manifest["files"].append(
+            dict(
+                path=os.path.basename(artifact),
+                bytes=os.path.getsize(artifact),
+                sha256=sha256(artifact),
+            )
+        )
     manifest["file_count"] = len(manifest["files"])
     manifest["total_bytes"] = sum(f["bytes"] for f in manifest["files"])
     manifest_path = os.path.join(DOWNLOAD, f"manifest_v{VERSION}.json")
     with open(manifest_path, "w", encoding="utf-8") as fh:
         json.dump(manifest, fh, ensure_ascii=False, indent=1)
-    return dict(zip=zip_path, tgz=tgz_path, manifest=manifest_path,
-                n_files=len(files), py_lines=manifest["python_lines"],
-                total_bytes=manifest["total_bytes"])
+    return dict(
+        zip=zip_path,
+        tgz=tgz_path,
+        manifest=manifest_path,
+        n_files=len(files),
+        py_lines=manifest["python_lines"],
+        total_bytes=manifest["total_bytes"],
+    )
 
 
 def copy_examples() -> list[str]:
@@ -146,14 +157,14 @@ def copy_examples() -> list[str]:
                 copied.append(fn)
     # новые примеры v2: рейтрейсер + карта неба + corner-текст
     from render.raytracer import demo_scene, render_to_png, Camera
+
     png = os.path.join(dst, "raytracer_demo.png")
-    render_to_png(demo_scene(), Camera(aspect=4 / 3), png,
-                  width=160, height=120)
+    render_to_png(demo_scene(), Camera(aspect=4 / 3), png, width=160, height=120)
     copied.append(os.path.basename(png))
     from render.ascii_sky import sky_map_ascii
+
     sky = sky_map_ascii(55.75, 1.5708)
-    with open(os.path.join(dst, "sky_map_55N.txt"), "w",
-              encoding="utf-8") as fh:
+    with open(os.path.join(dst, "sky_map_55N.txt"), "w", encoding="utf-8") as fh:
         fh.write(sky)
     copied.append("sky_map_55N.txt")
     return copied
@@ -162,16 +173,20 @@ def copy_examples() -> list[str]:
 def main() -> int:
     print("── СБОРКА v2.0.0 ─────────────────────────────")
     pf = preflight()
-    print(f"preflight: selftest {pf['selftest']}/{pf['selftest_total']}, "
-          f"приёмка: {pf['acceptance']}")
+    print(
+        f"preflight: selftest {pf['selftest']}/{pf['selftest_total']}, "
+        f"приёмка: {pf['acceptance']}"
+    )
     ex = build_examples()
     print(f"примеры: {len(ex)} артефактов")
     docs = build_docs()
     print(f"документация: API.md + RELEASE_v2.0.md")
     dist = build_dist()
-    print(f"дистрибутив: {dist['n_files']} файлов, "
-          f"{dist['py_lines']} строк Python, "
-          f"{dist['total_bytes'] / 1e6:.1f} МБ")
+    print(
+        f"дистрибутив: {dist['n_files']} файлов, "
+        f"{dist['py_lines']} строк Python, "
+        f"{dist['total_bytes'] / 1e6:.1f} МБ"
+    )
     copied = copy_examples()
     print(f"копии примеров в download/examples: {len(copied)}")
     print(f"ZIP: {dist['zip']}")

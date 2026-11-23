@@ -10,6 +10,7 @@ Dedalus: спектральный решатель PDE (Burns, Vasil, Oishi, Lec
 
 При ImportError — EngineUnavailable(fallback="native_vortex").
 """
+
 from __future__ import annotations
 
 import math
@@ -17,6 +18,7 @@ from typing import Any
 
 try:
     import dedalus  # noqa: F401
+
     HAVE_DEDALUS = True
 except ImportError:
     HAVE_DEDALUS = False
@@ -31,9 +33,11 @@ class DedalusAdapter(PhysicsEngine):
     def __init__(self, scene, grid: int = 64):
         if not HAVE_DEDALUS:
             raise EngineUnavailable(
-                "dedalus", fallback="native_vortex",
+                "dedalus",
+                fallback="native_vortex",
                 reason="пакет dedalus не установлен "
-                       "(pip install dedalus — спектральные методы PDE)")
+                "(pip install dedalus — спектральные методы PDE)",
+            )
         super().__init__(scene)
         self.grid = grid
         self._problem = None
@@ -51,31 +55,30 @@ class DedalusAdapter(PhysicsEngine):
             import numpy as np
             import dedalus.public as d3
             from scipy.interpolate import RegularGridInterpolator
+
             self._np = np
             self._interp_cls = RegularGridInterpolator
             self._d3 = d3
         except Exception as exc:
             raise EngineUnavailable(
-                "dedalus", fallback="native_vortex",
-                reason=f"стек dedalus неполон: {exc}")
+                "dedalus", fallback="native_vortex", reason=f"стек dedalus неполон: {exc}"
+            )
 
-        bodies = [b for b in self.scene.bodies
-                  if abs(b.circulation) > 1e-15]
+        bodies = [b for b in self.scene.bodies if abs(b.circulation) > 1e-15]
         if not bodies:
             # без циркуляций поле тривиально — считаем нативно
             raise EngineUnavailable(
-                "dedalus", fallback="native_vortex",
-                reason="в сцене нет вихрей с Γ ≠ 0 — поле не нужно")
+                "dedalus",
+                fallback="native_vortex",
+                reason="в сцене нет вихрей с Γ ≠ 0 — поле не нужно",
+            )
 
         # домен по габаритам сцены
-        L = max((max(abs(c) for c in b.position) for b in bodies),
-                default=1.0) * 1.5
+        L = max((max(abs(c) for c in b.position) for b in bodies), default=1.0) * 1.5
         coords = self._d3.CartesianCoordinates("x", "y")
         dist = self._d3.Distributor(coords, dtype=self._np.float64)
-        xbasis = self._d3.RealFourier(coords["x"], size=self.grid,
-                                      bounds=(-L, L), dealias=3 / 2)
-        ybasis = self._d3.RealFourier(coords["y"], size=self.grid,
-                                      bounds=(-L, L), dealias=3 / 2)
+        xbasis = self._d3.RealFourier(coords["x"], size=self.grid, bounds=(-L, L), dealias=3 / 2)
+        ybasis = self._d3.RealFourier(coords["y"], size=self.grid, bounds=(-L, L), dealias=3 / 2)
         self._L = L
         self._xg = dist.local_grid(xbasis)
         self._yg = dist.local_grid(ybasis)
@@ -104,16 +107,22 @@ class DedalusAdapter(PhysicsEngine):
             x = np.linspace(-self._L, self._L, self.grid)
             y = np.linspace(-self._L, self._L, self.grid)
         else:
-            x = np.squeeze(self._xg)[0, :] if self._xg.ndim == 2 \
+            x = (
+                np.squeeze(self._xg)[0, :]
+                if self._xg.ndim == 2
                 else np.linspace(-self._L, self._L, self.grid)
-            y = np.squeeze(self._yg)[:, 0] if self._yg.ndim == 2 \
+            )
+            y = (
+                np.squeeze(self._yg)[:, 0]
+                if self._yg.ndim == 2
                 else np.linspace(-self._L, self._L, self.grid)
+            )
         dx = x[1] - x[0] if len(x) > 1 else 1.0
         dy = y[1] - y[0] if len(y) > 1 else 1.0
         psi2 = np.asarray(psi)
         if psi2.ndim == 0:
             psi2 = np.full((len(y), len(x)), float(psi2))
-        u = np.gradient(psi2, dy, axis=0)   # ∂ψ/∂y
+        u = np.gradient(psi2, dy, axis=0)  # ∂ψ/∂y
         v = -np.gradient(psi2, dx, axis=1)  # -∂ψ/∂x
         return u, v
 
@@ -122,8 +131,7 @@ class DedalusAdapter(PhysicsEngine):
         вихри считаются тяжёлыми трассерами поля — для полной связки
         добавьте собственную динамику Γ)."""
         if not getattr(self, "_have_field", False):
-            raise EngineUnavailable("dedalus", fallback="native_vortex",
-                                    reason="поле не построено")
+            raise EngineUnavailable("dedalus", fallback="native_vortex", reason="поле не построено")
         np = self._np
         n = self.grid
         x = np.linspace(-self._L, self._L, n)
@@ -141,21 +149,26 @@ class DedalusAdapter(PhysicsEngine):
         self.scene.t += dt
 
     def get_states(self) -> list[BodyState]:
-        return [BodyState(b.id, b.position, b.velocity)
-                for b in self.scene.bodies]
+        return [BodyState(b.id, b.position, b.velocity) for b in self.scene.bodies]
 
     def energy(self) -> float:
         # кинетическая энергия трассеров (полная энергия поля — опционально)
         return sum(b.kinetic_energy() for b in self.scene.bodies)
 
     def to_dict(self) -> dict[str, Any]:
-        return dict(engine="dedalus", have_dedalus=HAVE_DEDALUS,
-                    grid=self.grid, L=getattr(self, "_L", 0),
-                    citation="Burns et al. 2020, Phys. Rev. Research 2, "
-                             "023068 (doi:10.1103/PhysRevResearch.2.023068)")
+        return dict(
+            engine="dedalus",
+            have_dedalus=HAVE_DEDALUS,
+            grid=self.grid,
+            L=getattr(self, "_L", 0),
+            citation="Burns et al. 2020, Phys. Rev. Research 2, "
+            "023068 (doi:10.1103/PhysRevResearch.2.023068)",
+        )
 
 
 def availability() -> dict[str, Any]:
-    return dict(name="dedalus", available=HAVE_DEDALUS,
-                reason="" if HAVE_DEDALUS else
-                "pip install dedalus — спектральные методы для PDE")
+    return dict(
+        name="dedalus",
+        available=HAVE_DEDALUS,
+        reason="" if HAVE_DEDALUS else "pip install dedalus — спектральные методы для PDE",
+    )

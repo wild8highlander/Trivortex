@@ -16,6 +16,7 @@ TRIVORTEX MASTER — композитор кадров: многослойный
 Самопроверка: два слоя смешиваются аддитивно без насыщения; альфа
 0.5 даёт полусумму; порядок слоёв определяет видимость.
 """
+
 from __future__ import annotations
 
 import math
@@ -28,26 +29,26 @@ from render.png_codec import write_png
 @dataclass
 class Layer:
     """Слой кадра."""
+
     name: str
-    pixels: bytearray          # RGB, w*h*3
+    pixels: bytearray  # RGB, w*h*3
     w: int
     h: int
-    alpha: float = 1.0         # глобальная прозрачность
-    blend: str = "normal"      # normal | additive | multiply
-    z: int = 0                 # порядок наложения (низший снизу)
+    alpha: float = 1.0  # глобальная прозрачность
+    blend: str = "normal"  # normal | additive | multiply
+    z: int = 0  # порядок наложения (низший снизу)
 
 
 class FrameComposer:
     """Композитор: стоп слоёв → итоговый кадр."""
 
-    def __init__(self, width: int, height: int,
-                 background: tuple[int, int, int] = (10, 17, 32)):
+    def __init__(self, width: int, height: int, background: tuple[int, int, int] = (10, 17, 32)):
         self.width = width
         self.height = height
         self.layers: list[Layer] = []
         self.background = background
 
-    def add(self, layer: Layer) -> "FrameComposer":
+    def add(self, layer: Layer) -> FrameComposer:
         self.layers.append(layer)
         self.layers.sort(key=lambda l: l.z)
         return self
@@ -72,12 +73,10 @@ class FrameComposer:
                         out[j + c] = min(v, 255.0)
                 elif layer.blend == "multiply":
                     for c in range(3):
-                        out[j + c] = out[j + c] * (1 - a
-                            + a * layer.pixels[j + c] / 255.0)
-                else:                       # normal (over)
+                        out[j + c] = out[j + c] * (1 - a + a * layer.pixels[j + c] / 255.0)
+                else:  # normal (over)
                     for c in range(3):
-                        out[j + c] = (out[j + c] * (1 - a)
-                                      + a * layer.pixels[j + c])
+                        out[j + c] = out[j + c] * (1 - a) + a * layer.pixels[j + c]
         result = bytearray(int(v) for v in out)
         return result
 
@@ -90,41 +89,42 @@ def _fit_layer(layer: Layer, w: int, h: int) -> Layer:
     for y in range(ch):
         src = 3 * (y * layer.w)
         dst = 3 * ((oy + y) * w + ox)
-        pix[dst:dst + 3 * cw] = layer.pixels[src:src + 3 * cw]
-    return Layer(name=layer.name, pixels=pix, w=w, h=h,
-                 alpha=layer.alpha, blend=layer.blend, z=layer.z)
+        pix[dst : dst + 3 * cw] = layer.pixels[src : src + 3 * cw]
+    return Layer(
+        name=layer.name, pixels=pix, w=w, h=h, alpha=layer.alpha, blend=layer.blend, z=layer.z
+    )
 
 
 # ═══════════════════════════════════════════════════════════════════════════
 # Генераторы слоёв
 # ═══════════════════════════════════════════════════════════════════════════
-def solid_layer(name: str, w: int, h: int,
-                color: tuple[int, int, int], z: int = 0) -> Layer:
+def solid_layer(name: str, w: int, h: int, color: tuple[int, int, int], z: int = 0) -> Layer:
     """Сплошной цвет."""
-    return Layer(name=name, pixels=bytearray(color) * (w * h),
-                 w=w, h=h, z=z)
+    return Layer(name=name, pixels=bytearray(color) * (w * h), w=w, h=h, z=z)
 
 
-def body_layer(w: int, h: int, positions: Sequence[tuple[float, float]],
-               radius_px: int = 6,
-               color: tuple[int, int, int] = (79, 209, 197),
-               z: int = 10) -> Layer:
+def body_layer(
+    w: int,
+    h: int,
+    positions: Sequence[tuple[float, float]],
+    radius_px: int = 6,
+    color: tuple[int, int, int] = (79, 209, 197),
+    z: int = 10,
+) -> Layer:
     """Слой тел: круги в экранных координатах."""
     pix = bytearray((0, 0, 0)) * (w * h)
-    for (cx, cy) in positions:
+    for cx, cy in positions:
         for dy in range(-radius_px, radius_px + 1):
             for dx in range(-radius_px, radius_px + 1):
                 if dx * dx + dy * dy <= radius_px * radius_px:
                     x, y = int(cx + dx), int(cy + dy)
                     if 0 <= x < w and 0 <= y < h:
                         j = 3 * (y * w + x)
-                        pix[j:j + 3] = bytes(color)
-    return Layer(name="bodies", pixels=pix, w=w, h=h,
-                 blend="additive", z=z)
+                        pix[j : j + 3] = bytes(color)
+    return Layer(name="bodies", pixels=pix, w=w, h=h, blend="additive", z=z)
 
 
-def starfield_layer(w: int, h: int, n_stars: int = 120,
-                    seed: int = 5, z: int = -10) -> Layer:
+def starfield_layer(w: int, h: int, n_stars: int = 120, seed: int = 5, z: int = -10) -> Layer:
     """Слой звёздного фона (детерминированный хэш-рандом)."""
     pix = bytearray((0, 0, 0)) * (w * h)
     state = seed
@@ -139,29 +139,26 @@ def starfield_layer(w: int, h: int, n_stars: int = 120,
         pix[j] = min(255, bright)
         pix[j + 1] = min(255, bright)
         pix[j + 2] = min(255, bright + 20)
-    return Layer(name="starfield", pixels=pix, w=w, h=h,
-                 blend="additive", z=z)
+    return Layer(name="starfield", pixels=pix, w=w, h=h, blend="additive", z=z)
 
 
-def grid_layer(w: int, h: int, spacing: int = 40,
-               color: tuple[int, int, int] = (35, 52, 74),
-               z: int = -5) -> Layer:
+def grid_layer(
+    w: int, h: int, spacing: int = 40, color: tuple[int, int, int] = (35, 52, 74), z: int = -5
+) -> Layer:
     """Слой координатной сетки."""
     pix = bytearray((0, 0, 0)) * (w * h)
     for x in range(0, w, spacing):
         for y in range(h):
             j = 3 * (y * w + x)
-            pix[j:j + 3] = bytes(color)
+            pix[j : j + 3] = bytes(color)
     for y in range(0, h, spacing):
         for x in range(w):
             j = 3 * (y * w + x)
-            pix[j:j + 3] = bytes(color)
-    return Layer(name="grid", pixels=pix, w=w, h=h,
-                 blend="additive", z=z)
+            pix[j : j + 3] = bytes(color)
+    return Layer(name="grid", pixels=pix, w=w, h=h, blend="additive", z=z)
 
 
-def vignette_layer(w: int, h: int, strength: float = 0.4,
-                   z: int = 50) -> Layer:
+def vignette_layer(w: int, h: int, strength: float = 0.4, z: int = 50) -> Layer:
     """Постэффект: затемнение краёв (multiply)."""
     pix = bytearray(w * h * 3)
     cx, cy = w / 2.0, h / 2.0
@@ -174,8 +171,7 @@ def vignette_layer(w: int, h: int, strength: float = 0.4,
             g = int(v * 255)
             j = 3 * (y * w + x)
             pix[j] = pix[j + 1] = pix[j + 2] = g
-    return Layer(name="vignette", pixels=pix, w=w, h=h,
-                 blend="multiply", z=z)
+    return Layer(name="vignette", pixels=pix, w=w, h=h, blend="multiply", z=z)
 
 
 def compose_to_png(compositor: FrameComposer, path: str) -> int:
@@ -223,11 +219,15 @@ def self_check() -> dict:
     c4.add(vignette_layer(w, h, strength=0.3))
     path = "/tmp/tv_compositor.png"
     size = compose_to_png(c4, path)
-    nonblack = sum(1 for v in c4.compose()[:3 * 200] if v > 10)
+    nonblack = sum(1 for v in c4.compose()[: 3 * 200] if v > 10)
     frame_ok = size > 1000 and nonblack > 30
     return dict(
-        additive_ok=additive_ok, alpha_ok=alpha_ok, zorder_ok=zorder_ok,
-        frame_bytes=size, nonblack=nonblack, frame_ok=frame_ok,
+        additive_ok=additive_ok,
+        alpha_ok=alpha_ok,
+        zorder_ok=zorder_ok,
+        frame_bytes=size,
+        nonblack=nonblack,
+        frame_ok=frame_ok,
         all_ok=additive_ok and alpha_ok and zorder_ok and frame_ok,
         note="слои: starfield(-10) → grid(-5) → bodies(10) → vignette(50)",
     )

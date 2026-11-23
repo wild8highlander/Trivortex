@@ -13,6 +13,7 @@ TRIVORTEX MASTER — планировщики траекторий.
 
 Trajectory — контейнер: times, states, metadata; сериализация JSON/CSV.
 """
+
 from __future__ import annotations
 
 import json
@@ -28,6 +29,7 @@ from typing import Any
 @dataclass
 class Trajectory:
     """Траектория: моменты времени × состояния тел."""
+
     times: list[float] = field(default_factory=list)
     states: list[list[list[float]]] = field(default_factory=list)  # [t][body][6]
     body_ids: list[str] = field(default_factory=list)
@@ -52,15 +54,18 @@ class Trajectory:
         if t1 <= t0:
             return self.states[lo]
         alpha = (t - t0) / (t1 - t0)
-        return [[a + (b - a) * alpha for a, b in zip(s0, s1)]
-                for s0, s1 in zip(self.states[lo], self.states[hi])]
+        return [
+            [a + (b - a) * alpha for a, b in zip(s0, s1)]
+            for s0, s1 in zip(self.states[lo], self.states[hi])
+        ]
 
     def positions_xy(self, body_index: int) -> list[tuple[float, float]]:
         return [(s[body_index][0], s[body_index][1]) for s in self.states]
 
     def to_dict(self) -> dict[str, Any]:
-        return dict(times=self.times, states=self.states,
-                    body_ids=self.body_ids, metadata=self.metadata)
+        return dict(
+            times=self.times, states=self.states, body_ids=self.body_ids, metadata=self.metadata
+        )
 
     def to_json(self, path: str) -> None:
         with open(path, "w", encoding="utf-8") as fh:
@@ -71,14 +76,16 @@ class Trajectory:
             fh.write("t,body_id,x,y,z,vx,vy,vz\n")
             for t, state in zip(self.times, self.states):
                 for bid, s in zip(self.body_ids, state):
-                    fh.write(f"{t},{bid},{s[0]},{s[1]},{s[2]},"
-                             f"{s[3]},{s[4]},{s[5]}\n")
+                    fh.write(f"{t},{bid},{s[0]},{s[1]},{s[2]}," f"{s[3]},{s[4]},{s[5]}\n")
 
     @classmethod
-    def from_dict(cls, d: dict[str, Any]) -> "Trajectory":
-        return cls(times=list(d["times"]), states=list(d["states"]),
-                   body_ids=list(d.get("body_ids", [])),
-                   metadata=dict(d.get("metadata", {})))
+    def from_dict(cls, d: dict[str, Any]) -> Trajectory:
+        return cls(
+            times=list(d["times"]),
+            states=list(d["states"]),
+            body_ids=list(d.get("body_ids", [])),
+            metadata=dict(d.get("metadata", {})),
+        )
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -89,8 +96,7 @@ class TrajectoryPlanner(ABC):
 
     name: str = "abstract"
 
-    def plan(self, n_steps: int = 500, dt: float = 0.01,
-             **params: Any) -> Trajectory:
+    def plan(self, n_steps: int = 500, dt: float = 0.01, **params: Any) -> Trajectory:
         """Универсальная точка входа: перенаправляет на конкретный метод
         планировщика по params['method'] (default — первый метод класса)."""
         method = params.pop("method", None)
@@ -110,6 +116,7 @@ class TrajectoryPlanner(ABC):
             raise ValueError(f"планировщик {self.name} не имеет метода {method}")
         # n_steps/dt передаются как явные kwargs совместимым методам
         import inspect
+
         sig = inspect.signature(fn)
         kwargs = dict(params)
         if "n_steps" in sig.parameters:
@@ -137,8 +144,9 @@ class AnalyticPlanner(TrajectoryPlanner):
     name = "analytic"
 
     # ── Теорема 3.1 ──
-    def theorem31(self, C_Ch: float = 1.0, T: float = 2 * math.pi,
-                  n_steps: int = 500, n_periods: float = 1.0) -> Trajectory:
+    def theorem31(
+        self, C_Ch: float = 1.0, T: float = 2 * math.pi, n_steps: int = 500, n_periods: float = 1.0
+    ) -> Trajectory:
         ratio = math.exp(C_Ch / math.pi)
         omega = (2 * math.pi / T) * ratio
         eps = 1.0 / (ratio - 1.0) if C_Ch > 0.01 else 1.0
@@ -164,18 +172,31 @@ class AnalyticPlanner(TrajectoryPlanner):
             times.append(t)
             states.append(frame)
         return Trajectory(
-            times=times, states=states,
+            times=times,
+            states=states,
             body_ids=["vortex_k0", "vortex_k1", "vortex_k2"],
-            metadata=dict(planner="theorem31", omega=omega, epsilon=eps,
-                          C_Ch=C_Ch, T=T, source="Trivortex Theorem 3.1"))
+            metadata=dict(
+                planner="theorem31",
+                omega=omega,
+                epsilon=eps,
+                C_Ch=C_Ch,
+                T=T,
+                source="Trivortex Theorem 3.1",
+            ),
+        )
 
     # ── Лагранж 1772 ──
-    def lagrange(self, side: float = 1.0, gamma_total: float = 3.0,
-                 n_steps: int = 500, n_periods: float = 1.0) -> Trajectory:
+    def lagrange(
+        self,
+        side: float = 1.0,
+        gamma_total: float = 3.0,
+        n_steps: int = 500,
+        n_periods: float = 1.0,
+    ) -> Trajectory:
         """Три равных вихря на равностороннем треугольнике; жёсткое вращение
         ω_L = 3Γ/(2πa²) (согласовано с лестницей V2)."""
-        a = side                     # сторона = радиус описанной окружности * √3
-        R = a / math.sqrt(3)         # радиус описанной окружности
+        a = side  # сторона = радиус описанной окружности * √3
+        R = a / math.sqrt(3)  # радиус описанной окружности
         gamma = gamma_total / 3.0
         omega = 3.0 * gamma / (2 * math.pi * a * a)
         if omega == 0:
@@ -193,10 +214,13 @@ class AnalyticPlanner(TrajectoryPlanner):
             times.append(t)
             states.append(frame)
         return Trajectory(
-            times=times, states=states,
+            times=times,
+            states=states,
             body_ids=["lagrange_0", "lagrange_1", "lagrange_2"],
-            metadata=dict(planner="lagrange", omega=omega, R=R, a=a,
-                          source="Lagrange 1772; ladder V2"))
+            metadata=dict(
+                planner="lagrange", omega=omega, R=R, a=a, source="Lagrange 1772; ladder V2"
+            ),
+        )
 
     # ── figure-eight Ченшинера–Монтгомери ──
     # точные НУ (Moore 1993 / Chenciner-Montgomery 2000): тела на
@@ -208,14 +232,12 @@ class AnalyticPlanner(TrajectoryPlanner):
     FIG8_VY = 0.4323657300
     FIG8_PERIOD = 6.32591398  # T для G=1, m=1
 
-    def figure_eight(self, mass: float = 1.0, G: float = 1.0,
-                     n_steps: int = 600, n_periods: float = 1.0) -> Trajectory:
-        x0, y0, vx0, vy0 = (self.FIG8_X0, self.FIG8_Y0,
-                            self.FIG8_VX, self.FIG8_VY)
+    def figure_eight(
+        self, mass: float = 1.0, G: float = 1.0, n_steps: int = 600, n_periods: float = 1.0
+    ) -> Trajectory:
+        x0, y0, vx0, vy0 = (self.FIG8_X0, self.FIG8_Y0, self.FIG8_VX, self.FIG8_VY)
         # тело 1 в (x0, y0), тело 2 зеркально в (−x0, −y0), тело 3 в (0,0)
-        state = [x0, y0, vx0, vy0,
-                 -x0, -y0, vx0, vy0,
-                 0.0, 0.0, -2 * vx0, -2 * vy0]
+        state = [x0, y0, vx0, vy0, -x0, -y0, vx0, vy0, 0.0, 0.0, -2 * vx0, -2 * vy0]
         T = self.FIG8_PERIOD
         dt = n_periods * T / n_steps
 
@@ -260,17 +282,19 @@ class AnalyticPlanner(TrajectoryPlanner):
             k4 = deriv(y4)
             frame = []
             for b in range(3):
-                x, yy, vx, vy = y[4 * b:4 * b + 4]
+                x, yy, vx, vy = y[4 * b : 4 * b + 4]
                 frame.append([x, yy, 0.0, vx, vy, 0.0])
             times.append(i * dt)
             states.append(frame)
-            y = [y[k] + (dt / 6.0) * (k1[k] + 2 * k2[k] + 2 * k3[k] + k4[k])
-                 for k in range(12)]
+            y = [y[k] + (dt / 6.0) * (k1[k] + 2 * k2[k] + 2 * k3[k] + k4[k]) for k in range(12)]
         return Trajectory(
-            times=times, states=states,
+            times=times,
+            states=states,
             body_ids=["fig8_0", "fig8_1", "fig8_2"],
-            metadata=dict(planner="figure_eight", mass=mass, G=G, T=T,
-                          source="Chenciner & Montgomery 2000"))
+            metadata=dict(
+                planner="figure_eight", mass=mass, G=G, T=T, source="Chenciner & Montgomery 2000"
+            ),
+        )
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -285,10 +309,18 @@ class KirchhoffPlanner(TrajectoryPlanner):
 
     name = "kirchhoff"
 
-    def ring(self, N: int = 5, R: float = 1.0, gamma: float = 1.0,
-             n_steps: int = 400, n_periods: float = 1.0,
-             jitter: float = 0.0, seed: int = 42) -> Trajectory:
+    def ring(
+        self,
+        N: int = 5,
+        R: float = 1.0,
+        gamma: float = 1.0,
+        n_steps: int = 400,
+        n_periods: float = 1.0,
+        jitter: float = 0.0,
+        seed: int = 42,
+    ) -> Trajectory:
         import random
+
         rng = random.Random(seed)
         omega_N = gamma * (N - 1) / (4 * math.pi * R * R)
         period = 2 * math.pi / abs(omega_N) if omega_N != 0 else 1.0
@@ -326,6 +358,7 @@ class KirchhoffPlanner(TrajectoryPlanner):
                 frame.append([p[k][0], p[k][1], 0.0, vels[k][0], vels[k][1], 0.0])
             times.append(i * dt)
             states.append(frame)
+
             # RK4
             def deriv(pp):
                 vv = velocities(pp)
@@ -335,26 +368,29 @@ class KirchhoffPlanner(TrajectoryPlanner):
                 return out
 
             k1 = deriv(p)
-            p2 = [[p[k][0] + 0.5 * dt * k1[k][0], p[k][1] + 0.5 * dt * k1[k][1]]
-                  for k in range(N)]
+            p2 = [[p[k][0] + 0.5 * dt * k1[k][0], p[k][1] + 0.5 * dt * k1[k][1]] for k in range(N)]
             k2 = deriv(p2)
-            p3 = [[p[k][0] + 0.5 * dt * k2[k][0], p[k][1] + 0.5 * dt * k2[k][1]]
-                  for k in range(N)]
+            p3 = [[p[k][0] + 0.5 * dt * k2[k][0], p[k][1] + 0.5 * dt * k2[k][1]] for k in range(N)]
             k3 = deriv(p3)
-            p4 = [[p[k][0] + dt * k3[k][0], p[k][1] + dt * k3[k][1]]
-                  for k in range(N)]
+            p4 = [[p[k][0] + dt * k3[k][0], p[k][1] + dt * k3[k][1]] for k in range(N)]
             k4 = deriv(p4)
             for k in range(N):
-                p[k][0] += (dt / 6.0) * (k1[k][0] + 2 * k2[k][0]
-                                          + 2 * k3[k][0] + k4[k][0])
-                p[k][1] += (dt / 6.0) * (k1[k][1] + 2 * k2[k][1]
-                                          + 2 * k3[k][1] + k4[k][1])
+                p[k][0] += (dt / 6.0) * (k1[k][0] + 2 * k2[k][0] + 2 * k3[k][0] + k4[k][0])
+                p[k][1] += (dt / 6.0) * (k1[k][1] + 2 * k2[k][1] + 2 * k3[k][1] + k4[k][1])
         return Trajectory(
-            times=times, states=states,
+            times=times,
+            states=states,
             body_ids=[f"ring_{k}" for k in range(N)],
-            metadata=dict(planner="kirchhoff_ring", N=N, R=R, gamma=gamma,
-                          omega_N=omega_N, jitter=jitter,
-                          source="Kirchhoff; Havelock 1931; POLYVORTEX W2/W4"))
+            metadata=dict(
+                planner="kirchhoff_ring",
+                N=N,
+                R=R,
+                gamma=gamma,
+                omega_N=omega_N,
+                jitter=jitter,
+                source="Kirchhoff; Havelock 1931; POLYVORTEX W2/W4",
+            ),
+        )
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -368,17 +404,23 @@ class KeplerPlanner(TrajectoryPlanner):
 
     name = "kepler"
 
-    def orbit(self, central_mass: float = 1.989e30, r0: float = 1.495978707e11,
-              eccentricity: float = 0.0, G: float = 6.67430e-11,
-              n_steps: int = 500, n_periods: float = 1.0) -> Trajectory:
+    def orbit(
+        self,
+        central_mass: float = 1.989e30,
+        r0: float = 1.495978707e11,
+        eccentricity: float = 0.0,
+        G: float = 6.67430e-11,
+        n_steps: int = 500,
+        n_periods: float = 1.0,
+    ) -> Trajectory:
         # скорость в перигелии для орбиты с эксцентриситетом e
         mu = G * central_mass
         if 0 <= eccentricity < 1:
-            a = r0 / (1 - eccentricity)     # большая полуось из перигелия
-            period = 2 * math.pi * math.sqrt(a ** 3 / mu)
+            a = r0 / (1 - eccentricity)  # большая полуось из перигелия
+            period = 2 * math.pi * math.sqrt(a**3 / mu)
         else:
             a = r0
-            period = float("inf")           # гиперболическая: периода нет
+            period = float("inf")  # гиперболическая: периода нет
         v_peri = math.sqrt(mu * (1 + eccentricity) / r0)
         dt = n_periods * period / n_steps
 
@@ -388,14 +430,13 @@ class KeplerPlanner(TrajectoryPlanner):
         def deriv(s):
             x, yy, vx, vy = s
             r = math.sqrt(x * x + yy * yy) + 1e-9
-            ax = -mu * x / (r ** 3)
-            ay = -mu * yy / (r ** 3)
+            ax = -mu * x / (r**3)
+            ay = -mu * yy / (r**3)
             return [vx, vy, ax, ay]
 
         times, states = [], []
         for i in range(n_steps + 1):
-            states.append([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                           [y[0], y[1], 0.0, y[2], y[3], 0.0]])
+            states.append([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [y[0], y[1], 0.0, y[2], y[3], 0.0]])
             times.append(i * dt)
             k1 = deriv(y)
             y2 = [y[k] + 0.5 * dt * k1[k] for k in range(4)]
@@ -404,28 +445,40 @@ class KeplerPlanner(TrajectoryPlanner):
             k3 = deriv(y3)
             y4 = [y[k] + dt * k3[k] for k in range(4)]
             k4 = deriv(y4)
-            y = [y[k] + (dt / 6.0) * (k1[k] + 2 * k2[k] + 2 * k3[k] + k4[k])
-                 for k in range(4)]
+            y = [y[k] + (dt / 6.0) * (k1[k] + 2 * k2[k] + 2 * k3[k] + k4[k]) for k in range(4)]
         return Trajectory(
-            times=times, states=states,
+            times=times,
+            states=states,
             body_ids=["primary", "secondary"],
-            metadata=dict(planner="kepler", central_mass=central_mass,
-                          r0=r0, eccentricity=eccentricity, period=period))
+            metadata=dict(
+                planner="kepler",
+                central_mass=central_mass,
+                r0=r0,
+                eccentricity=eccentricity,
+                period=period,
+            ),
+        )
 
 
 # ═══════════════════════════════════════════════════════════════════════════
 # 4. ScriptedPlanner — контрольные точки + сплайны Катмулла-Рома
 # ═══════════════════════════════════════════════════════════════════════════
-def catmull_rom(p0: tuple[float, ...], p1: tuple[float, ...],
-                p2: tuple[float, ...], p3: tuple[float, ...],
-                t: float) -> tuple[float, ...]:
+def catmull_rom(
+    p0: tuple[float, ...],
+    p1: tuple[float, ...],
+    p2: tuple[float, ...],
+    p3: tuple[float, ...],
+    t: float,
+) -> tuple[float, ...]:
     """Кубический сплайн Катмулла-Рома на чистом Python (без scipy)."""
     out = []
     for a, b, c, d in zip(p0, p1, p2, p3):
-        v = (0.5 * ((2 * b)
-                    + (-a + c) * t
-                    + (2 * a - 5 * b + 4 * c - d) * t * t
-                    + (-a + 3 * b - 3 * c + d) * t * t * t))
+        v = 0.5 * (
+            (2 * b)
+            + (-a + c) * t
+            + (2 * a - 5 * b + 4 * c - d) * t * t
+            + (-a + 3 * b - 3 * c + d) * t * t * t
+        )
         out.append(v)
     return tuple(out)
 
@@ -436,9 +489,13 @@ class ScriptedPlanner(TrajectoryPlanner):
 
     name = "scripted"
 
-    def waypoints(self, points_per_body: list[list[tuple[float, float, float]]],
-                  n_steps: int = 400, duration: float = 1.0,
-                  closed: bool = True) -> Trajectory:
+    def waypoints(
+        self,
+        points_per_body: list[list[tuple[float, float, float]]],
+        n_steps: int = 400,
+        duration: float = 1.0,
+        closed: bool = True,
+    ) -> Trajectory:
         n_bodies = len(points_per_body)
         times, states = [], []
         for i in range(n_steps + 1):
@@ -454,11 +511,13 @@ class ScriptedPlanner(TrajectoryPlanner):
                 u = t / duration * (m - 1)
                 seg = min(int(u), m - 2)
                 frac = u - seg
+
                 # соседи с заворотом (closed) или клампом
                 def pt(idx):
                     if closed:
                         return pts[idx % m]
                     return pts[max(0, min(idx, m - 1))]
+
                 p0, p1, p2, p3 = pt(seg - 1), pt(seg), pt(seg + 1), pt(seg + 2)
                 p_now = catmull_rom(p0, p1, p2, p3, frac)
                 p_next = catmull_rom(p0, p1, p2, p3, min(frac + 0.01, 1.0))
@@ -468,10 +527,13 @@ class ScriptedPlanner(TrajectoryPlanner):
             times.append(t)
             states.append(frame)
         return Trajectory(
-            times=times, states=states,
+            times=times,
+            states=states,
             body_ids=[f"scripted_{b}" for b in range(n_bodies)],
-            metadata=dict(planner="scripted", n_bodies=n_bodies,
-                          closed=closed, spline="Catmull-Rom"))
+            metadata=dict(
+                planner="scripted", n_bodies=n_bodies, closed=closed, spline="Catmull-Rom"
+            ),
+        )
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -487,6 +549,5 @@ PLANNERS = {
 
 def get_planner(name: str) -> TrajectoryPlanner:
     if name not in PLANNERS:
-        raise ValueError(f"неизвестный планировщик: {name}; "
-                         f"доступны: {', '.join(PLANNERS)}")
+        raise ValueError(f"неизвестный планировщик: {name}; " f"доступны: {', '.join(PLANNERS)}")
     return PLANNERS[name]()

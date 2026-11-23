@@ -5,6 +5,7 @@
 Рисует в Frame (pure_raster) декоративные элементы стиля AURORA:
 титульные плашки, статус-бары, легенды тел. Использует font_5x7.
 """
+
 from __future__ import annotations
 from render.font_5x7 import draw_text, text_width
 from render.pure_raster import Frame
@@ -42,12 +43,15 @@ def legend(frame: Frame, bodies, x: int = 6, y: int = 16) -> None:
     """Легенда тел: цветной квадратик + имя (латиницей, шрифт 5×7)."""
     cy = y
     for b in bodies:
-        name = b.name.encode('ascii', 'replace').decode()[:12]
+        name = b.name.encode("ascii", "replace").decode()[:12]
         for dy in range(6):
             for dx in range(6):
-                frame.set_pixel(x + dx, cy + dy, -1e-6,
-                                tuple(int(b.color.lstrip('#')[i:i+2], 16)
-                                      for i in (0, 2, 4)))
+                frame.set_pixel(
+                    x + dx,
+                    cy + dy,
+                    -1e-6,
+                    tuple(int(b.color.lstrip("#")[i : i + 2], 16) for i in (0, 2, 4)),
+                )
         draw_text(frame, x + 10, cy, name, (230, 240, 255))
         cy += 9
 
@@ -58,13 +62,18 @@ def warn_banner(frame: Frame, text: str) -> None:
     for yy in range(frame.h - h - 14, frame.h - 14):
         for xx in range(frame.w):
             frame.set_pixel(xx, yy, -1e-6, (59, 18, 32))
-    draw_text(frame, 4, frame.h - h - 11,
-              ('! ' + text.encode('ascii', 'replace').decode())[: (frame.w - 8) // 6],
-              RED)
+    draw_text(
+        frame,
+        4,
+        frame.h - h - 11,
+        ("! " + text.encode("ascii", "replace").decode())[: (frame.w - 8) // 6],
+        RED,
+    )
 
 
-def decorate_frame(frame: Frame, title: str, bodies, fraction: float = 1.0,
-                   warn: str | None = None) -> Frame:
+def decorate_frame(
+    frame: Frame, title: str, bodies, fraction: float = 1.0, warn: str | None = None
+) -> Frame:
     """Полный AURORA-декор кадра: титул + легенда + прогресс + плашка."""
     title_bar(frame, title)
     legend(frame, bodies)

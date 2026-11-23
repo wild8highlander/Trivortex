@@ -18,6 +18,7 @@ TRIVORTEX MASTER — CR3BP: точки Лагранжа, интеграл Яко
 Самопроверки: L1/L2/L3 системы Земля-Луна против известных расстояний;
 сохранение C вдоль 1000 шагов RK4.
 """
+
 from __future__ import annotations
 
 import math
@@ -28,22 +29,22 @@ from typing import Callable
 # Правая часть CR3BP (нормированные единицы: a=1, G·M=1, T=2π)
 # ═══════════════════════════════════════════════════════════════════════════
 def _r1_r2(x: float, y: float, z: float, mu: float) -> tuple[float, float]:
-    r1 = math.sqrt((x + mu) ** 2 + y ** 2 + z ** 2)     # до большего (−μ)
-    r2 = math.sqrt((x - 1 + mu) ** 2 + y ** 2 + z ** 2)  # до меньшего (1−μ)
+    r1 = math.sqrt((x + mu) ** 2 + y**2 + z**2)  # до большего (−μ)
+    r2 = math.sqrt((x - 1 + mu) ** 2 + y**2 + z**2)  # до меньшего (1−μ)
     return r1, r2
 
 
 def cr3bp_deriv(mu: float):
     """Правая часть: [ẋ, ẏ, ż, vẍ, vÿ, vz̈] во вращающейся СК."""
+
     def deriv(state, _t):
         x, y, z, vx, vy, vz = state
         r1, r2 = _r1_r2(x, y, z, mu)
-        ax = 2 * vy + x - (1 - mu) * (x + mu) / r1 ** 3 \
-            - mu * (x - 1 + mu) / r2 ** 3
-        ay = -2 * vx + y - (1 - mu) * y / r1 ** 3 \
-            - mu * y / r2 ** 3
-        az = -(1 - mu) * z / r1 ** 3 - mu * z / r2 ** 3
+        ax = 2 * vy + x - (1 - mu) * (x + mu) / r1**3 - mu * (x - 1 + mu) / r2**3
+        ay = -2 * vx + y - (1 - mu) * y / r1**3 - mu * y / r2**3
+        az = -(1 - mu) * z / r1**3 - mu * z / r2**3
         return [vx, vy, vz, ax, ay, az]
+
     return deriv
 
 
@@ -69,14 +70,11 @@ def _collinear_rhs(x: float, mu: float, sign: int) -> float:
     r2 = abs(x - 1 + mu)
     if sign == 1:
         # x − (1−μ)(x+μ)/r1³ − μ/r2² = 0 (r2 < 0 в r2-силе: тянет назад)
-        return x - (1 - mu) * (x + mu) / r1 ** 3 \
-            - mu / (r2 * r2) * (-1.0)
+        return x - (1 - mu) * (x + mu) / r1**3 - mu / (r2 * r2) * (-1.0)
     if sign == -1:
-        return x - (1 - mu) / (r1 * r1) * (-1.0) \
-            - mu * (x - 1 + mu) / r2 ** 3
+        return x - (1 - mu) / (r1 * r1) * (-1.0) - mu * (x - 1 + mu) / r2**3
     # L3
-    return x - (1 - mu) * (x + mu) / r1 ** 3 \
-        - mu * (x - 1 + mu) / r2 ** 3
+    return x - (1 - mu) * (x + mu) / r1**3 - mu * (x - 1 + mu) / r2**3
 
 
 def lagrange_points(mu: float) -> dict:
@@ -87,9 +85,9 @@ def lagrange_points(mu: float) -> dict:
     pts["L5"] = (0.5 - mu, -math.sqrt(3) / 2, 0.0)
     # коллинеарные: Ньютон с грубыми стартами
     starts = {
-        "L1": 0.5,           # между телами
-        "L2": 1.2,           # за меньшим телом
-        "L3": -1.1,          # за большим телом
+        "L1": 0.5,  # между телами
+        "L2": 1.2,  # за меньшим телом
+        "L3": -1.1,  # за большим телом
     }
     for name, x0 in starts.items():
 
@@ -134,12 +132,10 @@ def _rk4(deriv: Callable, y: list[float], dt: float) -> list[float]:
     k3 = deriv(y3, dt / 2)
     y4 = [y[i] + dt * k3[i] for i in range(n)]
     k4 = deriv(y4, dt)
-    return [y[i] + dt / 6 * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i])
-            for i in range(n)]
+    return [y[i] + dt / 6 * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]) for i in range(n)]
 
 
-def jacobi_drift(mu: float, state0: list[float], dt: float = 0.01,
-                 n_steps: int = 1000) -> float:
+def jacobi_drift(mu: float, state0: list[float], dt: float = 0.01, n_steps: int = 1000) -> float:
     """Дрейф интеграла Якоби вдоль интеграции (контроль точности)."""
     deriv = cr3bp_deriv(mu)
     c0 = jacobi_constant(state0, mu)
@@ -155,17 +151,16 @@ def jacobi_drift(mu: float, state0: list[float], dt: float = 0.01,
 # ═══════════════════════════════════════════════════════════════════════════
 # Квазипериодическая орбита (Лиссажу) вокруг L2
 # ═══════════════════════════════════════════════════════════════════════════
-def linear_frequencies(mu: float, point: tuple[float, float, float]
-                       ) -> tuple[float, float]:
+def linear_frequencies(mu: float, point: tuple[float, float, float]) -> tuple[float, float]:
     """Частоты малых колебаний у точки Лагранжа (планарная, вертикальная).
 
     Матрица вторых производных Ω в точке; собственные значения дают
     ω_xy, ω_z (в нормированных единицах).
     """
     x, y, _z = point
-    r1 = math.sqrt((x + mu) ** 2 + y ** 2)
-    r2 = math.sqrt((x - 1 + mu) ** 2 + y ** 2)
-    A = (1 - mu) / r1 ** 3 + mu / r2 ** 3
+    r1 = math.sqrt((x + mu) ** 2 + y**2)
+    r2 = math.sqrt((x - 1 + mu) ** 2 + y**2)
+    A = (1 - mu) / r1**3 + mu / r2**3
     omega_xx = 1.0 + 2.0 * A
     omega_yy = 1.0 - A
     omega_zz = -A
@@ -181,14 +176,18 @@ def linear_frequencies(mu: float, point: tuple[float, float, float]
     lam2_a = (-b + math.sqrt(disc)) / 2.0
     lam2_b = (-b - math.sqrt(disc)) / 2.0
     # устойчивые моды: отрицательные λ² → мнимые λ → частота
-    freq_xy = math.sqrt(max(-lam2_b, 1e-9))     # «короткопериодическая»
+    freq_xy = math.sqrt(max(-lam2_b, 1e-9))  # «короткопериодическая»
     freq_z = math.sqrt(max(-omega_zz, 1e-9))
     return freq_xy, freq_z
 
 
-def lissajous_around_l2(mu: float, amplitude_xy: float = 0.01,
-                        amplitude_z: float = 0.02, dt: float = 0.01,
-                        n_steps: int = 2000) -> list[list[float]]:
+def lissajous_around_l2(
+    mu: float,
+    amplitude_xy: float = 0.01,
+    amplitude_z: float = 0.02,
+    dt: float = 0.01,
+    n_steps: int = 2000,
+) -> list[list[float]]:
     """Квазипериодическая орбита вокруг L2 из линейного приближения.
 
     Не претендует на точную квазипериодичность вне линейного режима —
@@ -198,8 +197,7 @@ def lissajous_around_l2(mu: float, amplitude_xy: float = 0.01,
     l2 = pts["L2"]
     wx, wz = linear_frequencies(mu, l2)
     deriv = cr3bp_deriv(mu)
-    state = [l2[0] + amplitude_xy, l2[1], l2[2] + amplitude_z,
-             0.0, amplitude_xy * wx, 0.0]
+    state = [l2[0] + amplitude_xy, l2[1], l2[2] + amplitude_z, 0.0, amplitude_xy * wx, 0.0]
     traj = [list(state)]
     for _ in range(n_steps):
         state = _rk4(deriv, state, dt)
@@ -213,7 +211,7 @@ def lissajous_around_l2(mu: float, amplitude_xy: float = 0.01,
 def self_check() -> dict:
     """Земля-Луна: L1 ≈ 0.837 от барицентра; L2 ≈ 1.156; L4 = 0.488/0.866;
     дрейф Якоби < 1e-9."""
-    mu = 0.012150585609     # Земля-Луна (NASA)
+    mu = 0.012150585609  # Земля-Луна (NASA)
     pts = lagrange_points(mu)
     x_l1 = pts["L1"][0]
     x_l2 = pts["L2"][0]
@@ -222,25 +220,31 @@ def self_check() -> dict:
     l1_ok = abs(x_l1 - 0.836915) < 0.002
     l2_ok = abs(x_l2 - 1.155682) < 0.003
     l3_ok = abs(x_l3 + 1.005063) < 0.005
-    l4_ok = abs(pts["L4"][0] - (0.5 - mu)) < 1e-12 \
-        and abs(pts["L4"][1] - math.sqrt(3) / 2) < 1e-12
+    l4_ok = abs(pts["L4"][0] - (0.5 - mu)) < 1e-12 and abs(pts["L4"][1] - math.sqrt(3) / 2) < 1e-12
     # Якоби вдоль орбиты вокруг L1: у несимплектического RK4 глобальный
     # дрейф ~ dt⁴ на фиксированной дуге — проверяем малость дрейфа и
     # корректную скорость сходимости (при dt/2 дрейф падает ~16×,
     # допуск ×2.5 на неасимптотический режим)
     l1 = pts["L1"]
     state0 = [l1[0], l1[1] + 0.01, 0.0, 0.0, 0.05, 0.0]
-    n_coarse = 600                    # дуга t=3.0
+    n_coarse = 600  # дуга t=3.0
     drift_coarse = jacobi_drift(mu, state0, dt=0.005, n_steps=n_coarse)
     drift_fine = jacobi_drift(mu, state0, dt=0.0025, n_steps=2 * n_coarse)
     ratio = drift_coarse / max(drift_fine, 1e-18)
     jacobi_ok = drift_fine < 1e-5 and 6.0 < ratio < 40.0
     return dict(
-        x_L1=x_l1, x_L2=x_l2, x_L3=x_l3,
-        L1_ok=l1_ok, L2_ok=l2_ok, L3_ok=l3_ok, L4_ok=l4_ok,
-        jacobi_drift=drift_fine, drift_ratio=ratio, jacobi_ok=jacobi_ok,
+        x_L1=x_l1,
+        x_L2=x_l2,
+        x_L3=x_l3,
+        L1_ok=l1_ok,
+        L2_ok=l2_ok,
+        L3_ok=l3_ok,
+        L4_ok=l4_ok,
+        jacobi_drift=drift_fine,
+        drift_ratio=ratio,
+        jacobi_ok=jacobi_ok,
         all_ok=l1_ok and l2_ok and l3_ok and l4_ok and jacobi_ok,
         note="координаты от барицентра; NASA SSERD: L1 = 0.836915, "
-             "L2 = 1.155682; дрейф C: RK4 не-симплектический, "
-             "отношение дрейфов при dt/2 ~ 2⁴ подтверждает порядок метода",
+        "L2 = 1.155682; дрейф C: RK4 не-симплектический, "
+        "отношение дрейфов при dt/2 ~ 2⁴ подтверждает порядок метода",
     )
