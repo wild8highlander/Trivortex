@@ -1,0 +1,62 @@
+---
+name: TrivortexBot — dependabot auto-merge
+
+# TrivortexBot, organ 2 of 3: land the safe dependency updates without a
+# human in the loop. Dependabot (organ 1) opens grouped patch/minor PRs;
+# this workflow enables GitHub auto-merge for them, so the PR merges the
+# moment the required CI checks are green. Major version bumps and
+# indirect dependency updates are deliberately left for human review.
+#
+# Repository prerequisites (the deliberate security posture):
+#   * branch protection on main must require the `TRIVORTEX CI` checks,
+#     otherwise auto-merge has nothing to wait for;
+#   * Settings -> Pull Requests -> "Allow auto-merge" must be enabled
+#     (squash policy is chosen here to keep `main` linear);
+#   * the workflow uses pull_request_target with NO checkout of the PR
+#     head — only Dependabot's own, commit-verified metadata is trusted,
+#     so a forked PR can never execute code from here.
+on:
+  pull_request_target:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: trivortex-automerge-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  auto-merge:
+    name: Enable auto-merge for safe dependabot updates
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fetch dependabot metadata
+        id: meta
+        uses: dependabot/fetch-metadata@v2
+        with:
+          skip-commit-verification: true
+      - name: Auto-merge patch/minor direct updates, label the rest
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          UPDATE_TYPE: ${{ steps.meta.outputs.update-type }}
+          DEP_TYPE: ${{ steps.meta.outputs.dependency-type }}
+        run: |
+          safe="false"
+          if [[ "$DEP_TYPE" == "direct" ]]; then
+            if [[ "$UPDATE_TYPE" == "version-update:semver-patch" ||
+                  "$UPDATE_TYPE" == "version-update:semver-minor" ]]; then
+              safe="true"
+            fi
+          fi
+          if [[ "$safe" == "true" ]]; then
+            gh pr merge --auto --squash --delete-branch "$PR_URL"
+            echo "auto-merge enabled; merges when the required CI checks pass"
+          else
+            gh pr edit "$PR_URL" --add-label needs-human-review
+            echo "major or indirect update — left for human review"
+          fi

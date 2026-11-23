@@ -10,7 +10,7 @@ _Автогенерация из AST: всё, что здесь описано, 
 - **core**: `bridge.py`, `config.py`, `registry.py`
 - **entry**: `trivortex_master.py`
 - **lab**: `body.py`, `chaos.py`, `choreography.py`, `collisions.py`, `engine_base.py`, `grid_fields.py`, `halo_orbits.py`, `hamiltonian_split.py`, `integrators.py`, `kepler.py`, `nbody_tree.py`, `observables.py`, `orbital_maneuvers.py`, `physics.py`, `presets.py`, `radiation.py`, `relativity.py`, `resonances.py`, `scene.py`, `solar_system_sim.py`, `spacecraft.py`, `tides.py`, `tissot.py`, `trajectory.py`, `trojan_points.py`, `units.py`
-- **realism**: `almanac.py`, `bright_stars.py`, `cosmology.py`, `eclipse_predictor.py`, `encounter.py`, `jpl_horizons.py`, `mission_design.py`, `observatory.py`, `planetary_systems.py`, `sky_coordinates.py`, `space_weather.py`, `stellar.py`, `tles.py`, `validator.py`, `custom_adapter.py`, `dedalus_adapter.py`, `rebound_adapter.py`, `cache.py`, `nasa_exoplanet.py`, `nasa_planetary.py`
+- **realism**: `almanac.py`, `bright_stars.py`, `cosmology.py`, `eclipse_predictor.py`, `encounter.py`, `jpl_horizons.py`, `mission_design.py`, `observatory.py`, `planetary_systems.py`, `sky_coordinates.py`, `space_weather.py`, `stellar.py`, `tles.py`, `validator.py`, `cache.py`, `nasa_exoplanet.py`, `nasa_planetary.py`, `custom_adapter.py`, `dedalus_adapter.py`, `rebound_adapter.py`
 - **render**: `animator.py`, `ascii_sky.py`, `backend_ascii.py`, `backend_gl.py`, `backend_mpl.py`, `banners.py`, `camera.py`, `engine.py`, `font_5x7.py`, `frame_compositor.py`, `hud.py`, `particles.py`, `png_codec.py`, `pure_raster.py`, `raytracer.py`, `spectrum.py`
 - **reports**: `bibliography.py`, `charts.py`, `engine.py`, `templates.py`, `docx_writer.py`, `odt_writer.py`, `pdf_writer.py`, `pptx_writer.py`, `xlsx_writer.py`
 
@@ -1141,6 +1141,39 @@ _Автогенерация из AST: всё, что здесь описано, 
 - `is_physical(scene)` — True, если нет ошибок уровня error и N в допустимом диапазоне.
 - `realism_report(scene, catalog=None)` — Сводка для HUD/отчётов: сколько тел сверено, предупреждения.
 
+### `realism/data_fetchers/cache.py`
+
+**Классы:**
+
+- `TTLCache`
+  - `put(self, key, data, ttl=None)`
+  - `get(self, key, max_age=None)` — None, если записи нет или она протухла.
+  - `get_stale(self, key)` — Запись без проверки свежести (fallback при недоступной сети).
+  - `invalidate(self, key)`
+  - `clear(self)`
+  - `keys(self)`
+  - `status(self)`
+
+### `realism/data_fetchers/nasa_exoplanet.py`
+
+**Функции:**
+
+- `get_cache()`
+- `build_query(limit)` — ADQL-запрос: ближайшие подтверждённые планеты.
+- `fetch_confirmed_planets(limit=100, timeout=30.0, use_cache=True)` — Сырые строки TAP; при недоступной сети — последний кэш, иначе [].
+- `validate_schema(rows)` — Проверка ожидаемых колонок в TAP-ответе.
+- `to_body(record)` — TAP-строка → Body (масса кг, радиус м, орбита м).
+- `fetch_bodies(limit=20)` — Удобная обёртка: сразу список Body.
+- `nearest_systems(limit=15)` — Ближайшие планетные системы (для меню справки).
+
+### `realism/data_fetchers/nasa_planetary.py`
+
+**Функции:**
+
+- `planetary_bodies()` — Солнце + 8 планет + 8 крупных лун как Body (радиусы в метрах).
+- `update_cache(path=None)` — Опциональное обновление снимка факт-шита (сеть может быть закрыта —
+- `fact_sheet_table()` — Таблица факт-шита для отчётов и меню.
+
 ### `realism/adapters/custom_adapter.py`
 
 **Классы:**
@@ -1187,39 +1220,6 @@ _Автогенерация из AST: всё, что здесь описано, 
 **Функции:**
 
 - `availability()` — Статус адаптера для HUD.
-
-### `realism/data_fetchers/cache.py`
-
-**Классы:**
-
-- `TTLCache`
-  - `put(self, key, data, ttl=None)`
-  - `get(self, key, max_age=None)` — None, если записи нет или она протухла.
-  - `get_stale(self, key)` — Запись без проверки свежести (fallback при недоступной сети).
-  - `invalidate(self, key)`
-  - `clear(self)`
-  - `keys(self)`
-  - `status(self)`
-
-### `realism/data_fetchers/nasa_exoplanet.py`
-
-**Функции:**
-
-- `get_cache()`
-- `build_query(limit)` — ADQL-запрос: ближайшие подтверждённые планеты.
-- `fetch_confirmed_planets(limit=100, timeout=30.0, use_cache=True)` — Сырые строки TAP; при недоступной сети — последний кэш, иначе [].
-- `validate_schema(rows)` — Проверка ожидаемых колонок в TAP-ответе.
-- `to_body(record)` — TAP-строка → Body (масса кг, радиус м, орбита м).
-- `fetch_bodies(limit=20)` — Удобная обёртка: сразу список Body.
-- `nearest_systems(limit=15)` — Ближайшие планетные системы (для меню справки).
-
-### `realism/data_fetchers/nasa_planetary.py`
-
-**Функции:**
-
-- `planetary_bodies()` — Солнце + 8 планет + 8 крупных лун как Body (радиусы в метрах).
-- `update_cache(path=None)` — Опциональное обновление снимка факт-шита (сеть может быть закрыта —
-- `fact_sheet_table()` — Таблица факт-шита для отчётов и меню.
 
 ## Пакет `render`
 

@@ -1,8 +1,8 @@
 # TRIVORTEX Verification — Makefile
 
 .PHONY: help run run-quick run-full lab lab-smoke test ports \
-        rust rust-test cpp cpp-test haskell haskell-test \
-        coq lean4 isabelle agda docker-build clean
+	rust rust-test cpp cpp-test haskell haskell-test \
+	coq lean4 isabelle agda docker-build clean
 
 PYTHON ?= python3
 COMPOSE ?= docker compose

@@ -403,7 +403,7 @@ Rust/C++/GHC), runs in ≈ 30 s, and contains 63 tests:
 
 | Suite | Tests | Guards |
 |---|---|---|
-| `test_trivortex.py` — analytic pins | 13 | Theorem 3.1 reference values: ω = 1.3748022274393588, ε = 0.7276379117656014 (exact to float64), periodicity of the closed form, C_Ch formula shape, the quick-preset ladder in-process, JSON protocol shape |
+| `test_trivortex.py` — analytic pins | 13 | Theorem 3.1 reference values: ω = 1.3748022274393588, ε = 2.6680737914285615 (exact to float64), periodicity of the closed form, C_Ch formula shape, the quick-preset ladder in-process, JSON protocol shape |
 | `test_research_smoke.py` — study smoke | 12 | every TRX-01…12 script executes in `--smoke` mode, exits 0, and its committed protocol reports `status: PASS` |
 | `test_research_smoke.py` — completeness | 1 | every study ships README, code, pack, scheme SVG, four 300-dpi figures, monograph sources and the four monograph renditions (PDF+DOCX × RU/EN) |
 | `test_research_smoke.py` — library | 1 | the reading room: 28 PDFs + 28 DOCX + HTML sources + the four build-system scripts |

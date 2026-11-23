@@ -1,9 +1,26 @@
-# Dependabot — Automated dependency updates
-# https://docs.github.com/en/code-security/dependabot
+---
+# Dependabot — TrivortexBot, organ 1: automated dependency updates
+# https://docs.github.com/en/code-security/dependabot/working-with-dependabot
+#
+# Schema note (validated by .github/scripts/repo_doctor.py, rule DB-*):
+# the previous revision of this file carried three violations that silently
+# disabled Dependabot for the whole repository — an empty `package-ecosystem`
+# (conda is not supported), two pip entries sharing `directory: /`, and a
+# top-level `groups:` block (groups must live inside an update entry).
+#
+# Deliberate scope decisions:
+#   * conda is NOT covered — Dependabot has no conda ecosystem; the root
+#     environment.yml is refreshed by hand (or via the M4+ roadmap);
+#   * the docker ecosystems under verification/docker/ are NOT covered on
+#     purpose: those images are the PINNED formal toolchains of the port
+#     contract (README §8/§10) — a floating tag would silently change the
+#     Lean/Coq/Isabelle/Agda version the verification runs against;
+#   * pip updates land as grouped minor/patch PRs that the auto-merge
+#     workflow merges once CI is green; majors stay for human review.
 version: 2
 
 updates:
-  # GitHub Actions
+  # ── GitHub Actions: weekly, grouped, auto-mergeable patch/minor ──────────
   - package-ecosystem: github-actions
     directory: /
     schedule:
@@ -15,15 +32,19 @@ updates:
     labels:
       - dependencies
       - ci
+      - automerge
     commit-message:
-      prefix: "ci(actions):"
+      prefix: "ci(actions)"
       include: scope
+    groups:
+      actions-patch-minor:
+        update-types:
+          - version-update:semver-patch
+          - version-update:semver-minor
     reviewers:
       - wild8highlander
-    assignees:
-      - wild8highlander
 
-  # Python (pip)
+  # ── Python (pip): the root pyproject.toml of the repository ─────────────
   - package-ecosystem: pip
     directory: /
     schedule:
@@ -31,49 +52,39 @@ updates:
       day: monday
       time: "06:00"
       timezone: UTC
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 5
+    versioning-strategy: increase-if-necessary
     labels:
       - dependencies
       - python
+      - automerge
     commit-message:
-      prefix: "build(pip):"
+      prefix: "build(pip)"
       include: scope
+    groups:
+      python-patch-minor:
+        update-types:
+          - version-update:semver-patch
+          - version-update:semver-minor
     reviewers:
       - wild8highlander
 
-  # Python (pyproject.toml)
+  # ── Python (pip): the optional extras of the master package ─────────────
+  # unique (ecosystem, directory) pair — required by the schema.
   - package-ecosystem: pip
-    directory: /
+    directory: /verification/trivortex_master
     schedule:
       interval: monthly
       day: first-monday
       time: "06:00"
       timezone: UTC
+    open-pull-requests-limit: 5
+    allow-dependency-types: direct
+    versioning-strategy: lockfile-only
     labels:
       - dependencies
       - python
+      - master-package
     commit-message:
-      prefix: "build(pyproject):"
-
-  # Conda
-  - package-ecosystem: ""
-    directory: /
-    schedule:
-      interval: monthly
-    labels:
-      - dependencies
-    ignore:
-      - update-types: ["version-update:semver-major"]
-
-groups:
-  github-actions:
-    patterns:
-      - "actions/*"
-      - "github/*"
-  python-major:
-    update-types:
-      - major
-  python-minor:
-    update-types:
-      - minor
-      - patch
+      prefix: "build(master)"
+      include: scope

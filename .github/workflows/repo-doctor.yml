@@ -1,0 +1,103 @@
+---
+name: TrivortexBot — repo doctor (self-healing CI)
+
+# TrivortexBot, organ 3 of 3: the repo doctor. Dependabot (organ 1,
+# .github/dependabot.yml) keeps the dependencies fresh; the auto-merge
+# workflow (organ 2) lands the safe updates once CI is green; the doctor
+# keeps the repository skeleton itself healthy. It diagnoses the decay
+# classes GitHub Actions silently tolerates — broken branch-trigger
+# syntax, an invalid dependabot.yml, stale analytic pins of §11, nested
+# self-duplicate packaging, hygiene drift — repairs what is safe to
+# repair, commits the repair, and files an issue for the rest.
+#
+# Modes:
+#   * pull_request  -> diagnose only, blocking (a PR must not introduce
+#     any of the known decay classes);
+#   * push / schedule / manual -> diagnose, heal, commit, and escalate.
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/**'
+      - 'verification/README.md'
+      - 'verification/trivortex_master/**'
+      - 'Makefile'
+      - '**/Makefile'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/**'
+      - 'verification/README.md'
+      - 'Makefile'
+      - '**/Makefile'
+  schedule:
+    - cron: '30 4 * * 1'  # weekly, Monday 04:30 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read  # minimal default; the healing job escalates its own
+
+concurrency:
+  group: trivortex-doctor
+  cancel-in-progress: false
+
+jobs:
+  diagnose:
+    name: Diagnose (blocking on PRs)
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Run the doctor in check mode
+        run: python3 .github/scripts/repo_doctor.py --check
+
+  heal:
+    name: Diagnose, heal and escalate (on main)
+    runs-on: ubuntu-24.04
+    if: github.event_name != 'pull_request'
+    permissions:
+      contents: write      # auto-repair commits on main
+      issues: write         # escalate the unfixable findings
+      pull-requests: write  # keep the issue thread reachable
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Heal the repository in place
+        id: heal
+        run: |
+          python3 .github/scripts/repo_doctor.py --fix
+          status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0  # the escalation steps below own the failure semantics
+      - name: Commit and push the repairs
+        run: |
+          git config user.name "TrivortexBot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git add -A
+            git commit -m "chore(repo-doctor): auto-repair the repository skeleton"
+            git push
+          else
+            echo "nothing to repair — repository already healthy"
+          fi
+      - name: Escalate the unfixable findings to an issue
+        if: steps.heal.outputs.status == '1'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          body="$(python3 .github/scripts/repo_doctor.py --check)"
+          existing="$(gh issue list --label repo-doctor --state open --json number --jq 'length')"
+          if [[ "$existing" == "0" ]]; then
+            gh issue create --label repo-doctor \
+              --title "[TrivortexBot] repo doctor: findings need a human" \
+              --body "$body"
+          else
+            number="$(gh issue list --label repo-doctor --state open --json number --jq '.[0].number')"
+            gh issue comment "$number" --body "$body"
+          fi

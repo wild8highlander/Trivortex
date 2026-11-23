@@ -6,9 +6,10 @@
 ![CI](https://img.shields.io/github/actions/workflow/status/wild8highlander/Trivortex/ci.yml?branch=main&style=flat-square&label=CI)
 ![Docs](https://img.shields.io/github/actions/workflow/status/wild8highlander/Trivortex/deploy-docs.yml?branch=main&style=flat-square&label=Docs%20Deploy)
 
-The **GitHub Actions catalogue** of the TRIVORTEX repository (version 1.0.1) —
-12 YAML workflow definitions covering the verification, documentation, security
-and release lifecycle. Every workflow is idempotent, uses pinned action versions
+The **GitHub Actions catalogue** of the TRIVORTEX repository (version 1.1.0) —
+14 YAML workflow definitions covering the verification, documentation, security,
+release and self-healing lifecycle. Every workflow is idempotent, uses pinned
+action versions
 and requires no secrets beyond the built-in `GITHUB_TOKEN` (the Zenodo
 publisher optionally accepts `ZENODO_TOKEN` for DOI automation).
 
@@ -28,6 +29,8 @@ publisher optionally accepts `ZENODO_TOKEN` for DOI automation).
 | [`labeler.yml`](labeler.yml) | pull_request | auto-labels PRs by changed paths (`.github/labeler.yml`) |
 | [`stale.yml`](stale.yml) | schedule | marks and closes inactive issues/PRs after a period of silence |
 | [`release-drafter.yml`](release-drafter.yml) | push / PR | drafts release notes and versions from merged PRs |
+| [`repo-doctor.yml`](repo-doctor.yml) | push / PR touching `.github/**`, `verification/README.md` or `Makefile` files, weekly, manual | ★ **TrivortexBot, organ 3 — the repo doctor**: diagnoses broken workflow branch triggers, invalid `dependabot.yml` schema, stale §11 analytic pins, space-indented Makefile recipes, nested self-duplicate packaging and hygiene drift; auto-commits the repairs on `main`, files an issue for what needs a human |
+| [`dependabot-auto-merge.yml`](dependabot-auto-merge.yml) | PRs opened by `dependabot[bot]` | ★ **TrivortexBot, organ 2 — dependabot auto-merge**: enables squash auto-merge for grouped patch/minor dependency updates once the required CI checks pass; major and indirect updates are labelled `needs-human-review` |
 
 ## The CI job in detail
 
@@ -48,6 +51,12 @@ publisher optionally accepts `ZENODO_TOKEN` for DOI automation).
 
 ## Contract
 
+- **TrivortexBot keeps the skeleton healthy.** Organ 1 is Dependabot itself
+  (`.github/dependabot.yml`: grouped weekly github-actions/pip updates);
+  organ 2 lands the safe patch/minor PRs once required CI is green; organ 3
+  (`repo-doctor.yml` + `.github/scripts/repo_doctor.py`) repairs workflow
+  triggers, dependabot schema, §11 pins and Makefile recipe indentation on
+  every push to `main` and escalates the unfixable remainder to an issue.
 - **The ladder must stay green.** `ci.yml` runs the V1–V4 checks on every
   push; a red ladder is a release blocker, not a warning.
 - **JSON or it did not happen.** The ladder job uploads the JSON protocol of
@@ -66,4 +75,6 @@ The CI steps are reproducible locally through the root Makefile:
 make verify-quick   # the ladder, quick preset (what CI runs)
 make test           # the 28-test pytest guard
 make lint           # ruff over code/ + verification/
+make doctor         # the repo doctor, check mode (TrivortexBot)
+make doctor-fix     # the repo doctor, apply the safe repairs
 ```
