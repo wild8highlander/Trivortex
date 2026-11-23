@@ -1,0 +1,82 @@
+{
+ "version": "1.0.0",
+ "library": [
+  {
+   "id": "theorem31_ring",
+   "name": "Теорема 3.1 — дышащее кольцо",
+   "planner": "theorem31",
+   "params": {
+    "C_Ch": 1.0,
+    "T": 6.283185307179586,
+    "N": 3
+   },
+   "reference": "замкнутая форма: r_k(t)=√C_Ch·(1+ε·cos(ωt+2πk/3)), ω=(2π/T)·e^(C_Ch/π)=1.3748022274393588, ε=1/(e^(1/π)−1)=0.7276379117656014",
+   "source": "Trivortex README §4; ladder V1 (6.9e-14)"
+  },
+  {
+   "id": "lagrange_equilateral",
+   "name": "Лагранж 1772 — равносторонний треугольник",
+   "planner": "lagrange",
+   "params": {
+    "side": 1.0,
+    "mass": 1.0,
+    "N": 3
+   },
+   "reference": "жёсткое вращение треугольника; вихревой близнец — ω_L = 3Γ/(2πa²) (ladder V2)",
+   "source": "Lagrange, Essai (1772); Trivortex verification V2"
+  },
+  {
+   "id": "figure_eight",
+   "name": "Figure-eight (Ченшинер–Монтгомери)",
+   "planner": "figure_eight",
+   "params": {
+    "mass": 1.0,
+    "G": 1.0
+   },
+   "reference": "периодическая хореография равных масс, x0=±0.97000436, v0=(0.4662036850, 0.4323657300)",
+   "source": "Chenciner & Montgomery, Ann. Math. 152 (2000)"
+  },
+  {
+   "id": "butterfly_I",
+   "name": "Бабочка I (Шуваков–Дмитрашинович)",
+   "planner": "scripted",
+   "params": {
+    "family": "butterfly",
+    "variant": "I"
+   },
+   "reference": "хореография семейства бабочек PRL 110, 114301",
+   "source": "Šuvakov & Dmitrašinović (2013)"
+  },
+  {
+   "id": "circular_orbit",
+   "name": "Круговая кеплерова орбита",
+   "planner": "kepler",
+   "params": {
+    "eccentricity": 0.0
+   },
+   "reference": "v = √(GM/r); замкнутый круг",
+   "source": "классика"
+  },
+  {
+   "id": "elliptic_e06",
+   "name": "Эллипс e=0.6",
+   "planner": "kepler",
+   "params": {
+    "eccentricity": 0.6
+   },
+   "reference": "кеплеров эллипс с эксцентриситетом 0.6",
+   "source": "классика"
+  },
+  {
+   "id": "transfer_hohmann",
+   "name": "Гоманов переход Земля→Марс",
+   "planner": "scripted",
+   "params": {
+    "r1_au": 1.0,
+    "r2_au": 1.524
+   },
+   "reference": "двухимпульсный переход между круговыми орбитами",
+   "source": "Hohmann, Die Erreichbarkeit der Himmelskörper (1925)"
+  }
+ ]
+}
