@@ -1,6 +1,13 @@
-<p align="center">
-  <img src="../docs/assets/banner_lab.svg" alt="lab/" width="100%"/>
-</p>
+<!-- markdownlint-disable-file MD041 -->
+<div align="center">
+
+<img src="../docs/assets/banner_lab.svg" alt="lab/" width="100%"/>
+
+# 🧪 lab — the Physics Core
+
+</div>
+
+> **Navigation:** [`verification`](../../README.md) › [`trivortex_master`](../README.md) › **`lab`**
 
 <p align="center">
   <img src="https://img.shields.io/badge/modules-27-34D399?style=flat-square" alt="27 modules"/>
@@ -15,6 +22,38 @@ integrators from Newtonian RK4 to 6th-order Hamiltonian splits,
 trajectory planners (including Theorem 3.1 of the Trivortex core),
 20 presets, and a whole palette of "sciences": GR, chaos, tides,
 radiation, CR3BP, spacecraft attitude control.
+
+## 📂 Contents — What Lives Here
+
+| File | Size | Description |
+|---|---:|---|
+| [`__init__.py`](__init__.py) | 0 B | package marker |
+| [`body.py`](body.py) | 9,977 B | Scenes: bodies |
+| [`scene.py`](scene.py) | 13,304 B | Scenes: the scene container |
+| [`presets.py`](presets.py) | 15,451 B | Scenes: the 20 scene presets |
+| [`units.py`](units.py) | 1,689 B | Scenes: units |
+| [`grid_fields.py`](grid_fields.py) | 2,836 B | Scenes: grid fields |
+| [`physics.py`](physics.py) | 19,446 B | Dynamics: `run_simulation`, the Newtonian engine |
+| [`integrators.py`](integrators.py) | 16,138 B | Dynamics: integrators |
+| [`engine_base.py`](engine_base.py) | 2,580 B | Dynamics: engine base + registration |
+| [`nbody_tree.py`](nbody_tree.py) | 17,795 B | Dynamics: Barnes-Hut O(N log N) |
+| [`hamiltonian_split.py`](hamiltonian_split.py) | 9,051 B | Dynamics: Hamiltonian splits of orders 2/4/6 |
+| [`solar_system_sim.py`](solar_system_sim.py) | 9,523 B | Dynamics: the Solar System simulator |
+| [`trajectory.py`](trajectory.py) | 25,976 B | Trajectories: planners incl. Theorem 3.1 |
+| [`kepler.py`](kepler.py) | 17,410 B | Trajectories: Keplerian orbits |
+| [`orbital_maneuvers.py`](orbital_maneuvers.py) | 10,342 B | Trajectories: maneuvers |
+| [`choreography.py`](choreography.py) | 10,132 B | Trajectories: choreographies |
+| [`relativity.py`](relativity.py) | 16,770 B | Special regimes: 1PN/2PN GR |
+| [`chaos.py`](chaos.py) | 13,524 B | Special regimes: FLI and chaos diagnostics |
+| [`collisions.py`](collisions.py) | 15,132 B | Special regimes: collisions |
+| [`tides.py`](tides.py) | 12,908 B | Special regimes: tides |
+| [`radiation.py`](radiation.py) | 12,386 B | Special regimes: radiation (Poynting-Robertson) |
+| [`trojan_points.py`](trojan_points.py) | 5,534 B | Special regimes: Trojans, the Rabe criterion |
+| [`halo_orbits.py`](halo_orbits.py) | 12,530 B | Special regimes: halo orbits L1–L5 |
+| [`tissot.py`](tissot.py) | 7,806 B | Special regimes: Tissot indicatrix |
+| [`resonances.py`](resonances.py) | 10,948 B | Special regimes: resonances |
+| [`spacecraft.py`](spacecraft.py) | 20,791 B | Special regimes: quaternions/reaction wheels/PID |
+| [`observables.py`](observables.py) | 1,935 B | Observables |
 
 ## Module map
 
@@ -101,6 +140,11 @@ traj.metadata["admissible"]  # True: eps = 1/(e-1) ~ 0.582 < 1
   <img src="../docs/assets/figure_eight.gif" alt="figure-eight" width="44%"/>
 </p>
 
+The analytic core of this planner — the exact rotating equilateral
+solution and the conservation of the vortex integrals — is proven in
+Lean 4 ([`verification/lean4`](../../lean4/README.md), `lagrangeSol`
+and the `P/Q/I/H_kirchhoff_*` theorems).
+
 ## Physics vs independent references
 
 Every "science" module carries a `self_check()` against a literature
@@ -168,3 +212,23 @@ import cycle lab<->realism — the S3 pattern, see
 - [core/](../core/README.md) — configuration and the N limit
 - [analysis/](../analysis/README.md) — tests and metrics of this layer
 - [render/](../render/README.md) — scene visualization
+
+## 🇷🇺 Краткое резюме (Russian Summary)
+
+- Физическое ядро комплекса: тела и сцены, интеграторы от ньютоновского RK4 до расщеплений гамильтониана 6-го порядка, планировщики траекторий (включая Теорему 3.1 ядра Trivortex), 20 пресетов и целый набор «наук»: ОТО, хаос, приливы, излучение, CR3BP, управление ориентацией КА;
+- 27 модулей, сгруппированных в сцены, динамику, траектории, специальные режимы и наблюдаемые;
+- каждый «научный» модуль несёт `self_check()` против литературной или наблюдательной ссылки: Меркурий 42.98″/век, отступание Луны 3.80 см/год, TRAPPIST-1e, FLI на потенциале Хенона—Хейлса, манёвр КА на 90° за 12 с при |H| ≤ 1.8e-16;
+- планировщик Теоремы 3.1 с v2.0.1 записывает флаг `admissible`: замкнутая форма невырождена только при `C_Ch > pi*ln2 ~ 2.1776` (Теорема B), при C_Ch = 1 — Limacon с внутренней петлёй; тест S9 проверяет обе области;
+- лимит Хавелока: кольцо равных вихрей устойчиво при N ≤ 7 и неустойчиво с N ≥ 8 — потому `core/config.py` требует `allow_unphysical` для N = 8 и отказывает при N ≥ 9 (тест S12).
+
+---
+
+<div align="center">
+
+**[⬆ Back to top](#-lab--the-physics-core)** ·
+**[trivortex_master](../README.md)** ·
+**[Repository root](../../../README.md)**
+
+*Part of [wild8highlander/Trivortex](https://github.com/wild8highlander/Trivortex) · Licensed under [IPL-RP-1.0](https://github.com/wild8highlander/Trivortex/blob/main/LICENSE.md) — All Rights Reserved*
+
+</div>

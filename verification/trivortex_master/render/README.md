@@ -1,6 +1,13 @@
-<p align="center">
-  <img src="../docs/assets/banner_render.svg" alt="render/" width="100%"/>
-</p>
+<!-- markdownlint-disable-file MD041 -->
+<div align="center">
+
+<img src="../docs/assets/banner_render.svg" alt="render/" width="100%"/>
+
+# 🎨 render — the Presentation Layer
+
+</div>
+
+> **Navigation:** [`verification`](../../README.md) › [`trivortex_master`](../README.md) › **`render`**
 
 <p align="center">
   <img src="https://img.shields.io/badge/modules-17-E879F9?style=flat-square" alt="17 modules"/>
@@ -13,6 +20,28 @@
 **render/** is the presentation layer: four interchangeable backends,
 own PNG and GIF codecs (no Pillow/imageio), a software raytracer, the
 particle system, cinematic cameras, and the HUD in the AURORA palette.
+
+## 📂 Contents — What Lives Here
+
+| File | Size | Description |
+|---|---:|---|
+| [`__init__.py`](__init__.py) | 0 B | package marker |
+| [`engine.py`](engine.py) | 16,348 B | `get_backend()` — the backend dispatcher |
+| [`backend_ascii.py`](backend_ascii.py) | 7,440 B | truecolor terminal backend, density palette |
+| [`pure_raster.py`](pure_raster.py) | 19,242 B | own 3D rasterizer: 4x4 matrices, scanline, z-buffer, Lambert + Blinn-Phong |
+| [`backend_mpl.py`](backend_mpl.py) | 13,873 B | 2D/3D/4D matplotlib backend (4th axis = color/size) |
+| [`backend_gl.py`](backend_gl.py) | 5,575 B | moderngl backend (optional) |
+| [`png_codec.py`](png_codec.py) | 13,385 B | own PNG encoder: CRC32, row filters, fixed-Huffman DEFLATE |
+| [`animator.py`](animator.py) | 15,007 B | GIF89a (own LZW + NETSCAPE loop) / MP4 |
+| [`raytracer.py`](raytracer.py) | 15,958 B | spheres + plane, Phong, shadows, reflections, Reinhard |
+| [`ascii_sky.py`](ascii_sky.py) | 10,546 B | the stereographic sky map (astronomy via DI `bind_astronomy`) |
+| [`hud.py`](hud.py) | 28,760 B | truecolor AURORA HUD, gradient banner, progress bar, system monitor |
+| [`banners.py`](banners.py) | 2,936 B | frames, status bars, legends for the terminal |
+| [`font_5x7.py`](font_5x7.py) | 3,778 B | 5x7 bitmap font for the pure backend |
+| [`camera.py`](camera.py) | 15,575 B | cinematic cameras: orbit, follow, Catmull-Rom, shake |
+| [`particles.py`](particles.py) | 15,389 B | explosions/disks/jets |
+| [`frame_compositor.py`](frame_compositor.py) | 10,240 B | layers and blend modes for frames |
+| [`spectrum.py`](spectrum.py) | 7,476 B | blackbody to CIE to sRGB (the Sun #FFF9F9) |
 
 ## The render pipeline
 
@@ -102,3 +131,23 @@ animate_scene(sc, "figure_eight.gif", n_frames=56, fps=14, backend="pure")
 - [lab/](../lab/README.md) — where the scene history comes from
 - [realism/](../realism/README.md) — the star source for the sky map (DI)
 - [reports/](../reports/README.md) — embeds these PNGs into reports (base64)
+
+## 🇷🇺 Краткое резюме (Russian Summary)
+
+- Презентационный слой: четыре взаимозаменяемых бэкенда (`ascii`, `pure` — собственный 3D-растеризатор, `mpl`, опциональный `gl`), собственные кодеки PNG и GIF без Pillow/imageio, программный рейстрейсер, система частиц, кинематографичные камеры и HUD в палитре AURORA;
+- собственный PNG-энкодер: CRC32, 5 строчных фильтров, fixed-Huffman DEFLATE (x88 против наивного сопоставления) — декодируется под PIL/эталонными читалками PNG;
+- собственный GIF-кодек: LZW-компрессор для GIF89a, 256-цветная палитра, расширение NETSCAPE loop — бит-в-бит против семантики giflib/PIL; оба примера GIF собраны `animate_scene()` без единой внешней зависимости;
+- карта неба рисует стереографическую проекцию (конформную — круги остаются кругами, Snyder 1987), а каталог звёзд получает через внедрение зависимости `bind_astronomy()` (v2.0.1) — правило слоя S3 `render -> {core, lab}` соблюдено;
+- HUD деградирует до простого текста при выводе в канал, монитор системы (cpu/ram/temp/io) — опционален через psutil.
+
+---
+
+<div align="center">
+
+**[⬆ Back to top](#-render--the-presentation-layer)** ·
+**[trivortex_master](../README.md)** ·
+**[Repository root](../../../README.md)**
+
+*Part of [wild8highlander/Trivortex](https://github.com/wild8highlander/Trivortex) · Licensed under [IPL-RP-1.0](https://github.com/wild8highlander/Trivortex/blob/main/LICENSE.md) — All Rights Reserved*
+
+</div>

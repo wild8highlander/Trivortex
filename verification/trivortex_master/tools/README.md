@@ -1,6 +1,13 @@
-<p align="center">
-  <img src="../docs/assets/banner_tools.svg" alt="tools/" width="100%"/>
-</p>
+<!-- markdownlint-disable-file MD041 -->
+<div align="center">
+
+<img src="../docs/assets/banner_tools.svg" alt="tools/" width="100%"/>
+
+# 🛠 tools — the Build-and-CI Toolkit
+
+</div>
+
+> **Navigation:** [`verification`](../../README.md) › [`trivortex_master`](../README.md) › **`tools`**
 
 <p align="center">
   <img src="https://img.shields.io/badge/modules-9-94A3B8?style=flat-square" alt="9 modules"/>
@@ -11,6 +18,20 @@
 **tools/** is the build-and-CI toolkit: the catalog from NASA TAP,
 data-file generation, the ZIP distribution, the quality gate, data
 export, and release notes.
+
+## 📂 Contents — What Lives Here
+
+| File | Size | Description |
+|---|---:|---|
+| [`quality_gate.py`](quality_gate.py) | 10,737 B | the unified CI: selftest + acceptance + 49 self-checks + hygiene + limits |
+| [`verify_package.py`](verify_package.py) | 10,891 B | acceptance A1-A20 (launch without packages, the N range, ZIP integrity, ...) |
+| [`build_catalog.py`](build_catalog.py) | 28,557 B | catalog build: `--limit N` `--offline`; 440 TAP exoplanets + 98 static |
+| [`build_data_files.py`](build_data_files.py) | 27,659 B | scene presets, literature, trajectories |
+| [`build_dist.py`](build_dist.py) | 7,362 B | `dist/examples/`: raytracer, sky map (with the DI binding), corner text |
+| [`make_examples.py`](make_examples.py) | 2,738 B | example runs into `runs/examples/` |
+| [`data_exporter.py`](data_exporter.py) | 8,206 B | export of trajectories/metrics to CSV/JSON |
+| [`release_notes.py`](release_notes.py) | 11,272 B | release-note generation from the CHANGELOG |
+| [`extend_presets.py`](extend_presets.py) | 6,930 B | adding user presets |
 
 ## The build and CI pipeline
 
@@ -80,20 +101,6 @@ either language:
 "python3 trivortex_master.py" in readme and ("profile" in low or "профил" in low)
 ```
 
-## Modules
-
-| Tool | What it does |
-|---|---|
-| [`quality_gate.py`](quality_gate.py) | the unified CI: selftest + acceptance + 49 self-checks + hygiene + limits |
-| [`verify_package.py`](verify_package.py) | acceptance A1-A20 (launch without packages, the N range, ZIP integrity, ...) |
-| [`build_catalog.py`](build_catalog.py) | catalog build: `--limit N` `--offline`; 440 TAP exoplanets + 98 static |
-| [`build_data_files.py`](build_data_files.py) | scene presets, literature, trajectories |
-| [`build_dist.py`](build_dist.py) | `dist/examples/`: raytracer, sky map (with the DI binding), corner text |
-| [`make_examples.py`](make_examples.py) | example runs into `runs/examples/` |
-| [`data_exporter.py`](data_exporter.py) | export of trajectories/metrics to CSV/JSON |
-| [`release_notes.py`](release_notes.py) | release-note generation from the CHANGELOG |
-| [`extend_presets.py`](extend_presets.py) | adding user presets |
-
 ## Quick start
 
 ```bash
@@ -108,3 +115,23 @@ python3 build_zip.py                          # dist/ + manifest
 - [analysis/](../analysis/README.md) — the tests the gate runs
 - [data/](../data/README.md) — the catalog build output
 - [runs/](../runs/README.md) — where the gate protocols land
+
+## 🇷🇺 Краткое резюме (Russian Summary)
+
+- Сборочно-CI инструментарий: каталог из NASA TAP, генерация файлов данных, ZIP-дистрибуция, quality gate, экспорт данных и заметки о релизах;
+- `quality_gate.py` — весь CI одним вызовом: selftest S1–S24 + acceptance A1–A20 + 49 модульных самопроверок + гигиена 117 файлов + API-метрики; ненулевой код выхода при любом сбое, JSON-протокол в `runs/quality_gate.json`;
+- на текущем дереве (v2.0.2): 24/24, 20/20, 49/49, гигиена чиста, докстринги 100% — TOTAL: PASSED (обе редакции);
+- гигиена сканирует маркеры `TODO/FIXME/XXX/HACK` вне кавычек; взаимный skip-set решает «сканер-как-данные» (в glued-файле — дословная копия сканера);
+- A10 с v2.0.2 языково-нейтрален: принимает и `profile`, и `профил`.
+
+---
+
+<div align="center">
+
+**[⬆ Back to top](#-tools--the-build-and-ci-toolkit)** ·
+**[trivortex_master](../README.md)** ·
+**[Repository root](../../../README.md)**
+
+*Part of [wild8highlander/Trivortex](https://github.com/wild8highlander/Trivortex) · Licensed under [IPL-RP-1.0](https://github.com/wild8highlander/Trivortex/blob/main/LICENSE.md) — All Rights Reserved*
+
+</div>

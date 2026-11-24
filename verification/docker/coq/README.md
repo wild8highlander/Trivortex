@@ -2,22 +2,26 @@
 
 > **Navigation:** [`verification`](../../README.md) › [`docker`](../README.md) › **`coq`**
 
-![Type](https://img.shields.io/badge/Type-Dockerfile-2496ED?style=flat-square&logo=docker&logoColor=white) ![License](https://img.shields.io/badge/License-IPL--RP--1.0-red?style=flat-square)
+![Type](https://img.shields.io/badge/Type-Dockerfile-2496ED?style=flat-square&logo=docker&logoColor=white) ![Toolchain](https://img.shields.io/badge/Coq%2FRocq-8.18-informational?style=flat-square) ![License](https://img.shields.io/badge/License-IPL--RP--1.0-red?style=flat-square)
 
-The **Dockerfile pinning the Coq/Rocq (8.18) environment** for this framework layer. The image installs the toolchain (coq_makefile or per-file coqc as the in-container flow), copies the verification sources, and defaults to running the Coq/Rocq verification — so `docker run` reproduces exactly what CI runs, byte-for-byte at toolchain level.
+The **Dockerfile pinning the Coq/Rocq (8.18) environment** for this framework layer. The image uses the official `coqorg/coq` base, copies the verification sources, compiles the statement layer at image build time (and cleans the build products), and defaults to running `coqc Trivortex.v` — so `docker run` reproduces exactly what CI runs, byte-for-byte at toolchain level.
 
 ## 📂 Contents — What Lives Here
 
 | File | Size | Description |
 |---|---|---|
-| [`Dockerfile`](Dockerfile) | 179 B | Coq/Rocq 8.18 environment — install + source copy + verification entrypoint |
+| [`Dockerfile`](Dockerfile) | 629 B | Coq/Rocq 8.18 environment (`coqorg/coq:8.18-ocaml-4.14`) — source copy + `coqc` acceptance check + verification entrypoint |
 
 ## ▶️ How to Run
 
 ```bash
-docker build -t rp-coq verification/docker/coq
+# build exactly as CI does — the context is verification/ (the COPY paths):
+cd verification
+docker build -t rp-coq -f docker/coq/Dockerfile .
 docker run --rm rp-coq
 ```
+
+The build-time `RUN` executes `coqc Trivortex.v` and removes the `.vo/.vos/.vok/.glob/.aux` products, so the image carries the sources, not stale artifacts.
 
 ## 🔗 Cross-References
 
@@ -26,7 +30,7 @@ docker run --rm rp-coq
 
 ## 🇷🇺 Краткое резюме (Russian Summary)
 
-Dockerfile со средой Coq/Rocq 8.18: установка тулчейна + запуск верификации по умолчанию.
+Dockerfile со средой Coq/Rocq 8.18: база `coqorg/coq:8.18-ocaml-4.14`, компиляция `Trivortex.v` при сборке образа, запуск `coqc` по умолчанию.
 
 ---
 
@@ -44,26 +48,31 @@ Dockerfile со средой Coq/Rocq 8.18: установка тулчейна 
 | Pin | Value |
 |---|---|
 | Toolchain | Coq / Rocq 8.18 |
-| Base image | `coqorg/coq:8.18.0` |
-| Entrypoint | per-file build (the in-container flow) |
+| Base image | `coqorg/coq:8.18-ocaml-4.14` |
+| Build-time check | `coqc Trivortex.v` (products cleaned after the check) |
+| Entrypoint | `coqc Trivortex.v && echo 'Coq build OK — statement layer verified'` |
 | Pinned by | [`Dockerfile`](Dockerfile) |
 | Built by | [`docker.yml`](../../../.github/workflows/docker.yml) |
-| Status | roadmap pin — the artifact lands with milestone **M1** |
+| Status | **landed** — M1 (v1.1): [`Trivortex.v`](../../coq/Trivortex.v) compiles, statement layer proven, zero axioms — see the [Coq hub](../../coq/README.md) |
 
 ## What this image guarantees
 
 - the same toolchain version on a laptop, in CI and on a contributor's machine —
   byte-for-byte at the toolchain level, so a proof that compiles here compiles
   everywhere;
-- the verification sources are copied at build time; `docker run` executes the
-  same entrypoint CI would;
+- the verification sources are copied at build time and **compiled during the
+  build**; `docker run` executes the same `coqc` acceptance check CI would,
+  ending in an explicit "Coq build OK" echo;
 - no floating-point drift question: the M1 artifacts for this
   toolchain are exact-arithmetic or proof objects, not simulations.
 
 ## Honest status
 
-**This is a pinned plan, not a result.** The image builds and the toolchain
-runs, but the Coq / Rocq artifact for Theorem 3.1 has not landed yet — see the
-[milestone table](../README.md) and the
-[Coq / Rocq roadmap](../../coq/README.md). Nothing in this directory should be quoted as a
-verification.
+**The pin is real and the artifact has landed.** The image compiles
+[`Trivortex.v`](../../coq/Trivortex.v) — the M1 statement layer, proven with a
+closed axiom footprint — and a green `docker run` is the same check the Coq
+job of [`verification-ports.yml`](../../../.github/workflows/verification-ports.yml)
+performs (non-blocking until the three-green-days flip). What the artifact
+proves — and what it deliberately does not yet prove (the `I = Γ` derivation
+is M5) — is stated in the [Coq / Rocq roadmap](../../coq/README.md); quote
+results from there, never from this pin table alone.

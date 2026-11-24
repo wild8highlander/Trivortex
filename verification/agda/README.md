@@ -1,28 +1,67 @@
-# Agda Verification — Roadmap
+<!-- markdownlint-disable-file MD041 -->
+<div align="center">
 
-> Formalization / port target for the **TRIVORTEX** document
-> (`code/trivortex_core*.py`): Theorem 3.1 (the Lagrange-type rotating
-> solution) and the conservation of the Chaplygin-type vortex integrals.
+# 🧩 Agda Verification — the Constructive Angle Arithmetic
+
+![Agda](https://img.shields.io/badge/Agda-2.6.4-315672?style=flat-square&logo=haskell&logoColor=white)
+![Type](https://img.shields.io/badge/Type-proof%20artifact%20%28constructive%29-6E4C9E?style=flat-square)
+[![Ports CI](https://img.shields.io/github/actions/workflow/status/wild8highlander/Trivortex/verification-ports.yml?branch=main&style=flat-square&label=Ports%20CI)](https://github.com/wild8highlander/Trivortex/actions/workflows/verification-ports.yml)
+![Status](https://img.shields.io/badge/Status-landed%20v1.1%20%28M2%29-2EA043?style=flat-square)
+![License](https://img.shields.io/badge/License-IPL--RP--1.0-red?style=flat-square)
+
+<img src="../../docs/assets/divider-gold.svg" width="45%" alt="gold ornament divider"/>
+
+</div>
+
+> **Navigation:** [`verification`](../README.md) › **`agda`**
+
+> The constructive port of the **TRIVORTEX** statement layer
+> (`code/trivortex_core*.py`): the angle bookkeeping of the equilateral
+> choreography is discretized onto the rotation lattice it actually lives
+> on — one full turn is the unit, the three vortices sit at the lattice
+> points 0, 1/3, 2/3 — and the choreography statements reduce to finite,
+> normalization-free arithmetic on `Fin 3`.
 >
-> **Status: landed — v1.1 (milestone M2).** The artifact, the
-> CI-callable check and the bilingual documentation live in this
-> directory; the acceptance criteria below are checked. Local runs
-> need the pinned toolchain (Docker); the repository CI runs the
-> port non-blocking (see [`verification/README.md`](../README.md) §7).
+> **Status: landed — v1.1 (milestone M2).** The artifact
+> [`Trivortex.agda`](Trivortex.agda), the CI-callable check and the
+> bilingual documentation live in this directory; the acceptance criteria
+> below are checked. Local runs need the pinned toolchain (Docker); the
+> repository CI runs the port non-blocking (see
+> [`verification/README.md`](../README.md) §7).
 
 ---
 
-## Why Agda
+## 📂 Contents — What Lives Here
 
-Agda serves as the *independent* proof assistant in the
-matrix: its constructive background makes it a good stress test for
-whether the statement layer of Theorem 3.1 is phrased without
-accidental classical shortcuts. The port targets the choreography
-property (constructive angle arithmetic mod 2*pi/3) and the periodicity
-lemma; the analytic-frequency identity follows from the standard
-library's real-number machinery.
+This directory: [`README.md`](README.md) (this document) ·
+[`README_RU.md`](README_RU.md) (the Russian overview, same structure).
 
-## Scope of the port
+| File | Size | Lines | Description |
+|---|---|---|---|
+| [`Trivortex.agda`](Trivortex.agda) | 11 786 B | 254 | The M2 artifact: constructive angle arithmetic — the C3 rotation lattice, the phase lattice, the periodicity of the closed form over ℚ, the Chaplygin combination, the exact centroid anchors |
+
+## 🚀 How to Build / Run
+
+The pinned toolchain is [`docker/agda/Dockerfile`](../docker/agda/Dockerfile)
+(image `agda/agda:2.6.4`, the Agda standard library ships inside the image):
+
+```bash
+docker build -t trivortex-agda verification/docker/agda
+docker run --rm -v "$PWD":/work -w /work trivortex-agda \
+    agda verification/agda/Trivortex.agda
+```
+
+Or via the Makefile from `verification/` (`make help` lists all targets):
+
+```bash
+make agda        # type-check Trivortex.agda (needs a local Agda 2.6.4)
+```
+
+CI runs exactly the dockerized check in the non-blocking job
+*formal-agda* of
+[`verification-ports.yml`](https://github.com/wild8highlander/Trivortex/actions/workflows/verification-ports.yml).
+
+## ✅ What Is Verified Here
 
 The port fixes exactly three objects, so that every language proves or
 computes the *same* statements and the results stay comparable:
@@ -42,7 +81,53 @@ computes the *same* statements and the results stay comparable:
    trajectories — conserved to the tolerance bands of
    [`verification/tests/`](../tests/README.md).
 
-## Acceptance criteria
+What the artifact actually certifies, section by section (all proofs are
+term-level, `refl` and equational reasoning — no tactics, no axioms beyond
+the two declared postulates):
+
+| Section of [`Trivortex.agda`](Trivortex.agda) | Certified property |
+|---|---|
+| 1 — the C3 rotation lattice | `rot³-id`: three steps of 1/3 of a turn compose into one full turn on `Fin 3`; `no-fixed-point`: the 1/3-shifted orbit never self-intersects (V1, property (a) + the C3 group) |
+| 2 — the phase lattice | `uniform-step` / `phase-shifts-by-one-step`: consecutive vortex phases advance by exactly one step δ, for every δ (the rigid 120° shift, in particular for δ = 1/3) |
+| 3 — the radial closed form over ℚ | `r-periodic`: `r(t + 1) = r(t)` in turn units, given the single declared axiom that the cosine atom `c` has period one full turn (V1, property (b)) |
+| 4 — the Chaplygin combination | `C-additive`: `C(r, θ̇+δ, q) = C(r, θ̇, q) + r²·δ` for `C = r²θ̇ − q·r` — the algebraic shape the ladders record |
+| 5 — the vortex integrals | `P-anchored` / `Q-anchored`: if the centroid sits at the origin then `P = Q = 0` *exactly*, for every Γ — the analytic anchor of check V3; the definition of `I` keeps all four integrals in one module |
+
+**Axiom footprint (declared, nothing else postulated):**
+
+```agda
+postulate
+  c      : ℚ → ℚ                      -- the cosine atom
+  c-add1 : ∀ q → c (q + 1ℚ) ≡ c q     -- period: one turn
+```
+
+Everything else is proven constructively from the Agda standard library.
+The wrap-around of the phase lattice (three uniform steps closing the
+circle) is exactly the content of `rot³-id` on the lattice side; the
+corresponding turn-modulo identification on the ℚ side lives behind the
+declared period axiom — an honest division of labor that the artifact
+header makes explicit. This is Agda's role in the matrix: its
+constructive background is a stress test for whether the statement layer
+of Theorem 3.1 is phrased without accidental classical shortcuts.
+
+```mermaid
+flowchart TD
+    A["verify.py analytic layer — M0 release, commit 557bff8"] --> B["discretize the angle bookkeeping onto the rotation lattice: one turn = 1, vortices at 0, 1/3, 2/3"]
+    B --> C["finite, normalization-free arithmetic on Fin 3"]
+    C --> D["rot^3 = id — the C3 group of the choreography; no-fixed-point"]
+    C --> E["uniform-step — the phase lattice advances by exactly one step delta"]
+    B --> F["the closed form r over Q — the declared cosine atom c with period axiom c-add1"]
+    F --> G["r-periodic — period one full turn"]
+    B --> H["Chaplygin C = r^2*theta_dot - q*r — C-additive in theta_dot"]
+    B --> I["exact centroid anchors P = Q = 0"]
+    D --> J["agda Trivortex.agda type-checks in the pinned image — CI job formal-agda"]
+    E --> J
+    G --> J
+    H --> J
+    I --> J
+```
+
+## 📋 Acceptance Criteria (all checked)
 
 - [x] The three objects above are expressed in Agda (standard library) with no hidden
       assumptions beyond the axioms listed in the artifact header
@@ -54,35 +139,38 @@ computes the *same* statements and the results stay comparable:
 - [x] `verification/README.md` status table flips this row to
       *landed (v1.1)* with a link.
 
-## Build recipe
-
-```bash
-# pinned toolchain (see docker/agda/Dockerfile)
-docker build -t trivortex-agda docker/agda
-docker run --rm -v "$PWD":/work -w /work trivortex-agda \
-    agda verification/agda/Trivortex.agda   # lands with milestone M1
-```
-
-The Dockerfile in [`docker/agda/Dockerfile`](../docker/agda/Dockerfile)
-pins the toolchain; the repository CI never requires this build to pass
-until milestone M1 lands.
-
-## Toolchain pin and milestones
+## 🔧 Toolchain Pin and Milestones
 
 | Pin | Value |
 |---|---|
 | Toolchain | Agda 2.6.4 |
-| Docker pin | [`docker/agda/Dockerfile`](../docker/agda/Dockerfile) |
-| Planned artifact | `verification/agda/Trivortex.agda` |
-| Milestone | **M2** of the staged plan |
-| CI status | non-blocking job in `verification-ports.yml` |
+| Docker pin | [`docker/agda/Dockerfile`](../docker/agda/Dockerfile) — image `agda/agda:2.6.4` |
+| Artifact | `verification/agda/Trivortex.agda` — **landed** (v1.1) |
+| Milestone | **M2** of the staged plan (with [Isabelle](../isabelle/README.md)) |
+| CI status | non-blocking job *formal-agda* in `verification-ports.yml` |
 
-## What landed (v1.1)
+Milestone context: **M1** delivered [Coq](../coq/README.md),
+[Lean 4](../lean4/README.md) and [Rust](../rust/README.md); **M2** delivers the
+two cross-checking formalizations Isabelle + Agda; **M3** delivers the
+[C++](../cpp/README.md) and [Haskell](../haskell/README.md) ports. The status
+table lives in [`verification/README.md`](../README.md) §7.
 
-1. the constructive angle arithmetic: the C3 rotation lattice of the choreography (`rot³ ≡ id` proven on `Fin 3`), the uniform-step phase lattice, the periodicity of the closed form over ℚ given the single declared turn-period axiom, the Chaplygin additivity identity and the exact centroid anchors P = Q = 0;
-2. the axiom footprint is declared in the artifact header (the cosine atom and its period — nothing else is postulated).
+## 🔗 Cross-References
 
-The artifact header lists the axiom footprint; the JSON protocol of a
-real run is committed next to the artifact (`protocol_quick.json`) where
-the port is numerical. The bilingual overview lives in
-[README_RU.md](README_RU.md).
+- [Verification framework](../README.md) — milestones, tolerance bands, protocol schema
+- [Lean 4 hub](../lean4/README.md) — the Mathlib formalization of the same statement layer (M1)
+- [Coq port](../coq/README.md) — the classical statement layer this port constructively stress-tests
+- [Isabelle port](../isabelle/README.md) — the other M2 formalization
+- [Docker pin](../docker/agda/Dockerfile) and [pytest guard](../tests/README.md) — the tolerance bands the numeric ladders enforce
+- CI workflow: [`verification-ports.yml`](https://github.com/wild8highlander/Trivortex/actions/workflows/verification-ports.yml) · Makefile targets: `make agda`
+
+---
+
+<div align="center">
+
+**[⬆ Back to top](#-agda-verification--the-constructive-angle-arithmetic)** ·
+**[Repository root](../../README.md)**
+
+*Part of [wild8highlander/Trivortex](https://github.com/wild8highlander/Trivortex) · Licensed under [IPL-RP-1.0](https://github.com/wild8highlander/Trivortex/blob/main/LICENSE.md) — All Rights Reserved*
+
+</div>

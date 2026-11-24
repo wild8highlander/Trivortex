@@ -1,14 +1,42 @@
-# TRIVORTEX — Verification Framework
+<!-- markdownlint-disable-file MD041 -->
+<div align="center">
 
-> The multi-language framework that keeps every number in the TRIVORTEX
-> document honest: the working Python ladder, the interactive scientific
-> laboratory, seven pinned toolchains and seven landed language ports —
-> Coq, Lean 4, Rust (M1), Isabelle, Agda (M2), C++, Haskell (M3).
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- TRIVORTEX verification framework — navy-and-gold hero header   -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<img src="../docs/assets/logo-trivortex.svg" width="96" alt="The TRIVORTEX mark: three intertwined vortex rings over the Lagrange triangle"/>
 
-![Status](https://img.shields.io/badge/ladder-V1%E2%80%93V7%20%E2%9C%93%204%2F4%20%C3%97%207%20langs-2EA043?style=flat-square)
-![Tests](https://img.shields.io/badge/pytest-63%20passed-2EA043?style=flat-square&logo=pytest)
-![Languages](https://img.shields.io/badge/ports-8%20landed-2496ED?style=flat-square&logo=docker&logoColor=white)
-![License](https://img.shields.io/badge/License-IPL--RP--1.0-red?style=flat-square)
+# 🧪 TRIVORTEX — Verification Framework
+
+**The multi-language framework that keeps every number in the TRIVORTEX
+document honest.** The working Python ladder, the interactive scientific
+laboratory, seven pinned toolchains and seven landed language ports —
+Coq, Lean 4, Rust (M1), Isabelle, Agda (M2), C++, Haskell (M3).
+
+<img src="../docs/assets/divider-gold.svg" width="55%" alt="gold ornament divider"/>
+
+<!-- ROW 1 — CI & STATUS -->
+[![Verification Ports](https://img.shields.io/github/actions/workflow/status/wild8highlander/Trivortex/verification-ports.yml?branch=main&style=flat-square&label=Verification%20Ports)](https://github.com/wild8highlander/Trivortex/actions/workflows/verification-ports.yml)
+[![Ports](https://img.shields.io/badge/ports-8%20landed-2496ED?style=flat-square&logo=docker&logoColor=white)](#7-multi-language-roadmap-and-milestones)
+[![Ladder](https://img.shields.io/badge/ladder-V1%E2%80%93V4%20%E2%9C%93%204%2F4-2EA043?style=flat-square)](#5-the-v1v4-checks-in-detail)
+[![pytest](https://img.shields.io/badge/pytest-63%20passed-2EA043?style=flat-square&logo=pytest)](tests/README.md)
+
+<!-- ROW 2 — ARTIFACT & LICENSE -->
+[![Toolchains](https://img.shields.io/badge/toolchains-7%20pinned%20images-2496ED?style=flat-square&logo=docker&logoColor=white)](docker/README.md)
+[![Protocol](https://img.shields.io/badge/protocol-JSON%2C%20bound%20to%20runs-1284BA?style=flat-square)](#12-the-json-protocol-schema)
+[![Make](https://img.shields.io/badge/make-21%20targets-informational?style=flat-square&logo=gnu)](Makefile)
+[![License](https://img.shields.io/badge/License-IPL--RP--1.0-red?style=flat-square)](https://github.com/wild8highlander/Trivortex/blob/main/LICENSE.md)
+[![Status](https://img.shields.io/badge/status-M0%E2%80%93M3%20landed%20%C2%B7%20M4%2B%20pre--registered-2EA043?style=flat-square)](#71-what-is-next--the-m4-roadmap)
+
+</div>
+
+> **Navigation:** [`Trivortex`](../README.md) › **`verification`**
+
+> The checks live in **independent code** (`trivortex/python/verify.py`
+> shares no imports with the core document), run in a CI job on every
+> push, emit JSON protocols with full parameter snapshots, and are mapped
+> onto a multi-language port plan so that a future refactor cannot
+> silently move the goalposts.
 
 ---
 
@@ -21,6 +49,7 @@
 5. [The V1–V4 checks in detail](#5-the-v1v4-checks-in-detail)
 6. [Tolerance bands](#6-tolerance-bands)
 7. [Multi-language roadmap and milestones](#7-multi-language-roadmap-and-milestones)
+   - [7.1 What is next — the M4+ roadmap](#71-what-is-next--the-m4-roadmap)
 8. [Docker toolchains](#8-docker-toolchains)
 9. [How to reproduce everything](#9-how-to-reproduce-everything)
 10. [How to contribute a new language](#10-how-to-contribute-a-new-language)
@@ -28,6 +57,7 @@
 12. [The JSON protocol schema](#12-the-json-protocol-schema)
 13. [Honesty notes](#13-honesty-notes)
 14. [Frequently asked questions](#14-frequently-asked-questions)
+15. [Cross-references — the verification constellation](#15-cross-references--the-verification-constellation)
 
 ---
 
@@ -59,6 +89,29 @@ edition of this repository and kept deliberately:
 - **Skeletons are labelled as skeletons.** Directories whose artifacts
   have not landed yet say so in their first line. Nothing in this
   repository pretends to be verified when it is merely planned.
+
+The framework at a glance — one independent ladder, one pytest guard,
+eight CI port jobs, seven pinned toolchain images:
+
+```mermaid
+flowchart LR
+    DOC["code/<br/>trivortex_core*.py<br/>(the checked document)"] -- independent re-derivation --> PY["trivortex/python/<br/>verify.py — ladder V1-V4<br/>+ lab.py"]
+    PY -- JSON protocol --> TS["tests/<br/>63 pytest tests"]
+    PY -- pins and tolerances --> PORTS
+    subgraph PORTS["verification-ports.yml — 8 CI port jobs"]
+        direction LR
+        COQ["coq/<br/>Trivortex.v"]
+        LEAN["lean4/<br/>Trivortex.lean"]
+        RUST["rust/<br/>numeric twin"]
+        ISA["isabelle/<br/>Trivortex.thy"]
+        AGDA["agda/<br/>Trivortex.agda"]
+        CPP["cpp/<br/>CMake/CTest"]
+        HS["haskell/<br/>dual ladder"]
+        LAB["lab.py<br/>smoke"]
+    end
+    IMG["docker/<br/>7 pinned toolchain images"] -. toolchains .-> PORTS
+    TS -- guards --> PORTS
+```
 
 ---
 
@@ -115,12 +168,20 @@ verification/
 └── docker/                    ← 7 pinned toolchains
 ```
 
+The two meta-files of the layer:
+
+| File | Size | Role |
+|---|---|---|
+| [`Makefile`](Makefile) | 2 853 B | 21 targets: `run`, `run-quick`, `run-full`, `lab`, `lab-smoke`, `test`, `common`, one target per landed port (`rust`, `cpp`, `haskell`, `coq`, `lean4`, `isabelle`, `agda`), `docker-build`, `clean`, `run-check` |
+| [`CODEOWNERS`](CODEOWNERS) | 469 B | review routing: every verification directory, the ladder and the docker layer are owned by `@wild8highlander` |
+
 ---
 
 ## 4. The working Python ladder (today)
 
-`trivortex/python/verify.py` is a self-contained script (~450 lines with
-documentation) whose only dependency is `numpy`. It re-implements, from
+[`trivortex/python/verify.py`](trivortex/python/verify.py) is a
+self-contained script (469 lines, 17 911 B, documentation included)
+whose only dependency is `numpy`. It re-implements, from
 scratch, the objects it checks — the closed form of Theorem 3.1, the
 Chaplygin combination, the Kirchhoff right-hand side and a classical RK4
 stepper — so a bug in `code/trivortex_core*.py` cannot hide inside a
@@ -142,6 +203,13 @@ Every invocation writes a JSON protocol (`suite`, `preset`, UTC date,
 per-check residuals and parameter snapshots, wall time) — the same
 "numbers are bound to runs" discipline the repository has used since its
 first release.
+
+Beside the ladder lives the second M0 artifact,
+[`trivortex/python/lab.py`](trivortex/python/lab.py) (874 lines,
+35 483 B): the interactive scientific laboratory — bilingual
+(EN/RU menus), custom parameters, a convergence study over the step
+grids 250…8 000 steps/period, an invariant-drift scan and dashboard
+figures at 600 dpi. Its CI smoke entry is `lab.py --smoke`.
 
 ---
 
@@ -218,13 +286,31 @@ criteria are checked in the same files now.
 | `trivortex/python/` | working ladder V1–V4 + JSON | **M0** | ✅ **done** (v1.0) |
 | `tests/` | pytest guard of the ladder + program | **M0** | ✅ **done** (63 tests) |
 | `trivortex/python/lab.py` | interactive scientific laboratory, 600 dpi | **M0+** | ✅ **landed** (v1.1) |
-| `coq/` | `Trivortex.v` — statement layer + choreography | **M1** | ✅ **landed** (v1.1) — proven, zero axioms |
-| `lean4/` | `Trivortex.lean` — choreography + periodicity via Mathlib | **M1** | ✅ **landed** (v1.1) — proven, `#print axioms` closed |
-| `rust/` | crate — second floating-point implementation of V1–V4 | **M1** | ✅ **landed** (v1.1) — 14/14 tests, protocol committed |
-| `isabelle/` | `Trivortex.thy` — SMT-discharged invariant bounds | **M2** | ✅ **landed** (v1.1) — HOL proven; SMT session optional |
-| `agda/` | `Trivortex.agda` — constructive angle arithmetic | **M2** | ✅ **landed** (v1.1) — C3 lattice proven constructively |
-| `cpp/` | CMake/CTest port + `-O2` benchmark of the ladder | **M3** | ✅ **landed** (v1.1) — 21 guards, 1.7e7 rhs/s |
-| `haskell/` | `Double` vs exact-rational dual run of the ladder | **M3** | ✅ **landed** (v1.1) — ℚ(√3) anchors hold by computation |
+| [`coq/`](coq/README.md) | `Trivortex.v` — statement layer + choreography | **M1** | ✅ **landed** (v1.1) — proven, zero axioms |
+| [`lean4/`](lean4/README.md) | `Trivortex.lean` — the full statement layer §1–§9 via Mathlib | **M1 + depth** | ✅ **landed** (v5.0) — proven, 144 `#print axioms` statements closed, 0 `sorry` |
+| [`rust/`](rust/README.md) | crate — second floating-point implementation of V1–V4 | **M1** | ✅ **landed** (v1.1) — 14/14 tests, protocol committed |
+| [`isabelle/`](isabelle/README.md) | `Trivortex.thy` — SMT-discharged invariant bounds | **M2** | ✅ **landed** (v1.1) — HOL proven; SMT session optional |
+| [`agda/`](agda/README.md) | `Trivortex.agda` — constructive angle arithmetic | **M2** | ✅ **landed** (v1.1) — C3 lattice proven constructively |
+| [`cpp/`](cpp/README.md) | CMake/CTest port + `-O2` benchmark of the ladder | **M3** | ✅ **landed** (v1.1) — 25 guards, 1.7e7 rhs/s |
+| [`haskell/`](haskell/README.md) | `Double` vs exact-rational dual run of the ladder | **M3** | ✅ **landed** (v1.1) — ℚ(√3) anchors hold by computation |
+
+The milestone chain as it stands — three delivered, three pre-registered:
+
+```mermaid
+flowchart LR
+    M0["M0 · v1.0<br/>independent ladder<br/>V1-V4 + JSON protocols<br/>+ the laboratory"]
+    M1["M1 · v1.1<br/>independent re-derivation<br/>Coq + Lean 4 + Rust"]
+    M2["M2 · v1.1<br/>cross-checked statements<br/>Isabelle + Agda"]
+    M3["M3 · v1.1<br/>performance and exactness<br/>C++ + Haskell"]
+    M4["M4 · hardening<br/>target v1.2<br/>blocking ports, SMT online,<br/>Lean cache, site table"]
+    M5["M5 · depth<br/>target v1.3<br/>50-digit anchors, Julia twin,<br/>Chaplygin identity proven"]
+    M6["M6 · widening<br/>target v2.0<br/>V5 regular ring N=7,<br/>benchmark board"]
+    M0 --> M1 --> M2 --> M3 --> M4 --> M5 --> M6
+    style M0 fill:#1f2a44,color:#e6c77a
+    style M1 fill:#1f2a44,color:#e6c77a
+    style M2 fill:#1f2a44,color:#e6c77a
+    style M3 fill:#1f2a44,color:#e6c77a
+```
 
 Milestone definitions:
 
@@ -247,9 +333,10 @@ Milestone definitions:
   equilateral anchor identities hold by computation).
 
 The CI contract of §10 stands: every port job in
-`verification-ports.yml` is non-blocking; a port becomes blocking after
-a green run on three consecutive days (flip `continue-on-error` in the
-workflow for that job).
+[`verification-ports.yml`](../.github/workflows/verification-ports.yml)
+is non-blocking (`continue-on-error: true`, 8 jobs on `ubuntu-24.04`); a
+port becomes blocking after a green run on three consecutive days (flip
+`continue-on-error` in the workflow for that job).
 
 ### 7.1 What is next — the M4+ roadmap
 
@@ -303,32 +390,35 @@ widening the surface.
 the same pre-registration rule.
 
 1. **V5 — the regular ring.** A fifth ladder rung: the regular N-gon
-    vortex ring (N = 7) — rotation rate, shape stability, invariant
-    drift. Acceptance: V5 lands in Python first, then in at least two
-    ports; §5 and the protocols gain the new rung.
+   vortex ring (N = 7) — rotation rate, shape stability, invariant
+   drift. Acceptance: V5 lands in Python first, then in at least two
+   ports; §5 and the protocols gain the new rung.
 2. **Benchmark board.** rust vs c++ rhs/s side by side, same machine
-    and same protocol. Acceptance: both numbers pinned in §9.
+   and same protocol. Acceptance: both numbers pinned in §9.
 
 ---
 
 ## 8. Docker toolchains
 
-One image per toolchain, each a thin layer over the official base image:
+One image per toolchain, each a thin layer over an official base image —
+full recipes, entrypoints and honest per-image status live in
+[`docker/README.md`](docker/README.md):
 
-| Image | Base | Pins |
+| Image | Base image | Pins |
 |---|---|---|
-| `docker/coq/` | `rocq/rocq` | Coq/Rocq 8.18, standard Reals stack |
-| `docker/lean4/` | Lean community image | elan + lake, toolchain file |
-| `docker/isabelle/` | `makarius/isabelle` | Isabelle-HOL 2024 session env |
-| `docker/agda/` | `agda/agda` | Agda 2.6 + standard library |
-| `docker/rust/` | `rust` | stable ≥ 1.75, Cargo cache mounted |
-| `docker/cpp/` | `gcc` | GCC + CMake, C++17 |
-| `docker/haskell/` | `haskell` | GHC 9.4 + cabal |
+| [`docker/coq/`](docker/coq/README.md) | `coqorg/coq:8.18-ocaml-4.14` | Coq/Rocq 8.18, standard Reals stack |
+| [`docker/lean4/`](docker/lean4/README.md) | `ubuntu:24.04` + elan | Lean **v4.6.0** via [`lean-toolchain`](lean4/lean-toolchain) (`leanprover/lean4:v4.6.0`), Mathlib4 tag v4.6.0, lake |
+| [`docker/isabelle/`](docker/isabelle/README.md) | `makarius/isabelle:Isabelle2024` | Isabelle-HOL 2024 session env |
+| [`docker/agda/`](docker/agda/README.md) | `agda/agda:2.6.4` | Agda 2.6.4 + standard library |
+| [`docker/rust/`](docker/rust/README.md) | `rust:1.77` | stable pin 1.77 (crate `rust-version = 1.75`), Cargo test at `--release` |
+| [`docker/cpp/`](docker/cpp/README.md) | `gcc:13` | GCC 13 + CMake, C++17 (`CMAKE_CXX_STANDARD 17`) |
+| [`docker/haskell/`](docker/haskell/README.md) | `haskell:9.4-slim` | GHC 9.4 + cabal |
 
 Build and run any of them with the recipe in the corresponding language
 README (see [section 3](#3-directory-layout) for the paths). The CI builds
-images opportunistically via `docker.yml`; until milestone M1, a failing
-formal toolchain never blocks `main`.
+images opportunistically via
+[`docker.yml`](../.github/workflows/docker.yml); a failing formal
+toolchain never blocks `main` (the ports contract of §7).
 
 ---
 
@@ -365,6 +455,10 @@ docker build -t trivortex-agda verification/docker/agda \
 python3 verification/common/python/main.py --section 1 --preset default
 ```
 
+Every step above has a one-command Makefile alias — `make help` prints
+the full list (see [section 3](#3-directory-layout)); the
+`docker-build` target builds all seven pinned images in one loop.
+
 Environment: Python ≥ 3.10 with `numpy ≥ 1.24` (the laboratory adds
 optional `matplotlib`); the Rust port needs only a stable toolchain; the
 C++ port needs CMake ≥ 3.16 and a C++17 compiler; the Haskell port needs
@@ -399,7 +493,10 @@ ownership per directory in [`verification/CODEOWNERS`](CODEOWNERS).
 `verification/tests/` is the CI-friendly wrapper around the whole program.
 It needs only `numpy` and `pytest` (the port-guard suite is
 toolchain-agnostic: it pins the committed protocols, it never invokes
-Rust/C++/GHC), runs in ≈ 30 s, and contains 63 tests:
+Rust/C++/GHC), runs in ≈ 30 s, and contains 63 tests
+(`pytest --collect-only` reports exactly 63: 13 + 14 + 36 — the raw
+25 `def test_` functions expand under `@pytest.mark.parametrize`, e.g.
+the 25-row artifact table of `test_ports.py`):
 
 | Suite | Tests | Guards |
 |---|---|---|
@@ -415,7 +512,9 @@ The reference constants are *pinned, not assumed*: each expected value is
 computed from the closed form inside the test itself, so the suite fails if the
 formula — not just the implementation — drifts. The same discipline now
 spans the languages: the committed protocols of the Rust and C++ twins are
-pinned against the Python ladder's numbers by `test_ports.py`.
+pinned against the Python ladder's numbers by `test_ports.py`. The full
+test map, tolerance philosophy and CI wiring are documented in
+[`tests/README.md`](tests/README.md).
 
 ---
 
@@ -453,6 +552,11 @@ by the research studies:
 | `checks[].passed` | per-check verdict against the registered tolerance |
 | `checks[].params` | the full parameter snapshot — the protocol is reproducible from the file alone |
 | `date_utc`, `wall_time_s` | provenance of the run |
+
+Committed instances of this schema live with the executed ports:
+[`rust/protocol_quick.json`](rust/protocol_quick.json) (2 474 B) and
+[`cpp/protocol_quick.json`](cpp/protocol_quick.json) (2 411 B); the
+pytest guard pins both against the Python ladder's numbers (§11).
 
 ---
 
@@ -507,3 +611,44 @@ so in its first line. The formal ports (Coq, Lean, Isabelle, Agda) list
 their axiom footprint in the artifact header; the numerical ports commit
 the JSON protocol of a real run (`protocol_quick.json`). Status tables
 can now quote all of them.
+
+---
+
+## 15. Cross-references — the verification constellation
+
+| Where | What it holds |
+|---|---|
+| [`trivortex/`](trivortex/README.md) | the working ladder and the interactive laboratory (M0) — [README_RU](trivortex/README_RU.md) |
+| [`tests/`](tests/README.md) | the 63-test pytest guard — test map and tolerance philosophy |
+| [`common/`](common/README.md) | the shared verifier protocol package (kept from the previous edition) |
+| [`notes/`](notes/README.md) | symbolic and numeric pre-verification scripts backing the Lean 4 §8/§9 chunks, with their run logs |
+| [`lean4/`](lean4/README.md) | the Lean 4 hub — Mathlib formalization, landed v5.0, §1–§9, 145 `#print axioms` statements ([README_RU](lean4/README_RU.md)) |
+| [`coq/`](coq/README.md) · [`isabelle/`](isabelle/README.md) · [`agda/`](agda/README.md) | the other formal ports (M1/M2) |
+| [`rust/`](rust/README.md) · [`cpp/`](cpp/README.md) · [`haskell/`](haskell/README.md) | the compiled and exact-arithmetic ports (M1/M3) |
+| [`docker/`](docker/README.md) | the 7 pinned toolchain images that run the formal ports |
+| [`Makefile`](Makefile) · [`CODEOWNERS`](CODEOWNERS) | the command surface and review routing of the layer |
+
+Repository-level context: the [root README](../README.md) (the document,
+the studies, the reading room), [`CONTRIBUTING.md`](../CONTRIBUTING.md),
+and the CI workflows [`ci.yml`](../.github/workflows/ci.yml) and
+[`verification-ports.yml`](../.github/workflows/verification-ports.yml).
+
+## 🇷🇺 Краткое резюме (Russian Summary)
+
+- **`verification/`** — независимый контур проверки TRIVORTEX: лестница V1–V4 на Python (`trivortex/python/verify.py`, 469 строк, зависимость — только numpy), интерактивная лаборатория `lab.py` и pytest-щит из 63 тестов (~30 с).
+- Каждая проверка привязана к запуску: JSON-протокол с снимком параметров, невязкой и допуском; допуски (1e-12 / 1e-10 / 1e-6) зарегистрированы в README заранее.
+- Восемь портов приземлены (M0–M3): Coq и Lean 4 (доказано, без нетривиальных аксиом), Rust (числовой двойник), Isabelle и Agda (M2), C++ и Haskell (M3); CI-задания — `verification-ports.yml`, пока non-blocking.
+- Семь Docker-образов фиксируют тулчейны (Coq 8.18, Lean v4.6.0, Isabelle 2024, Agda 2.6.4, Rust 1.77, GCC 13, GHC 9.4); сборка — `make docker-build`.
+- Честность зафиксирована в §13: диагностика C_Ch(t) записывается, но не сертифицируется; консервируемые величины H, P, Q, I — то, что проверяют V3/V4.
+- Дорожная карта M4–M6 (hardening → depth → widening) предварительно зарегистрирована: критерии приёмки нельзя ослаблять после приземления артефактов.
+
+---
+
+<div align="center">
+
+**[⬆ Back to top](#-trivortex--verification-framework)** ·
+**[Repository root](../README.md)**
+
+*Part of [wild8highlander/Trivortex](https://github.com/wild8highlander/Trivortex) · Licensed under [IPL-RP-1.0](https://github.com/wild8highlander/Trivortex/blob/main/LICENSE.md) — All Rights Reserved*
+
+</div>

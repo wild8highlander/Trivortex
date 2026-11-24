@@ -1,17 +1,24 @@
-<p align="center">
-  <img src="docs/assets/banner_root.svg" alt="TRIVORTEX MASTER" width="100%"/>
-</p>
+<!-- markdownlint-disable-file MD041 -->
+<div align="center">
 
-<p align="center">
-  <img src="https://img.shields.io/badge/python-3.10%2B-22D3EE?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.10+"/>
-  <img src="https://img.shields.io/badge/selftest%20S1--S24-24%2F24%20%C2%B7%20exit%200-34D399?style=for-the-badge" alt="selftest 24/24"/>
-  <img src="https://img.shields.io/badge/acceptance%20A1--A20-20%2F20-FBBF24?style=for-the-badge" alt="acceptance 20/20"/>
-  <img src="https://img.shields.io/badge/quality%20gate-49%2F49%20PASSED-34D399?style=for-the-badge" alt="quality gate PASSED"/>
-  <img src="https://img.shields.io/badge/catalog-538%20objects%20%C2%B7%20URLs-E879F9?style=for-the-badge" alt="538-object catalog"/>
-  <img src="https://img.shields.io/badge/reports-8%20formats-60A5FA?style=for-the-badge" alt="8 report formats"/>
-  <img src="https://img.shields.io/badge/stdlib--first-zero%20required%20deps-94A3B8?style=for-the-badge" alt="stdlib-first"/>
-  <img src="https://img.shields.io/badge/v2.0.2-AURORA%20EDITION-0ea5e9?style=for-the-badge" alt="v2.0.2 AURORA"/>
-</p>
+# 🧭 trivortex_master — the Pure-Python N-body Laboratory
+
+<img src="docs/assets/banner_root.svg" alt="TRIVORTEX MASTER" width="100%"/>
+
+</div>
+
+> **Navigation:** [`verification`](../README.md) › **`trivortex_master`**
+
+![Language](https://img.shields.io/badge/python-3.10%2B-22D3EE?style=flat-square&logo=python&logoColor=white)
+![Deps](https://img.shields.io/badge/stdlib--first-zero%20required%20deps-94A3B8?style=flat-square)
+![Selftest](https://img.shields.io/badge/selftest%20S1--S24-24%2F24%20%C2%B7%20exit%200-34D399?style=flat-square)
+![Acceptance](https://img.shields.io/badge/acceptance%20A1--A20-20%2F20-FBBF24?style=flat-square)
+![Gate](https://img.shields.io/badge/quality%20gate-49%2F49%20PASSED-34D399?style=flat-square)
+![Catalog](https://img.shields.io/badge/catalog-538%20objects%20%C2%B7%20URLs-E879F9?style=flat-square)
+![Reports](https://img.shields.io/badge/reports-8%20formats-60A5FA?style=flat-square)
+![Modes](https://img.shields.io/badge/menu-73%20modes%20%C2%B7%2011%20categories-1284BA?style=flat-square)
+![Version](https://img.shields.io/badge/v2.0.2-AURORA%20EDITION-0ea5e9?style=flat-square)
+![License](https://img.shields.io/badge/License-IPL--RP--1.0-red?style=flat-square)
 
 **TRIVORTEX MASTER** is a pure-Python N-body laboratory: trajectory
 planning, physics from Newtonian RK4 to post-Newtonian GR, 2D/3D/4D
@@ -26,33 +33,30 @@ a launch. Every claim is pinned to a test with an independent reference.
 > Lambda-CDM distance ladder, an HR view of the 25 brightest stars).
 > The v2.0.1 code fixes stand: `TestResult.check` no longer resurrects a
 > failed test, S9 verifies the admissible domain of Theorem B
-> (C_Ch > pi*ln2) and detects the degenerate default, and the sky map
+> (`C_Ch > pi*ln2`) and detects the degenerate default, and the sky map
 > uses dependency injection (S3-clean). Full quality gate — **PASSED**,
 > see the [run log](docs/assets/quality_gate_log.txt).
+>
+> The code state has moved on since this README surface: the
+> [CHANGELOG](CHANGELOG.md) records **v2.0.3** (pyflakes-zero, docstring
+> coverage 100% — 1040/1040 public definitions), and the entry-point
+> banner and `build_zip.py` carry the same version.
 
----
+## 📂 Contents — What Lives Here
 
-## Table of contents
+| File / folder | Size | Contents |
+|---|---:|---|
+| [`trivortex_master.py`](trivortex_master.py) | 47,960 B | the single entry point: interactive menu (ACLL banner), CLI, engine injection |
+| [`trivortex_master_single.py`](trivortex_master_single.py) | 1,641,348 B | the single-file edition: all 110 package modules glued into one executable file |
+| [`trivortex_master_single.jl`](trivortex_master_single.jl) | 2,290,898 B | the Julia single-file edition (v2.2.0-jl "SIGNAL EDITION": own palette, RU/EN i18n, HUD monitor) |
+| [`build_zip.py`](build_zip.py) | 5,614 B | dist build: preflight → selftest → ZIP + manifest |
+| [`CHANGELOG.md`](CHANGELOG.md) | 20,665 B | the version history (v1.0.0 → v2.0.3) |
+| [`LICENSE`](LICENSE) | 1,815 B | IPL-RP-1.0 |
+| [`trivortex_bundle.zip`](trivortex_bundle.zip) | 15,383 B | a committed distribution bundle |
+| [`core/`](core/README.md) · [`lab/`](lab/README.md) · [`realism/`](realism/README.md) · [`render/`](render/README.md) · [`reports/`](reports/README.md) · [`analysis/`](analysis/README.md) · [`tools/`](tools/README.md) | — | the package layers (see [Repository layout](#-repository-layout)) |
+| [`data/`](data/README.md) · [`docs/`](docs/README.md) · [`runs/`](runs/README.md) | — | catalog + presets, release notes + asset gallery, run protocols + session logs |
 
-- [Quick start](#quick-start)
-- [Feature matrix](#feature-matrix)
-- [Real results](#real-results)
-- [Single-file edition](#single-file-edition--trivortex_master_singlepy)
-- [Architecture](#architecture)
-- [The verification ladder](#the-verification-ladder)
-- [Menu & CLI](#menu--cli)
-- [Profiles](#profiles)
-- [Link with the Trivortex core](#link-with-the-trivortex-core)
-- [Repository layout](#repository-layout)
-- [Honest limitations](#honest-limitations)
-- [FAQ](#faq)
-- [Roadmap](#roadmap)
-- [Contributing](#contributing)
-- [License](#license)
-
----
-
-## Quick start
+## 🚀 Quick start
 
 ```bash
 # package edition (recommended for development)
@@ -89,9 +93,7 @@ each engine reports its status in the menu ("Help -> Engine status").
 
 </details>
 
----
-
-## Feature matrix
+## 🧭 Feature matrix
 
 | Area | How it is implemented |
 |---|---|
@@ -106,9 +108,7 @@ each engine reports its status in the menu ("Help -> Engine status").
 | **Analysis** | selftest S1-S24 against independent references; Metropolis MCMC (Gelman-Rubin R-hat), Lomb-Scargle, BLS transits, TTV, Morlet wavelets, entropies + surrogates, IOD, HCM families |
 | **Realism** | Lambda-CDM (Planck-18), space weather, observatory, TLE (NORAD checksums), Horizons API with an offline fallback, almanac (Saros), the 25 brightest Hipparcos stars |
 
----
-
-## Real results
+## 📊 Real results
 
 Every chart below was computed by **this code** from real runs; the
 generation scripts live in the development repo, the ready files in
@@ -204,9 +204,7 @@ is why N=8 in MASTER requires the explicit `allow_unphysical` flag.
   <img src="docs/assets/analysis_periodogram.png" alt="Lomb-Scargle and MCMC" width="44%"/>
 </p>
 
----
-
-## Single-file edition — `trivortex_master_single.py`
+## 📦 Single-file edition — `trivortex_master_single.py`
 
 All 110 package modules glued into **one executable file** (27.8k lines;
 "linker-glue" architecture: blocks are verbatim, package imports resolve
@@ -230,9 +228,11 @@ TOTAL: 24/24 PASSED
 Full log: [docs/assets/selftest_log.txt](docs/assets/selftest_log.txt) ·
 banner: [docs/assets/banner_only_output.txt](docs/assets/banner_only_output.txt)
 
----
+A Julia sibling lives next to it: [`trivortex_master_single.jl`](trivortex_master_single.jl)
+(v2.2.0-jl "SIGNAL EDITION" — own traffic-light/gold palette, RU/EN i18n,
+two-column book menu, live HUD monitor; zero new packages).
 
-## Architecture
+## 🏛 Architecture
 
 Import directions are strictly one-way and verified by test S3
 (acyclicity + layer rules). Since v2.0.1 the sky map
@@ -275,6 +275,9 @@ graph TD
     class RENDER,REALISM fixed
 ```
 
+And the one-run pipeline — from a preset to renders, reports and the
+audit journal in `runs/`:
+
 ```mermaid
 flowchart LR
     A["preset / manual scene"] --> B["run_simulation<br/>RK4 - 1PN - Barnes-Hut"]
@@ -288,9 +291,7 @@ flowchart LR
     F --> G["runs/<br/>JSON protocols + logs"]
 ```
 
----
-
-## The verification ladder
+## 🧪 The verification ladder
 
 Every claim of the complex is pinned to a test with an independent
 reference:
@@ -323,11 +324,10 @@ flowchart TD
 
 The real log of the full CI loop (selftest + acceptance + 49 module
 checks + hygiene over 117 files): **[docs/assets/quality_gate_log.txt](docs/assets/quality_gate_log.txt)** —
-TOTAL: `PASSED`, exit code 0.
+TOTAL: `PASSED`, exit code 0. The machine-readable snapshot of the same
+loop is [`runs/quality_gate.json`](runs/quality_gate.json).
 
----
-
-## Menu & CLI
+## 🎛 Menu & CLI
 
 The launch menu exposes **73 modes in 11 categories** (Laboratory,
 Visualization, Simulations, Animations, Analysis, Science, Render,
@@ -340,7 +340,7 @@ CLI flags: --selftest - --preset <id> - --simulate - --steps N - --render
            --banner-only - --no-color
 ```
 
-## Profiles
+## ⚙️ Profiles
 
 | Profile | Purpose |
 |---|---|
@@ -351,7 +351,7 @@ CLI flags: --selftest - --preset <id> - --simulate - --steps N - --render
 | `cinematic` | 1920x1080, long animations |
 | `pure_stdlib` | guaranteed: no external packages, no network |
 
-## Link with the Trivortex core
+## 🔗 Link with the Trivortex core
 
 The complex inherits the results of the parent repository
 [wild8highlander/Trivortex](https://github.com/wild8highlander/Trivortex):
@@ -361,7 +361,10 @@ The complex inherits the results of the parent repository
   values follow the core code `verification/trivortex/python/verify.py`):
   embedded in the planner `AnalyticPlanner.theorem31()` and pinned by S9;
 - **Ladder V1-V4** — the Kirchhoff-integral conservation criteria are
-  reproduced in tests S5/S6;
+  reproduced in tests S5/S6. The analytic core of those checks is now
+  **proven in Lean 4** as well — [`verification/lean4`](../lean4/README.md):
+  `lagrangeSol` (the exact rotating triangle) and the conservation laws of
+  `H/P/Q/I`, with every theorem's `#print axioms` footprint closed;
 - **POLYVORTEX W4** — the Havelock threshold N<=7/N=8
   (max Re lambda = +0.4502): the rationale behind the body limit and the
   "Havelock rings" field scan;
@@ -370,11 +373,14 @@ The complex inherits the results of the parent repository
   v2.0.1 recorded in the planner metadata (`admissible`) and verified
   by S9.
 
+The inherited object itself is the core **22-section executable document**
+(`code/trivortex_core*.py`) with its interactive menu and report engine.
+
 If a copy of the repository is present (or `TRIVORTEX_HOME` is set), the
 bridge `core/bridge.py` connects the core and its verify.py ladder;
 otherwise MASTER runs autonomously (status in "Help -> Engine status").
 
-## Repository layout
+## 📁 Repository layout
 
 | Folder | Contents | README |
 |---|---|---|
@@ -390,7 +396,7 @@ otherwise MASTER runs autonomously (status in "Help -> Engine status").
 | `runs/` | run protocols and session logs | [runs/README.md](runs/README.md) |
 | `trivortex_master_single.py` | single-file edition (110 modules) | — see the section above |
 
-## Honest limitations
+## ⚠️ Honest limitations
 
 - comet-nucleus masses are literature estimates (flagged `mass_estimated: true`);
 - the own PDF writer uses core-14 fonts: Cyrillic is transliterated
@@ -407,7 +413,7 @@ otherwise MASTER runs autonomously (status in "Help -> Engine status").
   on 2026-11-23 to 2.6680737914285615 = 1/(e^(1/pi)-1); MASTER always
   follows the core *code*.
 
-## FAQ
+## ❓ FAQ
 
 <details>
 <summary><b>Does it really run without numpy?</b></summary>
@@ -449,18 +455,15 @@ outputs decode cleanly under PIL (verified in render contracts, S10).
 
 </details>
 
-## Roadmap
+## 🗺 Roadmap
 
-```mermaid
-timeline
-    title From here
-    v2.0.x : language-neutral CI surface (done in 2.0.2)
-    v2.1 : WebGL export of the pure-raster backend
-    v2.1 : symmetric symplectic integrators for the vortex engine
-    v2.2 : multi-run ensemble sweeps with parallel workers
-```
+| Version | Items |
+|---|---|
+| v2.0.x | language-neutral CI surface (done in 2.0.2) |
+| v2.1 | WebGL export of the pure-raster backend; symmetric symplectic integrators for the vortex engine |
+| v2.2 | multi-run ensemble sweeps with parallel workers |
 
-## Contributing
+## 🤝 Contributing
 
 1. Fork, branch (`feat/my-change`).
 2. Keep the layer rules: `core -> nothing`, `lab -> {core, lab}`,
@@ -472,6 +475,27 @@ timeline
 5. Follow the honest-limitations style: unknown = "estimated", never
    silently invented.
 
-## License
+## 📜 License
 
 IPL-RP-1.0 (as the Trivortex core) — see [LICENSE](LICENSE).
+
+## 🇷🇺 Краткое резюме (Russian Summary)
+
+- **trivortex_master** — чисто питоновская лаборатория N тел: планирование траекторий, физика от ньютоновского RK4 до постньютоновской ОТО, рендеринг 2D/3D/4D, анимации и восемь форматов отчётов; ядро — чистый stdlib, все внешние пакеты опциональны;
+- качество приколото к тестам: selftest S1–S24 = 24/24, acceptance A1–A20 = 20/20, quality gate 49/49 + гигиена 117 файлов — PASSED (журнал и машинный протокол в `runs/quality_gate.json`);
+- каталог из 538 объектов (98 статических + 440 экзопланет NASA TAP), у каждой записи — URL источника; 20 пресетов сцен; меню на 73 режима в 11 категориях; профили `quick` … `pure_stdlib`;
+- физика сверена с независимыми ссылками: Меркурий 42.98″/век (S13), отступание Луны 3.80 см/год (S17), TRAPPIST-1e 250 K (S19), дрейф энергии RK4 3.5e-16 (S7), интегралы Кирхгофа ≤ 1e-11 (S5/S6);
+- лимит тел — физика, а не конвенция: кольцо равных вихрей устойчиво при N ≤ 7 и неустойчиво с N = 8 (Хавелок 1893; POLYVORTEX W4, max Re lambda = +0.4502), N = 8 — только с `allow_unphysical`;
+- наследует ядро Trivortex: Теорема 3.1 (omega = e^(1/pi) = 1.3748022274393588), лестница V1–V4, порог Хавелока и Теорема B (`C_Ch > pi·ln2`); аналитическое ядро теперь доказано и в Lean 4 (`verification/lean4`).
+
+---
+
+<div align="center">
+
+**[⬆ Back to top](#-trivortex_master--the-pure-python-n-body-laboratory)** ·
+**[verification](../README.md)** ·
+**[Repository root](../../README.md)**
+
+*Part of [wild8highlander/Trivortex](https://github.com/wild8highlander/Trivortex) · Licensed under [IPL-RP-1.0](https://github.com/wild8highlander/Trivortex/blob/main/LICENSE.md) — All Rights Reserved*
+
+</div>

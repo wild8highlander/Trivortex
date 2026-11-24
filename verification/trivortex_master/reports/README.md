@@ -1,6 +1,13 @@
-<p align="center">
-  <img src="../docs/assets/banner_reports.svg" alt="reports/" width="100%"/>
-</p>
+<!-- markdownlint-disable-file MD041 -->
+<div align="center">
+
+<img src="../docs/assets/banner_reports.svg" alt="reports/" width="100%"/>
+
+# 📄 reports — Eight Formats from One Run
+
+</div>
+
+> **Navigation:** [`verification`](../../README.md) › [`trivortex_master`](../README.md) › **`reports`**
 
 <p align="center">
   <img src="https://img.shields.io/badge/modules-11-FBBF24?style=flat-square" alt="11 modules"/>
@@ -15,6 +22,21 @@
 ODT. The OOXML/ODF formats are written by own serializers on pure
 stdlib (zip + XML), without python-docx/openpyxl/python-pptx — and are
 still **validly readable** by them (verified by tests S21/S22).
+
+## 📂 Contents — What Lives Here
+
+| File | Size | Description |
+|---|---:|---|
+| [`__init__.py`](__init__.py) | 0 B | package marker |
+| [`engine.py`](engine.py) | 17,765 B | `ReportData`, `generate_reports()`, `validate_outputs()` — the pipeline core |
+| [`templates.py`](templates.py) | 10,234 B | text templates of the sections (summary, bodies, events, metrics) |
+| [`charts.py`](charts.py) | 3,976 B | tables and ASCII visualizations for the text formats |
+| [`bibliography.py`](bibliography.py) | 1,622 B | source references with URLs for the "Literature" section |
+| [`writers/docx_writer.py`](writers/docx_writer.py) | 11,397 B | DOCX: own zip + OOXML, valid for python-docx |
+| [`writers/pdf_writer.py`](writers/pdf_writer.py) | 13,061 B | PDF 1.4: own writer (core fonts, Cyrillic transliterated) |
+| [`writers/xlsx_writer.py`](writers/xlsx_writer.py) | 15,084 B | XLSX: an OOXML workbook, read by openpyxl (test S21) |
+| [`writers/pptx_writer.py`](writers/pptx_writer.py) | 20,860 B | PPTX: 3 slides, read by python-pptx (test S22) |
+| [`writers/odt_writer.py`](writers/odt_writer.py) | 11,023 B | ODT: OpenDocument, mimetype STORED, valid for LibreOffice |
 
 ## One run — eight formats
 
@@ -82,3 +104,23 @@ CLI equivalent: `python3 trivortex_master.py --preset earth_moon --simulate --re
 - [render/](../render/README.md) — the PNGs for base64 embedding
 - [analysis/](../analysis/README.md) — the metrics that land in reports
 - [runs/](../runs/README.md) — where the protocols are written
+
+## 🇷🇺 Краткое резюме (Russian Summary)
+
+- Отчёты из одного прогонa симуляции в восемь форматов: TXT, MD, HTML (темы AURORA/ICE/MINIMAL), CSV, JSON, DOCX, PDF 1.4, XLSX, PPTX, ODT;
+- OOXML/ODF-форматы пишутся собственными сериализаторами на чистом stdlib (zip + XML), без python-docx/openpyxl/python-pptx — и при этом корректно читаются ими (проверено тестами S21/S22);
+- HTML-отчёт самодостаточен: графики встроены как base64 PNG из `render/`;
+- честное ограничение: PDF-писатель использует core-14 шрифты, кириллица транслитерируется (при установке fpdf2 писатель сам переключается на Unicode PDF);
+- `validate_outputs()` проверяет каждый записанный файл — все присутствуют и непусты.
+
+---
+
+<div align="center">
+
+**[⬆ Back to top](#-reports--eight-formats-from-one-run)** ·
+**[trivortex_master](../README.md)** ·
+**[Repository root](../../../README.md)**
+
+*Part of [wild8highlander/Trivortex](https://github.com/wild8highlander/Trivortex) · Licensed under [IPL-RP-1.0](https://github.com/wild8highlander/Trivortex/blob/main/LICENSE.md) — All Rights Reserved*
+
+</div>

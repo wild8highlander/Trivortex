@@ -1,6 +1,13 @@
-<p align="center">
-  <img src="../docs/assets/banner_core.svg" alt="core/" width="100%"/>
-</p>
+<!-- markdownlint-disable-file MD041 -->
+<div align="center">
+
+<img src="../docs/assets/banner_core.svg" alt="core/" width="100%"/>
+
+# 🧱 core — the Foundation Layer
+
+</div>
+
+> **Navigation:** [`verification`](../../README.md) › [`trivortex_master`](../README.md) › **`core`**
 
 <p align="center">
   <img src="https://img.shields.io/badge/modules-3-22D3EE?style=flat-square" alt="3 modules"/>
@@ -14,6 +21,15 @@ profiles and the body limit, the bridge to the Trivortex core, and the
 menu mode registry. It is the only layer forbidden to import any other
 package layer (S3 rule: `core -> nothing`) — everything else builds on
 it.
+
+## 📂 Contents — What Lives Here
+
+| File | Size | Description |
+|---|---:|---|
+| [`__init__.py`](__init__.py) | 0 B | package marker |
+| [`config.py`](config.py) | 11,891 B | `MasterConfig`, profiles, validation |
+| [`bridge.py`](bridge.py) | 10,732 B | bridge to the Trivortex core + reference values |
+| [`registry.py`](registry.py) | 8,564 B | the menu mode registry (73 modes, 11 categories) |
 
 ## Modules
 
@@ -59,6 +75,12 @@ against the core code whenever it is found:
 required): r_k(t) = sqrt(C_Ch)*(1+eps*cos(omega*t+2*pi*k/3)),
 theta_k = omega*t+2*pi*k/3.
 
+The same objects — the closed form, the rigid rotation `omega = 3*Gamma/(2*pi*a^2)`
+and the conservation of the vortex integrals — are **proven** in Lean 4 in
+[`verification/lean4`](../../lean4/README.md) (`lagrangeSol`, the
+`P/Q/I/H_kirchhoff_*` conservation theorems); the pins here and the proofs
+there fix the same numbers.
+
 ## The mode registry
 
 ```python
@@ -84,10 +106,30 @@ print(cfg.backend, cfg.n_steps, cfg.G)     # ascii 200 6.6743e-11
 ```
 
 Profiles: `quick` · `standard` · `realistic` · `research` · `cinematic`
-· `pure_stdlib` — the full list in the [root README](../README.md#profiles).
+· `pure_stdlib` — the full list in the [root README](../README.md#-profiles).
 
 ## Related
 
 - [lab/](../lab/README.md) — consumes `MasterConfig` for every scene
 - [analysis/](../analysis/README.md) — tests S3/S4/S12 verify this layer
 - [root README](../README.md) — architecture and the verification ladder
+
+## 🇷🇺 Краткое резюме (Russian Summary)
+
+- Фундамент пакета: конфигурация с профилями и лимитом тел, мост к ядру Trivortex и реестр режимов меню; единственный слой, которому запрещено импортировать другие слои (правило S3: `core -> nothing`);
+- лимит тел — физика (порог Хавелока, POLYVORTEX W4): N ≤ 7 — полный режим, N = 8 — только с флагом `allow_unphysical`, N ≥ 9 — жёсткий отказ (`UnphysicalConfiguration`, `hard_max_bodies = 8`);
+- `bridge.py` не импортирует ядро принудительно — оно ищет его (`TRIVORTEX_HOME` или соседний чекаут) и честно работает само: эталонные значения pinned как литералы (`THEOREM31_REF["omega"] = 1.3748022274393588 = e^(1/pi)`, `HAVelock_REF`, `LADDER_LEVELS`) и перепроверяются при обнаружении ядра;
+- `registry.py` — реестр на 73 режима в 11 категориях; тест S4 проверяет вызываемость и отсутствие коллизий имён;
+- те же числа доказаны в Lean 4 (`verification/lean4`): пины моста и формальные доказательства фиксируют одни и те же величины.
+
+---
+
+<div align="center">
+
+**[⬆ Back to top](#-core--the-foundation-layer)** ·
+**[trivortex_master](../README.md)** ·
+**[Repository root](../../../README.md)**
+
+*Part of [wild8highlander/Trivortex](https://github.com/wild8highlander/Trivortex) · Licensed under [IPL-RP-1.0](https://github.com/wild8highlander/Trivortex/blob/main/LICENSE.md) — All Rights Reserved*
+
+</div>

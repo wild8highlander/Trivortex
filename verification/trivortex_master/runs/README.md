@@ -1,6 +1,13 @@
-<p align="center">
-  <img src="../docs/assets/banner_runs.svg" alt="runs/" width="100%"/>
-</p>
+<!-- markdownlint-disable-file MD041 -->
+<div align="center">
+
+<img src="../docs/assets/banner_runs.svg" alt="runs/" width="100%"/>
+
+# 🗃 runs — the Audit Journal
+
+</div>
+
+> **Navigation:** [`verification`](../../README.md) › [`trivortex_master`](../README.md) › **`runs`**
 
 <p align="center">
   <img src="https://img.shields.io/badge/session%20logs-session_*.log-FB923C?style=flat-square" alt="session logs"/>
@@ -11,8 +18,18 @@
 **runs/** is the audit journal: every launch of the complex leaves a
 trace. Sessions write `session_<timestamp>.log`, the full CI loop
 writes a machine-readable protocol `quality_gate.json`, menu modes
-write their own JSON protocols into run folders. The folder ships
-empty in the repository (`.gitkeep`) and fills up during work.
+write their own JSON protocols into run folders. The committed snapshot
+of this tree carries **86 session logs** plus the two quality-gate
+protocols of both editions — a fresh clone reproduces the recorded
+runs; new launches simply append.
+
+## 📂 Contents — What Lives Here
+
+| File | Size | Description |
+|---|---:|---|
+| [`quality_gate.json`](quality_gate.json) | 3,402 B | the machine-readable CI protocol of the package edition (v2.0.2: `passed: true`) |
+| [`quality_gate_single.json`](quality_gate_single.json) | 3,402 B | the same for the single-file edition |
+| `session_YYYYMMDD_HHMMSS.log` (86 files) | 47–141 B | timestamped session logs of real launches (2026-11-24) |
 
 ## What appears here
 
@@ -50,7 +67,7 @@ single-file edition's gate writes `quality_gate_single.json`:
   "module_selfchecks": {"passed": 49, "total": 49},
   "hygiene":      {"files": 117, "findings": [], "clean": true},
   "api":          {"modules": 96, "docstring_coverage": 1.0},
-  "code":         {"py_lines": 56980},
+  "code":         {"py_lines": 57488},
   "passed": true
 }
 ```
@@ -65,10 +82,30 @@ edition ([log](../docs/assets/quality_gate_single_log.txt)).
 - JSON protocols of menu runs: a `<date>_<tag>/` folder with
   `protocol.json`;
 - the folder is not part of any import graph — it is a pure journal;
-  safe to delete everything except `.gitkeep`.
+  safe to delete everything except the committed protocols you want to
+  keep.
 
 ## Related
 
 - [tools/](../tools/README.md) — who writes these protocols
 - [analysis/](../analysis/README.md) — the tests whose results are recorded
 - [docs/](../docs/README.md) — copies of the logs for the README gallery
+
+## 🇷🇺 Краткое резюме (Russian Summary)
+
+- Аудит-журнал комплекса: каждый запуск оставляет след — сессии пишут `session_<timestamp>.log`, полный цикл CI — машинно-читаемый протокол `quality_gate.json`, режимы меню — свои JSON-протоколы в папках прогонов;
+- в закоммиченном снимке дерева: 86 журналов сессий (2026-11-24) и два протокола quality gate (пакетная и однофайловая редакции), оба `passed: true`;
+- протокол фиксирует: selftest 24/24, acceptance 20/20, 49 модульных самопроверок, гигиена 117 файлов чиста, 96 модулей API, 57,488 строк Python;
+- папка не входит ни в какой граф импортов — это чистый журнал.
+
+---
+
+<div align="center">
+
+**[⬆ Back to top](#-runs--the-audit-journal)** ·
+**[trivortex_master](../README.md)** ·
+**[Repository root](../../../README.md)**
+
+*Part of [wild8highlander/Trivortex](https://github.com/wild8highlander/Trivortex) · Licensed under [IPL-RP-1.0](https://github.com/wild8highlander/Trivortex/blob/main/LICENSE.md) — All Rights Reserved*
+
+</div>

@@ -1,0 +1,101 @@
+<!-- markdownlint-disable-file MD041 -->
+<div align="center">
+
+# 📓 verification · notes — Pre-Verification Scripts & Run Logs
+
+</div>
+
+> **Navigation:** [`verification`](../README.md) › **`notes`**
+
+![Python](https://img.shields.io/badge/Python-sympy%20%C2%B7%20numpy-informational?style=flat-square&logo=python&logoColor=white) ![Type](https://img.shields.io/badge/Type-research%20notes-informational?style=flat-square) ![License](https://img.shields.io/badge/License-IPL--RP--1.0-red?style=flat-square)
+
+The **workbench behind the Lean 4 formalization**: every identity that
+[`verification/lean4/Trivortex.lean`](../lean4/README.md) proves in its
+§8 (linear stability of the Lagrange triangle) and §9 (nonlinear
+continuation of the modes, unequal circulations) is backed by a SymPy
+symbolic check and a NumPy numeric mirror — the same identities derived
+in a second computer-algebra system, *before* the Lean chunk is
+accepted. The scripts are the machine check that stands behind the Lean
+chunks (in the words of the §9 harness itself); the committed `.log`
+files are the outputs of real runs, kept exactly as printed, zero FAIL
+lines across all three.
+
+The convention mirror is stated in every header: the Kirchhoff
+right-hand side, `D_ij = (x_i−x_j)² + (y_i−y_j)²`, the Hamiltonian
+`H = −(1/2π)Σ ΓᵢΓⱼ ln rᵢⱼ`, the impulses `P, Q`, the angular impulse
+`I`, and the Lagrange rate `ω = 3G/(2πa²)` — the same objects the
+Python ladder and the Lean port fix, so the three layers certify each
+other.
+
+## 📂 Contents — What Lives Here
+
+| File | Size | Description |
+|---|---|---|
+| [`verify_identities.py`](verify_identities.py) | 4 553 B | SymPy pre-verification of the identities planned for `Trivortex.lean` v2.0: `dP/dt = dQ/dt = dI/dt = dH/dt = 0` symbolically (denominators cleared), the rotating equilateral satisfies the Kirchhoff velocities with `ω = 3G/(2πa²)`, the `ε` regime spot check |
+| [`verify_identities_s8.py`](verify_identities_s8.py) | 8 326 B | SymPy pre-verification of §8: the anchor is an equilibrium of the rotating frame, the exact `M0` linearization, translation/rotation/dilation/shape modes (`±3i`, `0`, `−6` nilpotent), `charpoly = λ²(λ²+9)²` (Thomson, N = 3), directional-derivative certification of the TRUE field, modal basis independence + dual covectors |
+| [`verify_identities_s9.py`](verify_identities_s9.py) | 5 179 B | SymPy PASS/FAIL harness for every §9 identity (general circulations): characteristic polynomial `λ²(λ²+G²)(λ²+3P)`, translation/kernel/chain/shape row identities, the (1,1,4), (1,1,−1/2), (1,1,−1) instances; exits non-zero on any failure |
+| [`verify_identities_s9.log`](verify_identities_s9.log) | 1 815 B | the committed run of the harness: **57 PASS, 0 FAIL**, closing line "ALL IDENTITIES VERIFIED — the §9 Lean chunk is backed by SymPy" |
+| [`numeric_mirror_s8.py`](numeric_mirror_s8.py) | 10 889 B | double-precision mirror of the §8 theorems (Lean v4.0): 16 numbered checks [1]–[16] — anchor fixed point, Lean rows vs central-difference Jacobian, eigenmodes, spectrum `{0, 0, ±3i, ±3i}`, certification derivatives, modal ODE solutions, norm bounds, orthonormal size basis |
+| [`numeric_mirror_s8.log`](numeric_mirror_s8.log) | 1 337 B | the committed run: `G = 1, ω = 0.477464829275686`; **19 PASS verdicts, 0 FAIL**; largest residual 1.7e-8 (spectrum), the rest ≤ 1e-10 … 5.6e-17 |
+| [`numeric_mirror_s9.py`](numeric_mirror_s9.py) | 8 108 B | numeric mirror for §9 (header: "mpmath high-precision", implemented on NumPy/SymPy): Kirchhoff integration for `Γ = (1, 1, 2)` vs the closed rotation form, the centroid identity along the trajectory, eigenvalues vs `λ²(λ²+G²)(λ²+3P)` for `γ ∈ {4, −1/2, −1}`, the growing mode `|m(t)|² = 12·e^{2√3·t}`, the bounded (1,1,4) oscillation norm |
+| [`numeric_mirror_s9.log`](numeric_mirror_s9.log) | 697 B | the committed run: **15/15 PASS**, including `ω = G/(2πa²) = 2/π` for `G = 4` and the growing-mode norm to `rel err < 1e-6` |
+
+## 🧭 How the layers certify each other
+
+```mermaid
+flowchart LR
+    SP["SymPy scripts<br/>verify_identities*.py<br/>(exact, symbolic)"] -->|"identities hold<br/>before writing Lean"| LEAN["lean4/Trivortex.lean<br/>ring_nf + simp proofs"]
+    NM["NumPy mirrors<br/>numeric_mirror_s*.py<br/>(float64 / high precision)"] -->|"same numbers<br/>from the same formulas"| LEAN
+    LEAN --> LOGS[".log files committed<br/>57 + 19 + 15 PASS, 0 FAIL"]
+```
+
+## ▶️ How to Run
+
+Each script is standalone (dependencies: `sympy`, `numpy`; run from this
+directory or with an absolute path):
+
+```bash
+python3 verification/notes/verify_identities.py        # prints one True/False line per identity
+python3 verification/notes/verify_identities_s9.py     # PASS/FAIL harness, non-zero exit on failure
+python3 verification/notes/numeric_mirror_s8.py        # 16 numeric checks with PASS bands
+python3 verification/notes/numeric_mirror_s9.py        # 15 numeric checks
+```
+
+`verify_identities_s8.py` prints its full audit (equilibrium, `M0`,
+modes, certification, dual covectors) and asserts the existence of the
+shape eigenvector; its verbose output is not committed — the committed
+§8 log is the numeric mirror's. The other three scripts have their
+outputs committed verbatim.
+
+## ✅ What the Logs Recorded
+
+| Log | Verdict | Highlights |
+|---|---|---|
+| `verify_identities_s9.log` | 57 PASS / 0 FAIL | `charpoly(1,1,γ) = λ²(λ²+G²)(λ²+3P)`; all 24 general-circulation row identities; the (1,1,4) oscillation norm `33c²+77s²−33cs = 165/2 − (11/2)(3c+s)² ≤ 165/2` |
+| `numeric_mirror_s8.log` | 19 PASS / 0 FAIL | `ω = 0.477464829275686` (= 3G/2π, G = 1); `det(xI−M0) = x²(x²+9)²` to 4.5e-14; ODE residuals ~1e-16; the size-drift bound margin exactly ≥ 0 |
+| `numeric_mirror_s9.log` | 15 PASS / 0 FAIL | rigid rotation of the translated (1,1,2) triangle (err < 1e-5); the growing mode `|m|² = 12·e^{2√3·t}` to rel err < 1e-6; the three γ-instances of `λ²(λ²+G²)(λ²+3P)` |
+
+## 🔗 Cross-References
+
+- [Framework root — verification/](../README.md)
+- [Lean 4 hub — the formalization these notes back](../lean4/README.md) ([README_RU](../lean4/README_RU.md))
+- [The working ladder — trivortex/python/verify.py](../trivortex/README.md) (the convention source)
+- [The pytest guard — tests/](../tests/README.md) (the CI-facing layer)
+
+## 🇷🇺 Краткое резюме (Russian Summary)
+
+- **`verification/notes/`** — рабочая тетрадь за Lean-формализацией: 4 SymPy-скрипта (символическая проверка тождеств) и 2 NumPy-зеркала (числовая проверка теорем §8 и §9 `Trivortex.lean`), плюс 3 журнала реальных запусков.
+- Тождества проверялись до написания доказательств: сохранение P, Q, I, H, устойчивость якоря вращающейся системы, моды `±3i / 0 / −6`, характеристические полиномы `λ²(λ²+9)²` и `λ²(λ²+G²)(λ²+3P)`.
+- Журналы зафиксированы как есть: 57 PASS (SymPy §9), 19 PASS (зеркало §8), 15/15 PASS (зеркало §9) — ни одного FAIL; `ω = 0.477464829275686` при G = 1.
+- Правила игры: скрипт-обвязка §9 завершается ненулевым кодом при любой ошибке; зеркала сравниваются с зарегистрированными полосами допусков, как лестница V1–V4.
+
+---
+
+<div align="center">
+
+**[⬆ Back to top](#-verification--notes--pre-verification-scripts--run-logs)** ·
+**[Repository root](../README.md)**
+
+*Part of [wild8highlander/Trivortex](https://github.com/wild8highlander/Trivortex) · Licensed under [IPL-RP-1.0](https://github.com/wild8highlander/Trivortex/blob/main/LICENSE.md) — All Rights Reserved*
+
+</div>

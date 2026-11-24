@@ -1,6 +1,13 @@
-<p align="center">
-  <img src="../docs/assets/banner_analysis.svg" alt="analysis/" width="100%"/>
-</p>
+<!-- markdownlint-disable-file MD041 -->
+<div align="center">
+
+<img src="../docs/assets/banner_analysis.svg" alt="analysis/" width="100%"/>
+
+# 🔬 analysis — the Evidential Layer
+
+</div>
+
+> **Navigation:** [`verification`](../../README.md) › [`trivortex_master`](../README.md) › **`analysis`**
 
 <p align="center">
   <img src="https://img.shields.io/badge/modules-22-F87171?style=flat-square" alt="22 modules"/>
@@ -13,6 +20,33 @@
 chaoticity metrics, spectral analysis, Bayesian estimation, and field
 studies. Every claim of the complex passes through a test with an
 independent reference — this layer is the arbiter.
+
+## 📂 Contents — What Lives Here
+
+| File | Size | Description |
+|---|---:|---|
+| [`__init__.py`](__init__.py) | 0 B | package marker |
+| [`tests.py`](tests.py) | 30,294 B | the selftest S1–S24 + `TestResult` (fixed in v2.0.1) |
+| [`tests_extra.py`](tests_extra.py) | 7,600 B | extra structural tests (S1–S24 set) |
+| [`metrics.py`](metrics.py) | 12,116 B | Metrics group: Lyapunov (Benettin), drifts, dominant periods (own DFT), B1–B8 |
+| [`benchmark.py`](benchmark.py) | 12,125 B | Metrics group |
+| [`lomb_scargle.py`](lomb_scargle.py) | 9,301 B | Spectra group: FAP 4e-191 |
+| [`periodogram.py`](periodogram.py) | 5,772 B | Spectra group |
+| [`wavelets.py`](wavelets.py) | 10,789 B | Spectra group: Morlet (chirp 2→5 Hz, 1.9%) |
+| [`entropy.py`](entropy.py) | 10,836 B | Spectra group: Shannon/Bandt-Pompe + surrogates |
+| [`rmt.py`](rmt.py) | 10,786 B | Spectra group: Girolami r |
+| [`fitting.py`](fitting.py) | 12,271 B | Fitting group: Levenberg-Marquardt (K=10.04±0.18 at truth 10) |
+| [`mcmc.py`](mcmc.py) | 14,343 B | Fitting group: Metropolis, R-hat 1.004 |
+| [`corner_plots.py`](corner_plots.py) | 10,901 B | Fitting group |
+| [`ttvs.py`](ttvs.py) | 8,649 B | Transits group: TTV super-periods |
+| [`lightcurves.py`](lightcurves.py) | 10,669 B | Transits group: Mandel-Agol |
+| [`orbital_elements_fit.py`](orbital_elements_fit.py) | 9,830 B | Transits group |
+| [`proper_elements.py`](proper_elements.py) | 10,438 B | Transits group: HCM families |
+| [`pipeline.py`](pipeline.py) | 12,886 B | Data group: a Kahn DAG, sha256 cache, failure isolation, provenance; docstrings 100% |
+| [`api_reference.py`](api_reference.py) | 9,836 B | Data group |
+| [`structure.py`](structure.py) | 3,343 B | Data group |
+| [`sandbox_physics.py`](sandbox_physics.py) | 890 B | Data group |
+| [`field.py`](field.py) | 15,307 B | Field: mass-x-velocity scans, Havelock rings N=2..8 |
 
 ## The S1-S24 test map
 
@@ -97,18 +131,6 @@ def check(self, cond, ok_msg, fail_msg):
 That bug had been masking two other defects (S9 and S3), which became
 visible and were fixed in the same release.
 
-## Modules
-
-| Group | Modules | Inside |
-|---|---|---|
-| Tests | [`tests.py`](tests.py), `tests_extra.py` | S1-S24 + TestResult (fixed) |
-| Metrics | `metrics.py`, `benchmark.py` | Lyapunov (Benettin), drifts, dominant periods (own DFT), B1-B8 |
-| Spectra | `lomb_scargle.py`, `periodogram.py`, `wavelets.py`, `entropy.py`, `rmt.py` | FAP 4e-191; Morlet (chirp 2->5 Hz, 1.9%); Shannon/Bandt-Pompe + surrogates; Girolami r |
-| Fitting | `fitting.py`, `mcmc.py`, `corner_plots.py` | Levenberg-Marquardt (K=10.04+/-0.18 at truth 10); Metropolis, R-hat 1.004 |
-| Transits | `ttvs.py`, `lightcurves.py`, `orbital_elements_fit.py`, `proper_elements.py` | BLS (SDE 7.2), TTV super-periods, Mandel-Agol, HCM families |
-| Data | `pipeline.py`, `api_reference.py`, `structure.py`, `sandbox_physics.py` | a Kahn DAG, sha256 cache, failure isolation, provenance; docstrings 100% |
-| Field | [`field.py`](field.py) | mass-x-velocity scans, Havelock rings N=2..8 |
-
 ## Field studies: the Havelock threshold
 
 <p align="center">
@@ -151,3 +173,25 @@ print(res["havelock_agreement"])             # 1.0 - 7/7
 - [lab/](../lab/README.md) — the physics under test
 - [tools/](../tools/README.md) — the quality gate on top of these tests
 - [runs/](../runs/README.md) — the JSON protocols of the runs
+- The numeric criteria S5/S6/S9 mirror the Trivortex ladder V1–V4 — whose
+  analytic core is proven in Lean 4 ([`verification/lean4`](../../lean4/README.md))
+
+## 🇷🇺 Краткое резюме (Russian Summary)
+
+- Свидетельский слой комплекса: структурные тесты S1–S24, метрики хаотичности, спектральный анализ, байесовские оценки и полевые исследования — арбитр всех утверждений;
+- S1–S24 покрывают структуру (сцены, JSON, направления импортов, реестр 73 режимов), физику (интегралы V3/V4 ≤ 1e-10, энергия RK4 3.5e-16, пин Теоремы 3.1 с допустимой областью `C_Ch > pi*ln2`) и контракты (рендер, отчёты, лимит N=8);
+- двенадцать тестов S13–S24 сверены с независимыми ссылками: Меркурий 42.98″/век, Barnes-Hut < 5%, Луна 3.80 см/год, TRAPPIST-1e 250 K, MCMC ~ OLS (R-hat 1.004);
+- полевой скан `scan_havelock()`: деформация кольца N=8 равна 0.285 против ~0.007 при N≤7 — согласие с прогнозом W4 7/7 (100%);
+- в v2.0.1 исправлена честность `TestResult.check` (успех больше не «воскрешает» провал), что вскрыло и позволило исправить дефекты S3 и S9.
+
+---
+
+<div align="center">
+
+**[⬆ Back to top](#-analysis--the-evidential-layer)** ·
+**[trivortex_master](../README.md)** ·
+**[Repository root](../../../README.md)**
+
+*Part of [wild8highlander/Trivortex](https://github.com/wild8highlander/Trivortex) · Licensed under [IPL-RP-1.0](https://github.com/wild8highlander/Trivortex/blob/main/LICENSE.md) — All Rights Reserved*
+
+</div>

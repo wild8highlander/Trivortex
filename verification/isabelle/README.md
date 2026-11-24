@@ -1,8 +1,27 @@
-# Isabelle/HOL Verification — Roadmap
+<!-- markdownlint-disable-file MD041 -->
+<div align="center">
 
-> Formalization / port target for the **TRIVORTEX** document
-> (`code/trivortex_core*.py`): Theorem 3.1 (the Lagrange-type rotating
-> solution) and the conservation of the Chaplygin-type vortex integrals.
+# 🧿 Isabelle/HOL Verification — the Automated Cross-Check
+
+![Isabelle/HOL](https://img.shields.io/badge/Isabelle%2FHOL-2024-CCAA00?style=flat-square)
+![Type](https://img.shields.io/badge/Type-proof%20artifact%20%28HOL%29-6E4C9E?style=flat-square)
+[![Ports CI](https://img.shields.io/github/actions/workflow/status/wild8highlander/Trivortex/verification-ports.yml?branch=main&style=flat-square&label=Ports%20CI)](https://github.com/wild8highlander/Trivortex/actions/workflows/verification-ports.yml)
+![Status](https://img.shields.io/badge/Status-landed%20v1.1%20%28M2%29-2EA043?style=flat-square)
+![License](https://img.shields.io/badge/License-IPL--RP--1.0-red?style=flat-square)
+
+<img src="../../docs/assets/divider-gold.svg" width="45%" alt="gold ornament divider"/>
+
+</div>
+
+> **Navigation:** [`verification`](../README.md) › **`isabelle`**
+
+> The HOL mirror of the **TRIVORTEX** statement layer
+> (`code/trivortex_core*.py`): one `Trivortex.thy` session over
+> `Complex_Main` that mirrors the [Coq artifact](../coq/README.md)
+> statement-for-statement — so the two provers cross-check each other —
+> plus the M2 flavor of this port: the tolerance bands pinned as
+> decidable strict inequalities and the optional SMT-discharged numeric
+> bounds.
 >
 > **Status: landed — v1.1 (milestone M2).** The artifact, the
 > CI-callable check and the bilingual documentation live in this
@@ -12,17 +31,46 @@
 
 ---
 
-## Why Isabelle/HOL
+## 📂 Contents — What Lives Here
 
-Isabelle/HOL offers the strongest automation (`smt`,
-`auto`, `presburger`) of the LCF family, which suits the invariant
-conservation checks: the drift statements are polynomial/rational
-bounds once the closed form is substituted, and SMT can discharge most
-of them. The plan is a single `Trivortex.thy` session mirroring the
-Coq artifact statement-for-statement, so the two provers cross-check
-each other.
+This directory: [`README.md`](README.md) (this document) ·
+[`README_RU.md`](README_RU.md) (the Russian overview, same structure).
 
-## Scope of the port
+| File | Size | Lines | Description |
+|---|---|---|---|
+| [`ROOT`](ROOT) | 847 B | 21 | The session definition: `session Trivortex = HOL` with theory `Trivortex`; the optional `Trivortex_SMT` session is listed but commented out — the `smt` method needs Z3 on PATH, which the toolchain image does not ship |
+| [`Trivortex.thy`](Trivortex.thy) | 11 211 B | 262 | The M2 artifact: the statement layer of Theorem 3.1, the Chaplygin integral and the vortex integrals over the reals of `Complex_Main`, with the machine-checked band record |
+| [`Trivortex_SMT.thy`](Trivortex_SMT.thy) | 2 063 B | 56 | The optional SMT-discharged numeric bounds: band ordering and representative drift inequalities discharged `by smt` (Z3) |
+
+## 🚀 How to Build / Run
+
+The pinned toolchain is
+[`docker/isabelle/Dockerfile`](../docker/isabelle/Dockerfile)
+(image `makarius/isabelle:Isabelle2024`; the image entrypoint is
+`isabelle build -D .`):
+
+```bash
+docker build -t trivortex-isabelle verification/docker/isabelle
+docker run --rm trivortex-isabelle isabelle build -D /app/isabelle
+```
+
+Or directly (from the repository root):
+
+```bash
+isabelle build -D verification/isabelle
+```
+
+Or via the Makefile from `verification/` (`make help` lists all targets):
+
+```bash
+make isabelle    # isabelle build -D isabelle
+```
+
+CI builds the HOL session in the pinned Isabelle2024 image in the
+non-blocking job *formal-isabelle* of
+[`verification-ports.yml`](https://github.com/wild8highlander/Trivortex/actions/workflows/verification-ports.yml).
+
+## ✅ What Is Verified Here
 
 The port fixes exactly three objects, so that every language proves or
 computes the *same* statements and the results stay comparable:
@@ -42,10 +90,62 @@ computes the *same* statements and the results stay comparable:
    trajectories — conserved to the tolerance bands of
    [`verification/tests/`](../tests/README.md).
 
-## Acceptance criteria
+What the artifact actually certifies:
+
+| Certified in [`Trivortex.thy`](Trivortex.thy) | Statement |
+|---|---|
+| `theta_separation`, `theta_three_step` | the equilateral choreography — phase separation exactly `2*pi/3` (V1, property (a)) |
+| `r_periodic`, `theta_periodic` | periodicity of the closed form, `r(t + 2*pi/omega) = r(t)` — proven via the standard `cos_periodic` lemma (V1, property (b)) |
+| `chaplygin_shape`, `gauge_inverse` | the Chaplygin combination reduces to `C_Ch = r^2*theta_dot - q*r` in the gauge `A_theta = 1/r` of Section 6 |
+| `rdist_eq1..3` | the sides of the equilateral reference state are exactly `1` (coordinates built from `1/sqrt 3`) |
+| `H_equilateral`, `P_equilateral`, `Q_equilateral`, `I_equilateral` | the exact anchors: **H = 0, P = 0, Q = 0, I = Γ** |
+| `lagrange_omega` | the point-vortex Lagrange frequency `3*gamma/(2*pi*a^2)` as a definition the ladders pin against |
+| `registered_bands` (record `tolerance_bands`) + `bands_positive`, `band_ordering` | the tolerance bands (`1/10^12`, `1/10^10`, `1/10^6`) as a machine-checked record with decidable ordering — strictly positive and mutually ordered |
+
+The M2 flavor — the optional SMT session ([`Trivortex_SMT.thy`](Trivortex_SMT.thy)):
+
+| Lemma | Discharged by |
+|---|---|
+| `band_closed_form_lt_rk4`, `band_rk4_lt_omega` | the band ordering `1/10^12 < 1/10^10 < 1/10^6`, `by smt`-style numeric reasoning |
+| `drift_bound_smt` | `x ≤ 1e-12 ⟹ x < 1e-6` — a representative drift bound in the exact numeric form the ladders enforce |
+| `tolerance_decidable_smt` | `x ≤ 1e-10 ∨ x > 1e-10` — the decidable strict inequality kernel of the tolerance contract |
+
+The SMT theory is kept **out of the default build** (see [`ROOT`](ROOT)):
+the `smt` method replays its certificates at build time and requires Z3
+on PATH, which the toolchain image does not ship. To enable it, install
+Z3 (e.g. `apt-get install z3` inside the image), uncomment the
+`session Trivortex_SMT = Trivortex +` block in `ROOT` and rebuild — the
+default build stays green on any Isabelle installation either way.
+
+Isabelle's role in the matrix: the strongest automation (`smt`, `auto`,
+`presburger`) of the LCF family, which suits the invariant conservation
+checks — the drift statements are polynomial/rational bounds once the
+closed form is substituted, and SMT can discharge most of them. The
+single `Trivortex.thy` session mirrors the [Coq artifact](../coq/README.md)
+statement-for-statement, so the two provers cross-check each other.
+
+```mermaid
+flowchart TD
+    A["verify.py analytic layer - M0 release, commit 557bff8"] --> B["session Trivortex = HOL - ROOT"]
+    B --> C["Trivortex.thy over Complex_Main - mirrors the Coq artifact statement-for-statement"]
+    C --> D["choreography: theta_separation, theta_three_step"]
+    C --> E["periodicity via cos_periodic: r_periodic, theta_periodic"]
+    C --> F["Chaplygin shape: chaplygin_shape, gauge_inverse"]
+    C --> G["exact anchors: sides = 1, H = 0, P = 0, Q = 0, I = Gamma"]
+    C --> H["registered_bands record with decidable ordering: bands_positive, band_ordering"]
+    B --> I["optional session Trivortex_SMT - commented out in ROOT, needs Z3"]
+    I --> J["band ordering + drift bounds discharged by smt"]
+    D --> K["isabelle build -D verification/isabelle - CI job formal-isabelle"]
+    E --> K
+    F --> K
+    G --> K
+    H --> K
+```
+
+## 📋 Acceptance Criteria (all checked)
 
 - [x] The three objects above are expressed in Isabelle/HOL with no hidden
-      assumptions beyond the axioms listed in the artifact header
+      assumptions beyond the artifact header
       (`verification/isabelle/Trivortex.thy` (+ optional `Trivortex_SMT.thy`));
 - [x] A CI-callable check: `isabelle build -D verification/isabelle` — builds the HOL session in the pinned Isabelle2024 image (workflow `verification-ports.yml`, job *formal-isabelle*);
 - [x] The artifact header carries SPDX + copyright lines (REUSE.toml)
@@ -54,36 +154,38 @@ computes the *same* statements and the results stay comparable:
 - [x] `verification/README.md` status table flips this row to
       *landed (v1.1)* with a link.
 
-## Build recipe
-
-```bash
-# pinned toolchain (see docker/isabelle/Dockerfile)
-docker build -t trivortex-isabelle docker/isabelle
-docker run --rm -v "$PWD":/work -w /work trivortex-isabelle \
-    isabelle build -D verification/isabelle   # lands with milestone M1
-```
-
-The Dockerfile in [`docker/isabelle/Dockerfile`](../docker/isabelle/Dockerfile)
-pins the toolchain; the repository CI never requires this build to pass
-until milestone M1 lands.
-
-## Toolchain pin and milestones
+## 🔧 Toolchain Pin and Milestones
 
 | Pin | Value |
 |---|---|
 | Toolchain | Isabelle/HOL 2024 |
-| Docker pin | [`docker/isabelle/Dockerfile`](../docker/isabelle/Dockerfile) |
-| Planned artifact | `verification/isabelle/Trivortex.thy` |
-| Milestone | **M2** of the staged plan |
-| CI status | non-blocking job in `verification-ports.yml` |
+| Docker pin | [`docker/isabelle/Dockerfile`](../docker/isabelle/Dockerfile) — image `makarius/isabelle:Isabelle2024` |
+| Artifact | `verification/isabelle/Trivortex.thy` (+ optional `Trivortex_SMT.thy`) — **landed** (v1.1) |
+| Milestone | **M2** of the staged plan (with [Agda](../agda/README.md)) |
+| CI status | non-blocking job *formal-isabelle* in `verification-ports.yml` |
 
-## What landed (v1.1)
+Milestone context: **M1** delivered [Coq](../coq/README.md),
+[Lean 4](../lean4/README.md) and [Rust](../rust/README.md); **M2** delivers
+the two cross-checking formalizations Isabelle + Agda; **M3** delivers the
+[C++](../cpp/README.md) and [Haskell](../haskell/README.md) ports. The
+status table lives in [`verification/README.md`](../README.md) §7.
 
-1. the statement layer with proven choreography and periodicity lemmas, the Chaplygin shape and the exact equilateral anchors;
-2. the registered tolerance bands as a machine-checked record with decidable ordering;
-3. the optional SMT-discharged numeric bounds (`Trivortex_SMT.thy`) — kept out of the default build until Z3 ships in the toolchain image (documented in `ROOT`).
+## 🔗 Cross-References
 
-The artifact header lists the axiom footprint; the JSON protocol of a
-real run is committed next to the artifact (`protocol_quick.json`) where
-the port is numerical. The bilingual overview lives in
-[README_RU.md](README_RU.md).
+- [Verification framework](../README.md) — milestones, tolerance bands, protocol schema
+- [Lean 4 hub](../lean4/README.md) — the Mathlib formalization of the same statement layer (M1)
+- [Coq port](../coq/README.md) — the artifact this session mirrors statement-for-statement
+- [Agda port](../agda/README.md) — the constructive half of milestone M2
+- [Docker pin](../docker/isabelle/Dockerfile) and [pytest guard](../tests/README.md) — the tolerance bands formalized here and enforced there
+- CI workflow: [`verification-ports.yml`](https://github.com/wild8highlander/Trivortex/actions/workflows/verification-ports.yml) · Makefile target: `make isabelle`
+
+---
+
+<div align="center">
+
+**[⬆ Back to top](#-isabellehol-verification--the-automated-cross-check)** ·
+**[Repository root](../../README.md)**
+
+*Part of [wild8highlander/Trivortex](https://github.com/wild8highlander/Trivortex) · Licensed under [IPL-RP-1.0](https://github.com/wild8highlander/Trivortex/blob/main/LICENSE.md) — All Rights Reserved*
+
+</div>
