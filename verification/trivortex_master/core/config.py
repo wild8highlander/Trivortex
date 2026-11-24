@@ -35,6 +35,7 @@ class UnphysicalConfiguration(Exception):
     """Попытка создать конфигурацию вне физической вселенной модели."""
 
     def __init__(self, message: str, n_bodies: int = 0):
+        """Do UnphysicalConfiguration.  init for message, n_bodies and return the result."""
         super().__init__(message)
         self.n_bodies = n_bodies
 
@@ -160,19 +161,23 @@ class MasterConfig:
 
     # ── сериализация ──
     def to_dict(self) -> dict[str, Any]:
+        """Serialize the configuration to a plain dict."""
         return dataclasses.asdict(self)
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> MasterConfig:
+        """Rebuild a MasterConfig from a plain dict."""
         valid = {f.name for f in dataclasses.fields(cls)}
         return cls(**{k: v for k, v in d.items() if k in valid})
 
     def save(self, path: str) -> None:
+        """Save the configuration as JSON to the given path."""
         with open(path, "w", encoding="utf-8") as fh:
             json.dump(self.to_dict(), fh, ensure_ascii=False, indent=1)
 
     @classmethod
     def load(cls, path: str) -> MasterConfig:
+        """Load a MasterConfig from a JSON file."""
         with open(path, encoding="utf-8") as fh:
             return cls.from_dict(json.load(fh))
 

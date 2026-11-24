@@ -43,12 +43,14 @@ class Registry:
     """Хранилище режимов по категориям."""
 
     def __init__(self):
+        """Handle Registry.  init."""
         self._entries: dict[str, ModeEntry] = {}
         self._category_order: list[str] = []
         self._capability_probes: dict[str, Callable[[], tuple[bool, str]]] = {}
 
     # ── регистрация ──
     def register(self, entry: ModeEntry) -> None:
+        """Register a menu mode (decorator entry point)."""
         if entry.name in self._entries:
             raise ValueError(f"режим уже зарегистрирован: {entry.name}")
         self._entries[entry.name] = entry
@@ -61,18 +63,22 @@ class Registry:
 
     # ── запросы ──
     def get(self, name: str) -> ModeEntry | None:
+        """Return a registered mode by name, or None."""
         return self._entries.get(name)
 
     def categories(self) -> list[str]:
+        """List the mode categories in display order."""
         return list(self._category_order)
 
     def modes(self, category: str) -> list[ModeEntry]:
+        """List modes of one category."""
         return sorted(
             (e for e in self._entries.values() if e.category == category),
             key=lambda e: (e.order, e.name),
         )
 
     def all_modes(self) -> list[ModeEntry]:
+        """Return every registered mode (name -> Mode)."""
         return list(self._entries.values())
 
     # ── доступность ──

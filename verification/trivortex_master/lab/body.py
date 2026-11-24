@@ -37,6 +37,7 @@ class Body:
 
     # ══════════════════ валидация ══════════════════
     def validate(self) -> list[str]:
+        """Validate body parameters; raise ValueError on inconsistency."""
         problems = []
         if not self.id:
             problems.append("пустой id")
@@ -55,9 +56,11 @@ class Body:
 
     # ══════════════════ физика ══════════════════
     def speed(self) -> float:
+        """Return the current speed of the body."""
         return math.sqrt(sum(v * v for v in self.velocity))
 
     def kinetic_energy(self) -> float:
+        """Return the kinetic energy of the body."""
         return 0.5 * self.mass * self.speed() ** 2
 
     def potential_energy(
@@ -71,22 +74,27 @@ class Body:
         return -G * self.mass * other.mass / denom
 
     def distance_to(self, other: Body) -> float:
+        """Return the Euclidean distance to another body."""
         return math.sqrt(sum((a - b) ** 2 for a, b in zip(self.position, other.position)))
 
     def momentum(self) -> tuple[float, float, float]:
+        """Return the linear momentum vector of the body."""
         return tuple(m * v for m, v in zip((self.mass,) * 3, self.velocity))
 
     def angular_momentum_origin(self) -> tuple[float, float, float]:
+        """Return angular momentum about the coordinate origin."""
         rx, ry, rz = self.position
         px, py, pz = self.momentum()
         return (ry * pz - rz * py, rz * px - rx * pz, rx * py - ry * px)
 
     # ══════════════════ геометрия/проекции ══════════════════
     def project_2d(self, plane: str = "xy") -> tuple[float, float]:
+        """Return the (x, y) projection of the position."""
         idx = {"xy": (0, 1), "xz": (0, 2), "yz": (1, 2)}[plane]
         return (self.position[idx[0]], self.position[idx[1]])
 
     def to_4d(self) -> tuple[float, float, float, float]:
+        """Return the position extended with the time axis (x, y, z, t)."""
         return (self.position[0], self.position[1], self.position[2], self.w)
 
     def state_vector(self) -> list[float]:
@@ -95,6 +103,7 @@ class Body:
 
     # ══════════════════ сериализация ══════════════════
     def to_dict(self) -> dict[str, Any]:
+        """Serialize the body to a plain dict."""
         return dict(
             id=self.id,
             name=self.name,
@@ -113,6 +122,7 @@ class Body:
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> Body:
+        """Rebuild a Body from a plain dict."""
         return cls(
             id=d["id"],
             name=d.get("name", d["id"]),
@@ -161,6 +171,7 @@ class Body:
         return body
 
     def __repr__(self) -> str:  # pragma: no cover
+        """Handle Body.  repr."""
         return f"Body({self.id!r}, m={self.mass:.3g}, " f"r={self.position}, v={self.velocity})"
 
 

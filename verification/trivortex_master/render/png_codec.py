@@ -24,6 +24,7 @@ from typing import Sequence
 # CRC32 (PNG, полином 0xEDB88320)
 # ═══════════════════════════════════════════════════════════════════════════
 def _build_crc_table() -> list[int]:
+    """Handle build crc table."""
     table = []
     for n in range(256):
         c = n
@@ -37,6 +38,7 @@ _CRC_TABLE = _build_crc_table()
 
 
 def crc32(data: bytes, crc: int = 0) -> int:
+    """Do crc32 for data, crc and return the result."""
     c = crc ^ 0xFFFFFFFF
     for b in data:
         c = _CRC_TABLE[(c ^ b) & 0xFF] ^ (c >> 8)
@@ -44,6 +46,7 @@ def crc32(data: bytes, crc: int = 0) -> int:
 
 
 def adler32(data: bytes, a: int = 1, b: int = 0) -> int:
+    """Do adler32 for data, a, b and return the result."""
     for x in data:
         a = (a + x) % 65521
         b = (b + a) % 65521
@@ -54,12 +57,15 @@ def adler32(data: bytes, a: int = 1, b: int = 0) -> int:
 # DEFLATE: fixed-Huffman + LZ77 (жадный), битуровень вручную
 # ═══════════════════════════════════════════════════════════════════════════
 class _BitWriter:
+    """Handle BitWriter."""
     def __init__(self):
+        """Handle BitWriter.  init."""
         self.buf = bytearray()
         self.acc = 0
         self.nbits = 0
 
     def write_bits(self, value: int, count: int) -> None:
+        """Do BitWriter.write bits for value, count and return the result."""
         self.acc |= (value & ((1 << count) - 1)) << self.nbits
         self.nbits += count
         while self.nbits >= 8:
@@ -75,10 +81,12 @@ class _BitWriter:
         self.write_bits(v, count)
 
     def flush(self, pad_bit: int = 0) -> None:
+        """Do BitWriter.flush for pad_bit and return the result."""
         if self.nbits:
             self.write_bits(pad_bit, 8 - self.nbits)
 
     def bytes(self) -> bytes:
+        """Handle BitWriter.bytes."""
         return bytes(self.buf)
 
 
@@ -232,6 +240,7 @@ def _match_length_code(length: int) -> tuple[int, int, int]:
 
 
 def _match_dist_code(dist: int) -> tuple[int, int, int]:
+    """Do match dist code for dist and return the result."""
     for i in range(len(_DIST_BASE) - 1, -1, -1):
         if dist >= _DIST_BASE[i]:
             extra = dist - _DIST_BASE[i]
@@ -337,6 +346,7 @@ def zlib_wrap(deflated: bytes, original: bytes | None = None) -> bytes:
 # PNG-писатель
 # ═══════════════════════════════════════════════════════════════════════════
 def _paeth(a: int, b: int, c: int) -> int:
+    """Do paeth for a, b, c and return the result."""
     p = a + b - c
     pa, pb, pc = abs(p - a), abs(p - b), abs(p - c)
     if pa <= pb and pa <= pc:

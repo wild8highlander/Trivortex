@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import datetime as _dt
 import json
+import importlib
 import os
 import sys
 
@@ -51,11 +52,11 @@ def collect_release_facts() -> dict:
 
     # режимы меню (без печати баннера)
     try:
-        import trivortex_master  # noqa: F401
-        import modes_extra  # noqa: F401
+        tv = importlib.import_module("trivortex_master")
+        importlib.import_module("modes_extra")
 
-        n_modes = len(trivortex_master.REGISTRY.all_modes())
-        categories = trivortex_master.REGISTRY.categories()
+        n_modes = len(tv.REGISTRY.all_modes())
+        categories = tv.REGISTRY.categories()
     except Exception:
         n_modes, categories = 0, []
 
@@ -131,7 +132,7 @@ def _v1_ast_facts() -> dict:
     import subprocess
 
     try:
-        out = subprocess.run(
+        subprocess.run(
             ["git", "show", "HEAD:trivortex_master/../download/manifest_v1.0.0.json"],
             capture_output=True,
             text=True,

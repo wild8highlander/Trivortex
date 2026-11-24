@@ -8,7 +8,6 @@
 from __future__ import annotations
 
 import math
-from typing import Sequence
 
 
 def radial_velocity(body_state, observer_dir=(1.0, 0.0, 0.0)) -> float:

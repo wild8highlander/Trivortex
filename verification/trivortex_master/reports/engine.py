@@ -37,6 +37,7 @@ class ReportData:
         config=None,
         extra_sections: list[tuple[str, str]] | None = None,
     ):
+        """Do ReportData.  init for title, scene, sim_summary, config and return the result."""
         self.title = title
         self.generated = _dt.datetime.now().isoformat(timespec="seconds")
         self.scene = scene
@@ -51,20 +52,24 @@ class ReportData:
         self.versions = dict(master="2.0.0")
 
     def add_card(self, key: str, value: str, cls: str = "info") -> ReportData:
+        """Do ReportData.add card for key, value and return the result."""
         self.cards.append((key, value, cls))
         return self
 
     def add_table(self, name: str, headers: list[str], rows: list[list]) -> ReportData:
+        """Do ReportData.add table for name, headers, rows and return the result."""
         self.tables.append((name, headers, rows))
         return self
 
     def add_chart(self, path: str, caption: str = "") -> ReportData:
+        """Do ReportData.add chart for path, caption and return the result."""
         if os.path.isfile(path):
             self.charts.append((path, caption))
         return self
 
     # ── сводка сцены ──
     def fill_from_scene(self) -> ReportData:
+        """Handle ReportData.fill from scene."""
         if self.scene is None:
             return self
         sc = self.scene
@@ -92,6 +97,7 @@ class ReportData:
         return self
 
     def to_dict(self) -> dict[str, Any]:
+        """Handle ReportData.to dict."""
         return dict(
             title=self.title,
             generated=self.generated,
@@ -110,6 +116,7 @@ class ReportData:
 # Писатели форматов
 # ═══════════════════════════════════════════════════════════════════════════
 def write_txt(data: ReportData, path: str) -> str:
+    """Write write txt to the given target."""
     L = []
     L.append("=" * 72)
     L.append(" TRIVORTEX MASTER — " + data.title)
@@ -142,6 +149,7 @@ def write_txt(data: ReportData, path: str) -> str:
 
 
 def write_md(data: ReportData, path: str) -> str:
+    """Write write md to the given target."""
     L = [f"# TRIVORTEX MASTER — {data.title}", "", f"*сгенерировано: {data.generated}*", ""]
     if data.unphysical_note:
         L += [f"> ⚠️ **{data.unphysical_note}**", ""]
@@ -173,6 +181,7 @@ def write_md(data: ReportData, path: str) -> str:
 
 
 def write_html(data: ReportData, path: str, theme: str = "aurora") -> str:
+    """Write write html to the given target."""
     sections = []
     # карточки
     if data.cards:
@@ -225,6 +234,7 @@ def write_html(data: ReportData, path: str, theme: str = "aurora") -> str:
 
 
 def write_csv(data: ReportData, path: str) -> str:
+    """Write write csv to the given target."""
     with open(path, "w", encoding="utf-8") as fh:
         fh.write("section,key,value\n")
         for k, v, _c in data.cards:
@@ -238,12 +248,14 @@ def write_csv(data: ReportData, path: str) -> str:
 
 
 def write_json(data: ReportData, path: str) -> str:
+    """Write write json to the given target."""
     with open(path, "w", encoding="utf-8") as fh:
         json.dump(data.to_dict(), fh, ensure_ascii=False, indent=1, default=str)
     return path
 
 
 def write_docx(data: ReportData, path: str) -> str:
+    """Write write docx to the given target."""
     from reports.writers.docx_writer import DocxBuilder
 
     doc = DocxBuilder(title=data.title)
@@ -269,6 +281,7 @@ def write_docx(data: ReportData, path: str) -> str:
 
 
 def write_pdf(data: ReportData, path: str) -> str:
+    """Write write pdf to the given target."""
     from reports.writers.pdf_writer import PDFBuilder, A4_W
 
     pdf = PDFBuilder(title=data.title)

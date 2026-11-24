@@ -14,8 +14,9 @@ get_backend('auto') выбирает каскадом mpl → pure → ascii п�
 from __future__ import annotations
 
 import os
+from importlib.util import find_spec
 from abc import ABC, abstractmethod
-from typing import Any, Sequence
+from typing import Any
 
 from lab.scene import Scene
 from lab.trajectory import Trajectory
@@ -30,10 +31,13 @@ class RenderEngine(ABC):
     name = "abstract"
 
     def __init__(self, config):
+        """Do RenderEngine.  init for config and return the result."""
         self.config = config
 
     @abstractmethod
-    def setup(self, scene: Scene) -> None: ...
+    def setup(self, scene: Scene) -> None:
+        """Do RenderEngine.setup for scene and return the result."""
+        ...
 
     @abstractmethod
     def draw_frame(self, t: float) -> dict[str, Any]:
@@ -41,9 +45,12 @@ class RenderEngine(ABC):
         ...
 
     @abstractmethod
-    def save_frame(self, path: str) -> int: ...
+    def save_frame(self, path: str) -> int:
+        """Do RenderEngine.save frame for path and return the result."""
+        ...
 
     def teardown(self) -> None:
+        """Handle RenderEngine.teardown."""
         pass
 
 
@@ -56,6 +63,7 @@ class AsciiEngine(RenderEngine):
     name = "ascii"
 
     def __init__(self, config):
+        """Do AsciiEngine.  init for config and return the result."""
         super().__init__(config)
         from render import backend_ascii
 
@@ -63,10 +71,12 @@ class AsciiEngine(RenderEngine):
         self._lines: list[str] = []
 
     def setup(self, scene: Scene) -> None:
+        """Do AsciiEngine.setup for scene and return the result."""
         self._scene = scene
         self._traj = _scene_trajectory(scene)
 
     def draw_frame(self, t: float) -> dict[str, Any]:
+        """Do AsciiEngine.draw frame for t and return the result."""
         traj = self._traj
         state = traj.sample(t) if traj else [b.state_vector() for b in self._scene.bodies]
         bodies = [
@@ -85,11 +95,13 @@ class AsciiEngine(RenderEngine):
         return dict(t=t, n_bodies=len(bodies), backend=self.name)
 
     def save_frame(self, path: str) -> int:
+        """Do AsciiEngine.save frame for path and return the result."""
         with open(path, "w", encoding="utf-8") as fh:
             fh.write("\n".join(self._lines) + "\n")
         return os.path.getsize(path)
 
     def print_frame(self) -> None:
+        """Handle AsciiEngine.print frame."""
         self._mod.print_ascii(self._lines)
 
 
@@ -102,6 +114,7 @@ class PureEngine(RenderEngine):
     name = "pure"
 
     def __init__(self, config):
+        """Do PureEngine.  init for config and return the result."""
         super().__init__(config)
         from render import pure_raster
 
@@ -109,10 +122,12 @@ class PureEngine(RenderEngine):
         self._frame = None
 
     def setup(self, scene: Scene) -> None:
+        """Do PureEngine.setup for scene and return the result."""
         self._scene = scene
         self._traj = _scene_trajectory(scene)
 
     def draw_frame(self, t: float) -> dict[str, Any]:
+        """Do PureEngine.draw frame for t and return the result."""
         traj = self._traj
         state = traj.sample(t) if traj else [b.state_vector() for b in self._scene.bodies]
         # нормированные экранные радиусы (для красоты)
@@ -143,6 +158,7 @@ class PureEngine(RenderEngine):
         return dict(t=t, backend=self.name, mode="4d", w=w_values)
 
     def save_frame(self, path: str) -> int:
+        """Do PureEngine.save frame for path and return the result."""
         if self._frame is None:
             raise RuntimeError("кадр не нарисован (draw_frame)")
         return self._frame.save_png(path)
@@ -157,6 +173,7 @@ class MplEngine(RenderEngine):
     name = "mpl"
 
     def __init__(self, config):
+        """Do MplEngine.  init for config and return the result."""
         super().__init__(config)
         from render import backend_mpl
 
@@ -166,6 +183,7 @@ class MplEngine(RenderEngine):
         self._last_path = None
 
     def setup(self, scene: Scene) -> None:
+        """Do MplEngine.setup for scene and return the result."""
         self._scene = scene
         self._traj = _scene_trajectory(scene)
 
@@ -175,6 +193,7 @@ class MplEngine(RenderEngine):
         return dict(t=t, backend=self.name, note="кадры mpl строятся через render_trajectory")
 
     def save_frame(self, path: str) -> int:
+        """Do MplEngine.save frame for path and return the result."""
         return os.path.getsize(path) if path and os.path.exists(path) else 0
 
     # ── полный набор графиков по траектории ──
@@ -227,9 +246,11 @@ class MplEngine(RenderEngine):
 # GL-бэкенд (обёртка)
 # ═══════════════════════════════════════════════════════════════════════════
 class GLEngine(RenderEngine):
+    """Handle GLEngine."""
     name = "gl"
 
     def __init__(self, config):
+        """Do GLEngine.  init for config and return the result."""
         super().__init__(config)
         from render import backend_gl
 
@@ -238,10 +259,12 @@ class GLEngine(RenderEngine):
         self._mod = backend_gl
 
     def setup(self, scene: Scene) -> None:
+        """Do GLEngine.setup for scene and return the result."""
         self._scene = scene
         self._traj = _scene_trajectory(scene)
 
     def draw_frame(self, t: float) -> dict[str, Any]:
+        """Do GLEngine.draw frame for t and return the result."""
         traj = self._traj
         state = traj.sample(t) if traj else [b.state_vector() for b in self._scene.bodies]
         scale = _scene_scale(self._scene)
@@ -257,6 +280,7 @@ class GLEngine(RenderEngine):
         return dict(t=t, backend=self.name)
 
     def save_frame(self, path: str) -> int:
+        """Do GLEngine.save frame for path and return the result."""
         self._mod.render_gl(
             self._pending,
             width=self.config.image_width,
@@ -284,19 +308,9 @@ def is_available(name: str) -> bool:
     if name == "ascii" or name == "pure":
         return True
     if name == "mpl":
-        try:
-            import matplotlib  # noqa: F401
-
-            return True
-        except ImportError:
-            return False
+        return find_spec("matplotlib") is not None
     if name == "gl":
-        try:
-            import moderngl  # noqa: F401
-
-            return True
-        except ImportError:
-            return False
+        return (find_spec("moderngl") is not None) or (find_spec("pyrender") is not None)
     return False
 
 
@@ -315,6 +329,7 @@ def get_backend(name: str, config) -> RenderEngine:
 
 
 def available_backends() -> list[str]:
+    """Handle available backends."""
     return [b for b in AUTO_CASCADE + ("gl",) if is_available(b)]
 
 
@@ -354,7 +369,7 @@ def _trails_upto(
     n = len(traj.body_ids)
     out = [[] for _ in range(n)]
     total = len(traj.times)
-    take = max(1, total // stride)
+    max(1, total // stride)
     for i in range(0, total, 1):
         if traj.times[i] > t:
             break

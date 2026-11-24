@@ -22,7 +22,7 @@ import sys
 import zipfile
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-VERSION = "2.0.2"
+VERSION = "2.0.3"
 
 INCLUDE_DIRS = ["core", "lab", "realism", "render", "reports", "analysis", "data", "tools"]
 INCLUDE_FILES = [

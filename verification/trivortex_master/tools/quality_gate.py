@@ -25,7 +25,6 @@ import json
 import os
 import re
 import sys
-from typing import Any
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if ROOT not in sys.path:

@@ -20,6 +20,7 @@ class ValidatorWarning(dict):
     """Предупреждение валидации: severity = info|warn|error."""
 
     def __init__(self, severity: str, code: str, message: str):
+        """Do ValidatorWarning.  init for severity, code, message and return the result."""
         super().__init__(severity=severity, code=code, message=message)
 
 

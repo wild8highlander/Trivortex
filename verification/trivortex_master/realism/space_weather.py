@@ -154,6 +154,7 @@ class GeomagneticStorm:
     kp_max: float
 
     def category(self) -> dict:
+        """Handle GeomagneticStorm.category."""
         level = "нет бури"
         for name, threshold in STORM_SCALES:
             if self.kp_max >= threshold:

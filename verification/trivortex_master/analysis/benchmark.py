@@ -35,6 +35,7 @@ class Bench:
     """Один сценарий: замер + порог."""
 
     def __init__(self, name: str, threshold_s: float | None = None):
+        """Do Bench.  init for name, threshold_s and return the result."""
         self.name = name
         self.threshold = threshold_s
         self.elapsed = 0.0
@@ -43,10 +44,12 @@ class Bench:
         self._t0 = 0.0
 
     def __enter__(self):
+        """Handle Bench.  enter."""
         self._t0 = time.perf_counter()
         return self
 
     def __exit__(self, *exc):
+        """Handle Bench.  exit."""
         self.elapsed = time.perf_counter() - self._t0
         if self.threshold is not None and self.elapsed > self.threshold:
             self.passed = False
@@ -119,7 +122,7 @@ def bench_integrators() -> Bench:
 def bench_barnes_hut() -> Bench:
     """B2: дерево на 400 телах."""
     b = Bench("B2 Barnes-Hut", threshold_s=25.0)
-    from lab.nbody_tree import BarnesHutTree, BodyLite, benchmark
+    from lab.nbody_tree import   benchmark
 
     with b:
         res = benchmark(n_bodies=400, seed=1)
@@ -338,12 +341,14 @@ def run_all(only: list[str] | None = None) -> dict:
 
 
 def _fmt(v: Any) -> str:
+    """Do fmt for v and return the result."""
     if isinstance(v, float):
         return f"{v:.3g}"
     return str(v)
 
 
 def save_protocol(result: dict, path: str) -> None:
+    """Save save protocol to disk (JSON)."""
     with open(path, "w", encoding="utf-8") as fh:
         json.dump(result, fh, ensure_ascii=False, indent=1, default=str)
 

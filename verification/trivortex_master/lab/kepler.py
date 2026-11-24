@@ -45,9 +45,11 @@ class OrbitalElements:
         return -mu / (2.0 * self.a)
 
     def r_peri(self) -> float:
+        """Return the periapsis radius of the orbit."""
         return self.a * (1.0 - self.e)
 
     def r_apo(self) -> float:
+        """Return the apoapsis radius of the orbit."""
         return self.a * (1.0 + self.e)
 
 
@@ -265,7 +267,6 @@ def lambert(
 
     # бисекция по z до смены знака, затем Ньютон
     z = 0.0
-    lo, hi = -4.0 * math.pi**2, 4.0 * math.pi**2
     f0 = tof(0.0) - dt
     if math.isnan(f0):
         return None

@@ -101,10 +101,10 @@ def porkchop_grid(
             t_dep = dl
             t_arr = dl + tof
             phi_e_dep = 360.0 * t_dep / 365.256  # Земля от 0°
-            phi_t_dep = phase_rate_deg_day * t_dep  # цель в t=0 на 0°
+            phase_rate_deg_day * t_dep  # цель в t=0 на 0°
             phi_e_arr = 360.0 * t_arr / 365.256
             phi_t_arr = phase_rate_deg_day * t_arr
-            d_theta = (phi_t_arr - phi_e_arr) % 360.0
+            (phi_t_arr - phi_e_arr) % 360.0
             r1v = position(r_earth_km, phi_e_dep)
             r2v = position(r_target_km, phi_t_arr)
             dt_s = tof * 86400.0

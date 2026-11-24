@@ -124,10 +124,12 @@ def get_theorem31_reference() -> dict:
 
 
 def get_havelock_reference() -> dict:
+    """Return the pinned Havelock reference: N<=7 stable, N=8 max Re lambda = +0.4502."""
     return dict(HAVelock_REF)
 
 
 def get_ladder_levels() -> list[str]:
+    """Return the verification-ladder levels V1-V4 with their tolerances."""
     return list(LADDER_LEVELS)
 
 

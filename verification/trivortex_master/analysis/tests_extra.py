@@ -44,6 +44,7 @@ def _run_module_check(
 
 # ═══════════════════════════════════════════════════════════════════════════
 def test_s13() -> TestResult:
+    """Handle test s13."""
     r = TestResult("S13", "relativity: прецессия Меркурия 42.98″/век")
     m = _run_module_check(r, "lab.relativity")
     # дополнительная жёсткая проверка: величина именно 42.98 ± 0.5
@@ -57,6 +58,7 @@ def test_s13() -> TestResult:
 
 
 def test_s14() -> TestResult:
+    """Handle test s14."""
     r = TestResult("S14", "Barnes-Hut: точность и ускорение")
     from lab.nbody_tree import benchmark
 
@@ -76,6 +78,7 @@ def test_s14() -> TestResult:
 
 
 def test_s15() -> TestResult:
+    """Handle test s15."""
     r = TestResult("S15", "chaos: FLI упорядочивание орбит")
     m = _run_module_check(r, "lab.chaos")
     flis = (m.get("fli_oscillator"), m.get("fli_hh_regular"), m.get("fli_hh_chaotic"))
@@ -88,12 +91,14 @@ def test_s15() -> TestResult:
 
 
 def test_s16() -> TestResult:
+    """Handle test s16."""
     r = TestResult("S16", "collisions: законы сохранения")
     _run_module_check(r, "lab.collisions")
     return r
 
 
 def test_s17() -> TestResult:
+    """Handle test s17."""
     r = TestResult("S17", "tides: Луна 3.8 см/год, Ио, Козаи")
     m = _run_module_check(r, "lab.tides")
     val = m.get("moon_cm_per_year")
@@ -106,6 +111,7 @@ def test_s17() -> TestResult:
 
 
 def test_s18() -> TestResult:
+    """Handle test s18."""
     r = TestResult("S18", "radiation: Пойнтинг-Робертсон/Ярковский")
     m = _run_module_check(r, "lab.radiation")
     t_pr = m.get("grain_pr_lifetime_years")
@@ -118,6 +124,7 @@ def test_s18() -> TestResult:
 
 
 def test_s19() -> TestResult:
+    """Handle test s19."""
     r = TestResult("S19", "planetary_systems: Hill + TRAPPIST-1")
     m = _run_module_check(r, "realism.planetary_systems")
     t_eq = m.get("trappist_T_eq")
@@ -130,6 +137,7 @@ def test_s19() -> TestResult:
 
 
 def test_s20() -> TestResult:
+    """Handle test s20."""
     r = TestResult("S20", "stellar: Солнце/O-звезда/карлик/Рош")
     m = _run_module_check(r, "realism.stellar")
     o_life = m.get("ostar_life_gyr")
@@ -142,6 +150,7 @@ def test_s20() -> TestResult:
 
 
 def test_s21() -> TestResult:
+    """Handle test s21."""
     r = TestResult("S21", "xlsx_writer: openpyxl читает книгу")
     m = _run_module_check(r, "reports.writers.xlsx_writer")
     read_ok = m.get("openpyxl_read_ok")
@@ -154,6 +163,7 @@ def test_s21() -> TestResult:
 
 
 def test_s22() -> TestResult:
+    """Handle test s22."""
     r = TestResult("S22", "pptx_writer: python-pptx читает слайды")
     m = _run_module_check(r, "reports.writers.pptx_writer")
     read_ok = m.get("pptx_read_ok")
@@ -166,6 +176,7 @@ def test_s22() -> TestResult:
 
 
 def test_s23() -> TestResult:
+    """Handle test s23."""
     r = TestResult("S23", "mcmc: согласие с МНК и R̂")
     m = _run_module_check(r, "analysis.mcmc")
     b_mcmc = m.get("b_mean")
@@ -180,6 +191,7 @@ def test_s23() -> TestResult:
 
 
 def test_s24() -> TestResult:
+    """Handle test s24."""
     r = TestResult("S24", "wavelets + fitting: chirp и гауссов пик")
     _run_module_check(r, "analysis.wavelets")
     _run_module_check(r, "analysis.fitting")

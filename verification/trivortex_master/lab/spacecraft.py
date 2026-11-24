@@ -39,11 +39,13 @@ class Quaternion:
     __slots__ = ("w", "x", "y", "z")
 
     def __init__(self, w: float = 1.0, x: float = 0.0, y: float = 0.0, z: float = 0.0):
+        """Do Quaternion.  init for w, x, y, z and return the result."""
         self.w, self.x, self.y, self.z = w, x, y, z
         self.normalize()
 
     # ── алгебра ──
     def __mul__(self, other: Quaternion) -> Quaternion:
+        """Do Quaternion.  mul for other and return the result."""
         w1, x1, y1, z1 = self.w, self.x, self.y, self.z
         w2, x2, y2, z2 = other.w, other.x, other.y, other.z
         return Quaternion(
@@ -54,12 +56,15 @@ class Quaternion:
         )
 
     def conjugate(self) -> Quaternion:
+        """Handle Quaternion.conjugate."""
         return Quaternion(self.w, -self.x, -self.y, -self.z)
 
     def norm(self) -> float:
+        """Handle Quaternion.norm."""
         return math.sqrt(self.w**2 + self.x**2 + self.y**2 + self.z**2)
 
     def normalize(self) -> None:
+        """Handle Quaternion.normalize."""
         n = self.norm()
         if n < 1e-18:
             self.w, self.x, self.y, self.z = 1.0, 0.0, 0.0, 0.0
@@ -72,6 +77,7 @@ class Quaternion:
     # ── геометрия ──
     @classmethod
     def from_axis_angle(cls, axis: Sequence[float], angle_rad: float) -> Quaternion:
+        """Do Quaternion.from axis angle for axis, angle_rad and return the result."""
         n = math.sqrt(sum(c * c for c in axis)) or 1.0
         s = math.sin(angle_rad / 2.0)
         return cls(math.cos(angle_rad / 2.0), s * axis[0] / n, s * axis[1] / n, s * axis[2] / n)
@@ -88,6 +94,7 @@ class Quaternion:
         return 2.0 * math.acos(max(-1.0, min(1.0, dot)))
 
     def to_dict(self) -> dict:
+        """Handle Quaternion.to dict."""
         return dict(w=self.w, x=self.x, y=self.y, z=self.z)
 
 
@@ -105,6 +112,7 @@ class PIDController:
         i_limit: float = 1.0,
         out_limit: float | None = None,
     ):
+        """Do PIDController.  init for kp, ki, kd, i_limit and return the result."""
         self.kp, self.ki, self.kd = kp, ki, kd
         self.i_limit = i_limit
         self.out_limit = out_limit
@@ -112,6 +120,7 @@ class PIDController:
         self._prev_error: float | None = None
 
     def update(self, error: float, dt: float) -> float:
+        """Do PIDController.update for error, dt and return the result."""
         self._integral += error * dt
         # анти-виндап: интеграл не выходит за предел
         self._integral = max(-self.i_limit, min(self.i_limit, self._integral))
@@ -123,6 +132,7 @@ class PIDController:
         return out
 
     def reset(self) -> None:
+        """Handle PIDController.reset."""
         self._integral = 0.0
         self._prev_error = None
 
@@ -134,6 +144,7 @@ class ReactionWheel:
     """Маховик: ось (в СК корпуса), макс. момент, макс. кинет. момент."""
 
     def __init__(self, axis: Sequence[float], max_torque: float = 0.05, max_momentum: float = 1.0):
+        """Do ReactionWheel.  init for axis, max_torque, max_momentum and return the result."""
         n = math.sqrt(sum(c * c for c in axis)) or 1.0
         self.axis = tuple(c / n for c in axis)
         self.max_torque = max_torque
@@ -156,6 +167,7 @@ class ReactionWheelArray:
     """Набор маховиков: распределение 3-осевого запроса по осям колёс."""
 
     def __init__(self, wheels: list[ReactionWheel]):
+        """Do ReactionWheelArray.  init for wheels and return the result."""
         if not wheels:
             raise ValueError("нужен хотя бы один маховик")
         self.wheels = wheels
@@ -172,11 +184,13 @@ class ReactionWheelArray:
         return tuple(applied)
 
     def total_momentum(self) -> tuple[float, float, float]:
+        """Handle ReactionWheelArray.total momentum."""
         return tuple(
             sum(w.momentum * a for w in self.wheels for a in [w.axis[i]]) for i in range(3)
         )
 
     def saturation_fraction(self) -> float:
+        """Handle ReactionWheelArray.saturation fraction."""
         return max(abs(w.momentum) / w.max_momentum for w in self.wheels)
 
 
@@ -193,6 +207,7 @@ class Spacecraft:
         q0: Quaternion | None = None,
         omega: Sequence[float] = (0.0, 0.0, 0.0),
     ):
+        """Do Spacecraft.  init for inertia_diag, wheels, q0, omega and return the result."""
         if len(inertia_diag) != 3 or min(inertia_diag) <= 0:
             raise ValueError("инерции: три положительных числа")
         self.I = tuple(inertia_diag)
@@ -239,6 +254,7 @@ class AttitudePropagator:
     """
 
     def __init__(self, sc: Spacecraft, dt: float = 0.05, wheel_torque_fn=None):
+        """Do AttitudePropagator.  init for sc, dt, wheel_torque_fn and return the result."""
         self.sc = sc
         self.dt = dt
         # постоянный момент колёс на шаг (обновляет slew-контроллер)
@@ -246,6 +262,7 @@ class AttitudePropagator:
         self.wheel_torque_fn = wheel_torque_fn
 
     def step(self, ext_torque: Sequence[float] = (0.0, 0.0, 0.0)) -> None:
+        """Do AttitudePropagator.step for ext_torque and return the result."""
         sc = self.sc
         if self.wheel_torque_fn is not None:
             self.wheel_torque = list(self.wheel_torque_fn())

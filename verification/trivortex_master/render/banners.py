@@ -7,7 +7,7 @@
 """
 
 from __future__ import annotations
-from render.font_5x7 import draw_text, text_width
+from render.font_5x7 import draw_text
 from render.pure_raster import Frame
 
 ICE = (125, 211, 252)

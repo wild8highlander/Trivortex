@@ -109,6 +109,7 @@ class CustomEngine(PhysicsEngine):
     """
 
     def __init__(self, scene, force_expr: str = "0.0"):
+        """Do CustomEngine.  init for scene, force_expr and return the result."""
         super().__init__(scene)
         if isinstance(force_expr, dict):
             self._codes = {axis: compile_force(expr) for axis, expr in force_expr.items()}
@@ -121,9 +122,11 @@ class CustomEngine(PhysicsEngine):
         self._expr_src = force_expr
 
     def name(self) -> str:
+        """Handle CustomEngine.name."""
         return "custom"
 
     def _user_accel(self, body, t: float) -> tuple[float, float, float]:
+        """Do CustomEngine. user accel for body, t and return the result."""
         env = dict(SANDBOX_GLOBALS)
         env.update(
             x=body.position[0],
@@ -151,6 +154,7 @@ class CustomEngine(PhysicsEngine):
         return tuple(out)
 
     def _grav_accel(self) -> list[tuple[float, float, float]]:
+        """Handle CustomEngine. grav accel."""
         bodies = self.scene.bodies
         n = len(bodies)
         G = self.cfg.G
@@ -174,6 +178,7 @@ class CustomEngine(PhysicsEngine):
         return acc
 
     def step(self, dt: float) -> None:
+        """Do CustomEngine.step for dt and return the result."""
         bodies = self.scene.bodies
         if not bodies:
             return
@@ -191,12 +196,15 @@ class CustomEngine(PhysicsEngine):
         self.scene.t += dt
 
     def get_states(self) -> list[BodyState]:
+        """Handle CustomEngine.get states."""
         return [BodyState(b.id, b.position, b.velocity) for b in self.scene.bodies]
 
     def energy(self) -> float:
+        """Handle CustomEngine.energy."""
         return self.scene.total_energy()
 
     def to_dict(self) -> dict[str, Any]:
+        """Handle CustomEngine.to dict."""
         return dict(
             engine="custom", force_expr=str(self._expr_src)[:500], sandbox="math-only, без импортов"
         )

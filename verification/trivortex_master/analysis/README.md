@@ -106,7 +106,7 @@ visible and were fixed in the same release.
 | Spectra | `lomb_scargle.py`, `periodogram.py`, `wavelets.py`, `entropy.py`, `rmt.py` | FAP 4e-191; Morlet (chirp 2->5 Hz, 1.9%); Shannon/Bandt-Pompe + surrogates; Girolami r |
 | Fitting | `fitting.py`, `mcmc.py`, `corner_plots.py` | Levenberg-Marquardt (K=10.04+/-0.18 at truth 10); Metropolis, R-hat 1.004 |
 | Transits | `ttvs.py`, `lightcurves.py`, `orbital_elements_fit.py`, `proper_elements.py` | BLS (SDE 7.2), TTV super-periods, Mandel-Agol, HCM families |
-| Data | `pipeline.py`, `api_reference.py`, `structure.py`, `sandbox_physics.py` | a Kahn DAG, sha256 cache, failure isolation, provenance; docstrings 66% |
+| Data | `pipeline.py`, `api_reference.py`, `structure.py`, `sandbox_physics.py` | a Kahn DAG, sha256 cache, failure isolation, provenance; docstrings 100% |
 | Field | [`field.py`](field.py) | mass-x-velocity scans, Havelock rings N=2..8 |
 
 ## Field studies: the Havelock threshold

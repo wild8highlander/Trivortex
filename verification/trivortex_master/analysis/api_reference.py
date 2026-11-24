@@ -19,7 +19,6 @@ from __future__ import annotations
 
 import ast
 import os
-import re
 from typing import Any
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -28,6 +27,7 @@ ENTRY_FILES = ("trivortex_master.py",)
 
 
 def _first_line(doc: str | None) -> str:
+    """Do first line for doc and return the result."""
     if not doc:
         return ""
     for line in doc.strip().splitlines():

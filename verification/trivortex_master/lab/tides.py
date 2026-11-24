@@ -39,9 +39,11 @@ class TidalSystem:
     e: float = 0.0
 
     def orbital_period(self) -> float:
+        """Handle TidalSystem.orbital period."""
         return 2.0 * math.pi * math.sqrt(self.a**3 / (G_SI * (self.M_primary + self.M_satellite)))
 
     def mu_primary(self) -> float:
+        """Handle TidalSystem.mu primary."""
         return G_SI * self.M_primary
 
 

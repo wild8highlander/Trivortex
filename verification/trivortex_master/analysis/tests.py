@@ -16,11 +16,9 @@ S6  интегралы V4 (Γ=1,2,3)   S12 лимит N=8 (порог Хавел
 from __future__ import annotations
 
 import importlib
-import io
-import json
 import math
 import os
-import sys
+from importlib.util import find_spec
 from typing import Any
 
 from core.config import MasterConfig, UnphysicalConfiguration, from_profile
@@ -33,7 +31,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 class TestResult:
+    """One structural test's outcome: id, title, details, metrics."""
     def __init__(self, test_id: str, name: str):
+        """Do TestResult.  init for test_id, name and return the result."""
         self.id = test_id
         self.name = name
         # оптимистичный старт: тест считается прошедшим, пока какой-нибудь
@@ -44,17 +44,20 @@ class TestResult:
         self.metrics: dict[str, Any] = {}
 
     def ok(self, msg: str = "") -> TestResult:
+        """Return True when all checks passed."""
         self.passed = True
         if msg:
             self.details.append(msg)
         return self
 
     def fail(self, msg: str) -> TestResult:
+        """Do TestResult.fail for msg and return the result."""
         self.passed = False
         self.details.append(msg)
         return self
 
     def check(self, cond: bool, ok_msg: str, fail_msg: str) -> bool:
+        """Append a detail line; a failed check fails the test."""
         if cond:
             self.details.append(ok_msg)
         else:
@@ -63,6 +66,7 @@ class TestResult:
         return cond
 
     def to_dict(self) -> dict[str, Any]:
+        """Handle TestResult.to dict."""
         return dict(
             id=self.id,
             name=self.name,
@@ -76,6 +80,7 @@ class TestResult:
 # S1 — структура сцены
 # ═══════════════════════════════════════════════════════════════════════════
 def test_s1() -> TestResult:
+    """Handle test s1."""
     r = TestResult("S1", "структура сцены")
     from lab.presets import load_presets, build_preset
 
@@ -121,13 +126,14 @@ def test_s1() -> TestResult:
 # S2 — сериализация сцены
 # ═══════════════════════════════════════════════════════════════════════════
 def test_s2() -> TestResult:
+    """Handle test s2."""
     r = TestResult("S2", "сериализация сцены")
     from lab.presets import build_preset
 
     cfg = from_profile("quick", n_steps=10)
     sc = build_preset("jupiter_system", cfg)
     run_simulation(sc, n_steps=10)
-    d = sc.to_dict(include_history=True)
+    sc.to_dict(include_history=True)
     path = "/tmp/tv_s2_scene.json"
     sc.save(path)
     sc2 = Scene.load(path)
@@ -173,6 +179,7 @@ def _module_imports(path: str) -> set[str]:
 
 
 def test_s3() -> TestResult:
+    """Handle test s3."""
     r = TestResult("S3", "направления зависимостей (граф ацикличен)")
     graph: dict[str, set[str]] = {}
     for pkg in ("core", "lab", "render", "reports", "realism", "analysis"):
@@ -233,11 +240,12 @@ def test_s3() -> TestResult:
 # S4 — реестр режимов
 # ═══════════════════════════════════════════════════════════════════════════
 def test_s4() -> TestResult:
+    """Handle test s4."""
     r = TestResult("S4", "реестр режимов")
     from core.registry import REGISTRY
 
     try:
-        import trivortex_master  # регистрирует режимы при первом импорте
+        importlib.import_module("trivortex_master")  # регистрирует режимы при первом импорте
     except ValueError:
         pass  # повторный импорт в том же процессе — уже зарегистрировано
     spec = REGISTRY.menu_spec()
@@ -258,6 +266,7 @@ def test_s4() -> TestResult:
 # S5/S6 — интегралы вихревого движка (критерии лестницы V3/V4)
 # ═══════════════════════════════════════════════════════════════════════════
 def _vortex_scene(gammas: list[float], cfg: MasterConfig) -> Scene:
+    """Do vortex scene for gammas, cfg and return the result."""
     sc = Scene(cfg, name=f"vortex_{len(gammas)}")
     n = len(gammas)
     R = 1.0
@@ -285,6 +294,7 @@ def _vortex_scene(gammas: list[float], cfg: MasterConfig) -> Scene:
 
 
 def test_s5() -> TestResult:
+    """Handle test s5."""
     r = TestResult("S5", "интегралы Кирхгофа, равные Γ (V3)")
     cfg = from_profile("quick", n_steps=200, physics_engine="native_vortex")
     sc = _vortex_scene([1.0, 1.0, 1.0], cfg)
@@ -310,6 +320,7 @@ def test_s5() -> TestResult:
 
 
 def test_s6() -> TestResult:
+    """Handle test s6."""
     r = TestResult("S6", "интегралы Кирхгофа, Γ=(1,2,3) (V4)")
     cfg = from_profile("quick", n_steps=200, physics_engine="native_vortex")
     sc = _vortex_scene([1.0, 2.0, 3.0], cfg)
@@ -324,7 +335,7 @@ def test_s6() -> TestResult:
         and drifts.get("Q_drift", 1) <= 1e-10
         and drifts.get("I_drift", 1) <= 1e-10
     )
-    r.check(ok, f"смешанные Γ: дрейфы ≤ 1e-10 (критерий V4)", "дрейф выше 1e-10 при Γ=(1,2,3)")
+    r.check(ok, "смешанные Γ: дрейфы ≤ 1e-10 (критерий V4)", "дрейф выше 1e-10 при Γ=(1,2,3)")
     return r.ok() if r.passed else r
 
 
@@ -332,6 +343,7 @@ def test_s6() -> TestResult:
 # S7 — энергия ньютоновского RK4
 # ═══════════════════════════════════════════════════════════════════════════
 def test_s7() -> TestResult:
+    """Handle test s7."""
     r = TestResult("S7", "сохранение энергии, ньютоновский RK4")
     from lab.presets import build_preset
 
@@ -348,10 +360,9 @@ def test_s7() -> TestResult:
 # S8 — сравнение движков
 # ═══════════════════════════════════════════════════════════════════════════
 def test_s8() -> TestResult:
+    """Handle test s8."""
     r = TestResult("S8", "сравнение движков (native vs REBOUND)")
-    try:
-        import rebound  # noqa: F401
-    except ImportError:
+    if find_spec("rebound") is None:
         r.metrics["skipped"] = True
         return r.ok("REBOUND не установлен — сравнение пропущено " "(штатный fallback)")
     from lab.presets import build_preset
@@ -378,6 +389,7 @@ def test_s8() -> TestResult:
 # S9 — траектории: Теорема 3.1 (хореография 2π/3)
 # ═══════════════════════════════════════════════════════════════════════════
 def test_s9() -> TestResult:
+    """Handle test s9."""
     r = TestResult("S9", "планировщик Теоремы 3.1: хореография 2π/3")
     planner = get_planner("analytic")
     traj = planner.theorem31(n_steps=120)
@@ -451,6 +463,7 @@ def test_s9() -> TestResult:
 # S10 — рендер-контракты
 # ═══════════════════════════════════════════════════════════════════════════
 def test_s10() -> TestResult:
+    """Handle test s10."""
     r = TestResult("S10", "рендер-контракты: все бэкенды пишут файлы")
     from lab.presets import build_preset
     from render.engine import available_backends, get_backend
@@ -483,6 +496,7 @@ def test_s10() -> TestResult:
 # S11 — отчёты
 # ═══════════════════════════════════════════════════════════════════════════
 def test_s11() -> TestResult:
+    """Handle test s11."""
     r = TestResult("S11", "отчёты: все 7 форматов")
     from lab.presets import build_preset
     from reports.engine import ReportData, generate_reports, validate_outputs
@@ -511,6 +525,7 @@ def test_s11() -> TestResult:
 # S12 — лимит N=8 (порог Хавелока)
 # ═══════════════════════════════════════════════════════════════════════════
 def test_s12() -> TestResult:
+    """Handle test s12."""
     r = TestResult("S12", "лимит N=8: порог Хавелока")
     from lab.presets import build_preset
 

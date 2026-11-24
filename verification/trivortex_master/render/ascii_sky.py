@@ -57,6 +57,7 @@ def astronomy_bound() -> bool:
 
 
 def _require_astronomy() -> None:
+    """Handle require astronomy."""
     if _catalog_provider is None or _eq_to_horiz is None:
         raise RuntimeError(
             "astronomy provider не привязан: вызовите "

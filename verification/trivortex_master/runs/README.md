@@ -49,7 +49,7 @@ single-file edition's gate writes `quality_gate_single.json`:
   "acceptance":   {"passed": 20, "total": 20, "details": {"A1": true, "...": true}},
   "module_selfchecks": {"passed": 49, "total": 49},
   "hygiene":      {"files": 117, "findings": [], "clean": true},
-  "api":          {"modules": 96, "docstring_coverage": 0.664},
+  "api":          {"modules": 96, "docstring_coverage": 1.0},
   "code":         {"py_lines": 56980},
   "passed": true
 }

@@ -76,6 +76,7 @@ def mean_motion_to_a(n_rev_day: float) -> float:
 
 
 def orbital_period_minutes(n_rev_day: float) -> float:
+    """Do orbital period minutes for n_rev_day and return the result."""
     return 1440.0 / n_rev_day
 
 

@@ -78,6 +78,7 @@ J2000_ELEMENTS = dict(
 
 
 def _load_catalog() -> dict[str, Any]:
+    """Handle load catalog."""
     return json.load(open(os.path.join(ROOT, "data", "catalog.json"), encoding="utf-8"))
 
 

@@ -46,6 +46,7 @@ class TwoBodyPN:
 
     @property
     def M(self) -> float:
+        """Return the total mass of the two-body system."""
         return self.m1 + self.m2
 
     @property

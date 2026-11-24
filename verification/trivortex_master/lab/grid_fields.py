@@ -9,7 +9,6 @@ O(N·G)), эквипотенциали для рендера, оценка сф�
 from __future__ import annotations
 
 import math
-from typing import Sequence
 
 
 def potential_at(point, bodies, G: float = 6.67430e-11, softening: float = 0.0) -> float:
@@ -58,6 +57,7 @@ def jeans_length(
 
 
 def escape_speed(mass: float, r: float, G: float = 6.67430e-11) -> float:
+    """Return the escape speed at the given distance from the mass."""
     return math.sqrt(2 * G * mass / max(r, 1e-12))
 
 

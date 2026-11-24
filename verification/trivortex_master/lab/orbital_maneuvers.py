@@ -36,6 +36,7 @@ H_SCALE_KM = 8.5
 # Одиночный импульс
 # ═══════════════════════════════════════════════════════════════════════════
 def circular_speed(r_km: float, mu: float = MU_EARTH_KM) -> float:
+    """Return the circular-orbit speed at the given radius."""
     return math.sqrt(mu / r_km)
 
 

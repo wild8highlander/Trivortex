@@ -13,11 +13,9 @@ word/_rels/document.xml.rels). Экранирование — xml.sax.saxutils.e
 
 from __future__ import annotations
 
-import base64
-import hashlib
 import os
 import zipfile
-from typing import Any, Sequence
+from typing import  Sequence
 from xml.sax.saxutils import escape
 
 W_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
@@ -56,6 +54,7 @@ class DocxBuilder:
     """Сборка документа: абзацы, заголовки, таблицы, картинки."""
 
     def __init__(self, title: str = "Отчёт TRIVORTEX MASTER"):
+        """Do DocxBuilder.  init for title and return the result."""
         self.title = title
         self.body: list[str] = []
         self.rels: list[str] = []  # rId изображений
@@ -64,6 +63,7 @@ class DocxBuilder:
 
     # ── элементы ──
     def heading(self, text: str, level: int = 1) -> DocxBuilder:
+        """Do DocxBuilder.heading for text, level and return the result."""
         style = f"Heading{min(level, 2)}"
         self.body.append(
             f'<w:p><w:pPr><w:pStyle w:val="{style}"/></w:pPr>'
@@ -79,6 +79,7 @@ class DocxBuilder:
         color: str | None = None,
         size_half_pt: int = 22,
     ) -> DocxBuilder:
+        """Do DocxBuilder.paragraph for text, bold, italic, color and return the result."""
         rpr = ""
         if bold:
             rpr += "<w:b/>"
@@ -94,6 +95,7 @@ class DocxBuilder:
         return self
 
     def bullet(self, text: str) -> DocxBuilder:
+        """Do DocxBuilder.bullet for text and return the result."""
         self.body.append(
             '<w:p><w:pPr><w:ind w:left="360" w:hanging="180"/></w:pPr>'
             f'<w:r><w:t xml:space="preserve">• {escape(text)}</w:t></w:r></w:p>'
@@ -182,11 +184,13 @@ class DocxBuilder:
         return self
 
     def spacer(self) -> DocxBuilder:
+        """Handle DocxBuilder.spacer."""
         self.body.append('<w:p><w:pPr><w:spacing w:after="120"/></w:pPr></w:p>')
         return self
 
     # ── сборка ──
     def _document_xml(self) -> str:
+        """Handle DocxBuilder. document xml."""
         core_props = (
             f'<w:p><w:pPr><w:jc w:val="center"/></w:pPr>'
             f'<w:r><w:rPr><w:b/><w:sz w:val="40"/><w:color w:val="0A1628"/></w:rPr>'
@@ -202,6 +206,7 @@ class DocxBuilder:
         )
 
     def _document_rels(self) -> str:
+        """Handle DocxBuilder. document rels."""
         return (
             '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
             '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
@@ -210,6 +215,7 @@ class DocxBuilder:
         )
 
     def save(self, path: str) -> int:
+        """Do DocxBuilder.save for path and return the result."""
         doc_rels_needed = bool(self.rels)
         with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as zf:
             zf.writestr("[Content_Types].xml", _CONTENT_TYPES)

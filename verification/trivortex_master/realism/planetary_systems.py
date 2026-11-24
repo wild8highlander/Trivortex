@@ -45,6 +45,7 @@ class PlanetLite:
 
     @property
     def mu(self) -> float:
+        """Handle PlanetLite.mu."""
         return G_SI * self.mass
 
 

@@ -116,6 +116,7 @@ def gue_cdf(s: float) -> float:
 
 
 def poisson_cdf(s: float) -> float:
+    """Do poisson cdf for s and return the result."""
     return 1.0 - math.exp(-s)
 
 

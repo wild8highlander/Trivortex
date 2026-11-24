@@ -58,10 +58,12 @@ class NewtonianEngine(PhysicsEngine):
     """
 
     def name(self) -> str:
+        """Return the engine identifier ('newton')."""
         return "native_newton"
 
     # ── правая часть: y = [x,y,z,vx,vy,vz]*N → dy/dt ──
     def _accelerations(self, pos: list[Vector3], vel: list[Vector3]) -> list[Vector3]:
+        """Do NewtonianEngine. accelerations for pos, vel and return the result."""
         n = len(pos)
         masses = [b.mass for b in self.scene.bodies]
         G = self.cfg.G
@@ -100,6 +102,7 @@ class NewtonianEngine(PhysicsEngine):
         return acc
 
     def _deriv(self, y: list[float]) -> list[float]:
+        """Do NewtonianEngine. deriv for y and return the result."""
         n = len(self.scene.bodies)
         pos = [(y[6 * i], y[6 * i + 1], y[6 * i + 2]) for i in range(n)]
         vel = [(y[6 * i + 3], y[6 * i + 4], y[6 * i + 5]) for i in range(n)]
@@ -111,6 +114,7 @@ class NewtonianEngine(PhysicsEngine):
         return out
 
     def step(self, dt: float) -> None:
+        """Advance the system by dt with RK4 and the chosen force law."""
         n = len(self.scene.bodies)
         if n == 0:
             return
@@ -133,9 +137,11 @@ class NewtonianEngine(PhysicsEngine):
         self.scene.t += dt
 
     def get_states(self) -> list[BodyState]:
+        """Return the per-body state vectors after the step."""
         return [BodyState(b.id, b.position, b.velocity) for b in self.scene.bodies]
 
     def energy(self) -> float:
+        """Return the total Newtonian energy (kinetic + potential)."""
         return self.scene.total_energy()
 
 
@@ -151,10 +157,12 @@ class VortexEngine(PhysicsEngine):
     """
 
     def name(self) -> str:
+        """Return the engine identifier ('vortex')."""
         return "native_vortex"
 
     # ── интегралы Кирхгофа ──
     def hamiltonian(self) -> float:
+        """Return the Kirchhoff Hamiltonian of the vortex system."""
         bodies = self.scene.bodies
         H = 0.0
         for i in range(len(bodies)):
@@ -173,6 +181,7 @@ class VortexEngine(PhysicsEngine):
         return H
 
     def integrals(self) -> dict[str, float]:
+        """Return the H, P, Q, I integral values of the system."""
         bodies = self.scene.bodies
         P = sum(b.circulation * b.position[0] for b in bodies)
         Q = sum(b.circulation * b.position[1] for b in bodies)
@@ -181,6 +190,7 @@ class VortexEngine(PhysicsEngine):
 
     # ── правая часть ──
     def _velocities(self) -> list[Vector3]:
+        """Handle VortexEngine. velocities."""
         bodies = self.scene.bodies
         n = len(bodies)
         out = []
@@ -201,6 +211,7 @@ class VortexEngine(PhysicsEngine):
         return out
 
     def step(self, dt: float) -> None:
+        """Advance the vortex system by dt with RK4."""
         bodies = self.scene.bodies
         if not bodies:
             return
@@ -240,12 +251,14 @@ class VortexEngine(PhysicsEngine):
         self.scene.t += dt
 
     def get_states(self) -> list[BodyState]:
+        """Return the per-body positions after the step."""
         return [
             BodyState(b.id, b.position, b.velocity, extra=dict(circulation=b.circulation))
             for b in self.scene.bodies
         ]
 
     def energy(self) -> float:
+        """Return the Hamiltonian value of the vortex system."""
         return self.hamiltonian()
 
 

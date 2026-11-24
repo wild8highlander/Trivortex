@@ -16,12 +16,9 @@ from __future__ import annotations
 import math
 from typing import Any
 
-try:
-    import dedalus  # noqa: F401
+from importlib.util import find_spec
 
-    HAVE_DEDALUS = True
-except ImportError:
-    HAVE_DEDALUS = False
+HAVE_DEDALUS = find_spec("dedalus") is not None  # availability probe
 
 from lab.engine_base import BodyState, EngineUnavailable, PhysicsEngine
 
@@ -31,6 +28,7 @@ class DedalusAdapter(PhysicsEngine):
     точечные вихри Кирхгофа (VortexEngine)."""
 
     def __init__(self, scene, grid: int = 64):
+        """Do DedalusAdapter.  init for scene, grid and return the result."""
         if not HAVE_DEDALUS:
             raise EngineUnavailable(
                 "dedalus",
@@ -46,6 +44,7 @@ class DedalusAdapter(PhysicsEngine):
         self._setup()
 
     def name(self) -> str:
+        """Handle DedalusAdapter.name."""
         return "dedalus"
 
     def _setup(self) -> None:
@@ -149,13 +148,16 @@ class DedalusAdapter(PhysicsEngine):
         self.scene.t += dt
 
     def get_states(self) -> list[BodyState]:
+        """Handle DedalusAdapter.get states."""
         return [BodyState(b.id, b.position, b.velocity) for b in self.scene.bodies]
 
     def energy(self) -> float:
         # кинетическая энергия трассеров (полная энергия поля — опционально)
+        """Handle DedalusAdapter.energy."""
         return sum(b.kinetic_energy() for b in self.scene.bodies)
 
     def to_dict(self) -> dict[str, Any]:
+        """Handle DedalusAdapter.to dict."""
         return dict(
             engine="dedalus",
             have_dedalus=HAVE_DEDALUS,
@@ -167,6 +169,7 @@ class DedalusAdapter(PhysicsEngine):
 
 
 def availability() -> dict[str, Any]:
+    """Handle availability."""
     return dict(
         name="dedalus",
         available=HAVE_DEDALUS,

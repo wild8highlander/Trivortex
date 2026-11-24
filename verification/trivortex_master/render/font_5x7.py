@@ -79,4 +79,5 @@ def draw_text(frame, x, y, text, color, scale=1):
 
 
 def text_width(text, scale=1):
+    """Do text width for text, scale and return the result."""
     return len(text) * 6 * scale

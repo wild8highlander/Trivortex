@@ -230,7 +230,7 @@ def self_check() -> dict:
     roundtrip_ok = angular_separation(ra, dec, ra2, dec2) < 1e-6
     # Полярная звезда: незаходит в Москве
     polar_dec = parse_dec("+89° 16′ 12″")
-    polar_ra = parse_ra("02h 31m 49s")
+    parse_ra("02h 31m 49s")
     circumpolar = is_circumpolar(polar_dec, 55.75)
     # угловое расстояние Сириус–Бетельгейзе ≈ 27°? проверим грубо
     betelgeuse_ra = parse_ra("05h 55m 10s")

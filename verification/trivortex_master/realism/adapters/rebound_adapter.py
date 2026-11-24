@@ -16,12 +16,9 @@ from __future__ import annotations
 
 from typing import Any
 
-try:
-    import rebound  # noqa: F401
+from importlib.util import find_spec
 
-    HAVE_REBOUND = True
-except ImportError:
-    HAVE_REBOUND = False
+HAVE_REBOUND = find_spec("rebound") is not None  # availability probe
 
 from lab.engine_base import BodyState, EngineUnavailable, PhysicsEngine
 
@@ -30,6 +27,7 @@ class REBOUNDAdapter(PhysicsEngine):
     """N-body через REBOUND (ias15 по умолчанию, whfast для скорости)."""
 
     def __init__(self, scene, integrator: str = "ias15"):
+        """Do REBOUNDAdapter.  init for scene, integrator and return the result."""
         if not HAVE_REBOUND:
             raise EngineUnavailable(
                 "rebound",
@@ -42,13 +40,16 @@ class REBOUNDAdapter(PhysicsEngine):
         self._setup()
 
     def name(self) -> str:
+        """Handle REBOUNDAdapter.name."""
         return "rebound"
 
     def warmup(self) -> None:
+        """Handle REBOUNDAdapter.warmup."""
         if self.sim is None:
             self._setup()
 
     def _setup(self) -> None:
+        """Handle REBOUNDAdapter. setup."""
         import rebound
 
         sim = rebound.Simulation()
@@ -75,6 +76,7 @@ class REBOUNDAdapter(PhysicsEngine):
         self.sim = sim
 
     def step(self, dt: float) -> None:
+        """Do REBOUNDAdapter.step for dt and return the result."""
         if self.sim is None:
             return
         # dt в единицах сцены; REBOUND получает время с учётом масштаба
@@ -86,9 +88,11 @@ class REBOUNDAdapter(PhysicsEngine):
     def _time_factor(self) -> float:
         # при делении координат на s и сохранении скоростей в м/с
         # время в нормированных единицах идёт в s раз быстрее
+        """Handle REBOUNDAdapter. time factor."""
         return self._scale if self._scale > 0 else 1.0
 
     def get_states(self) -> list[BodyState]:
+        """Handle REBOUNDAdapter.get states."""
         if self.sim is None:
             return []
         out = []
@@ -103,6 +107,7 @@ class REBOUNDAdapter(PhysicsEngine):
         return out
 
     def energy(self) -> float:
+        """Handle REBOUNDAdapter.energy."""
         if self.sim is None:
             return 0.0
         return self.sim.energy() * self._energy_factor()
@@ -110,9 +115,11 @@ class REBOUNDAdapter(PhysicsEngine):
     def _energy_factor(self) -> float:
         # E ~ m v² — масштабирование только координат не меняет v,
         # но potential масштабируется; возвращаем энергию сцены напрямую
+        """Handle REBOUNDAdapter. energy factor."""
         return 1.0
 
     def apply_states(self) -> None:
+        """Handle REBOUNDAdapter.apply states."""
         for st in self.get_states():
             body = self.scene.body(st.id)
             if body is not None:

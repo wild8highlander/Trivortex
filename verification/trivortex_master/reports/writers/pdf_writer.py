@@ -12,8 +12,6 @@ TRIVORTEX MASTER — PDF-писатель 1.4 на чистом stdlib.
 
 from __future__ import annotations
 
-import math
-import os
 from typing import Sequence
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -90,10 +88,12 @@ _TRANS = {
 
 
 def translit(text: str) -> str:
+    """Do translit for text and return the result."""
     return "".join(_TRANS.get(c, c) for c in text)
 
 
 def _esc(text: str) -> str:
+    """Do esc for text and return the result."""
     return text.replace("\\", r"\\").replace("(", r"\(").replace(")", r"\)")
 
 
@@ -109,7 +109,9 @@ LIGHT = (0.93, 0.95, 0.96)
 
 
 class _Page:
+    """Handle Page."""
     def __init__(self):
+        """Handle Page.  init."""
         self.ops: list[str] = []
 
     # ── текст ──
@@ -122,6 +124,7 @@ class _Page:
         bold: bool = False,
         color: tuple = DARK,
     ) -> None:
+        """Do Page.text for x, y, s, size and return the result."""
         font = "F2" if bold else "F1"
         r, g, b = color
         self.ops.append(
@@ -139,6 +142,7 @@ class _Page:
         color: tuple = DARK,
     ) -> None:
         # ширина по эмпирической метрике Helvetica (~0.5 em в среднем)
+        """Do Page.text right for x_right, y, s, size and return the result."""
         width = len(s) * size * 0.5
         self.text(x_right - width, y, s, size, bold, color)
 
@@ -160,6 +164,7 @@ class _Page:
         fill: tuple | None = None,
         stroke: tuple | None = None,
     ) -> None:
+        """Do Page.rect for x, y, w, h and return the result."""
         parts = [f"{x:.1f} {y:.1f} {w:.1f} {h:.1f} re"]
         if fill is not None:
             r, g, b = fill
@@ -176,6 +181,7 @@ class _Page:
     def line(
         self, x0: float, y0: float, x1: float, y1: float, color: tuple = GREY, width: float = 0.6
     ) -> None:
+        """Do Page.line for x0, y0, x1, y1 and return the result."""
         r, g, b = color
         self.ops.append(
             f"{r:.3f} {g:.3f} {b:.3f} RG {width:.1f} w "
@@ -192,6 +198,7 @@ class _Page:
         col_w: Sequence[float] | None = None,
         font_size: float = 8.5,
     ) -> float:
+        """Do Page.table for headers, rows, y, x and return the result."""
         ncols = len(headers)
         if col_w is None:
             total = A4_W - 2 * x
@@ -260,11 +267,14 @@ class _Page:
 # Сборка PDF
 # ═══════════════════════════════════════════════════════════════════════════
 class PDFBuilder:
+    """Handle PDFBuilder."""
     def __init__(self, title: str = "TRIVORTEX MASTER Report"):
+        """Do PDFBuilder.  init for title and return the result."""
         self.title = title
         self.pages: list[_Page] = [self._new_page()]
 
     def _new_page(self) -> _Page:
+        """Handle PDFBuilder. new page."""
         page = _Page()
         # верхний колонтитул
         page.rect(0, A4_H - 30, A4_W, 30, fill=DARK)
@@ -273,13 +283,16 @@ class PDFBuilder:
 
     @property
     def page(self) -> _Page:
+        """Handle PDFBuilder.page."""
         return self.pages[-1]
 
     def new_page(self) -> _Page:
+        """Handle PDFBuilder.new page."""
         self.pages.append(self._new_page())
         return self.page
 
     def save(self, path: str) -> int:
+        """Do PDFBuilder.save for path and return the result."""
         objs: list[bytes] = []
 
         def add(data: bytes) -> int:
@@ -320,7 +333,7 @@ class PDFBuilder:
             page_ids.append(pid)
         # каталог
         kids = " ".join(f"{p} 0 R" for p in page_ids)
-        objs[0] = (f"<< /Type /Catalog /Pages 2 0 R >>").encode()
+        objs[0] = ("<< /Type /Catalog /Pages 2 0 R >>").encode()
         objs[1] = (f"<< /Type /Pages /Count {len(page_ids)} " f"/Kids [{kids}] >>").encode()
 
         # файл

@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-TRIVORTEX MASTER — сборка дистрибутива v2.0.2.
+TRIVORTEX MASTER — сборка дистрибутива v2.0.3.
 
   1. Прогон всех проверок (selftest + приёмка + gate) — сборка только
      из зелёного состояния;
   2. генерация примеров (make_examples) и документации (API.md,
      RELEASE_v2.0.md);
-  3. ZIP + tar.gz с манифестом v2.0.2 (список файлов, sha256, размеры);
+  3. ZIP + tar.gz с манифестом v2.0.3 (список файлов, sha256, размеры);
   4. копирование в /home/z/my-project/download/.
 
 Версия: 2.0.0 (удвоенный объём).
@@ -29,7 +29,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 
 DOWNLOAD = "/home/z/my-project/download"
-VERSION = "2.0.2"
+VERSION = "2.0.3"
 
 EXCLUDE_DIRS = {"__pycache__", "runs", ".git", "data/cache"}
 EXCLUDE_EXT = {".pyc", ".pyo"}
@@ -178,7 +178,7 @@ def copy_examples() -> list[str]:
 
 
 def main() -> int:
-    print("── СБОРКА v2.0.2 ─────────────────────────────")
+    print("── СБОРКА v2.0.3 ─────────────────────────────")
     pf = preflight()
     print(
         f"preflight: selftest {pf['selftest']}/{pf['selftest_total']}, "
@@ -186,8 +186,8 @@ def main() -> int:
     )
     ex = build_examples()
     print(f"примеры: {len(ex)} артефактов")
-    docs = build_docs()
-    print(f"документация: API.md + RELEASE_v2.0.md")
+    build_docs()
+    print("документация: API.md + RELEASE_v2.0.md")
     dist = build_dist()
     print(
         f"дистрибутив: {dist['n_files']} файлов, "

@@ -21,7 +21,6 @@ from core.config import MasterConfig, from_profile
 from lab.body import Body
 from lab.physics import run_simulation
 from lab.scene import Scene
-from render.hud import ProgressBar
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -214,7 +213,7 @@ def scan_havelock(
     )
     rows: list[dict[str, Any]] = []
     idx = 0
-    total = 7 * len(jitters)
+    7 * len(jitters)
     for n in range(2, 9):
         for jit in jitters:
             idx += 1

@@ -241,10 +241,10 @@
   "modules": 96,
   "classes": 115,
   "functions": 632,
-  "docstring_coverage": 0.6644230769230769
+  "docstring_coverage": 1.0
  },
  "code": {
-  "py_lines": 56990
+  "py_lines": 57539
  },
  "passed": true
 }

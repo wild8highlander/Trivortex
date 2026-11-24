@@ -84,6 +84,7 @@ def correlation_heatmap(
     title: str = "Корреляции метрик",
     style: str = "neon_dark",
 ) -> str | None:
+    """Do correlation heatmap for matrix, labels, output, title and return the result."""
     if not HAVE_MPL:
         return None
     import matplotlib.pyplot as plt

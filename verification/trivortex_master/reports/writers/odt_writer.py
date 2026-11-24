@@ -39,6 +39,7 @@ class OdtBuilder:
     """Сборка ODT-документа: заголовки, абзацы, списки, таблицы."""
 
     def __init__(self, title: str = "TRIVORTEX MASTER", creator: str = "TRIVORTEX MASTER"):
+        """Do OdtBuilder.  init for title, creator and return the result."""
         self.title = title
         self.creator = creator
         self.body_xml: list[str] = []
@@ -46,6 +47,7 @@ class OdtBuilder:
 
     # ── содержимое ──
     def heading(self, text: str, level: int = 1) -> OdtBuilder:
+        """Do OdtBuilder.heading for text, level and return the result."""
         lvl = max(1, min(level, 6))
         self.body_xml.append(
             f'<text:h text:outline-level="{lvl}" '
@@ -54,17 +56,19 @@ class OdtBuilder:
         return self
 
     def paragraph(self, text: str, style: str = "Standard") -> OdtBuilder:
+        """Do OdtBuilder.paragraph for text, style and return the result."""
         self.body_xml.append(f'<text:p text:style-name="{style}">{escape(text)}</text:p>')
         return self
 
     def bullet(self, text: str) -> OdtBuilder:
+        """Do OdtBuilder.bullet for text and return the result."""
         self.body_xml.append(f'<text:p text:style-name="Bullet">▸ {escape(text)}</text:p>')
         return self
 
     def table(self, header: Sequence[str], rows: Sequence[Sequence[Any]]) -> OdtBuilder:
         """Таблица с шапкой; числа форматируются как строки."""
         n_cols = len(header)
-        col_xml = f"<table:table-column/>" * n_cols
+        col_xml = "<table:table-column/>" * n_cols
         rows_xml = []
         rows_xml.append(
             "<table:table-row>"
@@ -91,6 +95,7 @@ class OdtBuilder:
 
     # ── части документа ──
     def _content_xml(self) -> str:
+        """Handle OdtBuilder. content xml."""
         return f"""<?xml version="1.0" encoding="UTF-8"?>
 <office:document-content
  xmlns:office="{NS_OFFICE}" xmlns:text="{NS_TEXT}"
@@ -137,6 +142,7 @@ class OdtBuilder:
 </office:document-content>"""
 
     def _styles_xml(self) -> str:
+        """Handle OdtBuilder. styles xml."""
         return f"""<?xml version="1.0" encoding="UTF-8"?>
 <office:document-styles
  xmlns:office="{NS_OFFICE}" xmlns:style="{NS_STYLE}" xmlns:fo="{NS_FO}"
@@ -149,6 +155,7 @@ class OdtBuilder:
 </office:document-styles>"""
 
     def _meta_xml(self) -> str:
+        """Handle OdtBuilder. meta xml."""
         now = _dt.datetime.now().isoformat(timespec="seconds")
         return f"""<?xml version="1.0" encoding="UTF-8"?>
 <office:document-meta xmlns:office="{NS_OFFICE}"
@@ -161,6 +168,7 @@ class OdtBuilder:
 </office:meta></office:document-meta>"""
 
     def _manifest_xml(self) -> str:
+        """Handle OdtBuilder. manifest xml."""
         return f"""<?xml version="1.0" encoding="UTF-8"?>
 <manifest:manifest xmlns:manifest="{NS_MANIFEST}" manifest:version="1.2">
 <manifest:file-entry manifest:full-path="/" manifest:media-type=

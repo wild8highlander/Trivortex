@@ -44,11 +44,13 @@ _CACHE = None
 
 
 def _default_cache_dir() -> str:
+    """Handle default cache dir."""
     root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     return os.path.join(root, "data", "cache")
 
 
 def get_cache():
+    """Handle get cache."""
     global _CACHE
     if _CACHE is None:
         from realism.data_fetchers.cache import TTLCache

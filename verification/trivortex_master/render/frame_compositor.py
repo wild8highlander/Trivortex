@@ -20,8 +20,8 @@ TRIVORTEX MASTER — композитор кадров: многослойный
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass, field
-from typing import Callable, Sequence
+from dataclasses import dataclass
+from typing import  Sequence
 
 from render.png_codec import write_png
 
@@ -43,17 +43,20 @@ class FrameComposer:
     """Композитор: стоп слоёв → итоговый кадр."""
 
     def __init__(self, width: int, height: int, background: tuple[int, int, int] = (10, 17, 32)):
+        """Do FrameComposer.  init for width, height, background and return the result."""
         self.width = width
         self.height = height
         self.layers: list[Layer] = []
         self.background = background
 
     def add(self, layer: Layer) -> FrameComposer:
+        """Do FrameComposer.add for layer and return the result."""
         self.layers.append(layer)
         self.layers.sort(key=lambda l: l.z)
         return self
 
     def _empty(self) -> list[float]:
+        """Handle FrameComposer. empty."""
         bg = self.background
         return [float(c) for c in bg] * (self.width * self.height)
 

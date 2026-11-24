@@ -11,16 +11,12 @@ TRIVORTEX MASTER — терминальный ASCII-рендер.
 from __future__ import annotations
 
 import math
-import os
 from typing import Sequence
 
 from render.pure_raster import (
     mat_look_at,
     mat_perspective,
     mat_apply,
-    mat_mul,
-    mat_translate,
-    mat_scale,
 )
 
 # палитра плотности: от пустоты к яркому
@@ -29,6 +25,7 @@ DENSITY = " .:-=+*#%@"
 
 # ANSI truecolor
 def _fg(r: int, g: int, b: int) -> str:
+    """Do fg for r, g, b and return the result."""
     return f"\x1b[38;2;{r};{g};{b}m"
 
 
@@ -36,6 +33,7 @@ RESET = "\x1b[0m"
 
 
 def _hex_to_rgb(color: str) -> tuple[int, int, int]:
+    """Do hex to rgb for color and return the result."""
     h = color.lstrip("#")
     if len(h) == 3:
         h = "".join(c * 2 for c in h)
@@ -46,6 +44,7 @@ class AsciiCanvas:
     """Символьный кадр с z-буфером и цветом."""
 
     def __init__(self, width: int, height: int):
+        """Do AsciiCanvas.  init for width, height and return the result."""
         self.w = width
         self.h = height
         self.chars = [[" "] * width for _ in range(height)]
@@ -53,6 +52,7 @@ class AsciiCanvas:
         self.zbuf = [[float("inf")] * width for _ in range(height)]
 
     def plot(self, x: int, y: int, z: float, ch: str, color: tuple[int, int, int] | None) -> None:
+        """Do AsciiCanvas.plot for x, y, z, ch and return the result."""
         if 0 <= x < self.w and 0 <= y < self.h and z < self.zbuf[y][x]:
             self.zbuf[y][x] = z
             self.chars[y][x] = ch
@@ -72,6 +72,7 @@ class AsciiCanvas:
             )
 
     def to_lines(self, use_color: bool = True) -> list[str]:
+        """Do AsciiCanvas.to lines for use_color and return the result."""
         out = []
         for row in range(self.h):
             buf = []
@@ -193,6 +194,7 @@ def render_ascii(
 
 
 def print_ascii(lines: Sequence[str], stream=None) -> None:
+    """Do print ascii for lines, stream and return the result."""
     import sys
 
     stream = stream or sys.stdout

@@ -29,6 +29,7 @@ from typing import Callable
 # Правая часть CR3BP (нормированные единицы: a=1, G·M=1, T=2π)
 # ═══════════════════════════════════════════════════════════════════════════
 def _r1_r2(x: float, y: float, z: float, mu: float) -> tuple[float, float]:
+    """Do r1 r2 for x, y, z, mu and return the result."""
     r1 = math.sqrt((x + mu) ** 2 + y**2 + z**2)  # до большего (−μ)
     r2 = math.sqrt((x - 1 + mu) ** 2 + y**2 + z**2)  # до меньшего (1−μ)
     return r1, r2
@@ -119,6 +120,7 @@ def lagrange_points(mu: float) -> dict:
 # Интегратор RK4 (локальный, 6-мерный)
 # ═══════════════════════════════════════════════════════════════════════════
 def _rk4(deriv: Callable, y: list[float], dt: float) -> list[float]:
+    """Do rk4 for deriv, y, dt and return the result."""
     n = len(y)
     k1 = deriv(y, 0)
     y2 = [y[i] + 0.5 * dt * k1[i] for i in range(n)]
@@ -168,7 +170,7 @@ def linear_frequencies(mu: float, point: tuple[float, float, float]) -> tuple[fl
     disc = b * b - 4.0 * c
     if disc < 0:
         return (float("nan"), math.sqrt(max(-omega_zz, 0.0)))
-    lam2_a = (-b + math.sqrt(disc)) / 2.0
+    (-b + math.sqrt(disc)) / 2.0
     lam2_b = (-b - math.sqrt(disc)) / 2.0
     # устойчивые моды: отрицательные λ² → мнимые λ → частота
     freq_xy = math.sqrt(max(-lam2_b, 1e-9))  # «короткопериодическая»

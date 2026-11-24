@@ -11,22 +11,12 @@ mpl / pure / ascii. GL даёт аппаратное ускорение и те�
 from __future__ import annotations
 
 import math
-import os
-from typing import Sequence
 
-try:
-    import moderngl  # noqa: F401
+from importlib.util import find_spec
 
-    HAVE_MODERNGL = True
-except ImportError:
-    HAVE_MODERNGL = False
-
-try:
-    import pyrender  # noqa: F401
-
-    HAVE_PYRENDER = True
-except ImportError:
-    HAVE_PYRENDER = False
+# availability probes: bind booleans, not module objects
+HAVE_MODERNGL = find_spec("moderngl") is not None
+HAVE_PYRENDER = find_spec("pyrender") is not None
 
 HAVE_GL = HAVE_MODERNGL or HAVE_PYRENDER
 
@@ -121,7 +111,6 @@ def render_gl(
         mat_mul,
         mat_translate,
         mat_scale,
-        mat_apply,
     )
 
     ctx = moderngl.create_context(standalone=True, backend="egl")  # offscreen без X-сервера

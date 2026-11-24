@@ -13,15 +13,13 @@ scientific (светлый, для публикаций), minimal (ч/б).
 from __future__ import annotations
 
 import math
-import os
-from typing import Any, Sequence
+from typing import  Sequence
 
 try:
     import matplotlib
 
     matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
-    from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
+    import matplotlib.pyplot as plt  # noqa: F401 - availability probe
 
     HAVE_MPL = True
 except ImportError:
@@ -84,6 +82,7 @@ STYLES = {
 
 
 def _apply_style(ax, style: str) -> None:
+    """Do apply style for ax, style and return the result."""
     s = STYLES.get(style, STYLES["neon_dark"])
     ax.set_facecolor(s["axes_facecolor"])
     ax.tick_params(colors=s["text"])
@@ -93,11 +92,13 @@ def _apply_style(ax, style: str) -> None:
 
 
 def _fig_style(fig, style: str) -> None:
+    """Do fig style for fig, style and return the result."""
     s = STYLES.get(style, STYLES["neon_dark"])
     fig.patch.set_facecolor(s["facecolor"])
 
 
 def _color_for(body_color: str | None, index: int, style: str) -> str:
+    """Do color for for body_color, index, style and return the result."""
     if body_color:
         return body_color
     s = STYLES.get(style, STYLES["neon_dark"])
@@ -167,6 +168,7 @@ def plot_3d(
     body_colors: Sequence[str] | None = None,
     sphere_scale: float | None = None,
 ) -> str:
+    """Plot plot 3d and return the figure."""
     if not HAVE_MPL:
         raise ImportError("matplotlib не установлен")
     s = STYLES.get(style, STYLES["neon_dark"])
@@ -266,6 +268,7 @@ def plot_energy(
     title: str = "Сохранение энергии",
     dpi: int = 150,
 ) -> str:
+    """Plot plot energy and return the figure."""
     if not HAVE_MPL:
         raise ImportError("matplotlib не установлен")
     s = STYLES.get(style, STYLES["neon_dark"])

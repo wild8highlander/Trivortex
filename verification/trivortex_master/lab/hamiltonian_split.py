@@ -41,6 +41,7 @@ class SplitHamiltonian:
     """
 
     def __init__(self, deriv_q: Callable, deriv_p: Callable, dim: int):
+        """Do SplitHamiltonian.  init for deriv_q, deriv_p, dim and return the result."""
         def wrap(fn: Callable) -> Callable:
             out = fn
             if dim == 1:
@@ -57,11 +58,13 @@ class SplitHamiltonian:
 
     # ── элементарные шаги ──
     def kick(self, y: list[float], dt: float) -> None:
+        """Apply the kick (momentum) half-step."""
         dp_vals = self.dp(y)
         for i in range(self.dim):
             y[self.dim + i] += dt * dp_vals[i]
 
     def drift(self, y: list[float], dt: float) -> None:
+        """Apply the drift (position) half-step."""
         dq_vals = self.dq(y)
         for i in range(self.dim):
             y[i] += dt * dq_vals[i]
@@ -121,6 +124,7 @@ def harmonic_h(omega: float = 1.0) -> SplitHamiltonian:
 
 
 def energy_harmonic(y: list[float], omega: float = 1.0) -> float:
+    """Return the harmonic-oscillator part of the energy."""
     return 0.5 * y[1] ** 2 + 0.5 * omega**2 * y[0] ** 2
 
 
@@ -138,6 +142,7 @@ def henon_heiles_h() -> SplitHamiltonian:
 
 
 def energy_henon_heiles(y: list[float]) -> float:
+    """Return the Henon-Heiles part of the energy."""
     x, yy, px, py = y
     return 0.5 * (px * px + py * py) + 0.5 * (x * x + yy * yy) + x * x * yy - yy**3 / 3.0
 

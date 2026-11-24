@@ -11,13 +11,14 @@ from __future__ import annotations
 
 import ast
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 @dataclass
 class ModuleInfo:
+    """Handle ModuleInfo."""
     path: str
     lines: int = 0
     functions: int = 0
@@ -30,6 +31,7 @@ class ModuleInfo:
 
 
 def analyze_module(path: str) -> ModuleInfo:
+    """Do analyze module for path and return the result."""
     info = ModuleInfo(path=os.path.relpath(path, ROOT))
     try:
         src = open(path, encoding="utf-8").read()
@@ -60,6 +62,7 @@ def analyze_module(path: str) -> ModuleInfo:
 
 
 def analyze_all() -> dict:
+    """Handle analyze all."""
     infos = []
     for pkg in ("core", "lab", "realism", "render", "reports", "analysis", "tools"):
         pdir = os.path.join(ROOT, pkg)

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 ╔══════════════════════════════════════════════════════════════════════════╗
-║  TRIVORTEX MASTER — лабораторный комплекс N тел · v2.0.2 · AURORA       ║
+║  TRIVORTEX MASTER — лабораторный комплекс N тел · v2.0.3 · AURORA       ║
 ║  лаборатория N тел · планирование траекторий · 2D/3D/4D · отчёты 7 fmt  ║
 ╚══════════════════════════════════════════════════════════════════════════╝
 
@@ -31,15 +31,15 @@ if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
 # инъекция адаптеров REBOUND/Dedalus/Custom в диспетчер движков
-import realism  # noqa: F401  (регистрирует движки при импорте)
-import modes_extra  # noqa: F401  (34 доп. режима меню)
 
+import importlib
+importlib.import_module("modes_extra")  # noqa: F401 - side effect: registers 34 extra menu modes
+import realism as _realism_pkg
+_realism_pkg._inject_engines()  # register rebound/dedalus adapters
 from core.registry import REGISTRY, register_mode
 from core.config import MasterConfig, UnphysicalConfiguration, from_profile, resolve_paths, PROFILES
 from render.hud import (
-    banner,
     print_banner,
-    orn,
     kv,
     colorize,
     gry,
@@ -51,15 +51,13 @@ from render.hud import (
     mag,
     org,
     verdict_icon,
-    warn_plate,
     ProgressBar,
     Monitor,
     detect_color_mode,
     color_off,
-    RESET,
 )
 
-VERSION = "2.0.2"
+VERSION = "2.0.3"
 
 
 def ask(prompt: str) -> str:
@@ -83,6 +81,7 @@ class App:
     """Сессия лаборатории: конфиг, сцена, последние результаты."""
 
     def __init__(self):
+        """Handle App.  init."""
         self.config = resolve_paths(from_profile("standard"), ROOT)
         self.scene = None
         self.last_sim = None
@@ -96,6 +95,7 @@ class App:
         self._log("сессия начата")
 
     def _log(self, msg: str) -> None:
+        """Do App. log for msg and return the result."""
         try:
             with open(self.session_log, "a", encoding="utf-8") as fh:
                 fh.write(f"{_dt.datetime.now().isoformat(timespec='seconds')}" f"  {msg}\n")
@@ -103,11 +103,13 @@ class App:
             pass
 
     def new_run_dir(self, tag: str) -> str:
+        """Do App.new run dir for tag and return the result."""
         d = os.path.join(self.runs_dir, f"run_{tag}_{_dt.datetime.now().strftime('%Y%m%d_%H%M%S')}")
         os.makedirs(d, exist_ok=True)
         return d
 
     def require_scene(self):
+        """Handle App.require scene."""
         if self.scene is None:
             print(colorize("\n  сцена не создана — сначала пункт 1 (Лаборатория)", org))
             return None
@@ -132,6 +134,7 @@ APP = App()
     description="Пресеты: Солнечная система, Лагранж, вихревые кольца…",
 )
 def mode_scene_create(app: App):
+    """Do mode scene create for app and return the result."""
     from lab.presets import load_presets, build_preset
 
     presets = load_presets()
@@ -200,6 +203,7 @@ def mode_scene_create(app: App):
     description="Задать тела по одному: масса, радиус, позиция, скорость",
 )
 def mode_scene_custom(app: App):
+    """Do mode scene custom for app and return the result."""
     from lab.body import Body
     from lab.scene import Scene
 
@@ -277,6 +281,7 @@ def mode_scene_custom(app: App):
     description="Тела, массы, энергии, предупреждения валидатора",
 )
 def mode_scene_info(app: App):
+    """Do mode scene info for app and return the result."""
     sc = app.require_scene()
     if not sc:
         return
@@ -308,6 +313,7 @@ def mode_scene_info(app: App):
     description="258 объектов с источниками: планеты, луны, экзопланеты…",
 )
 def mode_scene_catalog(app: App):
+    """Do mode scene catalog for app and return the result."""
     from lab.presets import search_catalog, catalog_summary, load_catalog
 
     cat = load_catalog()
@@ -334,6 +340,7 @@ def mode_scene_catalog(app: App):
     description="Графики траекторий выбранным бэкендом",
 )
 def mode_viz_render(app: App):
+    """Do mode viz render for app and return the result."""
     sc = app.require_scene()
     if not sc:
         return
@@ -375,6 +382,7 @@ def mode_viz_render(app: App):
     description="Мгновенный терминальный рендер текущего состояния",
 )
 def mode_viz_ascii(app: App):
+    """Do mode viz ascii for app and return the result."""
     sc = app.require_scene()
     if not sc:
         return
@@ -407,6 +415,7 @@ def mode_viz_ascii(app: App):
     description="Движок, шаги, прогресс-бар, детекторы событий",
 )
 def mode_sim_run(app: App):
+    """Do mode sim run for app and return the result."""
     sc = app.require_scene()
     if not sc:
         return
@@ -460,6 +469,7 @@ def mode_sim_run(app: App):
     description="Теорема 3.1, Лагранж, figure-eight, Кеплер, waypoints",
 )
 def mode_sim_trajectory(app: App):
+    """Do mode sim trajectory for app and return the result."""
     from lab.trajectory import get_planner
 
     planners = [
@@ -521,6 +531,7 @@ def mode_sim_trajectory(app: App):
     description="Собственный LZW-кодер GIF89a, без зависимостей",
 )
 def mode_anim_gif(app: App):
+    """Do mode anim gif for app and return the result."""
     sc = app.require_scene()
     if not sc:
         return
@@ -557,6 +568,7 @@ def mode_anim_gif(app: App):
     description="ffmpeg или imageio (при наличии)",
 )
 def mode_anim_mp4(app: App):
+    """Do mode anim mp4 for app and return the result."""
     sc = app.require_scene()
     if not sc:
         return
@@ -587,6 +599,7 @@ def mode_anim_mp4(app: App):
     description="Структуры, направления, зависимости, интегралы V3/V4",
 )
 def mode_analysis_selftest(app: App):
+    """Do mode analysis selftest for app and return the result."""
     from analysis.tests import run_all
 
     print(colorize("\n  СТРУКТУРНЫЕ ТЕСТЫ S1–S12", cyn, True))
@@ -608,6 +621,7 @@ def mode_analysis_selftest(app: App):
     description="Ляпунов, интегралы, расстояния, периоды",
 )
 def mode_analysis_metrics(app: App):
+    """Do mode analysis metrics for app and return the result."""
     sc = app.require_scene()
     if not sc:
         return
@@ -643,6 +657,7 @@ def mode_analysis_metrics(app: App):
     description="Сканы масса×скорость, кольца Хавелока, бифуркации",
 )
 def mode_analysis_field(app: App):
+    """Do mode analysis field for app and return the result."""
     from analysis import field
 
     print(colorize("\n  ПОЛЕВЫЕ ИССЛЕДОВАНИЯ", cyn, True))
@@ -703,6 +718,7 @@ def mode_analysis_field(app: App):
     description="⟨r⟩ Джиролами: GUE/GOE/GSE/Poisson (наследие ядра)",
 )
 def mode_analysis_rmt(app: App):
+    """Do mode analysis rmt for app and return the result."""
     from analysis.rmt import synthetic_ensemble, analyze_spectrum
     import json
 
@@ -730,6 +746,7 @@ def mode_analysis_rmt(app: App):
     description="TXT · MD · HTML · CSV · JSON · DOCX · PDF",
 )
 def mode_reports_generate(app: App):
+    """Do mode reports generate for app and return the result."""
     sc = app.require_scene()
     if not sc:
         return
@@ -784,6 +801,7 @@ def mode_reports_generate(app: App):
     description="quick / standard / realistic / research / cinematic / pure_stdlib",
 )
 def mode_settings_profile(app: App):
+    """Do mode settings profile for app and return the result."""
     print(colorize("\n  ПРОФИЛИ", cyn, True))
     for name, params in PROFILES.items():
         print(f"  • {name:<12} " + ", ".join(f"{k}={v}" for k, v in list(params.items())[:3]))
@@ -807,6 +825,7 @@ def mode_settings_profile(app: App):
     description="G, dt, шаги, релятивизм 1PN, диссипация, лимиты N",
 )
 def mode_settings_physics(app: App):
+    """Do mode settings physics for app and return the result."""
     c = app.config
     print(colorize("\n  ФИЗИКА РЕАЛЬНОСТИ", cyn, True))
     print(kv("G", f"{c.G:.6e} м³кг⁻¹с⁻²"))
@@ -858,6 +877,7 @@ def mode_settings_physics(app: App):
     description="JSON-снимок конфигурации сессии",
 )
 def mode_settings_save(app: App):
+    """Do mode settings save for app and return the result."""
     what = input("  save/load [save]: ").strip() or "save"
     path = os.path.join(ROOT, "runs", "config.json")
     if what == "save":
@@ -881,6 +901,7 @@ def mode_settings_save(app: App):
     description="Что доступно, что опционально, что сделать",
 )
 def mode_help_engines(app: App):
+    """Do mode help engines for app and return the result."""
     from core.registry import engine_status_lines
     from render.engine import available_backends
     from core import bridge
@@ -896,7 +917,7 @@ def mode_help_engines(app: App):
     st = bridge.health_check()
     print(
         colorize(
-            f"  ядро Trivortex: "
+            "  ядро Trivortex: "
             + (
                 "найдено — лестница V1–V4 доступна"
                 if st.available
@@ -916,6 +937,7 @@ def mode_help_engines(app: App):
     description="Аннотированный список: ядро, движки, данные, классика",
 )
 def mode_help_literature(app: App):
+    """Do mode help literature for app and return the result."""
     path = os.path.join(ROOT, "data", "literature.md")
     if os.path.isfile(path):
         with open(path, encoding="utf-8") as fh:
@@ -944,6 +966,7 @@ def mode_help_literature(app: App):
     description="Версия, объём, философия stdlib-first",
 )
 def mode_help_about(app: App):
+    """Do mode help about for app and return the result."""
     total_lines = 0
     for base, _dirs, files in os.walk(ROOT):
         if "__pycache__" in base or ".git" in base:
@@ -969,6 +992,7 @@ def mode_help_about(app: App):
 # Отрисовка меню
 # ═══════════════════════════════════════════════════════════════════════════
 def print_menu() -> None:
+    """Handle print menu."""
     print()
     print(colorize("┌── ГЛАВНОЕ МЕНЮ " + "─" * 45 + "┐", mag, True))
     counter = 1
@@ -1053,6 +1077,7 @@ def interactive() -> int:
 # CLI
 # ═══════════════════════════════════════════════════════════════════════════
 def cli(args: list[str]) -> int:
+    """Do cli for args and return the result."""
     parser = argparse.ArgumentParser(
         prog="trivortex_master", description="TRIVORTEX MASTER — лабораторный комплекс N тел"
     )
@@ -1121,6 +1146,7 @@ def cli(args: list[str]) -> int:
 
 
 def main() -> int:
+    """Handle main."""
     try:
         return cli(sys.argv[1:])
     except KeyboardInterrupt:

@@ -19,7 +19,7 @@ import json
 import os
 
 from core.registry import register_mode
-from render.hud import kv, colorize, cyn, grn, red, verdict_icon
+from render.hud import kv, colorize, cyn,   verdict_icon
 
 
 def bind_ascii_sky() -> bool:
@@ -908,7 +908,6 @@ def mode_tools_benchmark(app: App):
     description="автогенерация docs/API.md из AST",
 )
 def mode_tools_apiref(app: App):
-    from analysis.api_reference import self_check
 
     _run_selfcheck(
         app,

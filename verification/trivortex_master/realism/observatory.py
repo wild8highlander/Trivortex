@@ -22,10 +22,10 @@ TRIVORTEX MASTER — моделирование наблюдательной с�
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Sequence
 
-from realism.sky_coordinates import equatorial_to_horizontal, lst_radians, julian_date
+from realism.sky_coordinates import equatorial_to_horizontal, lst_radians
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -57,6 +57,7 @@ class ObservationTarget:
     min_alt_deg: float = 30.0  # минимальная элевация
 
     def alt_az(self, site: ObservatorySite, jd: float) -> tuple[float, float]:
+        """Do ObservationTarget.alt az for site, jd and return the result."""
         return equatorial_to_horizontal(self.ra_deg, self.dec_deg, site.latitude_deg, site.lst(jd))
 
 
@@ -186,6 +187,7 @@ class SessionPlanner:
     def __init__(
         self, site: ObservatorySite, jd_start: float, jd_end: float, overhead_s: float = 120.0
     ):
+        """Do SessionPlanner.  init for site, jd_start, jd_end, overhead_s and return the result."""
         self.site = site
         self.jd_start = jd_start
         self.jd_end = jd_end
@@ -227,6 +229,7 @@ class SessionPlanner:
         return self.slots
 
     def total_science_time_h(self) -> float:
+        """Handle SessionPlanner.total science time h."""
         return sum((s.jd_end - s.jd_start) for s in self.slots) * 24.0
 
     def conflicts(self) -> list[tuple[str, str]]:

@@ -44,4 +44,5 @@ def as_table_rows() -> list[list[str]]:
 
 
 def count() -> int:
+    """Handle count."""
     return len(load_entries())

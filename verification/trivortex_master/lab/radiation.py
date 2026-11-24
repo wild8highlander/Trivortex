@@ -50,10 +50,12 @@ class DustGrain:
 
     @property
     def mass(self) -> float:
+        """Return the grain mass in kg."""
         return (4.0 / 3.0) * math.pi * self.radius**3 * self.density
 
     @property
     def cross_section(self) -> float:
+        """Return the grain cross-section in m^2."""
         return math.pi * self.radius**2
 
 

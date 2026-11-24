@@ -10,24 +10,24 @@
   [✓] A10 README
   [✓] A11 отчёты 8 форматов валидны — проблемы: []
   [✓] A12 Меркурий 1PN 42.98″/век — mercury=42.98047695363713
-  [✓] A13 Barnes-Hut: точность + скорость — err_rms=0.025, ×1.93
+  [✓] A13 Barnes-Hut: точность + скорость — err_rms=0.025, ×2.96
   [✓] A14 рейтрейсер: сцена видима — nonbg=880
   [✓] A15 MCMC: согласие с МНК, R̂<1.1 — b=0.41137482084080684 vs OLS 0.41092323115480284
   [✓] A16 Horizons: планета получена (online|offline) — режим: offline-synthetic
-  [✓] B1 интеграторы: 0.03 с (rk4_s=0.00921, leapfrog_s=0.00522, yoshida4_s=0.0156)
+  [✓] B1 интеграторы: 0.03 с (rk4_s=0.00907, leapfrog_s=0.00521, yoshida4_s=0.0157)
   [✓] B5 вихревой движок: 0.04 с (energy_drift=1.62e-12, t_final=4)
-  [✓] B6 MCMC: 0.08 с (total_s=0.0773, chains=4, samples_per_chain=800)
+  [✓] B6 MCMC: 0.08 с (total_s=0.0769, chains=4, samples_per_chain=800)
   [✓] A17 бенчмарк B1/B5/B6 зелёный — 3/3
-  [✓] A18 API: ≥65 модулей, docstrings ≥55% — 96 модулей, 66%
+  [✓] A18 API: ≥65 модулей, docstrings ≥55% — 96 модулей, 100%
   [✓] A19 каталог≥520, пресеты≥20, меню≥49 — 538 объектов, 20 пресетов, 73 режимов
-  [✓] A20 ≥24000 строк Python — 56990 строк
+  [✓] A20 ≥24000 строк Python — 57488 строк
 ── QUALITY GATE ──────────────────────────────────
 selftest:      24/24
 acceptance:    20/20
 module checks: 49/49
 hygiene:       чисто
-docstrings:    66%
-python lines:  56990
+docstrings:    100%
+python lines:  57488
   almanac   : 1/1 ✓
   ascii_sky : 1/1 ✓
   bright_stars: 1/1 ✓

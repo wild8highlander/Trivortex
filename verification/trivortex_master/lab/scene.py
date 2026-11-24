@@ -13,7 +13,6 @@ from __future__ import annotations
 import dataclasses
 import datetime as _dt
 import json
-import math
 import os
 import uuid
 from dataclasses import dataclass, field
@@ -31,12 +30,14 @@ class BoundingBox:
 
     @classmethod
     def from_scene(cls, bodies: list[Body], margin: float = 1.5) -> BoundingBox:
+        """Build the bounding box of a scene (with margins)."""
         if not bodies:
             return cls()
         m = max(max(abs(c) for c in b.position) for b in bodies)
         return cls(half=m * margin)
 
     def contains(self, p: tuple[float, float, float]) -> bool:
+        """Check whether the point is inside the box."""
         return all(abs(c) <= self.half for c in p)
 
 
@@ -50,6 +51,7 @@ class ValidationReport:
     unphysical: bool = False
 
     def to_dict(self) -> dict[str, Any]:
+        """Serialize the validation report to a dict."""
         return dataclasses.asdict(self)
 
 
@@ -57,6 +59,7 @@ class Scene:
     """Сцена N тел."""
 
     def __init__(self, config: MasterConfig, name: str = ""):
+        """Do Scene.  init for config, name and return the result."""
         self.config = config
         self.id = uuid.uuid4().hex[:10]
         self.name = name or f"scene_{self.id}"
@@ -113,11 +116,13 @@ class Scene:
         return body
 
     def remove_body(self, body_id: str) -> bool:
+        """Remove a body from the scene by index."""
         before = len(self.bodies)
         self.bodies = [b for b in self.bodies if b.id != body_id]
         return len(self.bodies) < before
 
     def body(self, body_id: str) -> Body | None:
+        """Return the body by index."""
         for b in self.bodies:
             if b.id == body_id:
                 return b
@@ -125,10 +130,12 @@ class Scene:
 
     @property
     def n(self) -> int:
+        """Return the number of bodies."""
         return len(self.bodies)
 
     # ══════════════════ валидация ══════════════════
     def validate(self) -> ValidationReport:
+        """Validate the scene against the configuration rules."""
         rep = ValidationReport()
         if self.n < self.config.min_bodies:
             rep.ok = False
@@ -162,9 +169,11 @@ class Scene:
 
     # ══════════════════ физика сцены ══════════════════
     def total_mass(self) -> float:
+        """Return the total mass of all bodies."""
         return sum(b.mass for b in self.bodies)
 
     def total_energy(self, G: float | None = None) -> float:
+        """Return the total energy of all bodies."""
         G = G if G is not None else self.config.G
         ke = sum(b.kinetic_energy() for b in self.bodies)
         pe = 0.0
@@ -176,18 +185,21 @@ class Scene:
         return ke + pe
 
     def total_momentum(self) -> tuple[float, float, float]:
+        """Return the total linear momentum vector."""
         px = sum(b.momentum()[0] for b in self.bodies)
         py = sum(b.momentum()[1] for b in self.bodies)
         pz = sum(b.momentum()[2] for b in self.bodies)
         return (px, py, pz)
 
     def total_angular_momentum(self) -> tuple[float, float, float]:
+        """Return the total angular momentum about the origin."""
         lx = sum(b.angular_momentum_origin()[0] for b in self.bodies)
         ly = sum(b.angular_momentum_origin()[1] for b in self.bodies)
         lz = sum(b.angular_momentum_origin()[2] for b in self.bodies)
         return (lx, ly, lz)
 
     def center_of_mass(self) -> tuple[float, float, float]:
+        """Return the center-of-mass position."""
         m = self.total_mass()
         if m <= 0:
             return (0.0, 0.0, 0.0)
@@ -206,6 +218,7 @@ class Scene:
 
     # ══════════════════ служебное ══════════════════
     def clone(self) -> Scene:
+        """Return a deep copy of the scene."""
         sc = Scene(self.config, name=self.name + "_copy")
         for b in self.bodies:
             sc.bodies.append(Body.from_dict(b.to_dict()))
@@ -217,6 +230,7 @@ class Scene:
         return sc
 
     def summary(self) -> dict[str, Any]:
+        """Return a short dict summary of the scene."""
         return dict(
             id=self.id,
             name=self.name,
@@ -246,12 +260,14 @@ class Scene:
         )
 
     def record_frame(self) -> None:
+        """Handle Scene.record frame."""
         self.trajectory_history.append([b.state_vector() for b in self.bodies])
         self.time_history.append(self.t)
         self.energy_history.append(self.total_energy())
 
     # ══════════════════ сериализация ══════════════════
     def to_dict(self, include_history: bool = False) -> dict[str, Any]:
+        """Do Scene.to dict for include_history and return the result."""
         d = dict(
             id=self.id,
             name=self.name,
@@ -274,6 +290,7 @@ class Scene:
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> Scene:
+        """Do Scene.from dict for d and return the result."""
         cfg = MasterConfig.from_dict(d["config"])
         sc = cls(cfg, name=d.get("name", ""))
         sc.id = d.get("id", sc.id)
@@ -294,11 +311,13 @@ class Scene:
         return sc
 
     def save(self, path: str) -> None:
+        """Do Scene.save for path and return the result."""
         os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
         with open(path, "w", encoding="utf-8") as fh:
             json.dump(self.to_dict(include_history=True), fh, ensure_ascii=False, indent=1)
 
     @classmethod
     def load(cls, path: str) -> Scene:
+        """Do Scene.load for path and return the result."""
         with open(path, encoding="utf-8") as fh:
             return cls.from_dict(json.load(fh))

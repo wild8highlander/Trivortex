@@ -83,6 +83,7 @@ class LevenbergMarquardt:
         sigma: Sequence[float],
         h_step: float = 1e-6,
     ):
+        """Do LevenbergMarquardt.  init for model, x, y, sigma and return the result."""
         self.model = model
         self.x = list(x)
         self.y = list(y)
@@ -92,10 +93,12 @@ class LevenbergMarquardt:
         self.chi2_history: list[float] = []
 
     def _residuals(self, theta: Vector) -> Vector:
+        """Do LevenbergMarquardt. residuals for theta and return the result."""
         pred = self.model(theta, self.x)
         return [(yi - pi) / si for yi, pi, si in zip(self.y, pred, self.sigma)]
 
     def _chi2(self, residuals: Vector) -> float:
+        """Do LevenbergMarquardt. chi2 for residuals and return the result."""
         return sum(r * r for r in residuals)
 
     def _jacobian(self, theta: Vector) -> list[list[float]]:
@@ -157,7 +160,7 @@ class LevenbergMarquardt:
                 if chi2_new < chi2:
                     # успех: уменьшаем демпфирование, принимаем шаг
                     d_chi2 = chi2 - chi2_new
-                    d_theta = math.sqrt(sum(d * d for d in delta))
+                    math.sqrt(sum(d * d for d in delta))
                     theta = theta_new
                     res = res_new
                     chi2 = chi2_new

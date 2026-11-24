@@ -113,6 +113,7 @@ _CSS = {
 
 
 def _b64(png_path: str) -> str:
+    """Do b64 for png_path and return the result."""
     with open(png_path, "rb") as fh:
         return base64.b64encode(fh.read()).decode("ascii")
 
@@ -178,6 +179,7 @@ IMG = Template("""<img class="chart" src="data:image/png;base64,$b64" alt="$alt"
 # Сборщики
 # ═══════════════════════════════════════════════════════════════════════════
 def html_table(headers: list[str], rows: list[list], classes: list[str] | None = None) -> str:
+    """Do html table for headers, rows, classes and return the result."""
     heads = "".join(f"<th>{h}</th>" for h in headers)
     body_rows = []
     for i, row in enumerate(rows):
@@ -193,10 +195,12 @@ def html_cards(items: list[tuple[str, str, str]]) -> str:
 
 
 def html_section(heading: str, content: str) -> str:
+    """Do html section for heading, content and return the result."""
     return SECTION.substitute(heading=heading, content=content)
 
 
 def html_image(png_path: str, alt: str = "график") -> str:
+    """Do html image for png_path, alt and return the result."""
     return IMG.substitute(b64=_b64(png_path), alt=alt)
 
 
@@ -208,6 +212,7 @@ def html_page(
     version: str = "1.0.0",
     banner: str = "",
 ) -> str:
+    """Do html page for title, subtitle, body, theme and return the result."""
     css = _CSS.get(theme, _CSS["aurora"])
     return PAGE.substitute(
         title=title,

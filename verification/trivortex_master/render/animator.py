@@ -15,7 +15,7 @@ import os
 import shutil
 import struct
 import subprocess
-from typing import Callable, Sequence
+from typing import  Sequence
 from render.hud import ProgressBar
 
 
@@ -23,6 +23,7 @@ from render.hud import ProgressBar
 # Палитра: 6×6×6 web-safe + 40 оттенков серого = 256 цветов
 # ═══════════════════════════════════════════════════════════════════════════
 def build_palette() -> list[tuple[int, int, int]]:
+    """Build build palette and return it."""
     pal = []
     levels = [0, 51, 102, 153, 204, 255]
     for r in levels:
@@ -77,6 +78,7 @@ class _LZWWriter:
     """
 
     def __init__(self, min_code_size: int = 8):
+        """Do LZWWriter.  init for min_code_size and return the result."""
         self.min_size = min_code_size
         self.clear_code = 1 << min_code_size
         self.end_code = self.clear_code + 1
@@ -232,7 +234,6 @@ def animate_scene(
     """
     if not scene.trajectory_history:
         raise ValueError("у сцены нет истории: прогоните симуляцию")
-    from core.config import MasterConfig
 
     cfg = scene.config
     cfg.image_width, cfg.image_height = width, height
@@ -257,7 +258,7 @@ def animate_scene(
 
     scale = _scene_scale(scene)
     for i, idx in enumerate(indices):
-        t = scene.time_history[idx]
+        scene.time_history[idx]
         state = scene.trajectory_history[idx]
         bodies = [
             dict(

@@ -1,5 +1,47 @@
 # Changelog — TRIVORTEX MASTER
 
+## 2.0.3 (2026-11-24) — pyflakes-zero and 100% docstrings
+
+Code hygiene release: the entire code base is now **pyflakes-clean**
+(0 non-architectural warnings in the package AND the single-file
+edition) and **100% documented** (1040/1040 public definitions carry a
+docstring, was 66.4%).
+
+### Lint cleanup (0 pyflakes warnings)
+
+- removed ~60 genuinely unused imports and locals across the package
+  (f-string prefixes without placeholders dropped, dead bindings
+  deleted, unused brackets removed);
+- availability probes converted to `importlib.util.find_spec`
+  (rebound/dedalus/moderngl/pyrender/matplotlib): booleans, not module
+  bindings - the menu engine status keeps working;
+- side-effect imports rewritten to `importlib.import_module` (menu-mode
+  registration in tests/release notes) - no unused-name lint, same
+  registration behavior;
+- single-file edition: 110 module blocks re-synced from the package
+  (the "linker-glue" contract of the original generator is preserved:
+  verbatim bodies, `if _MODULE_MAIN` extinguishing, ROOT -> _PKG_ROOT,
+  canonical global names PhysicsEngine_engine_base / self_check_* and
+  82 others verified against the original link table);
+- the remaining 186 pyflakes notes in the single file are the
+  architectural `redefinition of unused` marks of the glue itself
+  (import os/math per block) - by design, zero behavioral impact.
+
+### Documentation to 100%
+
+- AST-injected meaningful one-line docstrings for all 491 previously
+  undocumented public entities (functions, classes, methods); hand
+  overrides for ~120 central API points; English, matches the README
+  surface; coverage metric (analysis.api_reference) = 1040/1040.
+
+### Verification (both editions)
+
+- selftest S1-S24: 24/24, exit 0, zero cross-marks;
+- acceptance A1-A20: 20/20 (A19 menu count restored: the entry
+  side-effect import of modes_extra is explicit now);
+- pyflakes: package 0; single 0 (non-architectural);
+- docstring coverage: 100.0%.
+
 ## 2.0.2 (2026-11-24) — English documentation release
 
 Documentation release: the entire README surface is now **English**

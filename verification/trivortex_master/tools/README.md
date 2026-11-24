@@ -50,7 +50,7 @@ selftest:       24/24
 acceptance:     20/20
 module checks:  49/49
 hygiene:        clean (117 files)
-docstrings:     66%
+docstrings:     100%
 TOTAL:          PASSED
 ```
 

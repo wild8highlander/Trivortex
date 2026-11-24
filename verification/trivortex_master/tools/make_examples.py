@@ -14,7 +14,6 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 
-import realism  # noqa: F401 — инъекция движков
 from core.config import from_profile
 from lab.presets import build_preset
 from lab.physics import run_simulation

@@ -22,14 +22,15 @@ from __future__ import annotations
 
 import math
 import random
-from dataclasses import dataclass, field
-from typing import Callable, Optional
+from dataclasses import dataclass
+from typing import Callable
 
 from render.png_codec import write_png
 
 
 @dataclass
 class Particle:
+    """Handle Particle."""
     x: float
     y: float
     z: float = 0.0
@@ -70,6 +71,7 @@ class ParticleSystem:
         drag: float = 0.0,
         attractor: tuple[tuple[float, float, float], float] | None = None,
     ):
+        """Do ParticleSystem.  init for gravity, drag, attractor and return the result."""
         self.particles: list[Particle] = []
         self.gravity = gravity or (0.0, 0.0, 0.0)
         self.drag = drag
@@ -176,6 +178,7 @@ class ParticleSystem:
 
     @property
     def alive_count(self) -> int:
+        """Handle ParticleSystem.alive count."""
         return len(self.particles)
 
     def total_energy(self) -> float:

@@ -12,8 +12,6 @@ TRIVORTEX MASTER — PPTX-писатель на чистом stdlib (OOXML Prese
 
 from __future__ import annotations
 
-import base64
-import hashlib
 import os
 import zipfile
 from typing import Sequence
@@ -36,6 +34,7 @@ class SlideBuilder:
     """Один слайд: список шейпов (текст/картинка)."""
 
     def __init__(self, layout: int = 1):
+        """Do SlideBuilder.  init for layout and return the result."""
         self.layout = layout  # 0 = титул, 1 = заголовок+контент
         self.shapes_xml: list[str] = []
         self.image_parts: list[tuple[str, str, bytes]] = []
@@ -66,6 +65,7 @@ class SlideBuilder:
         )
 
     def title(self, text: str, subtitle: str = "") -> SlideBuilder:
+        """Do SlideBuilder.title for text, subtitle and return the result."""
         self.shapes_xml.append(
             self._text_shape(
                 838200,
@@ -92,6 +92,7 @@ class SlideBuilder:
     def bullets(
         self, items: Sequence[str], start_y: int = 3200000, size: int = 1600
     ) -> SlideBuilder:
+        """Do SlideBuilder.bullets for items, start_y, size and return the result."""
         runs = []
         for it in items:
             runs.append((f"▸ {it}", size, False, AURORA_TEXT))
@@ -125,6 +126,7 @@ class SlideBuilder:
         return self
 
     def caption(self, text: str, y: int = SLIDE_H - 800000) -> SlideBuilder:
+        """Do SlideBuilder.caption for text, y and return the result."""
         self.shapes_xml.append(
             self._text_shape(
                 800000,
@@ -138,6 +140,7 @@ class SlideBuilder:
         return self
 
     def note(self, text: str) -> SlideBuilder:
+        """Do SlideBuilder.note for text and return the result."""
         self.notes = text
         return self
 
@@ -146,16 +149,19 @@ class PptxBuilder:
     """Сборка презентации: слайды, мастер, тема, сохранение."""
 
     def __init__(self, title: str = "TRIVORTEX MASTER"):
+        """Do PptxBuilder.  init for title and return the result."""
         self.title = title
         self.slides: list[SlideBuilder] = []
 
     def slide(self, layout: int = 1) -> SlideBuilder:
+        """Do PptxBuilder.slide for layout and return the result."""
         s = SlideBuilder(layout)
         self.slides.append(s)
         return s
 
     # ── XML-части ──
     def _content_types(self) -> str:
+        """Handle PptxBuilder. content types."""
         overrides = [
             '<Override PartName="/ppt/presentation.xml" ContentType='
             '"application/vnd.openxmlformats-officedocument.'
@@ -200,6 +206,7 @@ class PptxBuilder:
         )
 
     def _presentation(self) -> str:
+        """Handle PptxBuilder. presentation."""
         slide_ids = "".join(
             f'<p:sldId id="{256 + i}" r:id="rId{i + 2}"/>' for i in range(len(self.slides))
         )
@@ -216,10 +223,11 @@ class PptxBuilder:
         )
 
     def _pres_rels(self) -> str:
+        """Handle PptxBuilder. pres rels."""
         rels = [
-            f'<Relationship Id="rId1" Type="http://schemas.openxmlformats'
-            f'.org/officeDocument/2006/relationships/slideMaster" '
-            f'Target="slideMasters/slideMaster1.xml"/>'
+            '<Relationship Id="rId1" Type="http://schemas.openxmlformats'
+            '.org/officeDocument/2006/relationships/slideMaster" '
+            'Target="slideMasters/slideMaster1.xml"/>'
         ]
         for i in range(len(self.slides)):
             rels.append(
@@ -235,6 +243,7 @@ class PptxBuilder:
         )
 
     def _slide_master(self) -> str:
+        """Handle PptxBuilder. slide master."""
         return f"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <p:sldMaster xmlns:a="{NS_A}" xmlns:r="{NS_R}" xmlns:p="{NS_P}">
 <p:cSld><p:bg><p:bgPr><a:solidFill><a:srgbClr val="{AURORA_BG}"/></a:solidFill>
@@ -248,6 +257,7 @@ class PptxBuilder:
 </p:sldMaster>"""
 
     def _slide_layout(self) -> str:
+        """Handle PptxBuilder. slide layout."""
         return f"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <p:sldLayout xmlns:a="{NS_A}" xmlns:r="{NS_R}" xmlns:p="{NS_P}" type="obj" preserve="1">
 <p:cSld name="Title and Content"><p:spTree>
@@ -257,6 +267,7 @@ class PptxBuilder:
 </p:spTree></p:cSld></p:sldLayout>"""
 
     def _theme(self) -> str:
+        """Handle PptxBuilder. theme."""
         return f"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <a:theme xmlns:a="{NS_A}" name="AURORA">
 <a:themeElements><a:clrScheme name="AURORA">
@@ -293,6 +304,7 @@ class PptxBuilder:
 </a:fmtScheme></a:themeElements></a:theme>"""
 
     def _slide_xml(self, s: SlideBuilder) -> str:
+        """Do PptxBuilder. slide xml for s and return the result."""
         return (
             f'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
             f'<p:sld xmlns:a="{NS_A}" xmlns:r="{NS_R}" xmlns:p="{NS_P}">'
@@ -305,10 +317,11 @@ class PptxBuilder:
         )
 
     def _slide_rels(self, s: SlideBuilder) -> str:
+        """Do PptxBuilder. slide rels for s and return the result."""
         rels = [
-            f'<Relationship Id="rIdLayout" Type="http://schemas.'
-            f"openxmlformats.org/officeDocument/2006/relationships/"
-            f'slideLayout" Target="../slideLayouts/slideLayout1.xml"/>'
+            '<Relationship Id="rIdLayout" Type="http://schemas.'
+            'openxmlformats.org/officeDocument/2006/relationships/'
+            'slideLayout" Target="../slideLayouts/slideLayout1.xml"/>'
         ]
         for rid, name, _data in s.image_parts:
             rels.append(
@@ -323,6 +336,7 @@ class PptxBuilder:
         )
 
     def _notes_xml(self, s: SlideBuilder, idx: int) -> str:
+        """Do PptxBuilder. notes xml for s, idx and return the result."""
         return (
             f'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
             f'<p:notes xmlns:a="{NS_A}" xmlns:r="{NS_R}" xmlns:p="{NS_P}">'
@@ -336,6 +350,7 @@ class PptxBuilder:
         )
 
     def save(self, path: str) -> int:
+        """Do PptxBuilder.save for path and return the result."""
         with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as zf:
             zf.writestr("[Content_Types].xml", self._content_types())
             zf.writestr(

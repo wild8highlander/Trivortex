@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import math
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Sequence
 
 G_SI = 6.67430e-11
@@ -63,9 +63,11 @@ class OctNode:
     n_bodies: int = 0
 
     def is_leaf(self) -> bool:
+        """Check whether the octree node has no children."""
         return self.children is None and self.body is not None
 
     def is_empty(self) -> bool:
+        """Check whether the node holds no bodies."""
         return self.children is None and self.body is None
 
 
@@ -79,6 +81,7 @@ class BarnesHutTree:
         G: float = G_SI,
         softening: float = 0.0,
     ):
+        """Do BarnesHutTree.  init for theta, use_quadrupole, G, softening and return the result."""
         self.theta = theta
         self.use_quadrupole = use_quadrupole
         self.G = G
@@ -88,6 +91,7 @@ class BarnesHutTree:
 
     # ── построение ──
     def build(self, bodies: Sequence[BodyLite]) -> None:
+        """Build the octree from the given bodies."""
         if not bodies:
             self.root = None
             return
@@ -105,6 +109,7 @@ class BarnesHutTree:
             self._insert(self.root, b, depth=0)
 
     def _child_index(self, node: OctNode, b: BodyLite) -> int:
+        """Do BarnesHutTree. child index for node, b and return the result."""
         idx = 0
         if b.x > node.cx:
             idx |= 1
@@ -115,6 +120,7 @@ class BarnesHutTree:
         return idx
 
     def _child_node(self, node: OctNode, idx: int) -> OctNode:
+        """Do BarnesHutTree. child node for node, idx and return the result."""
         dx = node.half / 2.0 * (1 if idx & 1 else -1)
         dy = node.half / 2.0 * (1 if idx & 2 else -1)
         dz = node.half / 2.0 * (1 if idx & 4 else -1)
@@ -171,6 +177,7 @@ class BarnesHutTree:
         return self._acc_node(self.root, b, eps2)
 
     def _acc_node(self, node: OctNode, b: BodyLite, eps2: float) -> tuple[float, float, float]:
+        """Do BarnesHutTree. acc node for node, b, eps2 and return the result."""
         ax = ay = az = 0.0
         if node.is_empty():
             return (0.0, 0.0, 0.0)
@@ -223,6 +230,7 @@ class BarnesHutTree:
 
     # ── статистика ──
     def stats(self) -> dict:
+        """Return tree statistics (nodes, depth, leaf fill)."""
         depth = 0
 
         def measure(node, d):
@@ -283,6 +291,7 @@ class BarnesHutEngineMixin:
     """
 
     def __init__(self, theta: float = 0.7, softening: float = 0.0):
+        """Do BarnesHutEngineMixin.  init for theta, softening and return the result."""
         self.theta = theta
         self.softening = softening
 
@@ -319,6 +328,7 @@ class SimBody(BodyLite):
     vz: float = 0.0
 
     def __init__(self, x, y, z, mass, vx=0.0, vy=0.0, vz=0.0, id=-1):
+        """Do SimBody.  init for x, y, z, mass and return the result."""
         super().__init__(x=x, y=y, z=z, mass=mass, id=id)
         self.vx = vx
         self.vy = vy

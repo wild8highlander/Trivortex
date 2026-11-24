@@ -32,6 +32,7 @@ Deriv = Callable[[Sequence[float], float], list[float]]
 # ═══════════════════════════════════════════════════════════════════════════
 @dataclass
 class PoincarePoint:
+    """One crossing of the Poincare section: time and section coordinates."""
     t: float
     coords: tuple[float, ...]  # координаты в сечении (без ведущей)
 
@@ -47,6 +48,7 @@ class PoincareMap:
     def __init__(
         self, deriv: Deriv, step_dt: float, axis: int = 0, level: float = 0.0, upward: bool = True
     ):
+        """Do PoincareMap.  init for deriv, step_dt, axis, level and return the result."""
         self.deriv = deriv
         self.dt = step_dt
         self.axis = axis
@@ -57,6 +59,7 @@ class PoincareMap:
         self._prev_t: float = 0.0
 
     def _rk4(self, y: list[float], t: float, dt: float) -> list[float]:
+        """Do PoincareMap. rk4 for y, t, dt and return the result."""
         k1 = self.deriv(y, t)
         y2 = [y[i] + 0.5 * dt * k1[i] for i in range(len(y))]
         k2 = self.deriv(y2, t + 0.5 * dt)
@@ -99,6 +102,7 @@ class PoincareMap:
         return self.points
 
     def to_rows(self, n_axes: int = 2) -> list[tuple[float, ...]]:
+        """Return the collected section points as a list of dicts."""
         return [p.coords for p in self.points]
 
 
@@ -163,7 +167,7 @@ def fli(
 
 def fli_classify(fli_value: float, dt: float, n_steps: int) -> str:
     """Грубая классификация по величине FLI относительно времени."""
-    span = dt * n_steps
+    dt * n_steps
     if fli_value > 8.0:
         return "хаотическая (экспоненциальное расхождение)"
     if fli_value > 2.0:

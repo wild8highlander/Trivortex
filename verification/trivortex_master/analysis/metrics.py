@@ -11,9 +11,7 @@ from __future__ import annotations
 import math
 from typing import Any, Sequence
 
-from core.config import MasterConfig
 from lab.body import Body
-from lab.physics import NewtonianEngine, VortexEngine, run_simulation
 from lab.scene import Scene
 
 

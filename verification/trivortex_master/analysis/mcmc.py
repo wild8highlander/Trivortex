@@ -24,7 +24,7 @@ from __future__ import annotations
 
 import math
 import random
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Callable, Sequence
 
 Vector = list[float]
@@ -68,6 +68,7 @@ def gaussian_loglike(
 # ═══════════════════════════════════════════════════════════════════════════
 @dataclass
 class ChainResult:
+    """Handle ChainResult."""
     samples: list[Vector]  # после burn-in
     acceptance: float
     log_posterior: list[float]
@@ -89,6 +90,7 @@ class MetropolisSampler:
         seed: int = 42,
         adapt: bool = True,
     ):
+        """Do MetropolisSampler.  init for log_posterior, theta0, step_sizes, seed and return the result."""
         self.log_posterior = log_posterior
         self.theta = list(theta0)
         self.step = list(step_sizes)
@@ -98,6 +100,7 @@ class MetropolisSampler:
         self.n_total = 0
 
     def _propose(self) -> Vector:
+        """Handle MetropolisSampler. propose."""
         return [t + self.rng.gauss(0.0, s) for t, s in zip(self.theta, self.step)]
 
     def run(self, n_samples: int, burn_in: int = 500) -> ChainResult:

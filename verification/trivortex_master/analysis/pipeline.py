@@ -71,12 +71,14 @@ class Pipeline:
     """DAG шагов с кэшированием и изоляцией сбоев."""
 
     def __init__(self, name: str = "pipeline"):
+        """Do Pipeline.  init for name and return the result."""
         self.name = name
         self.steps: dict[str, PipelineStep] = {}
         self.results: dict[str, StepResult] = {}
         self._cache: dict[str, Any] = {}
 
     def add(self, step: PipelineStep) -> Pipeline:
+        """Do Pipeline.add for step and return the result."""
         if step.name in self.steps:
             raise ValueError(f"шаг уже есть: {step.name}")
         self.steps[step.name] = step
@@ -176,6 +178,7 @@ class Pipeline:
 
     # ── сводка ──
     def summary(self) -> dict:
+        """Handle Pipeline.summary."""
         ok_n = sum(1 for r in self.results.values() if r.ok)
         cached_n = sum(1 for r in self.results.values() if r.from_cache)
         return dict(

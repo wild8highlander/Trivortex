@@ -10,18 +10,19 @@
   [✓] A10 README
   [✓] A11 отчёты 8 форматов валидны — проблемы: []
   [✓] A12 Меркурий 1PN 42.98″/век — mercury=42.98047695363713
-  [✓] A13 Barnes-Hut: точность + скорость — err_rms=0.025, ×1.98
+  [✓] A13 Barnes-Hut: точность + скорость — err_rms=0.025, ×1.95
   [✓] A14 рейтрейсер: сцена видима — nonbg=880
   [✓] A15 MCMC: согласие с МНК, R̂<1.1 — b=0.41137482084080684 vs OLS 0.41092323115480284
   [✓] A16 Horizons: планета получена (online|offline) — режим: offline-synthetic
-  [✓] B1 интеграторы: 0.03 с (rk4_s=0.00935, leapfrog_s=0.0054, yoshida4_s=0.0159)
+  [✓] B1 интеграторы: 0.03 с (rk4_s=0.00925, leapfrog_s=0.00535, yoshida4_s=0.0159)
   [✓] B5 вихревой движок: 0.04 с (energy_drift=1.62e-12, t_final=4)
-  [✓] B6 MCMC: 0.08 с (total_s=0.0771, chains=4, samples_per_chain=800)
+  [✓] B6 MCMC: 0.08 с (total_s=0.077, chains=4, samples_per_chain=800)
   [✓] A17 бенчмарк B1/B5/B6 зелёный — 3/3
-  [✓] A18 API: ≥65 модулей, docstrings ≥55% — 96 модулей, 66%
+  [✓] A18 API: ≥65 модулей, docstrings ≥55% — 96 модулей, 100%
   [✓] A19 каталог≥520, пресеты≥20, меню≥49 — 538 объектов, 20 пресетов, 73 режимов
-  [✓] A20 ≥24000 строк Python — 56990 строк
+  [✓] A20 ≥24000 строк Python — 57539 строк
 single edition gate passed: True
 {"selftest": {"passed": 24, "total": 24, "details": {}}, "acceptance": {"passed": 20, "total": 20, "details": {"A1": true, "A2": true, "A3": true, "A4": true, "A5": true, "A6": true, "A7": true, "A8": true, "A9": true, "A10": true, "A11": true, "A12": true, "A13": true, "A14": true, "A15": true, "A16": true, "A17": true, "A18": true, "A19": true, "A20": true}}}
 module_selfchecks: 49 / 49
 hygiene clean: True
+exit=0

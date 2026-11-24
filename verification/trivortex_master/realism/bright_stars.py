@@ -80,6 +80,7 @@ def find_brightest(ra_deg: float, dec_deg: float, radius_deg: float) -> Star | N
 
 
 def all_brighter_than(mag: float) -> list[Star]:
+    """Do all brighter than for mag and return the result."""
     return [s for s in BRIGHT_STARS if s.magnitude < mag]
 
 

@@ -61,6 +61,7 @@ BODIES_PHYS = {
 
 
 def _cache() -> Any:
+    """Handle cache."""
     from realism.data_fetchers.cache import TTLCache
 
     root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

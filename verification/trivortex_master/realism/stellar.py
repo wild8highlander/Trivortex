@@ -74,6 +74,7 @@ class MainSequenceStar:
 
     # ── спектральный класс по T_eff ──
     def spectral_class(self) -> str:
+        """Handle MainSequenceStar.spectral class."""
         t = self.teff()
         if t > 30000:
             return "O"
@@ -90,6 +91,7 @@ class MainSequenceStar:
         return "M"
 
     def summary(self) -> dict:
+        """Handle MainSequenceStar.summary."""
         return dict(
             mass_solar=self.mass_solar,
             L_solar=self.luminosity(),

@@ -14,14 +14,17 @@ YEAR_S = 365.25 * DAY_S
 
 # модельная система: длина = 1 а.е., время = 1 год/N_орбит, масса = M_sun
 def si_to_model(pos, vel, mass, time_scale=YEAR_S):
+    """Do si to model for pos, vel, mass, time_scale and return the result."""
     return (tuple(c / AU_M for c in pos), tuple(v / (AU_M / time_scale) for v in vel), mass / M_SUN)
 
 
 def model_to_si(pos, vel, mass, time_scale=YEAR_S):
+    """Do model to si for pos, vel, mass, time_scale and return the result."""
     return (tuple(c * AU_M for c in pos), tuple(v * (AU_M / time_scale) for v in vel), mass * M_SUN)
 
 
 def to_astronomical_units(meters):
+    """Do to astronomical units for meters and return the result."""
     return meters / AU_M
 
 

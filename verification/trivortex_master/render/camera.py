@@ -23,20 +23,23 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field
-from typing import Optional, Sequence
+from typing import  Sequence
 
 Vec3 = tuple[float, float, float]
 
 
 def _lerp(a: float, b: float, t: float) -> float:
+    """Do lerp for a, b, t and return the result."""
     return a + (b - a) * t
 
 
 def _lerp3(a: Vec3, b: Vec3, t: float) -> Vec3:
+    """Do lerp3 for a, b, t and return the result."""
     return (_lerp(a[0], b[0], t), _lerp(a[1], b[1], t), _lerp(a[2], b[2], t))
 
 
 def _dist(a: Vec3, b: Vec3) -> float:
+    """Do dist for a, b and return the result."""
     return math.sqrt(sum((x - y) ** 2 for x, y in zip(a, b)))
 
 
@@ -134,6 +137,7 @@ class FollowCamera:
         self._pos = _lerp3(self._pos, desired, k)
 
     def eye(self) -> Vec3:
+        """Handle FollowCamera.eye."""
         return self._pos
 
 
@@ -151,6 +155,7 @@ class CameraKey:
 
 
 def _catmull_rom_1d(p0, p1, p2, p3, u):
+    """Do catmull rom 1d for p0, p1, p2, p3 and return the result."""
     return 0.5 * (
         (2 * p1)
         + (-p0 + p2) * u
@@ -163,6 +168,7 @@ class PathCamera:
     """Кинематографический пролёт по ключевым кадрам."""
 
     def __init__(self, keys: Sequence[CameraKey]):
+        """Do PathCamera.  init for keys and return the result."""
         if len(keys) < 2:
             raise ValueError("нужно ≥2 ключевых кадра")
         self.keys = sorted(keys, key=lambda k: k.t)
@@ -198,6 +204,7 @@ class PathCamera:
         return dict(eye=eye, target=target, fov=fov)
 
     def duration(self) -> float:
+        """Handle PathCamera.duration."""
         return self.keys[-1].t - self.keys[0].t
 
 
@@ -215,6 +222,7 @@ class ShakeCamera:
         decay: float = 3.0,
         seed: int = 1,
     ):
+        """Do ShakeCamera.  init for base, amplitude, frequency, decay and return the result."""
         self.base = base  # OrbitCamera / PathCamera / ...
         self.amplitude = amplitude
         self.frequency = frequency
@@ -229,6 +237,7 @@ class ShakeCamera:
         self.amplitude = max(self.amplitude, strength)
 
     def update(self, dt: float) -> None:
+        """Do ShakeCamera.update for dt and return the result."""
         self._t += dt
         self.amplitude *= math.exp(-self.decay * dt)
         upd = getattr(self.base, "update", None)
@@ -236,6 +245,7 @@ class ShakeCamera:
             upd(dt)
 
     def eye(self) -> Vec3:
+        """Handle ShakeCamera.eye."""
         eye = self.base.eye()
         if self.amplitude < 1e-4:
             return eye
@@ -247,6 +257,7 @@ class ShakeCamera:
         )
 
     def view_params(self) -> dict:
+        """Handle ShakeCamera.view params."""
         vp = (
             self.base.view_params()
             if hasattr(self.base, "view_params")

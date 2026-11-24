@@ -24,11 +24,12 @@ F(y0) = ||y(T) − y(0)|| методом конечных разностей (Н
 from __future__ import annotations
 
 import math
-from typing import Callable, Sequence
+from typing import  Sequence
 
 
 # ── правая часть гравитационной N-теловой задачи (плоскость, m=1, G=1) ──
 def deriv_planar(y: Sequence[float], n: int) -> list[float]:
+    """Planar equations of motion for choreography orbits."""
     out = [0.0] * (4 * n)
     for i in range(n):
         out[4 * i] = y[4 * i + 2]
@@ -50,6 +51,7 @@ def deriv_planar(y: Sequence[float], n: int) -> list[float]:
 
 
 def rk4_planar(y: Sequence[float], n: int, dt: float) -> list[float]:
+    """One RK4 step for the planar choreography system."""
     k1 = deriv_planar(y, n)
     y2 = [y[i] + 0.5 * dt * k1[i] for i in range(4 * n)]
     k2 = deriv_planar(y2, n)

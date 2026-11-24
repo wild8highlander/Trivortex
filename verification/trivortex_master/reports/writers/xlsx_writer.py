@@ -44,16 +44,19 @@ class Worksheet:
     """Один лист: сетка ячеек + параметры."""
 
     def __init__(self, name: str, freeze_header: bool = True):
+        """Do Worksheet.  init for name, freeze_header and return the result."""
         self.name = name[:31]  # лимит Excel
         self.freeze_header = freeze_header
         self.rows: list[list[dict[str, Any]]] = []
         self.col_widths: dict[int, float] = {}
 
     def _cell(self, value: Any, style: str = "normal", fmt: str | None = None) -> dict[str, Any]:
+        """Do Worksheet. cell for value, style, fmt and return the result."""
         cell: dict[str, Any] = {"value": value, "style": style, "fmt": fmt}
         return cell
 
     def header(self, values: Sequence[str]) -> Worksheet:
+        """Do Worksheet.header for values and return the result."""
         row = [self._cell(v, style="header") for v in values]
         self.rows.append(row)
         return self
@@ -61,11 +64,13 @@ class Worksheet:
     def row(
         self, values: Sequence[Any], style: str = "normal", fmt: str | None = None
     ) -> Worksheet:
+        """Do Worksheet.row for values, style, fmt and return the result."""
         row = [self._cell(v, style=style, fmt=fmt) for v in values]
         self.rows.append(row)
         return self
 
     def formula_row(self, formulas: Sequence[str], style: str = "normal") -> Worksheet:
+        """Do Worksheet.formula row for formulas, style and return the result."""
         row = [self._cell(("=", f), style=style) for f in formulas]
         self.rows.append(row)
         return self
@@ -88,6 +93,7 @@ class Worksheet:
 
     # ── сериализация листа ──
     def to_xml(self) -> str:
+        """Handle Worksheet.to xml."""
         parts = [
             '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
             f'<worksheet xmlns="{_NS_MAIN}">',
@@ -128,7 +134,7 @@ class Worksheet:
                 else:
                     parts.append(
                         f'<c r="{ref}" s="{style_idx}" t="inlineStr">'
-                        f'<is><t xml:space="preserve">'
+                        '<is><t xml:space="preserve">'
                         f"{escape(str(v))}</t></is></c>"
                     )
             parts.append("</row>")
@@ -145,20 +151,23 @@ class XlsxBuilder:
     """Сборка книги: листы, стили, сохранение."""
 
     def __init__(self, creator: str = "TRIVORTEX MASTER"):
+        """Do XlsxBuilder.  init for creator and return the result."""
         self.creator = creator
         self.sheets: list[Worksheet] = []
 
     def sheet(self, name: str, freeze_header: bool = True) -> Worksheet:
+        """Do XlsxBuilder.sheet for name, freeze_header and return the result."""
         ws = Worksheet(name, freeze_header)
         self.sheets.append(ws)
         return ws
 
     # ── части OOXML ──
     def _content_types(self) -> str:
+        """Handle XlsxBuilder. content types."""
         overrides = "".join(
             f'<Override PartName="/xl/worksheets/sheet{i + 1}.xml" '
-            f'ContentType="application/vnd.openxmlformats-officedocument.'
-            f'spreadsheetml.worksheet+xml"/>'
+            'ContentType="application/vnd.openxmlformats-officedocument.'
+            'spreadsheetml.worksheet+xml"/>'
             for i in range(len(self.sheets))
         )
         return (
@@ -177,6 +186,7 @@ class XlsxBuilder:
         )
 
     def _root_rels(self) -> str:
+        """Handle XlsxBuilder. root rels."""
         return (
             '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
             '<Relationships xmlns="http://schemas.openxmlformats.org/'
@@ -187,20 +197,22 @@ class XlsxBuilder:
         )
 
     def _workbook(self) -> str:
+        """Handle XlsxBuilder. workbook."""
         sheets = "".join(
             f'<sheet name="{escape(s.name)}" sheetId="{i + 1}" ' f'r:id="rId{i + 1}"/>'
             for i, s in enumerate(self.sheets)
         )
         return (
-            f'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
             f'<workbook xmlns="{_NS_MAIN}" '
             f'xmlns:r="{_NS_REL}"><sheets>{sheets}</sheets></workbook>'
         )
 
     def _workbook_rels(self) -> str:
+        """Handle XlsxBuilder. workbook rels."""
         rels = "".join(
             f'<Relationship Id="rId{i + 1}" Type="http://schemas.'
-            f"openxmlformats.org/officeDocument/2006/relationships/"
+            "openxmlformats.org/officeDocument/2006/relationships/"
             f'worksheet" Target="worksheets/sheet{i + 1}.xml"/>'
             for i in range(len(self.sheets))
         )
@@ -208,9 +220,9 @@ class XlsxBuilder:
             '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
             '<Relationships xmlns="http://schemas.openxmlformats.org/'
             'package/2006/relationships">'
-            f'<Relationship Id="rIdStyle" Type="http://schemas.'
-            f"openxmlformats.org/officeDocument/2006/relationships/"
-            f'styles" Target="styles.xml"/>' + rels + "</Relationships>"
+            '<Relationship Id="rIdStyle" Type="http://schemas.'
+            "openxmlformats.org/officeDocument/2006/relationships/"
+            'styles" Target="styles.xml"/>' + rels + "</Relationships>"
         )
 
     def _styles(self) -> str:
@@ -246,6 +258,7 @@ class XlsxBuilder:
 
     # ── сохранение ──
     def save(self, path: str) -> int:
+        """Do XlsxBuilder.save for path and return the result."""
         for ws in self.sheets:
             if not ws.col_widths:
                 ws.autosize()

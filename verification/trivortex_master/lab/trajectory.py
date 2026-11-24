@@ -60,18 +60,22 @@ class Trajectory:
         ]
 
     def positions_xy(self, body_index: int) -> list[tuple[float, float]]:
+        """Do Trajectory.positions xy for body_index and return the result."""
         return [(s[body_index][0], s[body_index][1]) for s in self.states]
 
     def to_dict(self) -> dict[str, Any]:
+        """Handle Trajectory.to dict."""
         return dict(
             times=self.times, states=self.states, body_ids=self.body_ids, metadata=self.metadata
         )
 
     def to_json(self, path: str) -> None:
+        """Do Trajectory.to json for path and return the result."""
         with open(path, "w", encoding="utf-8") as fh:
             json.dump(self.to_dict(), fh, ensure_ascii=False, indent=1)
 
     def to_csv(self, path: str) -> None:
+        """Do Trajectory.to csv for path and return the result."""
         with open(path, "w", encoding="utf-8") as fh:
             fh.write("t,body_id,x,y,z,vx,vy,vz\n")
             for t, state in zip(self.times, self.states):
@@ -80,6 +84,7 @@ class Trajectory:
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> Trajectory:
+        """Do Trajectory.from dict for d and return the result."""
         return cls(
             times=list(d["times"]),
             states=list(d["states"]),
@@ -250,6 +255,7 @@ class AnalyticPlanner(TrajectoryPlanner):
     def figure_eight(
         self, mass: float = 1.0, G: float = 1.0, n_steps: int = 600, n_periods: float = 1.0
     ) -> Trajectory:
+        """Do AnalyticPlanner.figure eight for mass, G, n_steps, n_periods and return the result."""
         x0, y0, vx0, vy0 = (self.FIG8_X0, self.FIG8_Y0, self.FIG8_VX, self.FIG8_VY)
         # тело 1 в (x0, y0), тело 2 зеркально в (−x0, −y0), тело 3 в (0,0)
         state = [x0, y0, vx0, vy0, -x0, -y0, vx0, vy0, 0.0, 0.0, -2 * vx0, -2 * vy0]
@@ -334,6 +340,7 @@ class KirchhoffPlanner(TrajectoryPlanner):
         jitter: float = 0.0,
         seed: int = 42,
     ) -> Trajectory:
+        """Do KirchhoffPlanner.ring for N, R, gamma, n_steps and return the result."""
         import random
 
         rng = random.Random(seed)
@@ -429,6 +436,7 @@ class KeplerPlanner(TrajectoryPlanner):
         n_periods: float = 1.0,
     ) -> Trajectory:
         # скорость в перигелии для орбиты с эксцентриситетом e
+        """Do KeplerPlanner.orbit for central_mass, r0, eccentricity, G and return the result."""
         mu = G * central_mass
         if 0 <= eccentricity < 1:
             a = r0 / (1 - eccentricity)  # большая полуось из перигелия
@@ -511,6 +519,7 @@ class ScriptedPlanner(TrajectoryPlanner):
         duration: float = 1.0,
         closed: bool = True,
     ) -> Trajectory:
+        """Do ScriptedPlanner.waypoints for points_per_body, n_steps, duration, closed and return the result."""
         n_bodies = len(points_per_body)
         times, states = [], []
         for i in range(n_steps + 1):
@@ -563,6 +572,7 @@ PLANNERS = {
 
 
 def get_planner(name: str) -> TrajectoryPlanner:
+    """Do get planner for name and return the result."""
     if name not in PLANNERS:
         raise ValueError(f"неизвестный планировщик: {name}; " f"доступны: {', '.join(PLANNERS)}")
     return PLANNERS[name]()

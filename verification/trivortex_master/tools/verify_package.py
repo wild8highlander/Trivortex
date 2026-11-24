@@ -17,7 +17,6 @@ A10 README описывает запуск и профили.
 
 from __future__ import annotations
 
-import json
 import os
 import subprocess
 import sys
@@ -35,7 +34,6 @@ def check(label: str, cond: bool, detail: str = "") -> bool:
 
 def run() -> dict:
     results = {}
-    import realism  # noqa: F401
     from core.config import UnphysicalConfiguration, from_profile
     from lab.presets import build_preset, load_catalog
     from lab.physics import run_simulation, get_engine
@@ -118,7 +116,7 @@ def run() -> dict:
     results["A8"] = check("A8 selftest S1–S12", r8.returncode == 0)
 
     # A9: ZIP
-    zp = os.path.join(ROOT, "dist", "trivortex_master_v2.0.2.zip")
+    zp = os.path.join(ROOT, "dist", "trivortex_master_v2.0.3.zip")
     ok9 = False
     if os.path.isfile(zp):
         with zipfile.ZipFile(zp) as zf:

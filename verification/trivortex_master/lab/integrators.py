@@ -24,8 +24,7 @@ TRIVORTEX MASTER — интеграторы: симплектические и �
 
 from __future__ import annotations
 
-import math
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Callable, Sequence
 
 Deriv = Callable[[Sequence[float], float], list[float]]
@@ -61,6 +60,7 @@ class LeapfrogStats:
     e_max: float = float("-inf")
 
     def energy_span(self) -> float:
+        """Return the (min, max) span of the energy history."""
         if self.e_max < self.e_min:
             return 0.0
         return self.e_max - self.e_min
@@ -76,6 +76,7 @@ class Leapfrog:
     name = "leapfrog_kdk"
 
     def __init__(self, accel: Callable[[list, float], list], n_bodies: int):
+        """Do Leapfrog.  init for accel, n_bodies and return the result."""
         self.accel = accel
         self.n = n_bodies
         self.stats = LeapfrogStats()
@@ -83,7 +84,7 @@ class Leapfrog:
     def step(self, y: list[float], t: float, dt: float) -> tuple[list[float], float]:
         """y = [x,y,z,vx,vy,vz]*N; KDK-схема."""
         n6 = self.n * 6
-        pos = [y[i] * 1.0 for i in range(n6)]
+        [y[i] * 1.0 for i in range(n6)]
         # разбить на позиции и скорости
         xs = [y[6 * i + j] for i in range(self.n) for j in range(3)]
         vs = [y[6 * i + 3 + j] for i in range(self.n) for j in range(3)]
@@ -108,6 +109,7 @@ class VelocityVerlet(Leapfrog):
 
     def step(self, y: list[float], t: float, dt: float) -> tuple[list[float], float]:
         # алгебраически эквивалентен KDK; отдельный класс для ясности API
+        """Advance the state by dt with the velocity-Verlet scheme."""
         return super().step(y, t, dt)
 
 
@@ -126,10 +128,12 @@ class Yoshida4:
     name = "yoshida4"
 
     def __init__(self, accel: Callable[[list, float], list], n_bodies: int):
+        """Do Yoshida4.  init for accel, n_bodies and return the result."""
         self.lf = Leapfrog(accel, n_bodies)
 
     def step(self, y: list[float], t: float, dt: float) -> tuple[list[float], float]:
         # композиция: dt1 = w1*dt, dt2 = w0*dt, dt3 = w1*dt
+        """Advance the state by dt with the 4th-order Yoshida composition."""
         y1, t1 = self.lf.step(y, t, _W1 * dt)
         y2, t2 = self.lf.step(y1, t1, _W0 * dt)
         y3, t3 = self.lf.step(y2, t2, _W1 * dt)
@@ -138,10 +142,12 @@ class Yoshida4:
 
 
 def _to_positions(y: Sequence[float], n: int) -> list[tuple[float, ...]]:
+    """Do to positions for y, n and return the result."""
     return [tuple(y[6 * i : 6 * i + 3]) for i in range(n)]
 
 
 def _pack(xs: Sequence[float], vs: Sequence[float], n: int) -> list[float]:
+    """Do pack for xs, vs, n and return the result."""
     out = []
     for i in range(n):
         out.extend(xs[3 * i : 3 * i + 3])
@@ -168,12 +174,14 @@ _B4 = [25.0 / 216.0, 0.0, 1408.0 / 2565.0, 2197.0 / 4104.0, -1.0 / 5.0, 0.0]
 
 @dataclass
 class AdaptiveStats:
+    """Statistics of an adaptive integration run."""
     accepted: int = 0
     rejected: int = 0
     dt_min: float = float("inf")
     dt_max: float = 0.0
 
     def update(self, dt: float, ok: bool) -> None:
+        """Record one accepted step's statistics."""
         if ok:
             self.accepted += 1
             self.dt_min = min(self.dt_min, dt)
@@ -192,11 +200,13 @@ class RK45Adaptive:
     name = "rk45_adaptive"
 
     def __init__(self, deriv: Deriv, tol: float = 1e-9):
+        """Do RK45Adaptive.  init for deriv, tol and return the result."""
         self.deriv = deriv
         self.tol = tol
         self.stats = AdaptiveStats()
 
     def _stages(self, y: Sequence[float], t: float, dt: float) -> list[list[float]]:
+        """Do RK45Adaptive. stages for y, t, dt and return the result."""
         n = len(y)
         ks: list[list[float]] = []
         for s in range(6):
@@ -257,6 +267,7 @@ class EnergyGuard:
         rel_threshold: float = 0.02,
         dt_min: float = 1e-12,
     ):
+        """Do EnergyGuard.  init for stepper, energy_of, rel_threshold, dt_min and return the result."""
         self.stepper = stepper  # любой объект с .step(y, t, dt)
         self.energy_of = energy_of
         self.rel_threshold = rel_threshold

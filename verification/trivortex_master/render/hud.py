@@ -71,11 +71,13 @@ def detect_color_mode(stream=None) -> str:
 
 
 def color_on() -> None:
+    """Handle color on."""
     global COLOR
     COLOR = True
 
 
 def color_off() -> None:
+    """Handle color off."""
     global COLOR
     COLOR = False
 
@@ -101,6 +103,7 @@ def _rgb_to_256(r: int, g: int, b: int) -> int:
 
 
 def _p3(rgb: tuple) -> str:
+    """Do p3 for rgb and return the result."""
     if not COLOR or _COLOR_MODE == "none":
         return ""
     if _COLOR_MODE == "truecolor":
@@ -111,6 +114,7 @@ def _p3(rgb: tuple) -> str:
 
 
 def _c(rgb: tuple, bold: bool = False) -> str:
+    """Do c for rgb, bold and return the result."""
     if not COLOR or _COLOR_MODE == "none":
         return ""
     if _COLOR_MODE == "16":
@@ -135,50 +139,62 @@ def _col(rgb, bold=False):
 
 
 def cyn(bold=False):
+    """Colorize text cyan (AURORA palette)."""
     return _col(ICE, bold)
 
 
 def grn(bold=False):
+    """Colorize text green (AURORA palette)."""
     return _col(GRN, bold)
 
 
 def red(bold=False):
+    """Colorize text red (AURORA palette)."""
     return _col(RED, bold)
 
 
 def ylw(bold=False):
+    """Do ylw for bold and return the result."""
     return _col(GOLD, bold)
 
 
 def mag(bold=False):
+    """Do mag for bold and return the result."""
     return _col(VIO, bold)
 
 
 def blu(bold=False):
+    """Do blu for bold and return the result."""
     return _col(SKY, bold)
 
 
 def gry(bold=False):
+    """Do gry for bold and return the result."""
     return _col(GRY, bold)
 
 
 def wht(bold=False):
+    """Do wht for bold and return the result."""
     return _col(WHT, bold)
 
 
 def org(bold=False):
+    """Do org for bold and return the result."""
     return _col(ORG, bold)
 
 
 def gold(bold=False):
+    """Do gold for bold and return the result."""
     return _col(GOLD, bold)
 
 
 def reset() -> str:
+    """Handle reset."""
     return "\x1b[0m" if (COLOR and _COLOR_MODE != "none") else ""
 
 
 def colorize(text: str, rgb: tuple, bold: bool = False) -> str:
+    """Wrap text with an ANSI truecolor escape for the given RGB."""
     code = _col(rgb, bold)
     if not code:
         return text
@@ -206,6 +222,7 @@ _ANSI_RE = None
 
 
 def _strip_ansi(s: str) -> str:
+    """Do strip ansi for s and return the result."""
     global _ANSI_RE
     if _ANSI_RE is None:
         import re
@@ -215,10 +232,12 @@ def _strip_ansi(s: str) -> str:
 
 
 def visible_width(s: str) -> int:
+    """Do visible width for s and return the result."""
     return len(_strip_ansi(s))
 
 
 def pad_to(s: str, width: int) -> str:
+    """Do pad to for s, width and return the result."""
     vis = visible_width(s)
     if vis >= width:
         return s
@@ -226,6 +245,7 @@ def pad_to(s: str, width: int) -> str:
 
 
 def trunc_to(s: str, width: int) -> str:
+    """Do trunc to for s, width and return the result."""
     if visible_width(s) <= width:
         return s
     return _strip_ansi(s)[: max(width - 1, 0)] + "…"
@@ -243,6 +263,7 @@ def orn(width: int = 72) -> str:
 
 
 def hr(char: str = "─", width: int = 72) -> str:
+    """Do hr for char, width and return the result."""
     return char * width
 
 
@@ -295,6 +316,7 @@ def banner(version: str = "2.0.0", subtitle: str = "") -> list[str]:
 
 
 def print_banner(version: str = "2.0.0", subtitle: str = "", stream=None) -> None:
+    """Do print banner for version, subtitle, stream and return the result."""
     stream = stream or sys.stdout
     for ln in banner(version, subtitle):
         stream.write(ln + "\n")
@@ -302,6 +324,7 @@ def print_banner(version: str = "2.0.0", subtitle: str = "", stream=None) -> Non
 
 
 def verdict_icon(ok: bool) -> str:
+    """Return the verdict icon for a status word."""
     return colorize("✓", GRN, True) if ok else colorize("✗", RED, True)
 
 
@@ -313,6 +336,7 @@ def warn_plate(text: str, width: int = 74) -> str:
 
 
 def kv(key: str, value: str, key_w: int = 22) -> str:
+    """Return a key-value HUD line in the AURORA palette."""
     return f"  {colorize(pad_to(key, key_w), GRY)} {colorize(value, WHT)}"
 
 
@@ -327,6 +351,7 @@ class Spinner:
     """Символьный спиннер для неопределённых ожиданий."""
 
     def __init__(self, label: str = "", stream=None, braille: bool = True):
+        """Do Spinner.  init for label, stream, braille and return the result."""
         self.label = label
         self.stream = stream or sys.stderr
         self.frames = SPIN_BRAILLE if braille else SPIN_FRAMES
@@ -335,6 +360,7 @@ class Spinner:
         self._active = False
 
     def frame(self, elapsed: float | None = None) -> str:
+        """Do Spinner.frame for elapsed and return the result."""
         ch = self.frames[self._i % len(self.frames)]
         self._i += 1
         el = elapsed if elapsed is not None else time.time() - self._t0
@@ -342,6 +368,7 @@ class Spinner:
         return s if COLOR else f"[{ch}] {self.label} … {el:5.1f} с"
 
     def step(self) -> None:
+        """Handle Spinner.step."""
         if _COLOR_MODE == "none" or not self.stream.isatty():
             return
         self.stream.write("\r" + pad_to(self.frame(), 78))
@@ -355,6 +382,7 @@ class Monitor:
     """Лёгкий системный монитор: /proc напрямую, psutil — опционально."""
 
     def __init__(self):
+        """Handle Monitor.  init."""
         self._cpu_prev = None
         self._psutil = None
         try:
@@ -369,6 +397,7 @@ class Monitor:
     # ── cpu из /proc/stat ──
     @staticmethod
     def _read_proc_stat() -> tuple[int, int] | None:
+        """Handle Monitor. read proc stat."""
         try:
             with open("/proc/stat", encoding="utf-8") as fh:
                 parts = fh.readline().split()[1:]
@@ -379,6 +408,7 @@ class Monitor:
             return None
 
     def cpu_pct(self) -> float:
+        """Handle Monitor.cpu pct."""
         if self._psutil is not None:
             try:
                 return self._psutil.cpu_percent(interval=None)
@@ -400,6 +430,7 @@ class Monitor:
     # ── ram из /proc/meminfo ──
     @staticmethod
     def _read_meminfo() -> tuple[float, float]:
+        """Handle Monitor. read meminfo."""
         try:
             info = {}
             with open("/proc/meminfo", encoding="utf-8") as fh:
@@ -413,6 +444,7 @@ class Monitor:
             return 0.0, 0.0
 
     def ram(self) -> tuple[float, float]:
+        """Handle Monitor.ram."""
         if self._psutil is not None:
             try:
                 vm = self._psutil.virtual_memory()
@@ -424,6 +456,7 @@ class Monitor:
     # ── температура ──
     @staticmethod
     def temp_c() -> float:
+        """Handle Monitor.temp c."""
         for zone in sorted(_list_dir("/sys/class/thermal")):
             try:
                 with open(f"/sys/class/thermal/{zone}/temp") as fh:
@@ -440,6 +473,7 @@ class Monitor:
 
     # ── латентность пустого I/O-цикла ──
     def _probe_io_latency(self) -> None:
+        """Handle Monitor. probe io latency."""
         import tempfile
 
         try:
@@ -455,6 +489,7 @@ class Monitor:
 
     # ── строка для встраивания в бар ──
     def inline(self) -> str:
+        """Handle Monitor.inline."""
         cpu = self.cpu_pct()
         tot, avail = self.ram()
         parts = [f"cpu {cpu:4.0f}%"]
@@ -469,6 +504,7 @@ class Monitor:
 
 
 def _list_dir(path: str) -> list[str]:
+    """Do list dir for path and return the result."""
     try:
         return [d for d in os.listdir(path) if d.startswith(("thermal_zone", "hwmon"))]
     except OSError:
@@ -479,6 +515,7 @@ def _list_dir(path: str) -> list[str]:
 # 6. Прогресс-бар — одна строка, динамический, EMA-ETA
 # ═══════════════════════════════════════════════════════════════════════════
 def _term_width() -> int:
+    """Handle term width."""
     try:
         w = shutil.get_terminal_size((80, 24)).columns
     except OSError:
@@ -505,6 +542,7 @@ class ProgressBar:
         monitor: Monitor | None = None,
         eta_alpha: float = 0.22,
     ):
+        """Do ProgressBar.  init for label, total, stream, monitor and return the result."""
         self.label = label
         self.total = max(total, 1e-12)
         self.stream = stream or sys.stderr
@@ -527,6 +565,7 @@ class ProgressBar:
 
     # ── публичное API ──
     def update(self, value: float, tag: str = "") -> None:
+        """Do ProgressBar.update for value, tag and return the result."""
         with self._lock:
             now = time.time()
             frac = max(0.0, min(1.0, value / self.total))
@@ -554,12 +593,15 @@ class ProgressBar:
             self._repaint(time.time())
 
     def pause(self) -> None:
+        """Handle ProgressBar.pause."""
         self._paused = True
 
     def resume(self) -> None:
+        """Handle ProgressBar.resume."""
         self._paused = False
 
     def finish(self, message: str = "") -> None:
+        """Do ProgressBar.finish for message and return the result."""
         with self._lock:
             if self.enabled:
                 line = colorize(f"  ✓ {self.label}", GRN, True) if COLOR else f"  [ok] {self.label}"
@@ -569,22 +611,25 @@ class ProgressBar:
                 self.stream.write("\r" + " " * self._last_w + "\r" + line + "\n")
                 self.stream.flush()
             else:
-                milestone = 10
+                pass  # (unused local removed)
                 if message:
                     print(f"  {self.label}: {message}")
 
     # ── внутреннее ──
     def _eta(self) -> float | None:
+        """Handle ProgressBar. eta."""
         if self._ema_rate is None or self._ema_rate <= 1e-12:
             return None
         return max(0.0, (1.0 - self.frac) / self._ema_rate)
 
     @staticmethod
     def _fmt(sec: float) -> str:
+        """Do ProgressBar. fmt for sec and return the result."""
         sec = int(sec)
         return f"{sec // 3600:02d}:{(sec % 3600) // 60:02d}:{sec % 60:02d}"
 
     def _repaint(self, now: float) -> None:
+        """Do ProgressBar. repaint for now and return the result."""
         if not self.enabled or self._paused:
             return
         w = _term_width()
@@ -624,18 +669,21 @@ class BarQueue:
     не дедлокает расчёт — старые кадры просто отбрасываются."""
 
     def __init__(self, maxsize: int = 256):
+        """Do BarQueue.  init for maxsize and return the result."""
         import queue
 
         self.q: queue.Queue = queue.Queue(maxsize=maxsize)
         self._thread = None
 
     def put(self, fn) -> None:
+        """Do BarQueue.put for fn and return the result."""
         try:
             self.q.put_nowait(fn)
         except Exception:
             pass  # очередь полна — выбрасываем самый старый кадр
 
     def start(self) -> None:
+        """Handle BarQueue.start."""
         if self._thread is not None:
             return
 
@@ -653,6 +701,7 @@ class BarQueue:
         self._thread.start()
 
     def stop(self) -> None:
+        """Handle BarQueue.stop."""
         self.put(None)
 
 

@@ -21,7 +21,6 @@ TRIVORTEX MASTER — собственный программный растер�
 from __future__ import annotations
 
 import math
-from typing import Sequence
 
 from render.png_codec import write_png, write_ppm
 
@@ -34,38 +33,45 @@ Vec4 = tuple[float, float, float, float]
 
 
 def mat_identity() -> Mat4:
+    """Handle mat identity."""
     return [[1.0 if i == j else 0.0 for j in range(4)] for i in range(4)]
 
 
 def mat_mul(a: Mat4, b: Mat4) -> Mat4:
+    """Do mat mul for a, b and return the result."""
     return [[sum(a[i][k] * b[k][j] for k in range(4)) for j in range(4)] for i in range(4)]
 
 
 def mat_translate(tx: float, ty: float, tz: float) -> Mat4:
+    """Do mat translate for tx, ty, tz and return the result."""
     m = mat_identity()
     m[0][3], m[1][3], m[2][3] = tx, ty, tz
     return m
 
 
 def mat_scale(sx: float, sy: float, sz: float) -> Mat4:
+    """Do mat scale for sx, sy, sz and return the result."""
     m = mat_identity()
     m[0][0], m[1][1], m[2][2] = sx, sy, sz
     return m
 
 
 def mat_rotate_x(deg: float) -> Mat4:
+    """Do mat rotate x for deg and return the result."""
     r = math.radians(deg)
     c, s = math.cos(r), math.sin(r)
     return [[1, 0, 0, 0], [0, c, -s, 0], [0, s, c, 0], [0, 0, 0, 1]]
 
 
 def mat_rotate_y(deg: float) -> Mat4:
+    """Do mat rotate y for deg and return the result."""
     r = math.radians(deg)
     c, s = math.cos(r), math.sin(r)
     return [[c, 0, s, 0], [0, 1, 0, 0], [-s, 0, c, 0], [0, 0, 0, 1]]
 
 
 def mat_rotate_z(deg: float) -> Mat4:
+    """Do mat rotate z for deg and return the result."""
     r = math.radians(deg)
     c, s = math.cos(r), math.sin(r)
     return [[c, -s, 0, 0], [s, c, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
@@ -110,6 +116,7 @@ def mat_perspective(fov_y_deg: float, aspect: float, near: float, far: float) ->
 
 
 def mat_apply(m: Mat4, v: Vec4) -> Vec4:
+    """Do mat apply for m, v and return the result."""
     return tuple(
         m[i][0] * v[0] + m[i][1] * v[1] + m[i][2] * v[2] + m[i][3] * v[3] for i in range(4)
     )  # type: ignore
@@ -149,6 +156,7 @@ def uv_sphere(
 # 3. Кадр: z-буфер + попиксельная запись
 # ═══════════════════════════════════════════════════════════════════════════
 def _hex_to_rgb(color: str) -> tuple[int, int, int]:
+    """Do hex to rgb for color and return the result."""
     h = color.lstrip("#")
     if len(h) == 3:
         h = "".join(c * 2 for c in h)
@@ -159,6 +167,7 @@ class Frame:
     """RGB-кадр с z-буфером."""
 
     def __init__(self, width: int, height: int, bg: tuple[int, int, int] = (13, 22, 40)):
+        """Do Frame.  init for width, height, bg and return the result."""
         self.w = width
         self.h = height
         self.bg = bg
@@ -166,10 +175,12 @@ class Frame:
         self.zbuf = [float("inf")] * (width * height)
 
     def clear(self) -> None:
+        """Handle Frame.clear."""
         self.pixels = bytearray(bytes(self.bg) * (self.w * self.h))
         self.zbuf = [float("inf")] * (self.w * self.h)
 
     def set_pixel(self, x: int, y: int, z: float, color: tuple[int, int, int]) -> None:
+        """Do Frame.set pixel for x, y, z, color and return the result."""
         if 0 <= x < self.w and 0 <= y < self.h:
             idx = y * self.w + x
             if z < self.zbuf[idx]:
@@ -293,6 +304,7 @@ class Frame:
                 self.set_pixel(x, y, z, c)
 
     def _span(self, y, xa, za, ca, xb, zb, cb):
+        """Do Frame. span for y, xa, za, ca and return the result."""
         if abs(xb - xa) < 1e-9:
             yield xa, za, ca
             return
@@ -305,9 +317,11 @@ class Frame:
 
     # ── сохранение ──
     def save_png(self, path: str) -> int:
+        """Do Frame.save png for path and return the result."""
         return write_png(path, self.pixels, self.w, self.h)
 
     def save_ppm(self, path: str) -> int:
+        """Do Frame.save ppm for path and return the result."""
         return write_ppm(path, self.pixels, self.w, self.h)
 
 

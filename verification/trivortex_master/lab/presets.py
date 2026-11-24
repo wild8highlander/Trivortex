@@ -33,17 +33,20 @@ AU_M = 1.495978707e11
 # Каталог
 # ═══════════════════════════════════════════════════════════════════════════
 def load_catalog(path: str | None = None) -> dict[str, Any]:
+    """Load the object catalog from data/catalog.json (with caching)."""
     path = path or _CATALOG_PATH
     with open(path, encoding="utf-8") as fh:
         return json.load(fh)
 
 
 def catalog_objects(catalog: dict[str, Any] | None = None) -> list[dict]:
+    """Return catalog entries of a given type."""
     cat = catalog or load_catalog()
     return cat.get("objects", [])
 
 
 def catalog_summary(catalog: dict[str, Any] | None = None) -> dict[str, int]:
+    """Return a short summary dict of the catalog contents."""
     out: dict[str, int] = {}
     for rec in catalog_objects(catalog):
         out[rec["type"]] = out.get(rec["type"], 0) + 1
@@ -53,6 +56,7 @@ def catalog_summary(catalog: dict[str, Any] | None = None) -> dict[str, int]:
 def search_catalog(
     query: str, catalog: dict[str, Any] | None = None, limit: int = 20
 ) -> list[dict]:
+    """Search catalog entries by a query substring."""
     q = query.strip().lower()
     hits = []
     for rec in catalog_objects(catalog):
@@ -72,6 +76,7 @@ def search_catalog(
 
 
 def validate_catalog(catalog: dict[str, Any] | None = None) -> list[str]:
+    """Validate catalog entries; return found problems."""
     errors = []
     ids = set()
     for i, rec in enumerate(catalog_objects(catalog)):
@@ -93,6 +98,7 @@ def validate_catalog(catalog: dict[str, Any] | None = None) -> list[str]:
 # Пресеты сцен
 # ═══════════════════════════════════════════════════════════════════════════
 def load_presets(path: str | None = None) -> list[dict[str, Any]]:
+    """Load the scene presets from data/presets_scenes.json."""
     path = path or _PRESETS_PATH
     with open(path, encoding="utf-8") as fh:
         data = json.load(fh)
@@ -100,6 +106,7 @@ def load_presets(path: str | None = None) -> list[dict[str, Any]]:
 
 
 def get_preset(preset_id: str, path: str | None = None) -> dict[str, Any] | None:
+    """Return one scene preset definition by id."""
     for p in load_presets(path):
         if p["id"] == preset_id:
             return p
@@ -330,6 +337,7 @@ def _fix_binary(scene: Scene, G: float) -> None:
 
 
 def _build_figure_eight(config: MasterConfig, preset: dict) -> Scene:
+    """Do build figure eight for config, preset and return the result."""
     from lab.trajectory import AnalyticPlanner
 
     scene = Scene(config, name=preset["name"])
@@ -360,7 +368,7 @@ def _autotune_dt(scene: Scene) -> None:
     """
     if not scene.bodies:
         return
-    G = scene.config.G
+    pass  # (unused local removed)
     best = None
     central = max(scene.bodies, key=lambda b: b.mass)
     for b in scene.bodies:

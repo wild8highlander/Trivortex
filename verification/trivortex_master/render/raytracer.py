@@ -20,7 +20,6 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field
-from typing import Optional
 
 from render.png_codec import write_png
 
@@ -28,26 +27,32 @@ Vec3 = tuple[float, float, float]
 
 
 def v_add(a: Vec3, b: Vec3) -> Vec3:
+    """Do v add for a, b and return the result."""
     return (a[0] + b[0], a[1] + b[1], a[2] + b[2])
 
 
 def v_sub(a: Vec3, b: Vec3) -> Vec3:
+    """Do v sub for a, b and return the result."""
     return (a[0] - b[0], a[1] - b[1], a[2] - b[2])
 
 
 def v_scale(a: Vec3, s: float) -> Vec3:
+    """Do v scale for a, s and return the result."""
     return (a[0] * s, a[1] * s, a[2] * s)
 
 
 def v_dot(a: Vec3, b: Vec3) -> float:
+    """Do v dot for a, b and return the result."""
     return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
 
 
 def v_cross(a: Vec3, b: Vec3) -> Vec3:
+    """Do v cross for a, b and return the result."""
     return (a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0])
 
 
 def v_norm(a: Vec3) -> Vec3:
+    """Do v norm for a and return the result."""
     n = math.sqrt(v_dot(a, a))
     if n < 1e-12:
         return (0.0, 0.0, 0.0)
@@ -65,6 +70,7 @@ def v_reflect(d: Vec3, n: Vec3) -> Vec3:
 # ═══════════════════════════════════════════════════════════════════════════
 @dataclass
 class Sphere:
+    """Handle Sphere."""
     center: Vec3
     radius: float
     color: Vec3  # альбедо 0..1
@@ -86,6 +92,7 @@ class Plane:
 
 @dataclass
 class Light:
+    """Handle Light."""
     position: Vec3
     intensity: float = 1.0
     color: Vec3 = (1.0, 1.0, 1.0)
@@ -93,6 +100,7 @@ class Light:
 
 @dataclass
 class Camera:
+    """Handle Camera."""
     eye: Vec3 = (0.0, 1.2, 4.0)
     look_at: Vec3 = (0.0, 0.3, 0.0)
     up: Vec3 = (0.0, 1.0, 0.0)
@@ -102,6 +110,7 @@ class Camera:
 
 @dataclass
 class RaytraceScene:
+    """Handle RaytraceScene."""
     spheres: list[Sphere] = field(default_factory=list)
     planes: list[Plane] = field(default_factory=list)
     lights: list[Light] = field(default_factory=list)
@@ -143,6 +152,7 @@ def hit_plane(origin: Vec3, direction: Vec3, p: Plane) -> float | None:
 # ═══════════════════════════════════════════════════════════════════════════
 @dataclass
 class Hit:
+    """Handle Hit."""
     t: float
     point: Vec3
     normal: Vec3
@@ -153,6 +163,7 @@ class Hit:
 
 
 def nearest_hit(origin: Vec3, direction: Vec3, scene: RaytraceScene) -> Hit | None:
+    """Do nearest hit for origin, direction, scene and return the result."""
     best: Hit | None = None
     # сферы
     for s in scene.spheres:

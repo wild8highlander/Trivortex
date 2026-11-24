@@ -21,7 +21,6 @@ TRIVORTEX MASTER — орбитальные резонансы: положени
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass
 
 AU_M = 1.495978707e11
 G_SI = 6.67430e-11
@@ -128,7 +127,7 @@ def is_librating(angles_deg: list[float], tol: float = 60.0) -> bool:
     после приведения к ближайшей ветке (0 или 180)."""
     if len(angles_deg) < 3:
         return False
-    best_center = None
+    pass  # (unused local removed)
     best_spread = float("inf")
     for center in (0.0, 180.0):
         wrapped = []
@@ -138,7 +137,7 @@ def is_librating(angles_deg: list[float], tol: float = 60.0) -> bool:
         spread = max(wrapped) - min(wrapped)
         if spread < best_spread:
             best_spread = spread
-            best_center = center
+            pass  # (unused local removed)
     return best_spread < tol
 
 
