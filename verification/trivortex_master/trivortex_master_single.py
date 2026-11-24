@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 ╔══════════════════════════════════════════════════════════════════════════╗
-║   TRIVORTEX MASTER — SINGLE-FILE EDITION · v2.0.3 · AURORA            ║
+║   TRIVORTEX MASTER — SINGLE-FILE EDITION · v2.2.0 · SIGNAL            ║
 ║   лаборатория N тел · планирование траекторий · 2D/3D/4D · отчёты 7 fmt   ║
 ╚══════════════════════════════════════════════════════════════════════════╝
 
@@ -20,6 +20,19 @@
 литература, кэш экзопланет — в <файл>/data/), протоколы пишутся в <файл>/runs/.
 numpy/matplotlib и другие ускорители — опциональны, как и в пакете.
 
+Изменения v2.2.0 (SIGNAL EDITION — паритет с Julia-изданием v2.2.0-jl):
+палитра «светофор» (TL_*/GOLD_*/INK/PAPER) и multistop-градиент по 14
+стопам; баннер TRIVORTEX с диагональным градиентом и кэшем; i18n RU/EN —
+tr(), --lang, --version, --gate, команда меню lang/ru/en, автодетект
+TRIVORTEX_LANG/LANG, переводы всех 73 названий режимов; прогресс-бар со
+светофор-градиентом, спиннером-брайль, скоростью и локализованным ETA;
+живой HUD-монитор (ЦП/ОЗУ/load/аптайм/N/движок): футер меню и команда st;
+меню-оглавление: рамка 80, главы римскими цифрами, две колонки, ▶ на
+последнем запущенном режиме; поиск /текст; панель команд ?; 16-цветный
+режим терминала реально красит (раньше PALETTE_16 была мёртвой);
+ИСПРАВЛЕНО: имена палитры (cyn/red/…) были функциями, а код режимов
+передаёт их в colorize() как кортежи RGB — в цветном терминале это падало
+с TypeError ('function' object is not subscriptable); теперь это кортежи.
 Проверено на этой сборке (v2.0.2): selftest S1–S24 = 24/24; quality gate
 пакета (verification/trivortex_master, tools/quality_gate.py) = selftest
 24/24, приёмка 20/20, модульные самопроверки 49/49, гигиена (117 файлов)
@@ -18533,6 +18546,364 @@ PALETTE_RGB = dict(
 # 16-цветные аналоги (деградация)
 PALETTE_16 = dict(ice=6, sky=4, gold=3, grn=2, red=1, vio=5, gry=7, wht=7, org=3)
 
+# ═══════════════════════════════════════════════════════════════════════════
+# БЛОК: palette_v2 — светофор (красный/жёлтый/зелёный) + чёрный/золото (v2.2.0)
+# ═══════════════════════════════════════════════════════════════════════════
+
+# — светофор ————————————————————————————————————————————————————————————————
+TL_RED    = (220,  50,  60)   # ярко-красный «стоп»
+TL_AMBER  = (250, 204,  21)   # жёлтый «внимание»
+TL_GREEN  = ( 52, 211, 153)   # зелёный «идти»
+TL_DIM_R  = (120,  25,  30)   # тёмно-красный
+TL_DIM_G  = ( 25,  90,  60)   # тёмно-зелёный
+
+# — золото и чернила ————————————————————————————————————————————————————————
+GOLD_B    = (232, 199, 102)   # яркое золото
+GOLD_D    = (140, 110,  40)   # тёмное золото
+INK       = ( 15,  15,  20)   # чернила (чёрный)
+INK_SOFT  = ( 40,  40,  50)   # мягкий чёрный
+PAPER     = (240, 244, 248)   # светлая бумага
+
+# — стоп-лист градиента светофора: красный → чёрный → золото/жёлтый
+#   → чёрный → зелёный → золото —————————————————————————————————————————————
+TRAFFIC_STOPS = [
+    (0.00, INK),
+    (0.06, TL_DIM_R),
+    (0.14, TL_RED),
+    (0.22, TL_RED),
+    (0.28, INK),
+    (0.34, GOLD_D),
+    (0.42, TL_AMBER),
+    (0.50, GOLD_B),
+    (0.58, TL_AMBER),
+    (0.64, INK),
+    (0.72, TL_DIM_G),
+    (0.82, TL_GREEN),
+    (0.92, TL_GREEN),
+    (1.00, GOLD_B),
+]
+
+
+def multistop(t: float, stops=None) -> tuple:
+    """Мульти-стоп-градиент: цвет по позиции t ∈ [0,1]."""
+    stops = TRAFFIC_STOPS if stops is None else stops
+    if len(stops) == 1:
+        return stops[0][1]
+    if t <= stops[0][0]:
+        return stops[0][1]
+    if t >= stops[-1][0]:
+        return stops[-1][1]
+    for i in range(len(stops) - 1):
+        t1, c1 = stops[i]
+        t2, c2 = stops[i + 1]
+        if t1 <= t <= t2:
+            u = (t - t1) / max(t2 - t1, 1e-9)
+            return (
+                int(round(c1[0] + (c2[0] - c1[0]) * u)),
+                int(round(c1[1] + (c2[1] - c1[1]) * u)),
+                int(round(c1[2] + (c2[2] - c1[2]) * u)),
+            )
+    return stops[-1][1]
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# БЛОК: i18n — переключение языка RU/EN (v2.2.0)
+#   tr("key") в текущем языке; выбор: --lang ru|en, команда меню lang,
+#   автодетект TRIVORTEX_LANG > LANG. Названия 73 режимов переведены
+#   полностью (MODE_TITLES_EN); тексты режимов остаются в базовом языке.
+# ═══════════════════════════════════════════════════════════════════════════
+
+_LANG_REF = ["ru"]
+
+
+def set_lang(l: str) -> str:
+    """Установить язык интерфейса (ru | en)."""
+    _LANG_REF[0] = l
+    return l
+
+
+def get_lang() -> str:
+    """Текущий язык интерфейса."""
+    return _LANG_REF[0]
+
+
+def toggle_lang() -> str:
+    """Переключить язык ru ↔ en."""
+    return set_lang("en" if get_lang() == "ru" else "ru")
+
+
+def lang_label(l: str | None = None) -> str:
+    """Короткая метка языка для футера."""
+    return "РУС" if (l or get_lang()) == "ru" else "EN"
+
+
+# автодетект из окружения (TRIVORTEX_LANG > LANG)
+_v_env = os.environ.get("TRIVORTEX_LANG", os.environ.get("LANG", "")).lower()
+if "ru" in _v_env:
+    set_lang("ru")
+elif "en" in _v_env:
+    set_lang("en")
+
+STRINGS = {
+    "ru": {
+        "menu.title":       "ГЛАВНОЕ МЕНЮ · TRIVORTEX MASTER",
+        "menu.choose":      "выбор",
+        "menu.prompt":      "выбор",
+        "menu.back":        "Enter — в меню…",
+        "menu.exit":        "выход",
+        "menu.lang":        "язык",
+        "menu.status":      "статус",
+        "menu.engines":     "движки",
+        "menu.unphys":      "allow_unphysical: ВКЛ — конфигурации за порогом помечаются",
+        "menu.hint.search": "/текст — поиск",
+        "menu.hint.hud":    "st — монитор",
+        "menu.hint.help":   "? — команды",
+        "menu.hint.exit":   "0 — выход",
+        "unit.modes":       "режимов",
+        "unit.cats":        "категорий",
+        "unit.bodies":      "N тел",
+        "cat.lab":          "Лаборатория",
+        "cat.vis":          "Визуализация",
+        "cat.sim":          "Симуляции",
+        "cat.anim":         "Анимации",
+        "cat.analysis":     "Анализ",
+        "cat.science":      "Наука",
+        "cat.render":       "Рендер",
+        "cat.reports":      "Отчёты",
+        "cat.tools":        "Инструменты",
+        "cat.settings":     "Настройки",
+        "cat.help":         "Справка",
+        "hud.cpu":          "ЦП",
+        "hud.ram":          "ОЗУ",
+        "hud.load":         "Нагрузка",
+        "hud.uptime":       "Аптайм",
+        "hud.bodies":       "Тел",
+        "hud.engine":       "Движок",
+        "pb.done":          "готово",
+        "pb.eta":           "ост.",
+        "pb.speed":         "скорость",
+        "err.pick":         "неверный пункт",
+        "err.eof":          "stdin исчерпан — выходим",
+        "err.interrupt":    "прервано — возврат в меню",
+        "err.mode":         "ошибка режима",
+        "search.query":     "поиск",
+        "search.found":     "найдено",
+        "search.empty":     "ничего не найдено",
+        "help.title":       "КОМАНДЫ МЕНЮ",
+        "help.cmd.run":     "запустить режим №",
+        "help.cmd.lang":    "переключить язык (ru / en)",
+        "help.cmd.search":  "поиск режима по тексту",
+        "help.cmd.hud":     "панель мониторинга (ЦП / ОЗУ / load)",
+        "help.cmd.help":    "эта справка",
+        "help.cmd.back":    "возврат в меню",
+        "lang.switched.ru": "язык: русский",
+        "lang.switched.en": "язык: английский",
+        "banner.subtitle":  "лаборатория N тел · траектории · 2D/3D/4D · отчёты 7 форматов · stdlib-first",
+    },
+    "en": {
+        "menu.title":       "MAIN MENU · TRIVORTEX MASTER",
+        "menu.choose":      "choose",
+        "menu.prompt":      "choose",
+        "menu.back":        "Enter — back to menu…",
+        "menu.exit":        "exit",
+        "menu.lang":        "language",
+        "menu.status":      "status",
+        "menu.engines":     "engines",
+        "menu.unphys":      "allow_unphysical: ON — beyond-threshold configurations are flagged",
+        "menu.hint.search": "/text — search",
+        "menu.hint.hud":    "st — monitor",
+        "menu.hint.help":   "? — commands",
+        "menu.hint.exit":   "0 — exit",
+        "unit.modes":       "modes",
+        "unit.cats":        "categories",
+        "unit.bodies":      "bodies",
+        "cat.lab":          "Laboratory",
+        "cat.vis":          "Visualization",
+        "cat.sim":          "Simulations",
+        "cat.anim":         "Animations",
+        "cat.analysis":     "Analysis",
+        "cat.science":      "Science",
+        "cat.render":       "Render",
+        "cat.reports":      "Reports",
+        "cat.tools":        "Tools",
+        "cat.settings":     "Settings",
+        "cat.help":         "Help",
+        "hud.cpu":          "CPU",
+        "hud.ram":          "RAM",
+        "hud.load":         "Load",
+        "hud.uptime":       "Uptime",
+        "hud.bodies":       "Bodies",
+        "hud.engine":       "Engine",
+        "pb.done":          "done",
+        "pb.eta":           "ETA",
+        "pb.speed":         "speed",
+        "err.pick":         "invalid option",
+        "err.eof":          "stdin exhausted — exiting",
+        "err.interrupt":    "interrupted — back to menu",
+        "err.mode":         "mode error",
+        "search.query":     "search",
+        "search.found":     "found",
+        "search.empty":     "no matches",
+        "help.title":       "MENU COMMANDS",
+        "help.cmd.run":     "run mode #",
+        "help.cmd.lang":    "switch language (ru / en)",
+        "help.cmd.search":  "search modes by text",
+        "help.cmd.hud":     "system monitor panel (CPU / RAM / load)",
+        "help.cmd.help":    "this help",
+        "help.cmd.back":    "back to menu",
+        "lang.switched.ru": "language: russian",
+        "lang.switched.en": "language: english",
+        "banner.subtitle":  "N-body laboratory · trajectories · 2D/3D/4D · 7-format reports · stdlib-first",
+    },
+}
+
+
+def tr(key: str) -> str:
+    """Перевод по ключу; если ключа нет — вернуть сам ключ."""
+    d = STRINGS.get(get_lang(), STRINGS["en"])
+    return d.get(key, key)
+
+
+# — категории реестра: русское имя → ключ i18n ——————————————————————————————
+CAT_I18N = {
+    "Наука":         "cat.science",
+    "Анализ":        "cat.analysis",
+    "Рендер":        "cat.render",
+    "Отчёты":        "cat.reports",
+    "Инструменты":   "cat.tools",
+    "Лаборатория":   "cat.lab",
+    "Визуализация":  "cat.vis",
+    "Симуляции":     "cat.sim",
+    "Анимации":      "cat.anim",
+    "Настройки":     "cat.settings",
+    "Справка":       "cat.help",
+}
+
+# — иконки категорий (глифы одной ширины) ———————————————————————————————————
+CAT_ICON = {
+    "Наука":         "✦",
+    "Анализ":        "∑",
+    "Рендер":        "◐",
+    "Отчёты":        "▤",
+    "Инструменты":   "⚙",
+    "Лаборатория":   "⚛",
+    "Визуализация":  "◉",
+    "Симуляции":     "∞",
+    "Анимации":      "▶",
+    "Настройки":     "❖",
+    "Справка":       "?",
+}
+
+
+def cat_label(cat: str) -> str:
+    """Имя категории на языке интерфейса (с откатом на исходное)."""
+    return tr(CAT_I18N.get(cat, cat))
+
+
+def cat_icon(cat: str) -> str:
+    """Иконка категории (одношириринный глиф)."""
+    return CAT_ICON.get(cat, "·")
+
+
+# — английские названия всех 73 режимов (реестр хранит русские) —————————————
+MODE_TITLES_EN = {
+    # Наука (25)
+    "science_relativity":    "Post-Newtonian (1PN/2PN, GR)",
+    "science_barnes_hut":    "Barnes-Hut O(N log N)",
+    "science_chaos":         "Chaos: FLI/Poincaré/Laskar",
+    "science_collisions":    "Collisions & fragments",
+    "science_tides":         "Tides",
+    "science_radiation":     "Radiation: P-R/Yarkovsky",
+    "science_resonances":    "Resonances",
+    "science_tissot":        "Tisserand parameter",
+    "science_halo":          "CR3BP & Lagrange points",
+    "science_planetary":     "System architectures",
+    "science_stellar":       "Stellar physics",
+    "science_mission":       "Missions: Hohmann/Tsiolkovsky",
+    "science_encounter":     "Gravity assists",
+    "science_horizons":      "Horizons ephemerides",
+    "science_cosmology":     "ΛCDM cosmology",
+    "science_maneuvers":     "Orbital maneuvers",
+    "science_almanac":       "Almanac",
+    "science_solar_system":  "Solar system simulation",
+    "science_eclipses":      "Eclipses & Saros",
+    "science_trojans":       "Lagrange trojans",
+    "science_bright_stars":  "Bright star catalogue",
+    "science_hamiltonian":   "Hamiltonian integrators",
+    "science_spacecraft":    "Spacecraft: attitude & wheels",
+    "science_observatory":   "Observatory: sessions",
+    "science_spaceweather":  "Space weather",
+    # Анализ (17)
+    "analysis_lombscargle":  "Lomb-Scargle",
+    "analysis_ttvs":         "TTV analysis",
+    "analysis_bls":          "BLS transits",
+    "analysis_mcmc":         "MCMC (Metropolis)",
+    "analysis_wavelets":     "Morlet wavelets",
+    "analysis_fitting":      "Levenberg-Marquardt",
+    "analysis_iod":          "Orbit determination (IOD)",
+    "analysis_proper":       "Proper elements",
+    "analysis_sky":          "Sky coordinates",
+    "analysis_tle":          "TLE ephemerides",
+    "analysis_lightcurves":  "Transit light curves",
+    "analysis_corner":       "Corner plots",
+    "analysis_entropy":      "Series entropies",
+    "analysis_selftest":     "Structural tests S1–S12",
+    "analysis_metrics":      "Current scene metrics",
+    "analysis_field":        "Field studies",
+    "analysis_rmt":          "RMT spectra statistics",
+    # Рендер (6)
+    "render_raytracer":      "Ray tracer",
+    "render_particles":      "Particles",
+    "render_camera":         "Cinematic cameras",
+    "render_spectrum":       "Star colors",
+    "render_ascii_sky":      "Sky map (ASCII)",
+    "render_compositor":     "Frame compositor",
+    # Отчёты (4)
+    "reports_xlsx":          "XLSX report",
+    "reports_pptx":          "PPTX report",
+    "reports_odt":           "ODT report",
+    "reports_generate":      "Generate reports",
+    # Инструменты (5)
+    "tools_data_export":     "Data export",
+    "tools_pipeline":        "Data pipeline",
+    "tools_benchmark":       "Benchmark B1–B8",
+    "tools_apiref":          "API reference",
+    "tools_gate":            "Quality gate (full CI)",
+    # Лаборатория (4)
+    "scene_create":          "New scene from preset",
+    "scene_custom":          "Custom scene (N bodies)",
+    "scene_info":            "Show current scene",
+    "scene_catalog":         "Object catalogue (search)",
+    # Визуализация (2)
+    "viz_render":            "Visualize (2D/3D/4D)",
+    "viz_ascii":             "ASCII frame in terminal",
+    # Симуляции (2)
+    "sim_run":               "Run simulation",
+    "sim_trajectory":        "Plan a trajectory",
+    # Анимации (2)
+    "anim_gif":              "Build GIF animation",
+    "anim_mp4":              "Build MP4 video",
+    # Настройки (3)
+    "settings_profile":      "Configuration profile",
+    "settings_physics":      "Reality physics",
+    "settings_save":         "Save/load config",
+    # Справка (3)
+    "help_engines":          "Engines & dependencies",
+    "help_literature":       "Literature & sources",
+    "help_about":            "About the complex",
+}
+
+
+def mode_title(item) -> str:
+    """Название режима на языке интерфейса (item — dict menu_spec или ModeEntry)."""
+    if isinstance(item, dict):
+        name, base = item.get("name", ""), item.get("title", "")
+    else:
+        name, base = getattr(item, "name", ""), getattr(item, "title", "")
+    if get_lang() == "en":
+        return MODE_TITLES_EN.get(name, base)
+    return base
+
 _COLOR_MODE = "truecolor"  # truecolor | 256 | 16 | none
 COLOR = True  # цветовой шлюз: отчёты всегда получают чистый текст
 
@@ -18592,6 +18963,24 @@ def _rgb_to_256(r: int, g: int, b: int) -> int:
     return best
 
 
+_ANSI16_FG = [
+    (0, 0, 0), (205, 0, 0), (0, 205, 0), (205, 205, 0),
+    (0, 0, 238), (205, 0, 205), (0, 205, 205), (229, 229, 229),
+    (127, 127, 127), (255, 0, 0), (0, 255, 0), (255, 255, 0),
+    (92, 92, 255), (255, 0, 255), (0, 255, 255), (255, 255, 255),
+]
+
+
+def _rgb_to_16(rgb) -> int:
+    """Ближайший базовый ANSI-цвет (30–37 / 90–97) для режима 16 (v2.2.0)."""
+    best, best_d = 37, 1 << 30
+    for i, (r, g, b) in enumerate(_ANSI16_FG):
+        d = (rgb[0] - r) ** 2 + (rgb[1] - g) ** 2 + (rgb[2] - b) ** 2
+        if d < best_d:
+            best, best_d = (90 + i - 8) if i >= 8 else (30 + i), d
+    return best
+
+
 def _p3(rgb: tuple) -> str:
     """Do p3 for rgb and return the result."""
     if not COLOR or _COLOR_MODE == "none":
@@ -18617,65 +19006,36 @@ RESET_hud = "\x1b[0m" if COLOR else ""
 
 
 def _col(rgb, bold=False):
-    """Общая обёртка: код цвета или пустая строка."""
+    """Общая обёртка: код цвета или пустая строка (v2.2.0: режим 16 красит)."""
     if not COLOR or _COLOR_MODE == "none":
         return ""
     if _COLOR_MODE == "16":
-        return ""
+        # v2.2.0: раньше возвращался "" (PALETTE_16 была мёртвой) — теперь
+        # ближайший базовый ANSI-цвет по RGB-расстоянию
+        code = _rgb_to_16(rgb)
+        pre = "\x1b[1m" if bold else ""
+        return f"{pre}\x1b[{code}m"
     s = _p3(rgb)
     if bold and s:
         s = "\x1b[1m" + s
     return s
 
 
-def cyn(bold=False):
-    """Colorize text cyan (AURORA palette)."""
-    return _col(ICE, bold)
-
-
-def grn(bold=False):
-    """Colorize text green (AURORA palette)."""
-    return _col(GRN, bold)
-
-
-def red(bold=False):
-    """Colorize text red (AURORA palette)."""
-    return _col(RED, bold)
-
-
-def ylw(bold=False):
-    """Do ylw for bold and return the result."""
-    return _col(GOLD, bold)
-
-
-def mag(bold=False):
-    """Do mag for bold and return the result."""
-    return _col(VIO, bold)
-
-
-def blu(bold=False):
-    """Do blu for bold and return the result."""
-    return _col(SKY, bold)
-
-
-def gry(bold=False):
-    """Do gry for bold and return the result."""
-    return _col(GRY, bold)
-
-
-def wht(bold=False):
-    """Do wht for bold and return the result."""
-    return _col(WHT, bold)
-
-
-def org(bold=False):
-    """Do org for bold and return the result."""
-    return _col(ORG, bold)
-
-
-def gold(bold=False):
-    """Do gold for bold and return the result."""
-    return _col(GOLD, bold)
+# v2.2.0 (ИСПРАВЛЕНИЕ): раньше это были функции-обёртки _col(…), но код
+# режимов передаёт имена палитры в colorize() как КОРТЕЖИ RGB — в цветном
+# терминале colorize(text, cyn) падал с TypeError ('function' object is not
+# subscriptable; вызовов как функций нет ни одного — проверено grep-ом).
+# Теперь это кортежи, и все 57 мест вызова работают во всех режимах цвета.
+cyn = ICE
+grn = GRN
+red = RED
+ylw = GOLD
+mag = VIO
+blu = SKY
+gry = GRY
+wht = WHT
+org = ORG
+gold = GOLD
 
 
 def reset() -> str:
@@ -18786,31 +19146,68 @@ BANNER_ACLL = [
 
 BANNER_PLAIN = [
     "+=====================================================+",
-    "|   A C L L   ·   T R I V O R T E X   M A S T E R    |",
-    "|            лаборатория N тел · v{version}              |",
+    "|   TRIVORTEX MASTER · SIGNAL EDITION · v{version}    |",
+    "|     лаборатория N тел · траектории · отчёты 7 fmt   |",
     "+=====================================================+",
 ]
 
+"""Фиглет-баннер TRIVORTEX в цветах светофора (6 строк × ~70 колонок)."""
+BANNER_TRIVORTEX = [
+"████████╗██████╗ ██╗██╗   ██╗ ██████╗ ██████╗ ████████╗███████╗██╗  ██╗",
+"╚══██╔══╝██╔══██╗██║██║   ██║██╔═══██╗██╔══██╗╚══██╔══╝██╔════╝╚██╗██╔╝",
+"   ██║   ██████╔╝██║██║   ██║██║   ██║██████╔╝   ██║   █████╗   ╚███╔╝ ",
+"   ██║   ██╔══██╗██║╚██╗ ██╔╝██║   ██║██╔══██╗   ██║   ██╔══╝   ██╔██╗ ",
+"   ██║   ██║  ██║██║ ╚████╔╝ ╚██████╔╝██║  ██║   ██║   ███████╗██╔╝ ██╗",
+"   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝",
+]
+
+_BANNER_CACHE = None
+_BANNER_CACHE_KEY = None
+
+
+def banner_trivortex_colored() -> list[str]:
+    """Диагональный светофорный градиент по баннеру (кэш результата)."""
+    global _BANNER_CACHE, _BANNER_CACHE_KEY
+    if not COLOR or _COLOR_MODE == "none":
+        return list(BANNER_TRIVORTEX)
+    key = (_COLOR_MODE, COLOR)
+    if _BANNER_CACHE is not None and _BANNER_CACHE_KEY == key:
+        return _BANNER_CACHE
+    H = len(BANNER_TRIVORTEX)
+    out = []
+    for r, line in enumerate(BANNER_TRIVORTEX):
+        n = max(len(line), 1)
+        buf = []
+        for c, ch in enumerate(line):
+            tc = c / max(n - 1, 1)
+            tr_ = r / max(H - 1, 1)
+            t = min(max(0.72 * tc + 0.28 * tr_, 0.0), 1.0)
+            buf.append((_col(multistop(t), True) or "") + ch)
+        out.append("".join(buf) + reset())
+    _BANNER_CACHE = out
+    _BANNER_CACHE_KEY = key
+    return out
+
 
 def banner(version: str = "2.0.0", subtitle: str = "") -> list[str]:
-    """Баннер ACLL: truecolor-градиент лёд→золото, при Non-TTY — плоский."""
-    if _COLOR_MODE == "none" or not COLOR:
+    """Баннер TRIVORTEX: светофор-градиент (цвет) или плоский (Non-TTY)."""
+    if not COLOR or _COLOR_MODE == "none":
         lines = [ln.format(version=version) for ln in BANNER_PLAIN]
     else:
-        lines = [gradient_text(ln, ICE, GOLD) for ln in BANNER_ACLL]
-    title = f"T R I V O R T E X   M A S T E R   ·   v{version}   ·   AURORA EDITION"
-    lines.append(colorize(title, GOLD, True) if COLOR else title)
-    sub = subtitle or "лаборатория N тел · траектории · 2D/3D/4D · отчёты 7 форматов"
+        lines = banner_trivortex_colored()
+    title = f"T R I V O R T E X   M A S T E R   ·   v{version}   ·   SIGNAL EDITION"
+    lines.append(colorize(title, GOLD_B, True) if COLOR else title)
+    sub = subtitle or tr("banner.subtitle")
     lines.append(colorize(sub, GRY) if COLOR else sub)
     return lines
 
 
 def print_banner(version: str = "2.0.0", subtitle: str = "", stream=None) -> None:
-    """Do print banner for version, subtitle, stream and return the result."""
+    """Печать баннера: строки + орнамент-линия золотом."""
     stream = stream or sys.stdout
     for ln in banner(version, subtitle):
         stream.write(ln + "\n")
-    stream.write(colorize(orn(74), SKY) + "\n" if COLOR else orn(74) + "\n")
+    stream.write(colorize(orn(74), GOLD_B) + "\n" if COLOR else orn(74) + "\n")
 
 
 def verdict_icon(ok: bool) -> str:
@@ -19002,6 +19399,121 @@ def _list_dir(path: str) -> list[str]:
 
 
 # ═══════════════════════════════════════════════════════════════════════════
+# 5b. HUD-монитор меню (v2.2.0): CPU/RAM/load/аптайм/N тел/движок.
+#     Linux: /proc/stat, /proc/uptime, /proc/loadavg, /proc/meminfo;
+#     на не-Linux — «n/a», не падаем.
+# ═══════════════════════════════════════════════════════════════════════════
+_HUD_MON = None
+
+
+def _get_hud_mon() -> Monitor:
+    """Ленивый синглтон Monitor для HUD меню."""
+    global _HUD_MON
+    if _HUD_MON is None:
+        _HUD_MON = Monitor()
+    return _HUD_MON
+
+
+def _fmt_bytes_gb(gb: float) -> str:
+    """Человекочитаемые байты из ГБ (десятичных, как даёт Monitor.ram)."""
+    b = gb * 1e9
+    if b < 1024:
+        return f"{b:.0f} B"
+    if b < 1024 ** 2:
+        return f"{b / 1024:.1f} KiB"
+    if b < 1024 ** 3:
+        return f"{b / 1024 ** 2:.1f} MiB"
+    if b < 1024 ** 4:
+        return f"{b / 1024 ** 3:.2f} GiB"
+    return f"{b / 1024 ** 4:.2f} TiB"
+
+
+def _fmt_dur(s: float) -> str:
+    """Длительность: с → м:сс → ч:мм → сут."""
+    if s < 60:
+        return f"{s:.0f}s"
+    if s < 3600:
+        return f"{int(s // 60)}m{int(s) % 60:02d}s"
+    if s < 86400:
+        return f"{int(s // 3600)}h{int(s % 3600) // 60:02d}m"
+    return f"{s / 86400:.1f}d"
+
+
+def _uptime_s() -> float | None:
+    """Аптайм системы из /proc/uptime (None — не Linux)."""
+    try:
+        with open("/proc/uptime", encoding="utf-8") as fh:
+            return float(fh.read().split()[0])
+    except (OSError, ValueError, IndexError):
+        return None
+
+
+def _loadavg():
+    """(1m, 5m, 15m) из /proc/loadavg (None — не Linux)."""
+    try:
+        with open("/proc/loadavg", encoding="utf-8") as fh:
+            p = fh.read().split()
+        return float(p[0]), float(p[1]), float(p[2])
+    except (OSError, ValueError, IndexError):
+        return None
+
+
+def gauge(pct: float, width: int = 14) -> str:
+    """Мини-полоска: значение 0..100, цвет по зонам светофора."""
+    filled = max(0, min(width, int(round(pct / 100.0 * width))))
+    col = TL_GREEN if pct < 55 else (TL_AMBER if pct < 80 else TL_RED)
+    return colorize("█" * filled, col, True) + colorize("░" * (width - filled), INK_SOFT)
+
+
+def hud_lines(app=None) -> list[str]:
+    """Обновить и вернуть 3 строки HUD (CPU | RAM | тела/движок)."""
+    mon = _get_hud_mon()
+    cpu = mon.cpu_pct()
+    tot, avail = mon.ram()
+    up = _uptime_s()
+    la = _loadavg()
+
+    ram_str = "n/a" if tot <= 0 else (
+        f"{_fmt_bytes_gb(tot - avail)} / {_fmt_bytes_gb(tot)}  "
+        + gauge(100.0 * (tot - avail) / tot, 12)
+    )
+    up_str = "n/a" if up is None else _fmt_dur(up)
+    la_str = "n/a" if la is None else f"{la[0]:.2f} {la[1]:.2f} {la[2]:.2f}"
+
+    l1 = (
+        colorize("  " + tr("hud.cpu") + " ", INK_SOFT) + gauge(cpu, 18) + " "
+        + colorize(f"{cpu:5.1f}%", TL_AMBER, True) + "  "
+        + colorize(tr("hud.load") + " ", INK_SOFT) + colorize(la_str, PAPER)
+    )
+    l2 = (
+        colorize("  " + tr("hud.ram") + " ", INK_SOFT) + ram_str + "  "
+        + colorize(tr("hud.uptime") + " ", INK_SOFT) + colorize(up_str, PAPER)
+    )
+    n_bodies = 0
+    engine = "native_newton"
+    if app is not None:
+        sc = getattr(app, "scene", None)
+        n_bodies = int(getattr(sc, "n", 0) or 0)
+        engine = getattr(getattr(app, "config", None), "physics_engine", engine)
+    l3 = (
+        colorize("  " + tr("hud.bodies") + " ", INK_SOFT)
+        + colorize(str(n_bodies), TL_GREEN, True) + "   "
+        + colorize(tr("hud.engine") + " ", INK_SOFT)
+        + colorize(engine, GOLD_B, True)
+    )
+    return [l1, l2, l3]
+
+
+def draw_monitor(app=None, width: int = 80) -> None:
+    """Отрисовать HUD: рамка светофора + три строки (команда меню st)."""
+    print()
+    print(box_top(width, TL_AMBER))
+    for line in hud_lines(app):
+        print(box_row(line, width, TL_AMBER))
+    print(box_bot(width, TL_AMBER))
+
+
+# ═══════════════════════════════════════════════════════════════════════════
 # 6. Прогресс-бар — одна строка, динамический, EMA-ETA
 # ═══════════════════════════════════════════════════════════════════════════
 def _term_width() -> int:
@@ -19124,11 +19636,13 @@ class ProgressBar:
             return
         w = _term_width()
         pct = self.frac * 100.0
-        spin = "◐◓◑◒"[int(now * 8) % 4] if COLOR else "*"
-        head = f"{colorize(spin, ICE, True)} {self.label}"
-        bar_w = max(8, min(22, w // 4))
+        spin = SPIN_BRAILLE[int(now * 10) % len(SPIN_BRAILLE)] if COLOR else "*"
+        head = f"{colorize(spin, TL_AMBER, True)} {self.label}"
+        bar_w = max(8, min(34, w // 3))
         filled = int(bar_w * self.frac)
-        bar = colorize("▰" * filled, ICE, True) + colorize("▱" * (bar_w - filled), GRY)
+        # v2.2.0: заполнение мультистоп-градиентом светофора (как в баннере)
+        cells = [colorize("█", multistop((k + 0.5) / bar_w), True) for k in range(filled)]
+        bar = "".join(cells) + colorize("░" * (bar_w - filled), INK_SOFT)
         line = f"{head} {bar} {pct:5.1f}%"
         # хвост: статус → монитор → ETA → up (усекается справа налево)
         tail_parts = []
@@ -19141,7 +19655,9 @@ class ProgressBar:
                 pass
         eta = self._eta()
         if eta is not None:
-            tail_parts.append("ETA " + self._fmt(eta))
+            tail_parts.append(tr("pb.eta") + " " + self._fmt(eta))
+        if self._ema_rate and self._ema_rate > 1e-12:
+            tail_parts.append(f"{tr('pb.speed')} {self._ema_rate * self.total:.1f}/s")
         tail_parts.append("up " + self._fmt(now - self._t0))
         tail = " · ".join(p for p in tail_parts if p)
         budget = w - visible_width(line) - 3
@@ -26919,7 +27435,7 @@ from render.hud import (
     color_off,
 )
 
-VERSION = "2.0.3"
+VERSION = "2.2.0-py"
 
 
 def ask(prompt: str) -> str:
@@ -27853,97 +28369,294 @@ def mode_help_about(app: App_trivortex_master):
 # ═══════════════════════════════════════════════════════════════════════════
 # Отрисовка меню
 # ═══════════════════════════════════════════════════════════════════════════
-def print_menu() -> None:
-    """Handle print menu."""
-    print()
-    print(colorize("┌── ГЛАВНОЕ МЕНЮ " + "─" * 45 + "┐", mag, True))
-    counter = 1
-    global _MENU_INDEX
-    _MENU_INDEX = {}
-    for cat in REGISTRY.menu_spec():
-        print(colorize(f"│ ▸ {cat['category']}", mag, True))
-        for item in cat["items"]:
-            key = str(counter)
-            _MENU_INDEX[key] = item["name"]
-            icon = item["icon"]
-            title = item["title"]
-            if not item["available"]:
-                title += colorize(
-                    "  (недоступно: " + "; ".join(item["blocked_reasons"])[:40] + ")", gry
-                )
-            print(f"│  {colorize(key, ylw, True)}  {icon} {title}")
-            counter += 1
-    print(colorize("│  " + colorize("0", ylw, True) + "  ✖ Выход", wht))
-    print(colorize("└" + "─" * 60 + "┘", mag, True))
-
+# ═══════════════════════════════════════════════════════════════════════════
+# Отрисовка меню (v2.2.0 — SIGNAL): книжное оглавление — рамка 80,
+# главы римскими цифрами с диапазонами, две колонки пунктов, ▶ на последнем
+# запущенном режиме, живой HUD-футер, поиск /текст, панель команд ?,
+# язык lang/ru/en. Паритет с Julia-изданием v2.2.0-jl.
+# ═══════════════════════════════════════════════════════════════════════════
+MENU_UI_W = 80          # ширина меню/монитора/футера
+MENU_COL_W = 38         # ширина колонки пункта (5 + название ≤33)
+MENU_ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X",
+              "XI", "XII"]
+LAST_MODE_REF = ""      # ▶-маркер последнего запущенного режима
+_ENGINE_MARKS = None    # кэш строки статуса движков (зонды недешёвы)
 
 _MENU_INDEX: dict[str, str] = {}
 
 
-def interactive() -> int:
-    """Главный интерактивный цикл; EOF-safe, Ctrl-C-safe."""
-    detect_color_mode()
-    print_banner(
-        VERSION, "лаборатория N тел · траектории · 2D/3D/4D · " "отчёты 7 форматов · stdlib-first"
-    )
-    from core.registry import engine_status_lines
+def box_top(w: int = MENU_UI_W, col: tuple = GOLD_B) -> str:
+    """Верхняя кромка рамки ╭───╮."""
+    return colorize("╭" + "─" * (w - 2) + "╮", col)
 
-    marks = "  ".join(f"[{m}]{lbl[:12]}" for m, lbl, _w in engine_status_lines()[:6])
-    print(colorize("  движки: " + marks, gry))
+
+def box_bot(w: int = MENU_UI_W, col: tuple = GOLD_B) -> str:
+    """Нижняя кромка рамки ╰───╯."""
+    return colorize("╰" + "─" * (w - 2) + "╯", col)
+
+
+def box_row(content: str, w: int = MENU_UI_W, col: tuple = GOLD_B) -> str:
+    """Строка рамки │ контент │ (дотация по видимой ширине)."""
+    return colorize("│", col) + pad_to(" " + content, w - 2) + colorize("│", col)
+
+
+def _menu_cell(item: dict, numstr: str, width: int = MENU_COL_W) -> str:
+    """Ячейка пункта: NN ▶/· Название (▶ и янтарь — на последнем запуске)."""
+    global LAST_MODE_REF
+    active = LAST_MODE_REF == item["name"]
+    marker = colorize("▶", TL_AMBER, True) if active else colorize("·", INK_SOFT)
+    tw = width - 5 - (2 if not item["available"] else 0)
+    title = trunc_to(mode_title(item), tw)
+    line = (
+        colorize(numstr, GOLD_B, active) + " " + marker + " "
+        + colorize(title, TL_AMBER if active else PAPER, active)
+    )
+    if not item["available"]:
+        line += colorize(" ✗", RED, True)
+    return pad_to(line, width)
+
+
+def print_menu() -> None:
+    """Меню-оглавление: шапка-рамка, главы, две колонки, HUD-футер."""
+    global _MENU_INDEX, _ENGINE_MARKS
+    spec = REGISTRY.menu_spec()
+    n_modes = sum(len(c["items"]) for c in spec)
+    # ── шапка ──────────────────────────────────────────────────────────────
+    print()
+    print(box_top(MENU_UI_W, GOLD_B))
+    ver = "v" + VERSION
+    head_l = " " + colorize("✦ " + tr("menu.title"), TL_AMBER, True)
+    head_r = colorize(ver, GOLD_B, True) + " "
+    print(
+        colorize("│", GOLD_B)
+        + pad_to(head_l, MENU_UI_W - 2 - visible_width(head_r))
+        + head_r + colorize("│", GOLD_B)
+    )
+    n_bodies = 0
+    engine = "native_newton"
+    sc = getattr(APP, "scene", None)
+    if sc is not None:
+        n_bodies = int(getattr(sc, "n", 0) or 0)
+    engine = getattr(getattr(APP, "config", None), "physics_engine", engine)
+    counts = (
+        colorize(str(n_modes), GOLD_B, True) + " " + colorize(tr("unit.modes"), PAPER)
+        + colorize(" · ", INK_SOFT)
+        + colorize(str(len(spec)), GOLD_B, True) + " " + colorize(tr("unit.cats"), PAPER)
+        + colorize(" · ", INK_SOFT)
+        + colorize(tr("unit.bodies") + " ", INK_SOFT)
+        + colorize(str(n_bodies), TL_GREEN, True)
+        + colorize(" · " + tr("hud.engine") + " ", INK_SOFT)
+        + colorize(engine, GOLD_B)
+    )
     if APP.config.allow_unphysical:
-        print(colorize("  ⚠ allow_unphysical: ВКЛ — конфигурации N=8 помечаются", ylw, True))
+        counts += colorize(" · ⚠ unphys", TL_AMBER, True)
+    print(box_row(counts, MENU_UI_W, GOLD_B))
+    if _ENGINE_MARKS is None:
+        from core.registry import engine_status_lines
+
+        parts = []
+        for m, lbl, _w in engine_status_lines()[:6]:
+            parts.append(colorize(f"[{m}]{lbl[:10]}", TL_GREEN if m == "✓" else RED))
+        _ENGINE_MARKS = colorize(tr("menu.engines") + " ", INK_SOFT) + " ".join(parts)
+    print(box_row(_ENGINE_MARKS, MENU_UI_W, GOLD_B))
+    print(box_bot(MENU_UI_W, GOLD_B))
+    # ── главы: «оглавление» нефикшн-книги ──────────────────────────────────
+    _MENU_INDEX = {}
+    counter = 1
+    for ci, cat in enumerate(spec):
+        items = cat["items"]
+        i0, i1 = counter, counter + len(items) - 1
+        roman = MENU_ROMAN[ci] if ci < len(MENU_ROMAN) else f"{ci + 1:02d}"
+        name = cat_label(cat["category"]).upper()
+        rng = f"{i0:02d}" if len(items) == 1 else f"{i0:02d}–{i1:02d}"
+        tail = f" {len(items)} · {rng}"
+        left_plain = f" {roman} · {cat_icon(cat['category'])} {name} "
+        leader_w = max(MENU_UI_W - 2 - len(left_plain) - len(tail), 4)
+        print()
+        print(
+            "  " + colorize(roman, GOLD_B, True) + colorize(" · ", INK_SOFT)
+            + colorize(cat_icon(cat["category"]), TL_GREEN, True) + " "
+            + colorize(name, TL_AMBER, True) + " "
+            + colorize("─" * leader_w, TL_DIM_G) + colorize(tail, GRY)
+        )
+        half = (len(items) + 1) // 2
+        for r in range(half):
+            lm = items[r]
+            rm = items[r + half] if r + half < len(items) else None
+            row = "  " + _menu_cell(lm, f"{i0 + r:02d}")
+            row += "  " + (_menu_cell(rm, f"{i0 + half + r:02d}") if rm else "")
+            print(row)
+        for it in items:
+            _MENU_INDEX[str(counter)] = it["name"]
+            counter += 1
+    # ── футер: HUD-монитор + подсказки ─────────────────────────────────────
+    print()
+    print(box_top(MENU_UI_W, TL_DIM_G))
+    for line in hud_lines(APP):
+        print(box_row(line, MENU_UI_W, TL_DIM_G))
+    hints = (
+        colorize(tr("menu.lang") + ": ", INK_SOFT) + colorize(lang_label(), GOLD_B, True)
+        + colorize(
+            " · " + tr("menu.hint.search")
+            + " · " + tr("menu.hint.hud")
+            + " · " + tr("menu.hint.help")
+            + " · " + tr("menu.hint.exit"),
+            INK_SOFT,
+        )
+    )
+    print(box_row(hints, MENU_UI_W, TL_DIM_G))
+    print(box_bot(MENU_UI_W, TL_DIM_G))
+
+
+def ask_prompt(prompt: str) -> str | None:
+    """Цветной prompt; EOF/Ctrl-C → None (чистый выход из сессии)."""
+    try:
+        return input(
+            colorize("  " + prompt + " ", TL_AMBER, True) + colorize("▸ ", GOLD_B, True)
+        ).strip()
+    except (EOFError, KeyboardInterrupt):
+        return None
+
+
+def print_menu_help(width: int = MENU_UI_W) -> None:
+    """Панель команд меню (?)."""
+    print()
+    print(box_top(width, TL_DIM_G))
+    print(box_row(colorize("✦ " + tr("help.title"), TL_AMBER, True), width, TL_DIM_G))
+    rows = [
+        ("NN", tr("help.cmd.run")),
+        ("lang · ru · en", tr("help.cmd.lang")),
+        ("/text · /текст", tr("help.cmd.search")),
+        ("st", tr("help.cmd.hud")),
+        ("?", tr("help.cmd.help")),
+        ("0 · q", tr("menu.exit")),
+        ("Enter", tr("help.cmd.back")),
+    ]
+    for cmd, d in rows:
+        print(box_row("  " + colorize(pad_to(cmd, 17), GOLD_B, True) + colorize(d, PAPER),
+                      width, TL_DIM_G))
+    print(box_bot(width, TL_DIM_G))
+
+
+def _menu_search(query: str) -> None:
+    """Поиск режимов: имя, название (RU/EN), описание; печать попаданий."""
+    q = (query or "").strip().lower()
+    print()
+    if not q:
+        print(colorize("  » " + tr("search.query") + ": " + tr("menu.hint.search"), GRY))
+        return
+    hits = []
+    i = 1
+    for cat in REGISTRY.menu_spec():
+        for it in cat["items"]:
+            en = MODE_TITLES_EN.get(it["name"], "")
+            hay = (it["name"] + " " + it["title"] + " " + en + " "
+                   + it["description"]).lower()
+            if q in hay:
+                hits.append((i, it))
+            i += 1
+    print(
+        colorize(
+            "  » " + tr("search.query") + " «" + q + "» — "
+            + str(len(hits)) + " " + tr("search.found"),
+            TL_AMBER, True,
+        )
+    )
+    for num, it in hits:
+        print(
+            colorize(f"    {num:2d}", GOLD_B, True) + " " + colorize("▸", TL_GREEN, True)
+            + " " + colorize(trunc_to(mode_title(it), 60), PAPER)
+            + colorize("  ·  " + it["name"], INK_SOFT)
+            + ("" if it["available"] else colorize("  ✗ " + "; ".join(it["blocked_reasons"])[:40], GRY))
+        )
+    if not hits:
+        print(colorize("    ∅ " + tr("search.empty"), GRY))
+
+
+def interactive() -> int:
+    """Интерактивный цикл (v2.2.0): EOF-safe, Ctrl-C-safe; команды
+    lang/ru/en, st, ?, /поиск; ▶ помечает последний запущенный режим."""
+    detect_color_mode(sys.stdout)
+    print_banner(VERSION)
+    global LAST_MODE_REF
     empty_reads = 0
     while True:
         print_menu()
-        try:
-            choice = input("  номер пункта > ").strip()
-        except (EOFError, KeyboardInterrupt):
-            print("\n  выход")
+        choice = ask_prompt(tr("menu.prompt"))
+        if choice is None:
+            print(colorize("\n  " + tr("err.eof"), GRY))
             break
         if not choice:
             empty_reads += 1
             if empty_reads > 50:
-                print("  слишком много пустых вводов — выходим")
+                print(colorize("  " + tr("err.eof"), GRY))
                 break
             continue
         empty_reads = 0
+        low = choice.lower()
         if choice in ("0", "q", "q!", "exit", "quit", "выход"):
             break
+        elif low in ("lang", "язык", "language", "l"):
+            new = toggle_lang()
+            print(colorize("  ✓ " + tr("lang.switched." + new), TL_GREEN, True))
+            continue
+        elif low in ("ru", "рус"):
+            set_lang("ru")
+            print(colorize("  ✓ " + tr("lang.switched.ru"), TL_GREEN, True))
+            continue
+        elif low in ("en", "eng"):
+            set_lang("en")
+            print(colorize("  ✓ " + tr("lang.switched.en"), TL_GREEN, True))
+            continue
+        elif low in ("st", "стат", "статус", "status", "hud", "мон"):
+            draw_monitor(APP)
+            continue
+        elif low in ("?", "h", "help", "помощь", "команды"):
+            print_menu_help()
+            continue
+        elif choice.startswith("/"):
+            _menu_search(choice[1:])
+            continue
+        elif low.startswith("поиск ") or low.startswith("f ") or low.startswith("find "):
+            parts = choice.split(None, 1)
+            _menu_search(parts[1] if len(parts) > 1 else "")
+            continue
         mode_name = _MENU_INDEX.get(choice)
         if mode_name is None:
-            print(colorize(f"  нет пункта {choice}", red))
+            print(colorize("  ✗ " + tr("err.pick") + ": " + choice, RED))
             continue
         entry = REGISTRY.get(mode_name)
         if entry is None:
             continue
+        LAST_MODE_REF = mode_name
         try:
             entry.callable(APP)
         except KeyboardInterrupt:
-            print(colorize("\n  прервано — возврат в меню", ylw))
+            print(colorize("\n  ⚠ " + tr("err.interrupt"), GOLD))
         except Exception as exc:
-            print(colorize(f"\n  ✗ ошибка режима: {type(exc).__name__}: {exc}", red))
+            print(colorize("\n  ✗ " + tr("err.mode")
+                           + f": {type(exc).__name__}: {exc}", RED))
             traceback.print_exc(file=sys.stderr)
             APP._log(f"ошибка в {mode_name}: {exc}")
         # пауза, чтобы прочитать вывод
         try:
-            input(colorize("\n  Enter — в меню…", gry))
+            input(colorize("\n  " + tr("menu.back"), GRY))
         except (EOFError, KeyboardInterrupt):
             print()
             break
     APP._log("сессия завершена")
-    print(colorize("\n  лог сессии: " + APP.session_log, gry))
+    print(colorize("\n  лог сессии: " + APP.session_log, GRY))
     return 0
 
-
-# ═══════════════════════════════════════════════════════════════════════════
 # CLI
 # ═══════════════════════════════════════════════════════════════════════════
 def cli(args: list[str]) -> int:
     """Do cli for args and return the result."""
     parser = argparse.ArgumentParser(
-        prog="trivortex_master", description="TRIVORTEX MASTER — лабораторный комплекс N тел"
+        prog="trivortex_master", description="TRIVORTEX MASTER — лабораторный комплекс N тел (SIGNAL EDITION)",
+        epilog="меню: NN — режим · /текст — поиск · lang — язык · st — монитор · ? — команды · 0/q — выход"
     )
-    parser.add_argument("--selftest", action="store_true", help="структурные тесты S1–S12")
+    parser.add_argument("--selftest", action="store_true", help="структурные тесты S1–S24")
     parser.add_argument(
         "--profile", default="standard", choices=list(PROFILES), help="профиль конфигурации"
     )
@@ -27958,16 +28671,35 @@ def cli(args: list[str]) -> int:
         "--allow-unphysical", action="store_true", help="разрешить N=8 (вне физической вселенной)"
     )
     parser.add_argument("--no-color", action="store_true")
+    parser.add_argument(
+        "--lang", choices=("ru", "en"), default=None,
+        help="язык интерфейса (по умолчанию — автодетект окружения)",
+    )
+    parser.add_argument(
+        "--version", action="version",
+        version=f"TRIVORTEX MASTER v{VERSION} · SIGNAL EDITION",
+    )
+    parser.add_argument("--gate", action="store_true", help="полный CI-гейт (selftest + приёмка + self-check)")
     ns = parser.parse_args(args)
 
     if ns.no_color:
         color_off()
+    if ns.lang:
+        set_lang(ns.lang)
 
     if ns.selftest:
         from analysis.tests import run_all
 
         summary = run_all()
         return 0 if summary["all_pass"] else 1
+
+    if ns.gate:
+        entry = REGISTRY.get("tools_gate")
+        if entry is None:
+            print("quality gate недоступен")
+            return 1
+        entry.callable(APP)
+        return 0
 
     if ns.banner_only:
         print_banner(VERSION)
