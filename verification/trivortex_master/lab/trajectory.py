@@ -147,6 +147,19 @@ class AnalyticPlanner(TrajectoryPlanner):
     def theorem31(
         self, C_Ch: float = 1.0, T: float = 2 * math.pi, n_steps: int = 500, n_periods: float = 1.0
     ) -> Trajectory:
+        """Замкнутая форма Теоремы 3.1 — «дышащее кольцо» трёх вихрей:
+
+            r_k(t) = √C_Ch · (1 + ε·cos(ωt + 2πk/3)),  θ_k(t) = ωt + 2πk/3
+            ω = (2π/T)·e^(C_Ch/π),  ε = 1/(e^(C_Ch/π) − 1)
+
+        ДОПУСТИМОСТЬ (Теорема B монографа polyvortex): форма невырождена
+        при C_Ch > π·ln2 ≈ 2.1776 — там ε < 1 и радиусы положительны на
+        всём цикле. При C_Ch < π·ln2 (включая дефолт ядра C_Ch=1, ε≈2.668)
+        кривая — лимакон с внутренней петлёй: тело проходит через центр,
+        и геометрическое разделение 2π/3 по позициям ломается (разделение
+        по полярным углам θ_k сохраняется всегда). Параметр оставлен
+        свободным, как в ядре; вырожденность отмечается в metadata.
+        """
         ratio = math.exp(C_Ch / math.pi)
         omega = (2 * math.pi / T) * ratio
         eps = 1.0 / (ratio - 1.0) if C_Ch > 0.01 else 1.0
@@ -181,6 +194,8 @@ class AnalyticPlanner(TrajectoryPlanner):
                 epsilon=eps,
                 C_Ch=C_Ch,
                 T=T,
+                # порог допустимости Теоремы B (polyvortex): π·ln2 ≈ 2.1776
+                admissible=eps < 1.0,
                 source="Trivortex Theorem 3.1",
             ),
         )

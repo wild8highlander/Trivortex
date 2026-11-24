@@ -22,6 +22,32 @@ from core.registry import register_mode
 from render.hud import kv, colorize, cyn, grn, red, verdict_icon
 
 
+def bind_ascii_sky() -> bool:
+    """S3-чистая инъекция астроданных для render.ascii_sky.
+
+    render не импортирует realism (правило направлений S3: render →
+    {core, lab}); каталог ярких звёзд и преобразования координат
+    передаются сюда, на верхний слой меню. Аналог register_engine()
+    для адаптеров движков. Возвращает True при успехе."""
+    try:
+        from realism.bright_stars import BRIGHT_STARS
+        from realism.sky_coordinates import (
+            angular_separation,
+            equatorial_to_horizontal,
+        )
+        from render.ascii_sky import bind_astronomy
+
+        bind_astronomy(lambda: BRIGHT_STARS, equatorial_to_horizontal, angular_separation)
+        return True
+    except Exception:  # noqa: BLE001 — карта неба опциональна в меню
+        return False
+
+
+# привязка при импорте модуля: режим «Карта неба (ASCII)» и quality gate
+# получают работающий каталог без скрытой зависимости render → realism
+_ASCII_SKY_BOUND = bind_ascii_sky()
+
+
 class _AppShim:
     """Минимальная обвязка App: только new_run_dir (пути к протоколам).
 

@@ -1,0 +1,81 @@
+  [✓] A1 запуск без пакетов
+  [✓] A2 диапазон N=3…7, 8 с флагом, 9 — отказ
+  [✓] A3 рендер ascii/pure/mpl — mpl, pure, ascii
+  [✓] A4 GIF-LZW + MP4 (ffmpeg) — см. S10 и runs/examples
+  [✓] A5 отчёты 7 форматов — все валидны
+  [✓] A6 каталог ≥200 с источниками — 538 объектов, 538 с source
+  [✓] A7 fallback REBOUND→native — движок: native_newton
+  [✓] A8 selftest S1–S12
+  [✓] A9 ZIP целостность
+  [✓] A10 README
+  [✓] A11 отчёты 8 форматов валидны — проблемы: []
+  [✓] A12 Меркурий 1PN 42.98″/век — mercury=42.98047695363713
+  [✓] A13 Barnes-Hut: точность + скорость — err_rms=0.025, ×1.93
+  [✓] A14 рейтрейсер: сцена видима — nonbg=880
+  [✓] A15 MCMC: согласие с МНК, R̂<1.1 — b=0.41137482084080684 vs OLS 0.41092323115480284
+  [✓] A16 Horizons: планета получена (online|offline) — режим: offline-synthetic
+  [✓] B1 интеграторы: 0.03 с (rk4_s=0.00921, leapfrog_s=0.00522, yoshida4_s=0.0156)
+  [✓] B5 вихревой движок: 0.04 с (energy_drift=1.62e-12, t_final=4)
+  [✓] B6 MCMC: 0.08 с (total_s=0.0773, chains=4, samples_per_chain=800)
+  [✓] A17 бенчмарк B1/B5/B6 зелёный — 3/3
+  [✓] A18 API: ≥65 модулей, docstrings ≥55% — 96 модулей, 66%
+  [✓] A19 каталог≥520, пресеты≥20, меню≥49 — 538 объектов, 20 пресетов, 73 режимов
+  [✓] A20 ≥24000 строк Python — 56990 строк
+── QUALITY GATE ──────────────────────────────────
+selftest:      24/24
+acceptance:    20/20
+module checks: 49/49
+hygiene:       чисто
+docstrings:    66%
+python lines:  56990
+  almanac   : 1/1 ✓
+  ascii_sky : 1/1 ✓
+  bright_stars: 1/1 ✓
+  camera    : 1/1 ✓
+  chaos     : 1/1 ✓
+  collisions: 1/1 ✓
+  corner_plots: 1/1 ✓
+  cosmology : 1/1 ✓
+  data_exporter: 1/1 ✓
+  eclipses  : 1/1 ✓
+  encounter : 1/1 ✓
+  entropy   : 1/1 ✓
+  fitting   : 1/1 ✓
+  frame_compositor: 1/1 ✓
+  halo_orbits: 1/1 ✓
+  hamiltonian_split: 1/1 ✓
+  lightcurves: 1/1 ✓
+  lomb_scargle: 1/1 ✓
+  mcmc      : 1/1 ✓
+  mission_design: 1/1 ✓
+  nbody_tree: 1/1 ✓
+  observatory: 1/1 ✓
+  odt_writer: 1/1 ✓
+  orbital_elements_fit: 1/1 ✓
+  orbital_maneuvers: 1/1 ✓
+  particles : 1/1 ✓
+  periodogram: 1/1 ✓
+  pipeline  : 1/1 ✓
+  planetary_systems: 1/1 ✓
+  pptx_writer: 1/1 ✓
+  proper_elements: 1/1 ✓
+  radiation : 1/1 ✓
+  raytracer : 1/1 ✓
+  relativity: 1/1 ✓
+  release_notes: 1/1 ✓
+  resonances: 1/1 ✓
+  sky_coordinates: 1/1 ✓
+  solar_system_sim: 1/1 ✓
+  space_weather: 1/1 ✓
+  spacecraft: 1/1 ✓
+  spectrum  : 1/1 ✓
+  stellar   : 1/1 ✓
+  tides     : 1/1 ✓
+  tissot    : 1/1 ✓
+  tles      : 1/1 ✓
+  trojans   : 1/1 ✓
+  ttvs      : 1/1 ✓
+  wavelets  : 1/1 ✓
+  xlsx_writer: 1/1 ✓
+ИТОГ:          PASSED
+exit=0

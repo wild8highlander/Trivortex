@@ -174,11 +174,9 @@ def convergence_order(
 
 def self_check() -> dict:
     """Осциллятор: kdk дрейф ~dt²; y4 дрейф ~dt⁴; период сохранён;
-    ХХ: y4 дрейф меньше kdk."""
+    итог: дрейф y4 минимум на два порядка меньше kdk."""
     osc = harmonic_h()
     y0 = [1.0, 0.0]
-    conv2 = convergence_order(osc, energy_harmonic, y0, dt=0.1, n_steps=800)
-    conv4 = convergence_order(osc, energy_harmonic, y0, dt=0.1, n_steps=800)
     d2 = energy_drift_order(osc, energy_harmonic, y0, 0.1, 800, method="kdk")
     d4 = energy_drift_order(osc, energy_harmonic, y0, 0.1, 800, method="y4")
     # kdk: дрейф ~dt²  → дрейф(0.1) значителен; y4: дрейф ~dt⁴ → на

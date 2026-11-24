@@ -43,7 +43,11 @@ def scan_source_hygiene() -> dict:
         re.MULTILINE,
     )
     quoted = re.compile(r"[\'\"].{0,3}(?:TODO|FIXME|XXX|HACK).{0,3}[\'\"]")
-    self_file = os.path.relpath(os.path.abspath(__file__), ROOT)
+    # Маркеры-как-данные: сам сканер и его дословная копия внутри
+    # single-file издания (и наоборот) содержат паттерны TODO/FIXME/XXX
+    # и raise NotImplementedError КАК СТРОКИ кода сканера — это данные,
+    # не заглушки; носители кода сканера исключаются взаимно
+    skip_files = {"tools/quality_gate.py", "trivortex_master_single.py"}
     findings = []
     n_files = 0
     for base, dirs, files in os.walk(ROOT):
@@ -54,7 +58,7 @@ def scan_source_hygiene() -> dict:
             n_files += 1
             path = os.path.join(base, fn)
             rel = os.path.relpath(path, ROOT)
-            if rel == self_file:
+            if rel in skip_files:
                 continue
             src = open(path, encoding="utf-8").read()
             for m in patterns.finditer(src):
@@ -69,6 +73,21 @@ def scan_source_hygiene() -> dict:
 def module_selfchecks() -> list[dict]:
     """self_check() всех модулей с независимыми эталонами."""
     checks = []
+
+    # S3-чистая инъекция астроданных для render.ascii_sky (render не
+    # импортирует realism; каталог передаётся верхним слоем — как
+    # register_engine для адаптеров движков)
+    try:
+        from realism.bright_stars import BRIGHT_STARS
+        from realism.sky_coordinates import (
+            angular_separation,
+            equatorial_to_horizontal,
+        )
+        from render.ascii_sky import bind_astronomy
+
+        bind_astronomy(lambda: BRIGHT_STARS, equatorial_to_horizontal, angular_separation)
+    except Exception:  # noqa: BLE001 — gate продолжит, ascii_sky честно провалится
+        pass
 
     def run(label, module, func="self_check"):
         try:

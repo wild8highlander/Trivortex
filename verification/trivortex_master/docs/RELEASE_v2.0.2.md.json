@@ -1,0 +1,45 @@
+{
+ "generated": "2026-11-24T05:00:34",
+ "api": {
+  "modules": 96,
+  "classes": 115,
+  "functions": 632,
+  "docstring_coverage": 0.664,
+  "lines": 56990
+ },
+ "catalog": {
+  "objects": 538,
+  "by_type": {
+   "star": 16,
+   "planet": 8,
+   "dwarf_planet": 5,
+   "moon": 29,
+   "asteroid": 20,
+   "comet": 10,
+   "synthetic": 10,
+   "exoplanet": 440
+  }
+ },
+ "presets": 20,
+ "menu": {
+  "modes": 73,
+  "categories": [
+   "Наука",
+   "Анализ",
+   "Рендер",
+   "Отчёты",
+   "Инструменты",
+   "Лаборатория",
+   "Визуализация",
+   "Симуляции",
+   "Анимации",
+   "Настройки",
+   "Справка"
+  ]
+ },
+ "selftest": {
+  "passed": 24,
+  "total": 24,
+  "all_pass": true
+ }
+}

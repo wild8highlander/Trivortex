@@ -78,7 +78,6 @@ def ttv_amplitude(t_obs: Sequence[float]) -> dict:
     """
     res = oc_residuals(t_obs)
     oc = res["oc"]
-    t_mid = [(t - res["T0"]) for t in t_obs]
     if len(set(oc)) < 3 or res["rms"] < 1e-9:
         return dict(amplitude=0.0, period=None, rms=res["rms"])
     # грубый период: максимум автокорреляции остатков
@@ -144,7 +143,6 @@ def self_check() -> dict:
         + rng.gauss(0, 1e-6)
         for k in range(120)
     ]
-    res = oc_residuals(t_ttv)
     meas = ttv_amplitude(t_ttv)
     amp_ok = abs(meas["amplitude"] - a_true) < 0.004
     period_ok = meas["period"] is not None and abs(meas["period"] - p_ttv_true) < 25.0

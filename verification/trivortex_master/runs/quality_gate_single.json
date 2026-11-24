@@ -1,0 +1,250 @@
+{
+ "selftest": {
+  "passed": 24,
+  "total": 24,
+  "details": {}
+ },
+ "acceptance": {
+  "passed": 20,
+  "total": 20,
+  "details": {
+   "A1": true,
+   "A2": true,
+   "A3": true,
+   "A4": true,
+   "A5": true,
+   "A6": true,
+   "A7": true,
+   "A8": true,
+   "A9": true,
+   "A10": true,
+   "A11": true,
+   "A12": true,
+   "A13": true,
+   "A14": true,
+   "A15": true,
+   "A16": true,
+   "A17": true,
+   "A18": true,
+   "A19": true,
+   "A20": true
+  }
+ },
+ "module_selfchecks": {
+  "passed": 49,
+  "total": 49,
+  "modules": [
+   {
+    "module": "relativity",
+    "ok": true
+   },
+   {
+    "module": "nbody_tree",
+    "ok": true
+   },
+   {
+    "module": "chaos",
+    "ok": true
+   },
+   {
+    "module": "collisions",
+    "ok": true
+   },
+   {
+    "module": "tides",
+    "ok": true
+   },
+   {
+    "module": "radiation",
+    "ok": true
+   },
+   {
+    "module": "resonances",
+    "ok": true
+   },
+   {
+    "module": "tissot",
+    "ok": true
+   },
+   {
+    "module": "halo_orbits",
+    "ok": true
+   },
+   {
+    "module": "planetary_systems",
+    "ok": true
+   },
+   {
+    "module": "stellar",
+    "ok": true
+   },
+   {
+    "module": "sky_coordinates",
+    "ok": true
+   },
+   {
+    "module": "tles",
+    "ok": true
+   },
+   {
+    "module": "mission_design",
+    "ok": true
+   },
+   {
+    "module": "encounter",
+    "ok": true
+   },
+   {
+    "module": "lomb_scargle",
+    "ok": true
+   },
+   {
+    "module": "ttvs",
+    "ok": true
+   },
+   {
+    "module": "periodogram",
+    "ok": true
+   },
+   {
+    "module": "proper_elements",
+    "ok": true
+   },
+   {
+    "module": "orbital_elements_fit",
+    "ok": true
+   },
+   {
+    "module": "mcmc",
+    "ok": true
+   },
+   {
+    "module": "wavelets",
+    "ok": true
+   },
+   {
+    "module": "fitting",
+    "ok": true
+   },
+   {
+    "module": "xlsx_writer",
+    "ok": true
+   },
+   {
+    "module": "pptx_writer",
+    "ok": true
+   },
+   {
+    "module": "odt_writer",
+    "ok": true
+   },
+   {
+    "module": "raytracer",
+    "ok": true
+   },
+   {
+    "module": "particles",
+    "ok": true
+   },
+   {
+    "module": "camera",
+    "ok": true
+   },
+   {
+    "module": "spectrum",
+    "ok": true
+   },
+   {
+    "module": "frame_compositor",
+    "ok": true
+   },
+   {
+    "module": "cosmology",
+    "ok": true
+   },
+   {
+    "module": "almanac",
+    "ok": true
+   },
+   {
+    "module": "orbital_maneuvers",
+    "ok": true
+   },
+   {
+    "module": "lightcurves",
+    "ok": true
+   },
+   {
+    "module": "corner_plots",
+    "ok": true
+   },
+   {
+    "module": "entropy",
+    "ok": true
+   },
+   {
+    "module": "hamiltonian_split",
+    "ok": true
+   },
+   {
+    "module": "trojans",
+    "ok": true
+   },
+   {
+    "module": "solar_system_sim",
+    "ok": true
+   },
+   {
+    "module": "eclipses",
+    "ok": true
+   },
+   {
+    "module": "bright_stars",
+    "ok": true
+   },
+   {
+    "module": "data_exporter",
+    "ok": true
+   },
+   {
+    "module": "ascii_sky",
+    "ok": true
+   },
+   {
+    "module": "release_notes",
+    "ok": true
+   },
+   {
+    "module": "spacecraft",
+    "ok": true
+   },
+   {
+    "module": "observatory",
+    "ok": true
+   },
+   {
+    "module": "pipeline",
+    "ok": true
+   },
+   {
+    "module": "space_weather",
+    "ok": true
+   }
+  ]
+ },
+ "hygiene": {
+  "files": 117,
+  "findings": [],
+  "clean": true
+ },
+ "api": {
+  "modules": 96,
+  "classes": 115,
+  "functions": 632,
+  "docstring_coverage": 0.6644230769230769
+ },
+ "code": {
+  "py_lines": 56990
+ },
+ "passed": true
+}

@@ -92,14 +92,9 @@ def lagrange_points(mu: float) -> dict:
     for name, x0 in starts.items():
 
         def f(x):
+            # уравнение коллинеарных точек: x − (1−μ)(x+μ)/|r1|³ − μ(x−1+μ)/|r2|³ = 0
             r1 = x + mu
             r2 = x - 1 + mu
-            s1 = 1.0 if r1 >= 0 else -1.0
-            s2 = 1.0 if r2 >= 0 else -1.0
-            a1 = -(1 - mu) * s1 / (abs(r1) ** 2)
-            a2 = -mu * s2 / (abs(r2) ** 2)
-            # уравнение: x − (1−μ)(x+μ)/|r1|³·s1·|r1|... — численно:
-            # ускорение по x: −(1−μ)(x+μ)/r1³ − μ(x−1+μ)/r2³ + x = 0
             a1f = -(1 - mu) * r1 / (abs(r1) ** 3)
             a2f = -mu * r2 / (abs(r2) ** 3)
             return x + a1f + a2f

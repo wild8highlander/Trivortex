@@ -361,7 +361,7 @@ def self_check() -> dict:
         ps.step(1 / 30)
     n30 = ps.alive_count
     # все частицы должны умереть за ~1/0.03/60 с ≈ 0.55 с → 30 тиков хватает
-    all_dead = ps.alive_count == 0 if n30 == 0 else False
+    all_dead = n30 == 0
     # диск: частицы не мгновенно улетают
     disk = accretion_disk()
     disk.step(0.05)
@@ -372,9 +372,9 @@ def self_check() -> dict:
         explosion_n0=n0,
         explosion_n_after_30=n30,
         explosion_energy0=e0,
-        explosion_ok=n0 == 150 and n30 < n0,
+        explosion_ok=n0 == 150 and all_dead,
         disk_alive=disk.alive_count,
         disk_mean_radius=r_mean,
         disk_ok=disk.alive_count > 180 and 0.5 < r_mean < 4.0,
-        ok=(n0 == 150 and n30 < n0 and disk.alive_count > 180),
+        ok=(n0 == 150 and all_dead and disk.alive_count > 180),
     )

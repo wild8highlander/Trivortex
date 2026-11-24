@@ -138,9 +138,6 @@ def fragment_on_impact(
     frag_mass = smaller.mass / n_fragments
     frag_radius = smaller.radius / n_fragments ** (1.0 / 3.0)
     frags: list[Body] = []
-    v_cm = tuple(
-        (a.mass * u + b.mass * v) / (a.mass + b.mass) for u, v in zip(a.velocity, b.velocity)
-    )
     # изотропные направления разлёта в плоскости, перпендикулярной линии
     dx, dy, dz = (b.position[k] - a.position[k] for k in range(3))
     d = math.sqrt(dx * dx + dy * dy + dz * dz) or 1.0

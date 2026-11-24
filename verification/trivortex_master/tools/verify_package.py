@@ -118,7 +118,7 @@ def run() -> dict:
     results["A8"] = check("A8 selftest S1–S12", r8.returncode == 0)
 
     # A9: ZIP
-    zp = os.path.join(ROOT, "dist", "trivortex_master_v2.0.0.zip")
+    zp = os.path.join(ROOT, "dist", "trivortex_master_v2.0.2.zip")
     ok9 = False
     if os.path.isfile(zp):
         with zipfile.ZipFile(zp) as zf:
@@ -127,8 +127,12 @@ def run() -> dict:
 
     # A10: README
     readme = open(os.path.join(ROOT, "README.md"), encoding="utf-8").read()
+    low = readme.lower()
     results["A10"] = check(
-        "A10 README", "python3 trivortex_master.py" in readme and "профил" in readme.lower()
+        # language-neutral: the quick-start command plus the English or the
+        # Russian word for "profile" (the README may be localized)
+        "A10 README",
+        "python3 trivortex_master.py" in readme and ("profile" in low or "профил" in low),
     )
     return results
 

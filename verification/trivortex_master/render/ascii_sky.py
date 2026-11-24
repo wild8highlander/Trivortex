@@ -6,11 +6,20 @@ TRIVORTEX MASTER — карта неба в стереографической �
   * stereographic_project: (alt, az) → плоскость — конформная
     проекция: r = k·tan(z/2), z — зенитное расстояние; круги остаются
     кругами (свойство конформности, Snyder 1987, «Map Projections»);
-  * sky_map_ascii: все 25 ярких звёзд (realism.bright_stars) в
-    полусферическом виде для широты наблюдателя, символ по величине;
+  * sky_map_ascii: все 25 ярких звёзд в полусферическом виде для
+    широты наблюдателя, символ по величине;
   * constellation_lines: грубые линии известных фигур (Большой Ковш,
     Орион) между яркими звёздами;
   * cardinal_marks: метки сторон горизонта.
+
+Архитектура (правило направлений S3: render → {core, lab}): модуль НЕ
+импортирует realism. Каталог ярких звёзд (realism.bright_stars) и
+преобразования координат (realism.sky_coordinates) инъектируются
+верхним слоем через bind_astronomy() — вызывается из modes_extra.py,
+tools/quality_gate.py и tools/build_dist.py. Это тот же паттерн
+инверсии зависимости, что register_engine() для адаптеров
+REBOUND/Dedalus (см. core/registry.py): слой данных подключается к
+слою отображения, не создавая ребра render → realism в графе импортов.
 
 Самопроверки: зенит в центре; круг постоянной высоты — окружность
 (конформность); звёзды ниже горизонта не рисуются; длина линий
@@ -20,9 +29,41 @@ TRIVORTEX MASTER — карта неба в стереографической �
 from __future__ import annotations
 
 import math
+from typing import Any, Callable, Sequence
 
-from realism.bright_stars import BRIGHT_STARS, Star
-from realism.sky_coordinates import equatorial_to_horizontal
+# ── DI-слоты: инъекция астроданных (без импорта realism — правило S3) ──
+_catalog_provider: Callable[[], Sequence[Any]] | None = None
+_eq_to_horiz: Callable[..., tuple[float, float]] | None = None
+_angular_sep: Callable[..., float] | None = None
+
+
+def bind_astronomy(
+    catalog_provider: Callable[[], Sequence[Any]],
+    eq_to_horiz: Callable[..., tuple[float, float]],
+    angular_sep: Callable[..., float],
+) -> None:
+    """Инъекция зависимости: realism-слой передаёт каталог ярких звёзд и
+    преобразования координат; render остаётся свободным от импорта realism
+    (правило направлений S3). Аналог register_engine() для движков."""
+    global _catalog_provider, _eq_to_horiz, _angular_sep
+    _catalog_provider = catalog_provider
+    _eq_to_horiz = eq_to_horiz
+    _angular_sep = angular_sep
+
+
+def astronomy_bound() -> bool:
+    """Привязан ли поставщик астроданных (для диагностики в меню)."""
+    return _catalog_provider is not None and _eq_to_horiz is not None
+
+
+def _require_astronomy() -> None:
+    if _catalog_provider is None or _eq_to_horiz is None:
+        raise RuntimeError(
+            "astronomy provider не привязан: вызовите "
+            "render.ascii_sky.bind_astronomy(catalog, eq_to_horiz, ang_sep) "
+            "из верхнего слоя (modes_extra / tools) — render не импортирует "
+            "realism (правило направлений S3)"
+        )
 
 
 def stereographic_project(alt_deg: float, az_deg: float, k: float = 1.0) -> tuple[float, float]:
@@ -38,11 +79,15 @@ def stereographic_project(alt_deg: float, az_deg: float, k: float = 1.0) -> tupl
     return (r * math.sin(az), r * math.cos(az))
 
 
-def visible_stars(lat_deg: float, lst_rad: float) -> list[tuple[Star, float, float]]:
-    """Звёзды над горизонтом: (звезда, alt, az) для широты и LST."""
+def visible_stars(lat_deg: float, lst_rad: float) -> list[tuple[Any, float, float]]:
+    """Звёзды над горизонтом: (звезда, alt, az) для широты и LST.
+
+    Каталог и преобразование equatorial→horizontal приходят через
+    bind_astronomy() (инъекция, S3)."""
+    _require_astronomy()
     visible = []
-    for star in BRIGHT_STARS:
-        az, alt = equatorial_to_horizontal(star.ra_deg, star.dec_deg, lat_deg, lst_rad)
+    for star in _catalog_provider():
+        az, alt = _eq_to_horiz(star.ra_deg, star.dec_deg, lat_deg, lst_rad)
         if alt > 0:
             visible.append((star, alt, az))
     return visible
@@ -58,18 +103,19 @@ CONSTELLATION_LINES = {
 
 
 def constellation_lengths(lat_deg: float, lst_rad: float) -> dict:
-    """Угловые длины линий созвездий (для проверки масштаба)."""
-    from realism.sky_coordinates import angular_separation
+    """Угловые длины линий созвездий (для проверки масштаба).
 
+    angular_separation инъектируется через bind_astronomy() (S3)."""
+    _require_astronomy()
     out = {}
     for name, pairs in CONSTELLATION_LINES.items():
         total = 0.0
         for a, b in pairs:
-            sa = [s for s in BRIGHT_STARS if s.name == a]
-            sb = [s for s in BRIGHT_STARS if s.name == b]
+            sa = [s for s in _catalog_provider() if s.name == a]
+            sb = [s for s in _catalog_provider() if s.name == b]
             if not sa or not sb:
                 continue
-            total += angular_separation(sa[0].ra_deg, sa[0].dec_deg, sb[0].ra_deg, sb[0].dec_deg)
+            total += _angular_sep(sa[0].ra_deg, sa[0].dec_deg, sb[0].ra_deg, sb[0].dec_deg)
         out[name] = total
     return out
 
@@ -132,7 +178,7 @@ def self_check() -> dict:
     visible_ok = len(visible) >= 8
     # Сириус с юга России (45°) виден, на 60° с.ш. низко
     lst_sirius = math.radians(101.28 + 0.0)  # RA Сириуса в градусах
-    az_s, alt_s = equatorial_to_horizontal(101.28, -16.72, 55.75, lst_sirius)
+    az_s, alt_s = _eq_to_horiz(101.28, -16.72, 55.75, lst_sirius)
     sirius_up = alt_s > 0
     # карта-строка
     text = sky_map_ascii(55.75, lst)
@@ -145,6 +191,7 @@ def self_check() -> dict:
     return dict(
         zenith_ok=zenith_ok,
         conformal_ok=conformal_ok,
+        astronomy_bound=astronomy_bound(),
         n_visible=len(visible),
         visible_ok=visible_ok,
         sirius_alt=round(alt_s, 1),
@@ -154,5 +201,6 @@ def self_check() -> dict:
         map_ok=map_ok,
         all_ok=zenith_ok and conformal_ok and visible_ok and sirius_up and orion_ok and map_ok,
         note="стереографическая проекция — конформная (Snyder 1987); "
-        "символ яркости: █ < 0ᵐ, ▓ < 1ᵐ, ▒ < 2ᵐ, ░ остальные",
+        "символ яркости: █ < 0ᵐ, ▓ < 1ᵐ, ▒ < 2ᵐ, ░ остальные; "
+        "астроданные инъектируются через bind_astronomy (S3: render без realism)",
     )

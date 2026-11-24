@@ -1,5 +1,131 @@
 # Changelog — TRIVORTEX MASTER
 
+## 2.0.2 (2026-11-24) — English documentation release
+
+Documentation release: the entire README surface is now **English**
+(the root README and all 10 subfolder READMEs, rewritten and enriched),
+the acceptance check A10 is language-neutral, and the asset gallery
+gains three new real-run charts.
+
+### Documentation
+
+- **All READMEs in English**: the root README (rewritten: collapsible
+  accelerator table, FAQ, roadmap timeline, contributing rules with the
+  layer contracts) + core, lab, realism, render, reports, analysis,
+  tools, data, docs, runs — banners, badges, mermaid diagrams, real
+  charts and GIFs throughout
+- New gallery charts, computed by the package's own engines:
+  - `poincare_sections.png` — regular island vs chaotic sea of the
+    Henon-Heiles potential (families of initial conditions through
+    `PoincareMap`)
+  - `cosmology_ladder.png` — the flat Lambda-CDM distance ladder
+    (luminosity/comoving distances, lookback time; Planck-18)
+  - `bright_stars_hr.png` — a color-magnitude view of the 25 brightest
+    stars (realism/bright_stars, spectral classes)
+- All banners/charts/sky-map titles translated to English; the SVG
+  chip text is now XML-escaped (a raw `<` broke the core banner XML)
+
+### CI robustness
+
+- **A10 acceptance check made language-neutral**
+  (tools/verify_package.py + the embedded copy): previously it grepped
+  the Russian word for "profile" in README.md and would fail on an
+  English README; now it accepts either `profile` or `профил`
+
+### Version housekeeping
+
+- coordinated bump to v2.0.2: VERSION, build_zip, A9 ZIP name, ACLL
+  banner, single-file header block (historical mentions preserved)
+
+### Quality (re-verified on this tree)
+
+- selftest S1-S24: 24/24, exit 0, zero cross-marks — both editions
+- acceptance A1-A20: 20/20 (A9 green after `build_zip.py`)
+- quality gate: 49/49 module checks, hygiene of 117 files clean,
+  docstrings 66% — **PASSED** (package and single-file edition)
+
+## 2.0.1 (2026-11-24) — честность тестов, архитектура S3, документация
+
+Технический релиз: три скрытых дефекта, маскировавших друг друга,
+исправены; полный quality gate обоих изданий — **PASSED** (ранее
+пакетный gate падал на гигиене из-за взаимных ложных срабатываний со
+single-файлом, что не было замечено после генерации single-издания).
+
+### Исправления ядра
+
+- **TestResult.check (критично, analysis/tests.py)**: поздний успешный
+  чек безусловно ставил `passed = True`, затирая ранний провал — тесты
+  S3 и S9 показывали `[✓]` с внутренними `✗`. Семантика исправлена на
+  «провал любого чека валит тест»; `__init__` стартует оптимистично.
+  Именно этот баг скрывал два следующих дефекта.
+
+- **S9 / Теорема 3.1 — допустимая область (Теорема B)**: замкнутая форма
+  вырождена при C_Ch ≤ π·ln2 ≈ 2.1776 (ε>1, лимакон с внутренней
+  петлёй, проход через центр) — дефолт ядра C_Ch=1 лежит ниже порога
+  (зарегистрированный факт монографа polyvortex). Раньше разделение
+  2π/3 проверялось геометрически ровно в вырожденной точке и «чудом»
+  проходило лишь из-за бага check(). Теперь: разделение проверяется при
+  C_Ch=π (ошибка 1.8e-15), вырождение при C_Ch=1 детектируется явно
+  (ошибка 1.05 рад — порог работает), ω-пин на эталоне ядра сохранён;
+  планировщик `theorem31()` документирует порог и кладёт флаг
+  `admissible` в metadata.
+
+- **S3 / render → realism (architecture)**: `render/ascii_sky.py`
+  импортировал `realism.bright_stars` и `realism.sky_coordinates`,
+  нарушая правило направлений (render → {core, lab}). Переведён на
+  инъекцию зависимостей: `bind_astronomy(catalog, eq_to_horiz, ang_sep)`
+  вызывается верхним слоем (modes_extra.py при загрузке,
+  tools/quality_gate.py, tools/build_dist.py) — тот же паттерн, что
+  `register_engine()` для адаптеров движков. Непривязанное состояние
+  ловится внятной ошибкой.
+
+- **Гигиена quality gate (взаимные ложные срабатывания)**: пакетный
+  сканер флаговал single-файл (в нём дословно встроен код самого
+  сканера с паттернами TODO/FIXME/XXX как данными), gate single-издания
+  симметрично — пакетный сканер. Введён взаимный skip-набор
+  «носителей кода сканера» в обеих копиях.
+
+### Чистка мёртвого кода (поведение не менялось)
+
+- lab/relativity.py: удалён черновой блок 1PN (A_coef + цикл с pass);
+  каноническая форма (Меркурий 42.98″/век) сохранена дословно
+- lab/collisions.py: мёртвый v_cm (импульс осколков строится от
+  скорости меньшего тела — по контракту self_check)
+- lab/halo_orbits.py: мёртвые a1/a2 со знаковой логикой (рабочие
+  a1f/a2f сохранены)
+- lab/hamiltonian_split.py: мёртвые conv2/conv4 + заглушка «ХХ» в
+  docstring
+- lab/nbody_tree.py: мёртвая рекурсия max_depth (never called)
+- analysis/ttvs.py: мёртвые t_mid, res
+- render/particles.py: проверка «все частицы умирают за 30 тиков»
+  теперь реально входит в ok (ранее вычислялась и отбрасывалась)
+- reports/writers/odt_writer.py: генерация столбцов без мёртвой ветки
+  `if False`
+- trivortex_master.py: импорт ascii_table вынесен из цикла
+
+### Документация (новое)
+
+- README.md для всех подпапок: core, lab, realism, render, reports,
+  analysis, tools, data, docs, runs — баннеры (анимированные SVG со
+  SMIL), бейджи, mermaid-диаграммы, реальные графики и гифки
+- docs/assets/: 11 PNG из реальных прогонов (пресеты, Теорема 3.1 с
+  порогом π·ln2, Хавелок, FLI, энергия, Barnes-Hut, Меркурий, приливы,
+  TRAPPIST-1, каталог 538, спектры), 4 GIF собственным LZW-кодером,
+  рейтрейсер, карта неба, 12 SVG-баннеров + логотип, реальные логи
+  selftest/quality gate обоих изданий
+- корневой README переписан: содержание, реальные результаты, лестница
+  верификации (mermaid), архитектура с DI-паттерном, honest-limits
+  дополнены Теоремой B
+
+### Качество
+
+- selftest S1–S24: 24/24 (пакет и single-издание, exit 0, ноль ✗)
+- приёмка A1–A20: 20/20 (оба издания; A9 зелёный после build_zip)
+- quality gate: 49/49 модульных чеков, гигиена 117 файлов чисто,
+  docstrings 66% — **PASSED** (логи: docs/assets/quality_gate*.txt)
+- pyflakes: устранены все значимые предупреждения (неиспользуемые
+  локальные, мёртвые импорты в блоках)
+
 ## 2.0.0 (2026-11-21) — удвоенный объём
 
 ### Ядро лаборатории (+24 модуля)

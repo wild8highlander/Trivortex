@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-TRIVORTEX MASTER — сборка дистрибутива v2.0.0.
+TRIVORTEX MASTER — сборка дистрибутива v2.0.2.
 
   1. Прогон всех проверок (selftest + приёмка + gate) — сборка только
      из зелёного состояния;
   2. генерация примеров (make_examples) и документации (API.md,
      RELEASE_v2.0.md);
-  3. ZIP + tar.gz с манифестом v2.0.0 (список файлов, sha256, размеры);
+  3. ZIP + tar.gz с манифестом v2.0.2 (список файлов, sha256, размеры);
   4. копирование в /home/z/my-project/download/.
 
 Версия: 2.0.0 (удвоенный объём).
@@ -29,7 +29,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 
 DOWNLOAD = "/home/z/my-project/download"
-VERSION = "2.0.0"
+VERSION = "2.0.2"
 
 EXCLUDE_DIRS = {"__pycache__", "runs", ".git", "data/cache"}
 EXCLUDE_EXT = {".pyc", ".pyo"}
@@ -161,8 +161,15 @@ def copy_examples() -> list[str]:
     png = os.path.join(dst, "raytracer_demo.png")
     render_to_png(demo_scene(), Camera(aspect=4 / 3), png, width=160, height=120)
     copied.append(os.path.basename(png))
-    from render.ascii_sky import sky_map_ascii
+    from render.ascii_sky import bind_astronomy, sky_map_ascii
+    from realism.bright_stars import BRIGHT_STARS
+    from realism.sky_coordinates import (
+        angular_separation,
+        equatorial_to_horizontal,
+    )
 
+    # S3: render не импортирует realism — каталог инъектируется здесь
+    bind_astronomy(lambda: BRIGHT_STARS, equatorial_to_horizontal, angular_separation)
     sky = sky_map_ascii(55.75, 1.5708)
     with open(os.path.join(dst, "sky_map_55N.txt"), "w", encoding="utf-8") as fh:
         fh.write(sky)
@@ -171,7 +178,7 @@ def copy_examples() -> list[str]:
 
 
 def main() -> int:
-    print("── СБОРКА v2.0.0 ─────────────────────────────")
+    print("── СБОРКА v2.0.2 ─────────────────────────────")
     pf = preflight()
     print(
         f"preflight: selftest {pf['selftest']}/{pf['selftest_total']}, "

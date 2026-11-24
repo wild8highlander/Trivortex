@@ -1,0 +1,21 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='1280' height='200' viewBox='0 0 1280 200'>
+  <defs>
+    <linearGradient id='bg_docs' x1='0' y1='0' x2='1' y2='0'>
+      <stop offset='0%' stop-color='#0B1220'/>
+      <stop offset='100%' stop-color='#0F1A33'/>
+    </linearGradient>
+    <linearGradient id='ln_docs' x1='0' y1='0' x2='1' y2='0'>
+      <stop offset='0%' stop-color='#A78BFA' stop-opacity='0.9'/>
+      <stop offset='100%' stop-color='#A78BFA' stop-opacity='0.1'/>
+    </linearGradient>
+  </defs>
+  <rect width='1280' height='200' rx='16' fill='url(#bg_docs)'/>
+  <rect x='1.5' y='1.5' width='1277' height='197' rx='15' fill='none' stroke='#26344F' stroke-width='2'/>
+  <rect x='0' y='0' width='7' height='200' rx='3' fill='url(#ln_docs)'/>
+  <path d='M 76 71 h 30 q 6 0 6 6 v 42 q 0 -6 -6 -6 h -30 z' stroke='#A78BFA' stroke-width='4' fill='none' stroke-linecap='round' stroke-linejoin='round'/><path d='M 148 71 h -30 q -6 0 -6 6 v 42 q 0 -6 6 -6 h 30 z' stroke='#A78BFA' stroke-width='4' fill='none' stroke-linecap='round' stroke-linejoin='round'/>
+  <text x='214' y='92' font-family='Segoe UI, Arial, Helvetica, sans-serif' font-size='40' font-weight='800' fill='#E6EDF7'>docs/</text>
+  <text x='216' y='126' font-family='Segoe UI, Arial, Helvetica, sans-serif' font-size='18' fill='#8CA3C7'>Releases, API reference, changelog and the README asset gallery</text>
+  <g>
+    <g><rect x='60' y='148' rx='11' width='146' height='26' fill='#A78BFA' opacity='0.16'/><rect x='60' y='148' rx='11' width='146' height='26' fill='none' stroke='#A78BFA' stroke-width='1' opacity='0.65'/><text x='133' y='166' text-anchor='middle' font-family='Segoe UI, Arial, Helvetica, sans-serif' font-size='13' fill='#A78BFA'>RELEASE v2.0.2</text></g><g><rect x='260' y='148' rx='11' width='78' height='26' fill='#A78BFA' opacity='0.16'/><rect x='260' y='148' rx='11' width='78' height='26' fill='none' stroke='#A78BFA' stroke-width='1' opacity='0.65'/><text x='299' y='166' text-anchor='middle' font-family='Segoe UI, Arial, Helvetica, sans-serif' font-size='13' fill='#A78BFA'>API.md</text></g><g><rect x='390' y='148' rx='11' width='293' height='26' fill='#A78BFA' opacity='0.16'/><rect x='390' y='148' rx='11' width='293' height='26' fill='none' stroke='#A78BFA' stroke-width='1' opacity='0.65'/><text x='536' y='166' text-anchor='middle' font-family='Segoe UI, Arial, Helvetica, sans-serif' font-size='13' fill='#A78BFA'>assets/ - banners, GIFs, charts</text></g>
+  </g>
+</svg>

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 ╔══════════════════════════════════════════════════════════════════════════╗
-║  TRIVORTEX MASTER — лабораторный комплекс N тел · v2.0.0 · AURORA       ║
+║  TRIVORTEX MASTER — лабораторный комплекс N тел · v2.0.2 · AURORA       ║
 ║  лаборатория N тел · планирование траекторий · 2D/3D/4D · отчёты 7 fmt  ║
 ╚══════════════════════════════════════════════════════════════════════════╝
 
@@ -59,7 +59,7 @@ from render.hud import (
     RESET,
 )
 
-VERSION = "2.0.0"
+VERSION = "2.0.2"
 
 
 def ask(prompt: str) -> str:
@@ -686,11 +686,10 @@ def mode_analysis_field(app: App):
     app._log(f"полевые исследования: {len(results)} сканов")
     # таблицы в терминал
     from analysis.field import field_tables
+    from reports.charts import ascii_table
 
     for name, headers, rows in field_tables(results):
         print(colorize(f"\n  {name}", cyn, True))
-        from reports.charts import ascii_table
-
         for line in ascii_table(headers, rows).splitlines():
             print("  " + line)
 

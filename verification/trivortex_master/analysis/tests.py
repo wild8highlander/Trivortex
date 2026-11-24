@@ -36,7 +36,10 @@ class TestResult:
     def __init__(self, test_id: str, name: str):
         self.id = test_id
         self.name = name
-        self.passed = False
+        # оптимистичный старт: тест считается прошедшим, пока какой-нибудь
+        # check()/fail() его не провалит; успех отдельного чека НЕ воскрешает
+        # проваленный ранее чек (до v2.0.1 поздний успех затирал ранний ✗)
+        self.passed = True
         self.details: list[str] = []
         self.metrics: dict[str, Any] = {}
 
@@ -54,7 +57,6 @@ class TestResult:
     def check(self, cond: bool, ok_msg: str, fail_msg: str) -> bool:
         if cond:
             self.details.append(ok_msg)
-            self.passed = True
         else:
             self.details.append("✗ " + fail_msg)
             self.passed = False
@@ -81,9 +83,11 @@ def test_s1() -> TestResult:
     presets = load_presets()
     r.metrics["presets"] = len(presets)
     ok_count = 0
+    skipped_unphysical = 0
     for p in presets:
         try:
             if p.get("unphysical"):
+                skipped_unphysical += 1
                 continue
             sc = build_preset(p["id"], cfg)
             rep = sc.validate()
@@ -93,10 +97,15 @@ def test_s1() -> TestResult:
                 r.details.append(f"пресет {p['id']}: {rep.problems}")
         except Exception as exc:
             r.details.append(f"пресет {p['id']}: {type(exc).__name__}: {exc}")
+    suffix = (
+        f" (+{skipped_unphysical} unphysical-пресет пропущен по флагу)"
+        if skipped_unphysical
+        else ""
+    )
     r.check(
         ok_count >= 8,
-        f"пресетов без проблем: {ok_count}/{len(presets)}",
-        f"слишком много проблем: {ok_count}/{len(presets)}",
+        f"пресетов без проблем: {ok_count}/{len(presets) - skipped_unphysical}{suffix}",
+        f"слишком много проблем: {ok_count}/{len(presets) - skipped_unphysical}",
     )
     # тела валидны
     sc = build_preset("inner_solar", cfg)
@@ -379,30 +388,55 @@ def test_s9() -> TestResult:
         f"ω = {traj.metadata['omega']:.13f} (эталон " f"{THEOREM31_REF['omega']:.13f})",
         "ω не совпала с эталоном ядра",
     )
-    # угловое разделение 2π/3: по позициям (r>0), допуская циклический
-    # порядок вершин (2π/3 или 4π/3); скачки atan2 при r→0 отсечены
-    omega = traj.metadata["omega"]
-    worst_sep = 0.0
-    for frame in traj.states:
-        thetas = []
-        for st in frame:
-            rr = math.hypot(st[0], st[1])
-            if rr >= 1e-12:
-                thetas.append(math.atan2(st[1], st[0]))
-        if len(thetas) == 3:
-            for i in range(3):
-                d = (thetas[(i + 1) % 3] - thetas[i]) % (2 * math.pi)
-                if d > math.pi:
-                    d = 2 * math.pi - d
-                err = min(abs(d - 2 * math.pi / 3), abs(d - 4 * math.pi / 3))
-                worst_sep = max(worst_sep, err)
-    r.metrics["max_separation_error"] = worst_sep
+
+    def worst_separation(traj) -> float:
+        """Максимальная геометрическая ошибка разделения 2π/3 по позициям
+        (atan2), допуская циклический порядок вершин (2π/3 или 4π/3);
+        скачки atan2 при r→0 отсечены порогом 1e-12."""
+        worst = 0.0
+        for frame in traj.states:
+            thetas = []
+            for st in frame:
+                rr = math.hypot(st[0], st[1])
+                if rr >= 1e-12:
+                    thetas.append(math.atan2(st[1], st[0]))
+            if len(thetas) == 3:
+                for i in range(3):
+                    d = (thetas[(i + 1) % 3] - thetas[i]) % (2 * math.pi)
+                    if d > math.pi:
+                        d = 2 * math.pi - d
+                    err = min(abs(d - 2 * math.pi / 3), abs(d - 4 * math.pi / 3))
+                    worst = max(worst, err)
+        return worst
+
+    # ── допустимая область Теоремы B (polyvortex, монограф): замкнутая
+    # форма невырождена при C_Ch > π·ln2 ≈ 2.1776 (там ε < 1 и радиусы
+    # положительны). Дефолт ядра C_Ch=1 лежит НИЖЕ порога: ε ≈ 2.668 > 1,
+    # кривая — лимакон с внутренней петлёй, тело проходит через центр и
+    # геометрическое разделение ломается (зарегистрированный факт
+    # монографа, раздел Abstract). Проверяем оба режима явно.
+    C_ADMISSIBLE = math.pi  # ε = 1/(e−1) ≈ 0.582 < 1 → кольцо «дышит» чисто
+    traj_adm = planner.theorem31(C_Ch=C_ADMISSIBLE, n_steps=120)
+    sep_adm = worst_separation(traj_adm)
+    r.metrics["max_separation_error"] = sep_adm
+    r.metrics["C_Ch_admissible"] = C_ADMISSIBLE
     r.check(
-        worst_sep <= 1e-9,
-        f"разделение 2π/3: макс. ошибка {worst_sep:.1e} (лестница V1: ≤1e-12)",
-        f"разделение 2π/3 нарушено: {worst_sep:.1e}",
+        sep_adm <= 1e-9,
+        f"разделение 2π/3 при C_Ch=π>π·ln2: ошибка {sep_adm:.1e} "
+        f"(ε={traj_adm.metadata['epsilon']:.3f}<1, лестница V1: ≤1e-12)",
+        f"разделение 2π/3 нарушено в допустимой области: {sep_adm:.1e}",
     )
-    # периодичность r
+    # вырожденный дефолт C_Ch=1 < π·ln2: разделение обязано ломаться —
+    # это детектор порога допустимости, а не сбой планировщика
+    sep_deg = worst_separation(traj)
+    r.metrics["max_separation_error_C_Ch1"] = sep_deg
+    r.check(
+        sep_deg > 0.1,
+        f"порог π·ln2 подтверждён: C_Ch=1 (ε={traj.metadata['epsilon']:.3f}>1) "
+        f"вырожден — лимакон с петлёй, ошибка {sep_deg:.2f} рад",
+        "вырождение при C_Ch=1 не обнаружено: порог π·ln2 не работает",
+    )
+    # периодичность r (верна в обеих областях: cos периодичен)
     t_r = 2 * math.pi / traj.metadata["omega"]
     r0 = [math.hypot(*s[:2]) for s in traj.states[0]]
     rT = [math.hypot(*s[:2]) for s in traj.sample(t_r)]

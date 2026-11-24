@@ -1,0 +1,21 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='1280' height='200' viewBox='0 0 1280 200'>
+  <defs>
+    <linearGradient id='bg_render' x1='0' y1='0' x2='1' y2='0'>
+      <stop offset='0%' stop-color='#0B1220'/>
+      <stop offset='100%' stop-color='#0F1A33'/>
+    </linearGradient>
+    <linearGradient id='ln_render' x1='0' y1='0' x2='1' y2='0'>
+      <stop offset='0%' stop-color='#E879F9' stop-opacity='0.9'/>
+      <stop offset='100%' stop-color='#E879F9' stop-opacity='0.1'/>
+    </linearGradient>
+  </defs>
+  <rect width='1280' height='200' rx='16' fill='url(#bg_render)'/>
+  <rect x='1.5' y='1.5' width='1277' height='197' rx='15' fill='none' stroke='#26344F' stroke-width='2'/>
+  <rect x='0' y='0' width='7' height='200' rx='3' fill='url(#ln_render)'/>
+  <rect x='72' y='65' width='80' height='60' rx='8' stroke='#E879F9' stroke-width='4' fill='none' stroke-linecap='round' stroke-linejoin='round'/><polygon points='104,81 128,95 104,109' fill='#E879F9' opacity='0.85'/>
+  <text x='214' y='92' font-family='Segoe UI, Arial, Helvetica, sans-serif' font-size='40' font-weight='800' fill='#E6EDF7'>render/</text>
+  <text x='216' y='126' font-family='Segoe UI, Arial, Helvetica, sans-serif' font-size='18' fill='#8CA3C7'>4 engines: truecolor ASCII · pure-raster 3D · matplotlib · GL</text>
+  <g>
+    <g><rect x='60' y='148' rx='11' width='215' height='26' fill='#E879F9' opacity='0.16'/><rect x='60' y='148' rx='11' width='215' height='26' fill='none' stroke='#E879F9' stroke-width='1' opacity='0.65'/><text x='168' y='166' text-anchor='middle' font-family='Segoe UI, Arial, Helvetica, sans-serif' font-size='13' fill='#E879F9'>17 modules · ~4.9k LOC</text></g><g><rect x='310' y='148' rx='11' width='232' height='26' fill='#E879F9' opacity='0.16'/><rect x='310' y='148' rx='11' width='232' height='26' fill='none' stroke='#E879F9' stroke-width='1' opacity='0.65'/><text x='426' y='166' text-anchor='middle' font-family='Segoe UI, Arial, Helvetica, sans-serif' font-size='13' fill='#E879F9'>own PNG + GIF-LZW codecs</text></g><g><rect x='560' y='148' rx='11' width='207' height='26' fill='#E879F9' opacity='0.16'/><rect x='560' y='148' rx='11' width='207' height='26' fill='none' stroke='#E879F9' stroke-width='1' opacity='0.65'/><text x='663' y='166' text-anchor='middle' font-family='Segoe UI, Arial, Helvetica, sans-serif' font-size='13' fill='#E879F9'>raytracer + particles</text></g>
+  </g>
+</svg>

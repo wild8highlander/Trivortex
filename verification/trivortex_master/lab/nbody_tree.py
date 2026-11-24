@@ -225,17 +225,6 @@ class BarnesHutTree:
     def stats(self) -> dict:
         depth = 0
 
-        def max_depth(node):
-            nonlocal depth
-            if node is None:
-                return
-            if node.children:
-                for c in node.children:
-                    if c is not None:
-                        max_depth(c)
-            else:
-                pass
-
         def measure(node, d):
             nonlocal depth
             if node is None:

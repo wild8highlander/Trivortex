@@ -64,14 +64,7 @@ class OdtBuilder:
     def table(self, header: Sequence[str], rows: Sequence[Sequence[Any]]) -> OdtBuilder:
         """Таблица с шапкой; числа форматируются как строки."""
         n_cols = len(header)
-        col_xml = "".join(
-            (
-                f'<table:table-column table:number-columns-repeated="{n_cols}"/>'
-                if False
-                else f"<table:table-column/>"
-            )
-            for _ in range(n_cols)
-        )
+        col_xml = f"<table:table-column/>" * n_cols
         rows_xml = []
         rows_xml.append(
             "<table:table-row>"

@@ -1,0 +1,21 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='1280' height='200' viewBox='0 0 1280 200'>
+  <defs>
+    <linearGradient id='bg_lab' x1='0' y1='0' x2='1' y2='0'>
+      <stop offset='0%' stop-color='#0B1220'/>
+      <stop offset='100%' stop-color='#0F1A33'/>
+    </linearGradient>
+    <linearGradient id='ln_lab' x1='0' y1='0' x2='1' y2='0'>
+      <stop offset='0%' stop-color='#34D399' stop-opacity='0.9'/>
+      <stop offset='100%' stop-color='#34D399' stop-opacity='0.1'/>
+    </linearGradient>
+  </defs>
+  <rect width='1280' height='200' rx='16' fill='url(#bg_lab)'/>
+  <rect x='1.5' y='1.5' width='1277' height='197' rx='15' fill='none' stroke='#26344F' stroke-width='2'/>
+  <rect x='0' y='0' width='7' height='200' rx='3' fill='url(#ln_lab)'/>
+  <ellipse cx='112' cy='95' rx='44' ry='17' stroke='#34D399' stroke-width='4' fill='none' stroke-linecap='round' stroke-linejoin='round' transform='rotate(-24 112 95)'/><ellipse cx='112' cy='95' rx='44' ry='17' stroke='#34D399' stroke-width='4' fill='none' stroke-linecap='round' stroke-linejoin='round' transform='rotate(24 112 95)'/><circle cx='112' cy='95' r='7' fill='#34D399'/><circle cx='152' cy='78' r='5' fill='#34D399' opacity='0.8'/>
+  <text x='214' y='92' font-family='Segoe UI, Arial, Helvetica, sans-serif' font-size='40' font-weight='800' fill='#E6EDF7'>lab/</text>
+  <text x='216' y='126' font-family='Segoe UI, Arial, Helvetica, sans-serif' font-size='18' fill='#8CA3C7'>N-body physics: Newtonian RK4, GR 1PN/2PN, Barnes-Hut, chaos, CR3BP</text>
+  <g>
+    <g><rect x='60' y='148' rx='11' width='215' height='26' fill='#34D399' opacity='0.16'/><rect x='60' y='148' rx='11' width='215' height='26' fill='none' stroke='#34D399' stroke-width='1' opacity='0.65'/><text x='168' y='166' text-anchor='middle' font-family='Segoe UI, Arial, Helvetica, sans-serif' font-size='13' fill='#34D399'>27 modules · ~6.6k LOC</text></g><g><rect x='300' y='148' rx='11' width='164' height='26' fill='#34D399' opacity='0.16'/><rect x='300' y='148' rx='11' width='164' height='26' fill='none' stroke='#34D399' stroke-width='1' opacity='0.65'/><text x='382' y='166' text-anchor='middle' font-family='Segoe UI, Arial, Helvetica, sans-serif' font-size='13' fill='#34D399'>20 scene presets</text></g><g><rect x='450' y='148' rx='11' width='146' height='26' fill='#34D399' opacity='0.16'/><rect x='450' y='148' rx='11' width='146' height='26' fill='none' stroke='#34D399' stroke-width='1' opacity='0.65'/><text x='523' y='166' text-anchor='middle' font-family='Segoe UI, Arial, Helvetica, sans-serif' font-size='13' fill='#34D399'>S5-S7, S13-S20</text></g>
+  </g>
+</svg>
