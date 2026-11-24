@@ -5,11 +5,11 @@
 > Lagrange-type rotating solution), the Chaplygin-type vortex integrals,
 > their conservation laws, and the Lagrange equilateral solution.
 >
-> **Status: landed — v2.0 (milestones M1 + M4/M5 depth tracks).** The
+> **Status: landed — v3.0 (milestones M1 + M4/M5/M6 depth tracks).** The
 > artifact, the CI-callable check and the bilingual documentation live
 > in this directory; the acceptance criteria below are checked. The
-> v2.0 release was **built and verified green** against the pinned
-> toolchain (Lean 4 v4.6.0 + Mathlib4 tag v4.6.0): 44 theorems,
+> v3.0 release was **built and verified green** against the pinned
+> toolchain (Lean 4 v4.6.0 + Mathlib4 tag v4.6.0): 88 theorems,
 > zero `sorry`/`axiom`, `#print axioms` closed on every theorem
 > (only `propext`, `Classical.choice`, `Quot.sound`).
 
@@ -59,6 +59,25 @@ results stay comparable:
    be an *exact* Kirchhoff solution (`lagrangeSol`), and the anchor
    values `H = 0, P = 0, Q = 0, I = Γ` are proven to hold along it
    **for all time** (side `a = 1`), not just at `t = 0`.
+5. **The complete theory of the Lagrange triangle (new in v3.0,
+   Section 7 of the artifact).** The `lagrange_triangle` scene of
+   `verification/trivortex_master` (three equal bodies at 0°, 120°,
+   240°) is formalized to full depth: the rotation-group identity
+   (`lag_rotation_x/y`), the rigid velocity field d/dt r = ω·J·r
+   (`lag_deriv_field_x/y`), the orbit radius a/√3 (`lag_orbit_radius`),
+   the Kirchhoff field at an arbitrary trial frequency
+   (`lag_kx0_field…lag_ky2_field`), **the forcing theorem**
+   (`lag_omega_unique`: a rotating equilateral Kirchhoff triangle must
+   rotate at exactly ω = 3Γ/(2πa²) — the analytic identity behind the
+   V2 "measured omega" criterion), the period closed form
+   T = 4π²a²/(3Γ) (`lag_period_closed`) with periodicity and
+   half-period inversion, the choreography cycle (`lag_cycle_x0…y2`),
+   the homogeneity/scaling laws of all four integrals (`*_scale`), the
+   family scaling laws (`lagomega_scale`, `lag_trajectory_scale_x/y`),
+   the distance certificates (`lag_dist01/02/12` — the shape part of
+   check V2), and the exact anchors for a triangle of arbitrary side
+   `a` (`lagrange_side_H/P/Q/I`: H = −(3Γ²/2π)·ln a, P = Q = 0,
+   I = Γa²).
 
 ## Acceptance criteria
 
@@ -79,7 +98,10 @@ results stay comparable:
       Lagrange solution theorem are proven with `#print axioms` closed
       (this absorbs the "Chaplygin identity, proven" M5 track into
       the Lean port: the conservation statement itself is now
-      machine-checked).
+      machine-checked);
+- [x] (v3.0) The complete Lagrange-triangle theory (Section 7) is
+      proven with `#print axioms` closed — 88 theorems in total, zero
+      `sorry`/`axiom`.
 
 ## Build recipe
 
@@ -101,8 +123,8 @@ lake exe cache get && lake build
 | Toolchain | Lean 4 **v4.6.0** (upgraded from v4.4.0; see note) |
 | Mathlib | tag **v4.6.0** (pinned in `lakefile.lean`; was unpinned `@ master`) |
 | Docker pin | [`docker/lean4/Dockerfile`](../docker/lean4/Dockerfile) |
-| Artifact | `verification/lean4/Trivortex.lean` (44 theorems/defs) |
-| Milestone | M1 + the M4/M5 depth tracks (conservation + Lagrange) |
+| Artifact | `verification/lean4/Trivortex.lean` (88 theorems/defs) |
+| Milestone | M1 + the M4/M5/M6 depth tracks (conservation + Lagrange + complete theory) |
 | CI status | non-blocking job in `verification-ports.yml` |
 
 > **Toolchain note.** v1.1 pinned Lean v4.4.0 with Mathlib `@ "master"`,
@@ -128,7 +150,15 @@ lake exe cache get && lake build
   `lagrangeSol` — V2); the all-time anchors along the rotating
   solution (`lagrange_anchor_H/P/Q/I`); toolchain modernization
   (v4.4.0 → v4.6.0) and the pinned Mathlib tag.
+- **v3.0 (M6 — the complete Lagrange-triangle theory):** Section 7 of
+  the artifact — the rotation-group identity, the velocity field
+  ω·J·r, the Kirchhoff field at an arbitrary trial frequency, the
+  forcing theorem `lag_omega_unique`, the period closed form
+  T = 4π²a²/(3Γ), the choreography cycle, the homogeneity (scaling)
+  laws of the four integrals, the orbit radius, the distance
+  certificates and the general-side anchors — 44 new theorems,
+  88 total, all `#print axioms`-closed.
 
-The artifact header lists the axiom footprint (44 theorems, all
+The artifact header lists the axiom footprint (88 theorems, all
 `#print axioms`-closed over Mathlib's classical foundations). The
 bilingual overview lives in [README_RU.md](README_RU.md).

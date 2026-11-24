@@ -4,7 +4,7 @@ SPDX-License-Identifier: LicenseRef-Proprietary-Wild8Highlander-1.0
 -/
 /-
 ==========================================================================
-TRIVORTEX — LEAN 4 FORMALIZATION: THE FULL STATEMENT LAYER (v2.0)
+TRIVORTEX — LEAN 4 FORMALIZATION: THE FULL STATEMENT LAYER (v3.0)
 ==========================================================================
 Milestone M4/M5 artifact: `verification/lean4/Trivortex.lean`.
 
@@ -27,6 +27,11 @@ release still left to the numerical ladders only:
   2. The Chaplygin topological integral C_Ch = r²(θ̇ − q·A_θ) with the
      gauge A_θ = 1/r: the algebraic shape C_Ch = r²θ̇ − q·r is PROVEN.
   3. The vortex integrals H, P, Q, I of the Kirchhoff equations.
+  3'. Section 7 (v3.0): the complete theory of the Lagrange triangle —
+     rotation-group identity, velocity field ω·J·r, Kirchhoff field at
+     an arbitrary trial frequency, the FORCING theorem for ω, period
+     closed form T = 4π²a²/(3Γ), choreography cycle, scaling laws,
+     orbit radius, distance certificates, general-side anchors.
      v1.1 proved the exact equilateral anchor values H = 0, P = 0,
      Q = 0, I = Γ. v2.0 additionally PROVES the conservation laws
      themselves — the analytic core of checks V3/V4:
@@ -1155,6 +1160,580 @@ theorem lagrange_anchor_I (g t : ℝ) :
     exact I_equilateral g
   exact hc.trans h0
 
+/-! ## Section 7 — the Lagrange triangle: the complete theory -/
+
+/-! The `lagrange_triangle` scene of `verification/trivortex_master`
+    (`data/presets_scenes.json`: three equal bodies at 0°, 120°, 240°, the
+    classical 1772 solution) is the configuration formalized in Section 6.
+    This section completes its theory to the same depth the numerical
+    ladders exercise it with (`verification/trivortex/python/verify.py`,
+    check V2): the rotation-group identity, the kinematic velocity field
+    d/dt r = ω·Jr, the Kirchhoff field at an arbitrary trial frequency, the
+    forcing theorem for the frequency, the period closed form and
+    periodicity, the choreography cycle (one third of the period permutes
+    the vortices cyclically), the homogeneity (scaling) laws of the vortex
+    integrals, the orbit radius, the distance certificates, the scaling
+    law of the family, and the exact anchor values of all four integrals
+    for a triangle of arbitrary side a. -/
+
+/-! ### trigonometric half-period identities -/
+
+private theorem cos_add_pi_unit (u : ℝ) : Real.cos (u + Real.pi) = -Real.cos u := by
+  rw [Real.cos_add, Real.cos_pi, Real.sin_pi]
+  ring
+
+private theorem sin_add_pi_unit (u : ℝ) : Real.sin (u + Real.pi) = -Real.sin u := by
+  rw [Real.sin_add, Real.cos_pi, Real.sin_pi]
+  ring
+
+/-! ### the homogeneity of the vortex integrals (scaling laws) -/
+
+/-- The distance between two scaled points scales linearly: the pairwise
+    term of the Kirchhoff integrals is homogeneous of degree 1. -/
+theorem vortexDist_scale (c x1 y1 x2 y2 : ℝ) (hc : 0 ≤ c) :
+    vortexDist (c * x1) (c * y1) (c * x2) (c * y2)
+      = c * vortexDist x1 y1 x2 y2 := by
+  unfold vortexDist
+  have hexp : (c * x1 - c * x2) ^ 2 + (c * y1 - c * y2) ^ 2
+      = c ^ 2 * ((x1 - x2) ^ 2 + (y1 - y2) ^ 2) := by ring
+  have hD : 0 ≤ (x1 - x2) ^ 2 + (y1 - y2) ^ 2 := by positivity
+  have hD2 : 0 ≤ c ^ 2 := sq_nonneg c
+  rw [hexp, Real.sqrt_mul hD2, Real.sqrt_sq hc]
+
+/-- The linear impulse P = ΣΓx is homogeneous of degree 1. -/
+theorem Pvortex_scale (c g1 g2 g3 x1 x2 x3 : ℝ) :
+    Pvortex g1 g2 g3 (c * x1) (c * x2) (c * x3) = c * Pvortex g1 g2 g3 x1 x2 x3 := by
+  unfold Pvortex
+  ring
+
+/-- The linear impulse Q = ΣΓy is homogeneous of degree 1. -/
+theorem Qvortex_scale (c g1 g2 g3 y1 y2 y3 : ℝ) :
+    Qvortex g1 g2 g3 (c * y1) (c * y2) (c * y3) = c * Qvortex g1 g2 g3 y1 y2 y3 := by
+  unfold Qvortex
+  ring
+
+/-- The angular impulse I = ΣΓ|r|² is homogeneous of degree 2. -/
+theorem Ivortex_scale (c g1 g2 g3 x1 y1 x2 y2 x3 y3 : ℝ) :
+    Ivortex g1 g2 g3 (c * x1) (c * y1) (c * x2) (c * y2) (c * x3) (c * y3)
+      = c ^ 2 * Ivortex g1 g2 g3 x1 y1 x2 y2 x3 y3 := by
+  unfold Ivortex
+  ring
+
+/-- **The Hamiltonian is quasi-homogeneous**: scaling the configuration by
+    c > 0 shifts H by −(1/2π)·(Γ₁Γ₂+Γ₁Γ₃+Γ₂Γ₃)·ln c — the logarithmic
+    scaling law behind "smaller vortex triangles rotate faster". -/
+theorem Hvortex_scale (c g1 g2 g3 x1 y1 x2 y2 x3 y3 : ℝ) (hc : 0 < c)
+    (h12 : vortexDist x1 y1 x2 y2 ≠ 0) (h13 : vortexDist x1 y1 x3 y3 ≠ 0)
+    (h23 : vortexDist x2 y2 x3 y3 ≠ 0) :
+    Hvortex g1 g2 g3 (c * x1) (c * y1) (c * x2) (c * y2) (c * x3) (c * y3)
+      = Hvortex g1 g2 g3 x1 y1 x2 y2 x3 y3
+        - (1 / (2 * Real.pi)) * (g1 * g2 + g1 * g3 + g2 * g3) * Real.log c := by
+  unfold Hvortex at *
+  rw [vortexDist_scale c x1 y1 x2 y2 hc.le, vortexDist_scale c x1 y1 x3 y3 hc.le,
+    vortexDist_scale c x2 y2 x3 y3 hc.le,
+    Real.log_mul (ne_of_gt hc) h12, Real.log_mul (ne_of_gt hc) h13,
+    Real.log_mul (ne_of_gt hc) h23]
+  ring
+
+/-! ### the rotation-group identity and the velocity field -/
+
+/-- **The Lagrange choreography is a one-parameter rotation group**: the
+    state at time t + s is the state at time t rotated by the angle ω·s —
+    the exact statement of "rigid rotation". -/
+theorem lag_rotation_x (a ω s t : ℝ) (k : ℕ) :
+    lagX a ω (t + s) k
+      = Real.cos (ω * s) * lagX a ω t k - Real.sin (ω * s) * lagY a ω t k := by
+  unfold lagX lagY
+  rw [show ω * (t + s) + 2 * Real.pi * (k:ℝ) / 3
+        = (ω * t + 2 * Real.pi * (k:ℝ) / 3) + ω * s from by ring, Real.cos_add]
+  ring
+
+/-- The y-coordinate twin of `lag_rotation_x`. -/
+theorem lag_rotation_y (a ω s t : ℝ) (k : ℕ) :
+    lagY a ω (t + s) k
+      = Real.sin (ω * s) * lagX a ω t k + Real.cos (ω * s) * lagY a ω t k := by
+  unfold lagX lagY
+  rw [show ω * (t + s) + 2 * Real.pi * (k:ℝ) / 3
+        = (ω * t + 2 * Real.pi * (k:ℝ) / 3) + ω * s from by ring, Real.sin_add]
+  ring
+
+/-- **The rigid-rotation velocity field**: whatever the frequency, the
+    trajectory derivative is exactly d/dt r_k = −ω·y_k — the point-vortex
+    velocity equals ω·J·r (J = the quarter-turn). -/
+theorem lag_deriv_field_x (a ω t : ℝ) (k : ℕ) :
+    HasDerivAt (fun s => lagX a ω s k) (-ω * lagY a ω t k) t := by
+  refine (lagX_deriv a ω t k).congr_deriv ?_
+  unfold lagY
+  ring
+
+/-- The y-component of the rigid-rotation velocity field: d/dt y_k = ω·x_k. -/
+theorem lag_deriv_field_y (a ω t : ℝ) (k : ℕ) :
+    HasDerivAt (fun s => lagY a ω s k) (ω * lagX a ω t k) t := by
+  refine (lagY_deriv a ω t k).congr_deriv ?_
+  unfold lagX
+  ring
+
+/-- **The orbit radius**: every vortex of the rotating triangle stays on
+    the circle of radius a/√3 centered at the origin — |r_k(t)|² = a²/3. -/
+theorem lag_orbit_radius (a ω t : ℝ) (k : ℕ) :
+    lagX a ω t k ^ 2 + lagY a ω t k ^ 2 = a ^ 2 / 3 := by
+  have h3 : (Real.sqrt 3) ^ 2 = 3 := Real.sq_sqrt (by norm_num)
+  have hs2 : Real.sqrt 3 * Real.sqrt 3 = 3 := by linear_combination h3
+  have hcc : (a / Real.sqrt 3) * (a / Real.sqrt 3) = a ^ 2 / 3 := by
+    rw [show (a / Real.sqrt 3) * (a / Real.sqrt 3)
+        = a * a / (Real.sqrt 3 * Real.sqrt 3) from by ring, hs2]
+    ring
+  have h := Real.sin_sq_add_cos_sq (ω * t + 2 * Real.pi * (k:ℝ) / 3)
+  unfold lagX lagY
+  have hexp : ((a / Real.sqrt 3) * Real.cos (ω * t + 2 * Real.pi * (k:ℝ) / 3)) ^ 2
+      + ((a / Real.sqrt 3) * Real.sin (ω * t + 2 * Real.pi * (k:ℝ) / 3)) ^ 2
+      = (a / Real.sqrt 3) * (a / Real.sqrt 3)
+        * (Real.cos (ω * t + 2 * Real.pi * (k:ℝ) / 3) ^ 2
+          + Real.sin (ω * t + 2 * Real.pi * (k:ℝ) / 3) ^ 2) := by
+    ring
+  rw [hexp, hcc]
+  linear_combination (a ^ 2 / 3) * h
+
+/-! ### the period of the choreography -/
+
+/-- **The period closed form**: one full turn of the triangle takes
+    T = 2π/ω = 4π²a²/(3Γ) — the number the V2 ladder measures. -/
+theorem lag_period_closed (g a : ℝ) (hg : g ≠ 0) (ha : a ≠ 0) :
+    2 * Real.pi / lagrangeOmega g a = 4 * Real.pi ^ 2 * a ^ 2 / (3 * g) := by
+  have h2 : (0:ℝ) < a ^ 2 := by rw [pow_two]; exact mul_self_pos.mpr ha
+  have hnum : (3 * g : ℝ) ≠ 0 := mul_ne_zero (show (3:ℝ) ≠ 0 from by norm_num) hg
+  have hden : (2 * Real.pi * a ^ 2 : ℝ) ≠ 0 :=
+    mul_ne_zero (show (2 * Real.pi : ℝ) ≠ 0 from by positivity) (ne_of_gt h2)
+  unfold lagrangeOmega
+  field_simp [hnum, hden]
+  ring
+
+/-- **Periodicity of the choreography**: after T = 2π/ω every vortex is
+    exactly back at its starting point — the point-vortex twin of the
+    `r_periodic`/`theta_periodic` certificates of the V1 closed form. -/
+theorem lagX_periodic (a ω t : ℝ) (k : ℕ) (hω : ω ≠ 0) :
+    lagX a ω (t + 2 * Real.pi / ω) k = lagX a ω t k := by
+  unfold lagX
+  rw [show ω * (t + 2 * Real.pi / ω) + 2 * Real.pi * (k:ℝ) / 3
+        = (ω * t + 2 * Real.pi * (k:ℝ) / 3) + 2 * Real.pi from by field_simp; ring,
+    Real.cos_add_two_pi]
+
+/-- The y-coordinate twin of `lagX_periodic`. -/
+theorem lagY_periodic (a ω t : ℝ) (k : ℕ) (hω : ω ≠ 0) :
+    lagY a ω (t + 2 * Real.pi / ω) k = lagY a ω t k := by
+  unfold lagY
+  rw [show ω * (t + 2 * Real.pi / ω) + 2 * Real.pi * (k:ℝ) / 3
+        = (ω * t + 2 * Real.pi * (k:ℝ) / 3) + 2 * Real.pi from by field_simp; ring,
+    Real.sin_add_two_pi]
+
+/-- After half the period the triangle is exactly inverted through the
+    origin (rotated by π). -/
+theorem lagX_half_period (a ω t : ℝ) (k : ℕ) (hω : ω ≠ 0) :
+    lagX a ω (t + Real.pi / ω) k = -lagX a ω t k := by
+  unfold lagX
+  rw [show ω * (t + Real.pi / ω) + 2 * Real.pi * (k:ℝ) / 3
+        = (ω * t + 2 * Real.pi * (k:ℝ) / 3) + Real.pi from by field_simp; ring,
+    cos_add_pi_unit]
+  ring
+
+/-- The y-coordinate twin of `lagX_half_period`. -/
+theorem lagY_half_period (a ω t : ℝ) (k : ℕ) (hω : ω ≠ 0) :
+    lagY a ω (t + Real.pi / ω) k = -lagY a ω t k := by
+  unfold lagY
+  rw [show ω * (t + Real.pi / ω) + 2 * Real.pi * (k:ℝ) / 3
+        = (ω * t + 2 * Real.pi * (k:ℝ) / 3) + Real.pi from by field_simp; ring,
+    sin_add_pi_unit]
+  ring
+
+/-! ### the choreography cycle -/
+
+/-- **The choreography cycle**: one third of the period maps vortex 0
+    exactly onto vortex 1 — the triangle advances by exactly one vertex
+    (x-part). -/
+theorem lag_cycle_x0 (a ω t : ℝ) (hω : ω ≠ 0) :
+    lagX a ω (t + 2 * Real.pi / (3 * ω)) 0 = lagX a ω t 1 := by
+  unfold lagX
+  rw [show ω * (t + 2 * Real.pi / (3 * ω)) + 2 * Real.pi * (0:ℕ) / 3
+        = ω * t + 2 * Real.pi * (1:ℕ) / 3 from by push_cast; field_simp; ring]
+
+/-- The cycle continues: one third of the period maps vortex 1 onto
+    vortex 2 (x-part). -/
+theorem lag_cycle_x1 (a ω t : ℝ) (hω : ω ≠ 0) :
+    lagX a ω (t + 2 * Real.pi / (3 * ω)) 1 = lagX a ω t 2 := by
+  unfold lagX
+  rw [show ω * (t + 2 * Real.pi / (3 * ω)) + 2 * Real.pi * (1:ℕ) / 3
+        = ω * t + 2 * Real.pi * (2:ℕ) / 3 from by push_cast; field_simp; ring]
+
+/-- The cycle closes: one third of the period maps vortex 2 onto vortex 0
+    (x-part) — the permutation (0 1 2) of the choreography. -/
+theorem lag_cycle_x2 (a ω t : ℝ) (hω : ω ≠ 0) :
+    lagX a ω (t + 2 * Real.pi / (3 * ω)) 2 = lagX a ω t 0 := by
+  unfold lagX
+  rw [show ω * (t + 2 * Real.pi / (3 * ω)) + 2 * Real.pi * (2:ℕ) / 3
+        = (ω * t + 2 * Real.pi * (0:ℕ) / 3) + 2 * Real.pi from by push_cast; field_simp; ring,
+    Real.cos_add_two_pi]
+
+/-- The choreography cycle, y-part (vortex 0 → 1). -/
+theorem lag_cycle_y0 (a ω t : ℝ) (hω : ω ≠ 0) :
+    lagY a ω (t + 2 * Real.pi / (3 * ω)) 0 = lagY a ω t 1 := by
+  unfold lagY
+  rw [show ω * (t + 2 * Real.pi / (3 * ω)) + 2 * Real.pi * (0:ℕ) / 3
+        = ω * t + 2 * Real.pi * (1:ℕ) / 3 from by push_cast; field_simp; ring]
+
+/-- The choreography cycle, y-part (vortex 1 → 2). -/
+theorem lag_cycle_y1 (a ω t : ℝ) (hω : ω ≠ 0) :
+    lagY a ω (t + 2 * Real.pi / (3 * ω)) 1 = lagY a ω t 2 := by
+  unfold lagY
+  rw [show ω * (t + 2 * Real.pi / (3 * ω)) + 2 * Real.pi * (1:ℕ) / 3
+        = ω * t + 2 * Real.pi * (2:ℕ) / 3 from by push_cast; field_simp; ring]
+
+/-- The choreography cycle, y-part (vortex 2 → 0). -/
+theorem lag_cycle_y2 (a ω t : ℝ) (hω : ω ≠ 0) :
+    lagY a ω (t + 2 * Real.pi / (3 * ω)) 2 = lagY a ω t 0 := by
+  unfold lagY
+  rw [show ω * (t + 2 * Real.pi / (3 * ω)) + 2 * Real.pi * (2:ℕ) / 3
+        = (ω * t + 2 * Real.pi * (0:ℕ) / 3) + 2 * Real.pi from by push_cast; field_simp; ring,
+    Real.sin_add_two_pi]
+
+/-! ### the Kirchhoff field at an arbitrary trial frequency -/
+
+/-- **The Kirchhoff field, form 1 (x-velocity of vortex 0)**: at the
+    vertices of the rotating equilateral triangle — for ANY trial
+    frequency ω — the Kirchhoff x-velocity is −ω_G·y₀ where
+    ω_G = 3Γ/(2πa²) is the Lagrange frequency: the field depends only on
+    the configuration, not on the trial frequency. -/
+theorem lag_kx0_field (g a ω t : ℝ) :
+    kx1 g g g (lagX a ω t 0) (lagY a ω t 0) (lagX a ω t 1) (lagY a ω t 1)
+      (lagX a ω t 2) (lagY a ω t 2)
+      = -(3 * g / (2 * Real.pi * a ^ 2)) * lagY a ω t 0 := by
+  have hd1 : d2 (lagX a ω t 0) (lagY a ω t 0) (lagX a ω t 1) (lagY a ω t 1) = a ^ 2 :=
+    d2_lag01 a ω t
+  have hd2 : d2 (lagX a ω t 0) (lagY a ω t 0) (lagX a ω t 2) (lagY a ω t 2) = a ^ 2 :=
+    d2_lag02 a ω t
+  have hs := lagY_sum a ω t
+  have hsum : g * (lagY a ω t 0 - lagY a ω t 1) + g * (lagY a ω t 0 - lagY a ω t 2)
+      = 3 * g * lagY a ω t 0 := by
+    linear_combination (-g) * hs
+  unfold kx1
+  rw [hd1, hd2, show g * (lagY a ω t 0 - lagY a ω t 1) / a ^ 2
+        + g * (lagY a ω t 0 - lagY a ω t 2) / a ^ 2
+      = (g * (lagY a ω t 0 - lagY a ω t 1) + g * (lagY a ω t 0 - lagY a ω t 2)) / a ^ 2 from by
+      ring, hsum]
+  ring
+
+/-- The Kirchhoff field, form 2 (x-velocity of vortex 1). -/
+theorem lag_kx1_field (g a ω t : ℝ) :
+    kx2 g g g (lagX a ω t 0) (lagY a ω t 0) (lagX a ω t 1) (lagY a ω t 1)
+      (lagX a ω t 2) (lagY a ω t 2)
+      = -(3 * g / (2 * Real.pi * a ^ 2)) * lagY a ω t 1 := by
+  have hd1 : d2 (lagX a ω t 0) (lagY a ω t 0) (lagX a ω t 1) (lagY a ω t 1) = a ^ 2 :=
+    d2_lag01 a ω t
+  have hd2 : d2 (lagX a ω t 1) (lagY a ω t 1) (lagX a ω t 2) (lagY a ω t 2) = a ^ 2 :=
+    d2_lag12 a ω t
+  have hs := lagY_sum a ω t
+  have hsum : g * (lagY a ω t 1 - lagY a ω t 0) + g * (lagY a ω t 1 - lagY a ω t 2)
+      = 3 * g * lagY a ω t 1 := by
+    linear_combination (-g) * hs
+  unfold kx2
+  rw [hd1, hd2, show g * (lagY a ω t 1 - lagY a ω t 0) / a ^ 2
+        + g * (lagY a ω t 1 - lagY a ω t 2) / a ^ 2
+      = (g * (lagY a ω t 1 - lagY a ω t 0) + g * (lagY a ω t 1 - lagY a ω t 2)) / a ^ 2 from by
+      ring, hsum]
+  ring
+
+/-- The Kirchhoff field, form 3 (x-velocity of vortex 2). -/
+theorem lag_kx2_field (g a ω t : ℝ) :
+    kx3 g g g (lagX a ω t 0) (lagY a ω t 0) (lagX a ω t 1) (lagY a ω t 1)
+      (lagX a ω t 2) (lagY a ω t 2)
+      = -(3 * g / (2 * Real.pi * a ^ 2)) * lagY a ω t 2 := by
+  have hd1 : d2 (lagX a ω t 0) (lagY a ω t 0) (lagX a ω t 2) (lagY a ω t 2) = a ^ 2 :=
+    d2_lag02 a ω t
+  have hd2 : d2 (lagX a ω t 1) (lagY a ω t 1) (lagX a ω t 2) (lagY a ω t 2) = a ^ 2 :=
+    d2_lag12 a ω t
+  have hs := lagY_sum a ω t
+  have hsum : g * (lagY a ω t 2 - lagY a ω t 0) + g * (lagY a ω t 2 - lagY a ω t 1)
+      = 3 * g * lagY a ω t 2 := by
+    linear_combination (-g) * hs
+  unfold kx3
+  rw [hd1, hd2, show g * (lagY a ω t 2 - lagY a ω t 0) / a ^ 2
+        + g * (lagY a ω t 2 - lagY a ω t 1) / a ^ 2
+      = (g * (lagY a ω t 2 - lagY a ω t 0) + g * (lagY a ω t 2 - lagY a ω t 1)) / a ^ 2 from by
+      ring, hsum]
+  ring
+
+/-- The Kirchhoff field, form 4 (y-velocity of vortex 0). -/
+theorem lag_ky0_field (g a ω t : ℝ) :
+    ky1 g g g (lagX a ω t 0) (lagY a ω t 0) (lagX a ω t 1) (lagY a ω t 1)
+      (lagX a ω t 2) (lagY a ω t 2)
+      = (3 * g / (2 * Real.pi * a ^ 2)) * lagX a ω t 0 := by
+  have hd1 : d2 (lagX a ω t 0) (lagY a ω t 0) (lagX a ω t 1) (lagY a ω t 1) = a ^ 2 :=
+    d2_lag01 a ω t
+  have hd2 : d2 (lagX a ω t 0) (lagY a ω t 0) (lagX a ω t 2) (lagY a ω t 2) = a ^ 2 :=
+    d2_lag02 a ω t
+  have hc := lagX_sum a ω t
+  have hsum : g * (lagX a ω t 0 - lagX a ω t 1) + g * (lagX a ω t 0 - lagX a ω t 2)
+      = 3 * g * lagX a ω t 0 := by
+    linear_combination (-g) * hc
+  unfold ky1
+  rw [hd1, hd2, show g * (lagX a ω t 0 - lagX a ω t 1) / a ^ 2
+        + g * (lagX a ω t 0 - lagX a ω t 2) / a ^ 2
+      = (g * (lagX a ω t 0 - lagX a ω t 1) + g * (lagX a ω t 0 - lagX a ω t 2)) / a ^ 2 from by
+      ring, hsum]
+  ring
+
+/-- The Kirchhoff field, form 5 (y-velocity of vortex 1). -/
+theorem lag_ky1_field (g a ω t : ℝ) :
+    ky2 g g g (lagX a ω t 0) (lagY a ω t 0) (lagX a ω t 1) (lagY a ω t 1)
+      (lagX a ω t 2) (lagY a ω t 2)
+      = (3 * g / (2 * Real.pi * a ^ 2)) * lagX a ω t 1 := by
+  have hd1 : d2 (lagX a ω t 0) (lagY a ω t 0) (lagX a ω t 1) (lagY a ω t 1) = a ^ 2 :=
+    d2_lag01 a ω t
+  have hd2 : d2 (lagX a ω t 1) (lagY a ω t 1) (lagX a ω t 2) (lagY a ω t 2) = a ^ 2 :=
+    d2_lag12 a ω t
+  have hc := lagX_sum a ω t
+  have hsum : g * (lagX a ω t 1 - lagX a ω t 0) + g * (lagX a ω t 1 - lagX a ω t 2)
+      = 3 * g * lagX a ω t 1 := by
+    linear_combination (-g) * hc
+  unfold ky2
+  rw [hd1, hd2, show g * (lagX a ω t 1 - lagX a ω t 0) / a ^ 2
+        + g * (lagX a ω t 1 - lagX a ω t 2) / a ^ 2
+      = (g * (lagX a ω t 1 - lagX a ω t 0) + g * (lagX a ω t 1 - lagX a ω t 2)) / a ^ 2 from by
+      ring, hsum]
+  ring
+
+/-- The Kirchhoff field, form 6 (y-velocity of vortex 2). -/
+theorem lag_ky2_field (g a ω t : ℝ) :
+    ky3 g g g (lagX a ω t 0) (lagY a ω t 0) (lagX a ω t 1) (lagY a ω t 1)
+      (lagX a ω t 2) (lagY a ω t 2)
+      = (3 * g / (2 * Real.pi * a ^ 2)) * lagX a ω t 2 := by
+  have hd1 : d2 (lagX a ω t 0) (lagY a ω t 0) (lagX a ω t 2) (lagY a ω t 2) = a ^ 2 :=
+    d2_lag02 a ω t
+  have hd2 : d2 (lagX a ω t 1) (lagY a ω t 1) (lagX a ω t 2) (lagY a ω t 2) = a ^ 2 :=
+    d2_lag12 a ω t
+  have hc := lagX_sum a ω t
+  have hsum : g * (lagX a ω t 2 - lagX a ω t 0) + g * (lagX a ω t 2 - lagX a ω t 1)
+      = 3 * g * lagX a ω t 2 := by
+    linear_combination (-g) * hc
+  unfold ky3
+  rw [hd1, hd2, show g * (lagX a ω t 2 - lagX a ω t 0) / a ^ 2
+        + g * (lagX a ω t 2 - lagX a ω t 1) / a ^ 2
+      = (g * (lagX a ω t 2 - lagX a ω t 0) + g * (lagX a ω t 2 - lagX a ω t 1)) / a ^ 2 from by
+      ring, hsum]
+  ring
+
+/-! ### the frequency is forced -/
+
+/-- **THE FORCING THEOREM — the frequency is not an ansatz choice.**
+    If the equilateral triangle rotating at an arbitrary trial frequency ν
+    is to satisfy the Kirchhoff y-equation at t = 0, then necessarily
+    ν = 3Γ/(2πa²): the Lagrange angular velocity is uniquely determined by
+    the configuration and the circulation. This is the analytic identity
+    behind the V2 criterion "measured omega = 3Γ/(2πa²) within 1e-6". -/
+theorem lag_omega_unique (g a ν : ℝ) (ha : a ≠ 0)
+    (h : ky1 g g g (lagX a ν 0 0) (lagY a ν 0 0) (lagX a ν 0 1) (lagY a ν 0 1)
+      (lagX a ν 0 2) (lagY a ν 0 2) = ν * lagX a ν 0 0) :
+    ν = lagrangeOmega g a := by
+  have hfield := lag_ky0_field g a ν 0
+  rw [hfield] at h
+  have hx0 : lagX a ν 0 0 = a / Real.sqrt 3 := by
+    unfold lagX
+    rw [phase0_eq, mul_zero, Real.cos_zero]
+    ring
+  have hx0ne : lagX a ν 0 0 ≠ 0 := by
+    rw [hx0]
+    intro h0
+    field_simp at h0
+    exact ha h0
+  have h3g : (3 * g / (2 * Real.pi * a ^ 2) : ℝ) = lagrangeOmega g a := by
+    unfold lagrangeOmega
+    ring
+  rw [h3g] at h
+  exact (mul_right_cancel₀ hx0ne h).symm
+
+/-- The Lagrange frequency is nonzero whenever the circulation and the
+    side are nonzero. -/
+theorem lagomega_ne_zero (g a : ℝ) (hg : g ≠ 0) (ha : a ≠ 0) :
+    lagrangeOmega g a ≠ 0 := by
+  have h2 : (0:ℝ) < a ^ 2 := by rw [pow_two]; exact mul_self_pos.mpr ha
+  have hnum : (3 * g : ℝ) ≠ 0 := mul_ne_zero (show (3:ℝ) ≠ 0 from by norm_num) hg
+  have hden : (2 * Real.pi * a ^ 2 : ℝ) ≠ 0 :=
+    mul_ne_zero (show (2 * Real.pi : ℝ) ≠ 0 from by positivity) (ne_of_gt h2)
+  unfold lagrangeOmega
+  intro h
+  exact div_ne_zero hnum hden h
+
+/-- **The direction of the rotation**: the Lagrange frequency is positive
+    exactly when the circulation is positive (the side length enters
+    through a², so it never flips the sign) — counterclockwise for Γ > 0. -/
+theorem lagomega_pos_iff (g a : ℝ) (ha : a ≠ 0) : 0 < lagrangeOmega g a ↔ 0 < g := by
+  have h2 : (0:ℝ) < a ^ 2 := by rw [pow_two]; exact mul_self_pos.mpr ha
+  have hden : 0 < 2 * Real.pi * a ^ 2 :=
+    mul_pos (show (0:ℝ) < 2 * Real.pi from by positivity) h2
+  unfold lagrangeOmega
+  constructor
+  · intro h
+    rcases div_pos_iff.mp h with ⟨h1, -⟩ | ⟨h1, h2'⟩
+    · linarith
+    · exfalso
+      linarith
+  · intro hg
+    exact div_pos (mul_pos (show (0:ℝ) < 3 from by norm_num) hg) hden
+
+/-! ### the scaling law of the family -/
+
+/-- The Lagrange frequency scales as ω(λa) = ω(a)/λ² — halving the
+    triangle quadruples the spin rate. -/
+theorem lagomega_scale (g a c : ℝ) (hg : g ≠ 0) (hc : c ≠ 0) (ha : a ≠ 0) :
+    lagrangeOmega g (c * a) = lagrangeOmega g a / c ^ 2 := by
+  have h2 : (0:ℝ) < c ^ 2 := by rw [pow_two]; exact mul_self_pos.mpr hc
+  have ha2 : (0:ℝ) < a ^ 2 := by rw [pow_two]; exact mul_self_pos.mpr ha
+  have hca : (0:ℝ) < (c * a) ^ 2 := by
+    rw [pow_two]
+    exact mul_self_pos.mpr (mul_ne_zero hc ha)
+  have hden1 : (2 * Real.pi * (c * a) ^ 2 : ℝ) ≠ 0 :=
+    mul_ne_zero (show (2 * Real.pi : ℝ) ≠ 0 from by positivity) (ne_of_gt hca)
+  have hden2 : (2 * Real.pi * a ^ 2 : ℝ) ≠ 0 :=
+    mul_ne_zero (show (2 * Real.pi : ℝ) ≠ 0 from by positivity) (ne_of_gt ha2)
+  have hnum : (3 * g : ℝ) ≠ 0 := mul_ne_zero (show (3:ℝ) ≠ 0 from by norm_num) hg
+  unfold lagrangeOmega
+  field_simp [hden1, hden2, hnum, ne_of_gt h2]
+  ring
+
+/-- The trajectories of the family are scaled copies: the solution at side
+    c·a is c times the solution at side a, run at the scaled time t/c². -/
+theorem lagX_scale (c a ω t : ℝ) (k : ℕ) : lagX (c * a) ω t k = c * lagX a ω t k := by
+  unfold lagX
+  ring
+
+/-- The y-coordinate twin of `lagX_scale`. -/
+theorem lagY_scale (c a ω t : ℝ) (k : ℕ) : lagY (c * a) ω t k = c * lagY a ω t k := by
+  unfold lagY
+  ring
+
+/-- The initial vertex k = a·(the reference vertex k): the t = 0 slice of
+    the rotating triangle is the reference state, scaled. -/
+theorem lagX_zero (a ω : ℝ) (k : ℕ) : lagX a ω 0 k = a * lagX 1 ω 0 k := by
+  have h := lagX_scale a 1 ω 0 k
+  rwa [mul_one] at h
+
+/-- The y-coordinate twin of `lagX_zero`. -/
+theorem lagY_zero (a ω : ℝ) (k : ℕ) : lagY a ω 0 k = a * lagY 1 ω 0 k := by
+  have h := lagY_scale a 1 ω 0 k
+  rwa [mul_one] at h
+
+/-- **The trajectory scaling law**: lagX(c·a, ω(c·a), t) = c·lagX(a, ω(a),
+    t/c²) — the same choreography, time-rescaled. Together with
+    `lagomega_scale` this is the complete similarity solution of the
+    Lagrange family. -/
+theorem lag_trajectory_scale_x (g a c t : ℝ) (k : ℕ) (hc : c ≠ 0) (ha : a ≠ 0) :
+    lagX (c * a) (lagrangeOmega g (c * a)) t k
+      = c * lagX a (lagrangeOmega g a) (t / c ^ 2) k := by
+  unfold lagX lagrangeOmega
+  have harg : (3 * g / (2 * Real.pi * (c * a) ^ 2)) * t + 2 * Real.pi * (k:ℝ) / 3
+        = (3 * g / (2 * Real.pi * a ^ 2)) * (t / c ^ 2) + 2 * Real.pi * (k:ℝ) / 3 := by
+    field_simp
+    ring
+  rw [harg]
+  ring
+
+/-- The y-coordinate twin of `lag_trajectory_scale_x`. -/
+theorem lag_trajectory_scale_y (g a c t : ℝ) (k : ℕ) (hc : c ≠ 0) (ha : a ≠ 0) :
+    lagY (c * a) (lagrangeOmega g (c * a)) t k
+      = c * lagY a (lagrangeOmega g a) (t / c ^ 2) k := by
+  unfold lagY lagrangeOmega
+  have harg : (3 * g / (2 * Real.pi * (c * a) ^ 2)) * t + 2 * Real.pi * (k:ℝ) / 3
+        = (3 * g / (2 * Real.pi * a ^ 2)) * (t / c ^ 2) + 2 * Real.pi * (k:ℝ) / 3 := by
+    field_simp
+    ring
+  rw [harg]
+  ring
+
+/-! ### the distance certificates (the shape part of check V2) -/
+
+/-- **The side lengths never change, in distance form**: the 0–1 side of
+    the rotating triangle is exactly a for every t (0 < a) — the exact
+    counterpart of the `shape_drift ≤ 1e-10` band of check V2. -/
+theorem lag_dist01 (a ω t : ℝ) (ha : 0 < a) :
+    vortexDist (lagX a ω t 0) (lagY a ω t 0) (lagX a ω t 1) (lagY a ω t 1) = a := by
+  rw [vortexDist_eq, d2_lag01 a ω t, Real.sqrt_sq (le_of_lt ha)]
+
+/-- The 0–2 side is exactly a for every t. -/
+theorem lag_dist02 (a ω t : ℝ) (ha : 0 < a) :
+    vortexDist (lagX a ω t 0) (lagY a ω t 0) (lagX a ω t 2) (lagY a ω t 2) = a := by
+  rw [vortexDist_eq, d2_lag02 a ω t, Real.sqrt_sq (le_of_lt ha)]
+
+/-- The 1–2 side is exactly a for every t. -/
+theorem lag_dist12 (a ω t : ℝ) (ha : 0 < a) :
+    vortexDist (lagX a ω t 1) (lagY a ω t 1) (lagX a ω t 2) (lagY a ω t 2) = a := by
+  rw [vortexDist_eq, d2_lag12 a ω t, Real.sqrt_sq (le_of_lt ha)]
+
+/-! ### the anchors for a triangle of arbitrary side a -/
+
+/-- **H along the rotating triangle of side a** (0 < a, all t): the
+    Hamiltonian takes the exact value −(3Γ²/2π)·ln a — the a = 1 anchor
+    `lagrange_anchor_H` is the specialization ln 1 = 0. -/
+theorem lagrange_side_H (g a : ℝ) (ha : 0 < a) (t : ℝ) :
+    Hvortex g g g (lagX a (lagrangeOmega g a) t 0) (lagY a (lagrangeOmega g a) t 0)
+      (lagX a (lagrangeOmega g a) t 1) (lagY a (lagrangeOmega g a) t 1)
+      (lagX a (lagrangeOmega g a) t 2) (lagY a (lagrangeOmega g a) t 2)
+      = -(3 * g ^ 2 / (2 * Real.pi)) * Real.log a := by
+  have hcons := H_kirchhoff_conserved g g g (lagrangeSol g a ha) t 0
+  simp only [lagrangeSol] at hcons
+  rw [hcons, lagX_zero a (lagrangeOmega g a) 0, lagY_zero a (lagrangeOmega g a) 0,
+    lagX_zero a (lagrangeOmega g a) 1, lagY_zero a (lagrangeOmega g a) 1,
+    lagX_zero a (lagrangeOmega g a) 2, lagY_zero a (lagrangeOmega g a) 2,
+    lagX0_eq1 (lagrangeOmega g a), lagY0_eq1 (lagrangeOmega g a),
+    lagX0_eq2 (lagrangeOmega g a), lagY0_eq2 (lagrangeOmega g a),
+    lagX0_eq3 (lagrangeOmega g a), lagY0_eq3 (lagrangeOmega g a),
+    Hvortex_scale a g g g eqX1 eqY1 eqX2 eqY2 eqX3 eqY3 ha
+      (by rw [side1]; norm_num) (by rw [side3']; norm_num) (by rw [side2]; norm_num),
+    H_equilateral g]
+  ring
+
+/-- **P along the rotating triangle of side a** (all t): the linear
+    impulse stays exactly 0. -/
+theorem lagrange_side_P (g a : ℝ) (ha : 0 < a) (t : ℝ) :
+    Pvortex g g g (lagX a (lagrangeOmega g a) t 0) (lagX a (lagrangeOmega g a) t 1)
+      (lagX a (lagrangeOmega g a) t 2) = 0 := by
+  have hcons := P_kirchhoff_conserved g g g (lagrangeSol g a ha) t 0
+  simp only [lagrangeSol] at hcons
+  rw [hcons, lagX_zero a (lagrangeOmega g a) 0, lagX_zero a (lagrangeOmega g a) 1,
+    lagX_zero a (lagrangeOmega g a) 2,
+    lagX0_eq1 (lagrangeOmega g a), lagX0_eq2 (lagrangeOmega g a),
+    lagX0_eq3 (lagrangeOmega g a), Pvortex_scale, P_equilateral]
+  ring
+
+/-- **Q along the rotating triangle of side a** (all t): the linear
+    impulse stays exactly 0. -/
+theorem lagrange_side_Q (g a : ℝ) (ha : 0 < a) (t : ℝ) :
+    Qvortex g g g (lagY a (lagrangeOmega g a) t 0) (lagY a (lagrangeOmega g a) t 1)
+      (lagY a (lagrangeOmega g a) t 2) = 0 := by
+  have hcons := Q_kirchhoff_conserved g g g (lagrangeSol g a ha) t 0
+  simp only [lagrangeSol] at hcons
+  rw [hcons, lagY_zero a (lagrangeOmega g a) 0, lagY_zero a (lagrangeOmega g a) 1,
+    lagY_zero a (lagrangeOmega g a) 2,
+    lagY0_eq1 (lagrangeOmega g a), lagY0_eq2 (lagrangeOmega g a),
+    lagY0_eq3 (lagrangeOmega g a), Qvortex_scale, Q_equilateral]
+  ring
+
+/-- **I along the rotating triangle of side a** (all t): the angular
+    impulse takes the exact value Γa² — the a = 1 anchor
+    `lagrange_anchor_I` is the specialization a² = 1. -/
+theorem lagrange_side_I (g a : ℝ) (ha : 0 < a) (t : ℝ) :
+    Ivortex g g g (lagX a (lagrangeOmega g a) t 0) (lagY a (lagrangeOmega g a) t 0)
+      (lagX a (lagrangeOmega g a) t 1) (lagY a (lagrangeOmega g a) t 1)
+      (lagX a (lagrangeOmega g a) t 2) (lagY a (lagrangeOmega g a) t 2) = g * a ^ 2 := by
+  have hcons := I_kirchhoff_conserved g g g (lagrangeSol g a ha) t 0
+  simp only [lagrangeSol] at hcons
+  rw [hcons, lagX_zero a (lagrangeOmega g a) 0, lagY_zero a (lagrangeOmega g a) 0,
+    lagX_zero a (lagrangeOmega g a) 1, lagY_zero a (lagrangeOmega g a) 1,
+    lagX_zero a (lagrangeOmega g a) 2, lagY_zero a (lagrangeOmega g a) 2,
+    lagX0_eq1 (lagrangeOmega g a), lagY0_eq1 (lagrangeOmega g a),
+    lagX0_eq2 (lagrangeOmega g a), lagY0_eq2 (lagrangeOmega g a),
+    lagX0_eq3 (lagrangeOmega g a), lagY0_eq3 (lagrangeOmega g a),
+    Ivortex_scale, I_equilateral]
+  ring
+
 /-! ## The axiom footprint -/
 
 -- Every theorem above must depend only on Mathlib's classical foundations.
@@ -1202,5 +1781,50 @@ theorem lagrange_anchor_I (g t : ℝ) :
 #print axioms lagrange_anchor_P
 #print axioms lagrange_anchor_Q
 #print axioms lagrange_anchor_I
+
+#print axioms vortexDist_scale
+#print axioms Pvortex_scale
+#print axioms Qvortex_scale
+#print axioms Ivortex_scale
+#print axioms Hvortex_scale
+#print axioms lag_rotation_x
+#print axioms lag_rotation_y
+#print axioms lag_deriv_field_x
+#print axioms lag_deriv_field_y
+#print axioms lag_orbit_radius
+#print axioms lag_period_closed
+#print axioms lagX_periodic
+#print axioms lagY_periodic
+#print axioms lagX_half_period
+#print axioms lagY_half_period
+#print axioms lag_cycle_x0
+#print axioms lag_cycle_x1
+#print axioms lag_cycle_x2
+#print axioms lag_cycle_y0
+#print axioms lag_cycle_y1
+#print axioms lag_cycle_y2
+#print axioms lag_kx0_field
+#print axioms lag_kx1_field
+#print axioms lag_kx2_field
+#print axioms lag_ky0_field
+#print axioms lag_ky1_field
+#print axioms lag_ky2_field
+#print axioms lag_omega_unique
+#print axioms lagomega_ne_zero
+#print axioms lagomega_pos_iff
+#print axioms lagomega_scale
+#print axioms lagX_scale
+#print axioms lagY_scale
+#print axioms lagX_zero
+#print axioms lagY_zero
+#print axioms lag_trajectory_scale_x
+#print axioms lag_trajectory_scale_y
+#print axioms lag_dist01
+#print axioms lag_dist02
+#print axioms lag_dist12
+#print axioms lagrange_side_H
+#print axioms lagrange_side_P
+#print axioms lagrange_side_Q
+#print axioms lagrange_side_I
 
 end Trivortex
