@@ -2,10 +2,40 @@
 # -*- coding: utf-8 -*-
 # ═════════════════════════════════════════════════════════════════════════════
 #  TRIVORTEX MASTER · SINGLE-FILE EDITION · JULIA
-#  v2.0.3-jl (2026-11-24) — полный порт однофайлового издания с Python v2.0.3
+#  v2.2.0-jl (2026-11-24) — SIGNAL EDITION: палитра «светофор» + чёрный/золото,
+#  баннер TRIVORTEX, i18n RU/EN, книжное меню-оглавление (две колонки),
+#  живой HUD-монитор и прогресс-бар со спиннером/ETA
+#
+#  История версий (Julia-издание):
+#    2.2.0-jl — SIGNAL EDITION (визуальная модернизация, ноль новых пакетов):
+#               палитра «светофор» (TL_*/GOLD_*/INK/PAPER) и multistop-
+#               градиент по 14 стопам; фиглет-баннер TRIVORTEX с диагональ-
+#               ным градиентом и кэшем по COLOR_MODE; i18n RU/EN — tr(),
+#               --lang, команда меню lang/ru/en, автодетект TRIVORTEX_LANG/
+#               LANG, переводы всех 77 названий режимов; прогресс-бар со
+#               спиннером, ETA и скоростью (автопоказ в run_simulation! при
+#               TTY и N≥500); живой HUD-монитор (ЦП/ОЗУ/load/аптайм/N/дви-
+#               гок): футер меню и команда st; меню-оглавление в книжной
+#               типографике: рамка 80, главы римскими цифрами с диапазонами,
+#               две колонки пунктов, ▶ на последнем запущенном режиме;
+#               поиск режимов /текст; панель команд ?; CLI: --help, --lang.
+#               Цветовой бэкенд: TTY-детект через stdout isa TTY (раньше
+#               isinteractive() — скрипт в терминале получал ANSI16), режим
+#               ansi256 (куб 6×6×6), COLORTERM/truecolor-детект и фикс SGR-
+#               последовательности truecolor (пробел перед «m» ломал код).
+#    2.1.0-jl — автозапуск после include; потолок N и порог Хавелока
+#               настраиваемые (--max-bodies, --havelok, 0 = без ограничений);
+#               генератор матриц тел (7 типов, скалярное масштабирование ×k
+#               до бесконечности); движок barnes_hut на сцене идёт через
+#               квадродерево O(N log N); history-every для больших N;
+#               все параметры конфига переопределяются (CLI + меню);
+#               баги: пресет sun_all_planets (N=9) теперь собирается,
+#               frame_save возвращает путь (не байты), честный замер
+#               скорости BH (прогрев перед @elapsed), EOF-выход из меню.
+#    2.0.3-jl — полный порт Python v2.0.3.
 # ═════════════════════════════════════════════════════════════════════════════
 #
-#  Лабораторный комплекс N тел: 73 режима меню, каталог 538 объектов,
+#  Лабораторный комплекс N тел: 77 режимов меню, каталог 538 объектов,
 #  20 пресетов, selftest S1–S24, приёмка A1–A20, отчёты 10 форматов
 #  (txt/md/html/csv/json/docx/odt/pdf/pptx/xlsx — нативные ZIP+XML),
 #  PNG/GIF-кодеки, рейтрейсер, pure-растеризатор, бенчмарк B1–B8.
@@ -20,7 +50,14 @@
 #    julia trivortex_master_single.jl --acceptance       # приёмка A1–A20
 #    julia trivortex_master_single.jl --gate             # полный CI-гейт
 #    julia trivortex_master_single.jl --banner-only
+#    julia trivortex_master_single.jl --lang en       # язык интерфейса
 #    julia trivortex_master_single.jl --preset inner_solar --simulate --render
+#    julia trivortex_master_single.jl --matrix grid2d --matrix-rows 8 \
+#        --matrix-cols 8 --matrix-scale 2 --allow-unphysical --simulate
+#
+#  Include (REPL или другой скрипт) запускает меню СРАЗУ, без exit(…):
+#    include("trivortex_master_single.jl")   # → меню прямо в сессии
+#    ENV["TRIVORTEX_NO_AUTORUN"] = "1"        # отключить автозапуск (библиотека)
 #
 #  Структура: «линкер-склейка» — 110+ блоков с маркерами # БЛОК: <имя>,
 #  соответствуют модулям пакетного Python-издания.
@@ -40,9 +77,8 @@ export main
 # БЛОК: core/config.py — конфигурация, профили, константы
 # ═══════════════════════════════════════════════════════════════════════════
 
-const VERSION = "2.0.3-jl"
+const VERSION = "2.2.0-jl"
 const ROOT = @__DIR__
-const HARD_MAX_BODIES = 8
 const AU = 1.495978707e11        # а.е. в метрах (точно, IAU 2012)
 const AU_M = AU
 const YEAR_S = 365.25 * 86400.0  # юлианский год, с
@@ -58,6 +94,36 @@ const EPS31 = 2.6680737914285615     # ε Теоремы 3.1: 1/(e^{1/π}−1)
 const J2000_JD = 2451545.0
 const MPC_KM = 3.0857e19
 const G0 = 9.80665               # стандартное ускорение свободного падения
+
+# ── настраиваемые глобальные лимиты (v2.1.0) ────────────────────────────────
+# 0 означает «без ограничения»: N можно масштабировать до бесконечности.
+const MAX_BODIES_REF = Ref{Int}(0)     # потолок числа тел; 0 = ∞
+const HAVLOK_REF = Ref{Int}(8)         # порог Хавелока (unphysical-протокол); 0 = выкл.
+const BH_THETA_REF = Ref{Float64}(0.6) # угол раскрытия квадродерева Barnes-Hut
+
+"""Текущий потолок числа тел (0 = без ограничения)."""
+max_bodies() = MAX_BODIES_REF[]
+"""Установить потолок числа тел (0 = без ограничения)."""
+set_max_bodies!(n::Int) = (MAX_BODIES_REF[] = max(0, n); MAX_BODIES_REF[])
+"""Текущий порог Хавелока для unphysical-протокола (0 = порог отключён)."""
+havelok_threshold() = HAVLOK_REF[]
+"""Установить порог Хавелока (0 = отключить unphysical-ворот N)."""
+set_havelok_threshold!(n::Int) = (HAVLOK_REF[] = max(0, n); HAVLOK_REF[])
+"""Текущий угол раскрытия θ квадродерева Barnes-Hut."""
+bh_theta() = BH_THETA_REF[]
+"""Установить угол раскрытия θ квадродерева Barnes-Hut."""
+set_bh_theta!(t::Real) = (BH_THETA_REF[] = clamp(Float64(t), 1e-6, 10.0);
+                         BH_THETA_REF[])
+
+# первичная инициализация из окружения (TRIVORTEX_MAX_BODIES / _HAVLOK / _BH_THETA)
+let
+    v = tryparse(Int, get(ENV, "TRIVORTEX_MAX_BODIES", ""))
+    v !== nothing && set_max_bodies!(v)
+    v = tryparse(Int, get(ENV, "TRIVORTEX_HAVLOK", ""))
+    v !== nothing && set_havelok_threshold!(v)
+    v = tryparse(Float64, get(ENV, "TRIVORTEX_BH_THETA", ""))
+    v !== nothing && set_bh_theta!(v)
+end
 
 """Конфигурация прогона: физические константы и шкалы интегрирования."""
 mutable struct MasterConfig
@@ -112,19 +178,36 @@ COLOR_ENABLED = true
 COLOR_MODE = "truecolor"
 
 function _is_tty()
-    isinteractive() && (get(ENV, "TERM", "") != "dumb")
+    (stdout isa Base.TTY) && (get(ENV, "TERM", "") != "dumb")
 end
 
 detect_color_mode!() = begin
     global COLOR_ENABLED, COLOR_MODE
     if get(ENV, "NO_COLOR", "") != "" || get(ENV, "TV_NO_COLOR", "") != ""
         COLOR_ENABLED = false; COLOR_MODE = "none"
-    elseif _is_tty()
+    elseif !_is_tty()
+        COLOR_MODE = "ansi"          # пайп/файл: минимальный цвет
+    elseif get(ENV, "COLORTERM", "") in ("truecolor", "24bit") ||
+           occursin("direct", get(ENV, "TERM", "")) ||
+           occursin("truecolor", get(ENV, "TERM", ""))
         COLOR_MODE = "truecolor"
+    elseif occursin("256color", get(ENV, "TERM", ""))
+        COLOR_MODE = "ansi256"
     else
-        COLOR_MODE = "ansi"
+        COLOR_MODE = "truecolor"     # современный терминал по умолчанию
     end
     nothing
+end
+
+"""RGB → 256-цветный xterm (куб 6×6×6 + серая шкала), режим ansi256."""
+function _rgb256(rgb::Tuple{Int,Int,Int})
+    r, g, b = rgb
+    if abs(r - g) < 9 && abs(g - b) < 9 && abs(r - b) < 9
+        r > 238 && return 231
+        return clamp(round(Int, (r - 8) / 10), 0, 23) + 232
+    end
+    16 + 36 * clamp(round(Int, r / 51), 0, 5) +
+        6 * clamp(round(Int, g / 51), 0, 5) + clamp(round(Int, b / 51), 0, 5)
 end
 
 color_off!() = begin
@@ -135,11 +218,14 @@ end
 """Завернуть текст в ANSI-цвет (truecolor-палитра AURORA)."""
 function colorize(text::String, rgb::Tuple{Int,Int,Int}, bold::Bool=false)
     COLOR_ENABLED || return text
+    b = bold ? "1" : "0"
     if COLOR_MODE == "truecolor"
-        b = bold ? "1" : "0"
-        return "\e[38;2;$(rgb[1]);$(rgb[2]);$(rgb[3]);$b m" * text * "\e[0m"
+        # v2.2.0: фикс SGR — раньше был пробел перед «m», код ломался
+        return "\e[38;2;$(rgb[1]);$(rgb[2]);$(rgb[3]);$(b)m" * text * "\e[0m"
+    elseif COLOR_MODE == "ansi256"
+        return "\e[38;5;$(_rgb256(rgb));$(b)m" * text * "\e[0m"
     end
-    # ANSI 16: приблизим по яркости
+    # ANSI 16: приблизим по яркости (последний фолбэк, пайп/файл)
     lum = 0.299 * rgb[1] + 0.587 * rgb[2] + 0.114 * rgb[3]
     code = lum > 180 ? 97 : lum > 110 ? 37 : lum > 50 ? 36 : 34
     s = bold ? "1;" : ""
@@ -182,17 +268,356 @@ end
 orn(width::Int=74) = "═"^width
 
 # ═══════════════════════════════════════════════════════════════════════════
-# БЛОК: render/banners.py + hud.banner — банер ACLL
+# БЛОК: palette_v2 — светофор (красный/жёлтый/зелёный) + чёрный/золото
 # ═══════════════════════════════════════════════════════════════════════════
 
-const BANNER_ACLL = [
-    " █████╗ ██╗      █████╗ ██╗     ██╗      ██████╗ ",
-    "██╔══██╗██║     ██╔══██╗██║     ██║     ██╔════╝ ",
-    "███████║██║     ███████║██║     ██║     ██║      ",
-    "██╔══██║██║     ██╔══██╗██║     ██║     ██║      ",
-    "██║  ██║███████╗██║  ██║███████╗███████╗╚██████╗",
-    "╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝ ╚═════╝ ",
+# — светофор ————————————————————————————————————————————————————————————————
+const TL_RED    = (220,  50,  60)   # ярко-красный «стоп»
+const TL_AMBER  = (250, 204,  21)   # жёлтый «внимание»
+const TL_GREEN  = ( 52, 211, 153)   # зелёный «идти»
+const TL_DIM_R  = (120,  25,  30)   # тёмно-красный
+const TL_DIM_G  = ( 25,  90,  60)   # тёмно-зелёный
+
+# — золото и чернила ————————————————————————————————————————————————————————
+const GOLD_B    = (232, 199, 102)   # яркое золото
+const GOLD_D    = (140, 110,  40)   # тёмное золото
+const INK       = ( 15,  15,  20)   # чернила (чёрный)
+const INK_SOFT  = ( 40,  40,  50)   # мягкий чёрный
+const PAPER     = (240, 244, 248)   # светлая бумага
+
+# — стоп-лист градиента светофора: красный → чёрный → золото/жёлтый
+#   → чёрный → зелёный → золото —————————————————————————————————————————————
+const TRAFFIC_STOPS = Tuple{Float64,Tuple{Int,Int,Int}}[
+    (0.00, INK),
+    (0.06, TL_DIM_R),
+    (0.14, TL_RED),
+    (0.22, TL_RED),
+    (0.28, INK),
+    (0.34, GOLD_D),
+    (0.42, TL_AMBER),
+    (0.50, GOLD_B),
+    (0.58, TL_AMBER),
+    (0.64, INK),
+    (0.72, TL_DIM_G),
+    (0.82, TL_GREEN),
+    (0.92, TL_GREEN),
+    (1.00, GOLD_B),
 ]
+
+"""Мульти-стоп-градиент: цвет по позиции t ∈ [0,1]."""
+function multistop(t::Real, stops::Vector{Tuple{Float64,Tuple{Int,Int,Int}}}
+                   = TRAFFIC_STOPS)
+    length(stops) == 1 && return stops[1][2]
+    t ≤ stops[1][1] && return stops[1][2]
+    t ≥ stops[end][1] && return stops[end][2]
+    for i in 1:length(stops)-1
+        t1, c1 = stops[i]; t2, c2 = stops[i+1]
+        if t1 ≤ t ≤ t2
+            u = (t - t1) / max(t2 - t1, 1e-9)
+            return (round(Int, c1[1] + (c2[1]-c1[1])*u),
+                    round(Int, c1[2] + (c2[2]-c1[2])*u),
+                    round(Int, c1[3] + (c2[3]-c1[3])*u))
+        end
+    end
+    stops[end][2]
+end
+
+# ═══════════════════════════════════════════════════════════════════════════
+# БЛОК: i18n — переключение языка RU/EN (v2.2.0)
+#   tr("key") в текущем языке; выбор: --lang ru|en, команда меню lang,
+#   автодетект TRIVORTEX_LANG > LANG. Названия 77 режимов переведены
+#   полностью (MODE_TITLES_EN); тексты режимов остаются в базовом языке.
+# ═══════════════════════════════════════════════════════════════════════════
+
+const LANG_REF = Ref{Symbol}(:ru)
+
+set_lang!(l::Symbol)  = (LANG_REF[] = l; l)
+get_lang()            = LANG_REF[]
+toggle_lang!()        = set_lang!(get_lang() == :ru ? :en : :ru)
+lang_label(l::Symbol=get_lang()) = l == :ru ? "РУС" : "EN"
+
+# автодетект из окружения (TRIVORTEX_LANG > LANG)
+let
+    v = lowercase(get(ENV, "TRIVORTEX_LANG", get(ENV, "LANG", "")))
+    if occursin("ru", v)
+        set_lang!(:ru)
+    elseif occursin("en", v)
+        set_lang!(:en)
+    end
+end
+
+const STRINGS = Dict{Symbol,Dict{String,String}}(
+    :ru => Dict{String,String}(
+        "menu.title"       => "ГЛАВНОЕ МЕНЮ · TRIVORTEX MASTER",
+        "menu.choose"      => "выбор",
+        "menu.prompt"      => "выбор",
+        "menu.back"        => "Enter — в меню…",
+        "menu.exit"        => "выход",
+        "menu.lang"        => "язык",
+        "menu.status"      => "статус",
+        "menu.engines"     => "движки",
+        "menu.maxn"        => "потолок N",
+        "menu.unphys"      => "allow_unphysical: ВКЛ — конфигурации за порогом помечаются",
+        "menu.hint.search" => "/текст — поиск",
+        "menu.hint.hud"    => "st — монитор",
+        "menu.hint.help"   => "? — команды",
+        "menu.hint.exit"   => "0 — выход",
+        "unit.modes"       => "режимов",
+        "unit.cats"        => "категорий",
+        "unit.bodies"      => "N тел",
+        "unit.ceiling"     => "потолок",
+        "cat.lab"          => "Лаборатория",
+        "cat.vis"          => "Визуализация",
+        "cat.sim"          => "Симуляции",
+        "cat.anim"         => "Анимации",
+        "cat.analysis"     => "Анализ",
+        "cat.science"      => "Наука",
+        "cat.render"       => "Рендер",
+        "cat.reports"      => "Отчёты",
+        "cat.tools"        => "Инструменты",
+        "cat.settings"     => "Настройки",
+        "cat.help"         => "Справка",
+        "hud.cpu"          => "ЦП",
+        "hud.ram"          => "ОЗУ",
+        "hud.load"         => "Нагрузка",
+        "hud.uptime"       => "Аптайм",
+        "hud.bodies"       => "Тел",
+        "hud.engine"       => "Движок",
+        "hud.step"         => "Шаг",
+        "hud.mode"         => "Режим",
+        "pb.done"          => "готово",
+        "pb.running"       => "выполняется",
+        "pb.eta"           => "ост.",
+        "pb.elapsed"       => "прошло",
+        "pb.speed"         => "скорость",
+        "pb.steps"         => "шагов",
+        "mon.free"         => "своб.",
+        "mon.used"         => "занято",
+        "err.pick"         => "неверный пункт",
+        "err.eof"          => "stdin исчерпан — выходим",
+        "help.title"       => "КОМАНДЫ МЕНЮ",
+        "err.toomany"      => "слишком много пустых вводов — выходим",
+        "err.noscene"      => "сцена не создана — создайте её (Лаборатория → «Создать сцену из пресета»)",
+        "err.mode"         => "ошибка режима",
+        "err.interrupt"    => "прервано — возврат в меню",
+        "search.query"     => "поиск",
+        "search.found"     => "найдено",
+        "search.empty"     => "ничего не найдено",
+        "help.cmd.run"     => "запустить режим №",
+        "help.cmd.lang"    => "переключить язык (ru / en)",
+        "help.cmd.search"  => "поиск режима по тексту",
+        "help.cmd.hud"     => "панель мониторинга (ЦП / ОЗУ / load)",
+        "help.cmd.help"    => "эта справка",
+        "help.cmd.back"    => "возврат в меню",
+        "lang.switched.ru" => "язык: русский",
+        "lang.switched.en" => "язык: английский",
+        "banner.subtitle"  => "лаборатория N тел · траектории · 2D/3D/4D · отчёты 10 форматов · stdlib-first",
+    ),
+    :en => Dict{String,String}(
+        "menu.title"       => "MAIN MENU · TRIVORTEX MASTER",
+        "menu.choose"      => "choose",
+        "menu.prompt"      => "choose",
+        "menu.back"        => "Enter — back to menu…",
+        "menu.exit"        => "exit",
+        "menu.lang"        => "language",
+        "menu.status"      => "status",
+        "menu.engines"     => "engines",
+        "menu.maxn"        => "N ceiling",
+        "menu.unphys"      => "allow_unphysical: ON — beyond-threshold configurations are flagged",
+        "menu.hint.search" => "/text — search",
+        "menu.hint.hud"    => "st — monitor",
+        "menu.hint.help"   => "? — commands",
+        "menu.hint.exit"   => "0 — exit",
+        "unit.modes"       => "modes",
+        "unit.cats"        => "categories",
+        "unit.bodies"      => "bodies",
+        "unit.ceiling"     => "ceiling",
+        "cat.lab"          => "Laboratory",
+        "cat.vis"          => "Visualization",
+        "cat.sim"          => "Simulations",
+        "cat.anim"         => "Animations",
+        "cat.analysis"     => "Analysis",
+        "cat.science"      => "Science",
+        "cat.render"       => "Render",
+        "cat.reports"      => "Reports",
+        "cat.tools"        => "Tools",
+        "cat.settings"     => "Settings",
+        "cat.help"         => "Help",
+        "hud.cpu"          => "CPU",
+        "hud.ram"          => "RAM",
+        "hud.load"         => "Load",
+        "hud.uptime"       => "Uptime",
+        "hud.bodies"       => "Bodies",
+        "hud.engine"       => "Engine",
+        "hud.step"         => "Step",
+        "hud.mode"         => "Mode",
+        "pb.done"          => "done",
+        "pb.running"       => "running",
+        "pb.eta"           => "ETA",
+        "pb.elapsed"       => "elapsed",
+        "pb.speed"         => "speed",
+        "pb.steps"         => "steps",
+        "mon.free"         => "free",
+        "mon.used"         => "used",
+        "err.pick"         => "invalid option",
+        "err.eof"          => "stdin exhausted — exiting",
+        "help.title"       => "MENU COMMANDS",
+        "err.toomany"      => "too many empty inputs — exiting",
+        "err.noscene"      => "no scene yet — create one first (Laboratory → «New scene from preset»)",
+        "err.mode"         => "mode error",
+        "err.interrupt"    => "interrupted — back to menu",
+        "search.query"     => "search",
+        "search.found"     => "found",
+        "search.empty"     => "no matches",
+        "help.cmd.run"     => "run mode #",
+        "help.cmd.lang"    => "switch language (ru / en)",
+        "help.cmd.search"  => "search modes by text",
+        "help.cmd.hud"     => "system monitor panel (CPU / RAM / load)",
+        "help.cmd.help"    => "this help",
+        "help.cmd.back"    => "back to menu",
+        "lang.switched.ru" => "language: russian",
+        "lang.switched.en" => "language: english",
+        "banner.subtitle"  => "N-body laboratory · trajectories · 2D/3D/4D · 10-format reports · stdlib-first",
+    ),
+)
+
+"""Перевод по ключу; если ключа нет — вернуть сам ключ."""
+tr(key::AbstractString; lang::Symbol=get_lang()) =
+    get(get(STRINGS, lang, STRINGS[:en]), String(key), String(key))
+
+# — категории реестра: русское имя → ключ i18n ——————————————————————————————
+const CAT_I18N = Dict{String,String}(
+    "Наука"         => "cat.science",
+    "Анализ"        => "cat.analysis",
+    "Рендер"        => "cat.render",
+    "Отчёты"        => "cat.reports",
+    "Инструменты"   => "cat.tools",
+    "Лаборатория"   => "cat.lab",
+    "Визуализация"  => "cat.vis",
+    "Симуляции"     => "cat.sim",
+    "Анимации"      => "cat.anim",
+    "Настройки"     => "cat.settings",
+    "Справка"       => "cat.help",
+)
+
+# — иконки категорий (глифы одной ширины) ———————————————————————————————————
+const CAT_ICON = Dict{String,String}(
+    "Наука"         => "✦",
+    "Анализ"        => "∑",
+    "Рендер"        => "◐",
+    "Отчёты"        => "▤",
+    "Инструменты"   => "⚙",
+    "Лаборатория"   => "⚛",
+    "Визуализация"  => "◉",
+    "Симуляции"     => "∞",
+    "Анимации"      => "▶",
+    "Настройки"     => "❖",
+    "Справка"       => "?",
+)
+
+# — имена категорий по ключу i18n (с откатом на исходное имя) ————————————————
+cat_label(cat::AbstractString) =
+    tr(get(CAT_I18N, String(cat), String(cat)))
+cat_icon(cat::AbstractString) = get(CAT_ICON, String(cat), "·")
+
+# — английские названия всех 77 режимов (реестр хранит русские) —————————————
+const MODE_TITLES_EN = Dict{String,String}(
+    # Наука (25)
+    "science_relativity"    => "Post-Newtonian (1PN/2PN, GR)",
+    "science_barnes_hut"    => "Barnes-Hut O(N log N)",
+    "science_chaos"         => "Chaos: FLI/Poincaré/Laskar",
+    "science_collisions"    => "Collisions & fragments",
+    "science_tides"         => "Tides",
+    "science_radiation"     => "Radiation: P-R/Yarkovsky",
+    "science_resonances"    => "Resonances",
+    "science_tissot"        => "Tisserand parameter",
+    "science_halo"          => "CR3BP & Lagrange points",
+    "science_trojans"       => "Lagrange trojans",
+    "science_planetary"     => "System architectures",
+    "science_stellar"       => "Stellar physics",
+    "science_mission"       => "Missions: Hohmann/Tsiolkovsky",
+    "science_encounter"     => "Gravity assists",
+    "science_cosmology"     => "ΛCDM cosmology",
+    "science_solar_system"  => "Solar system simulation",
+    "science_eclipses"      => "Eclipses & Saros",
+    "science_bright_stars"  => "Bright star catalogue",
+    "science_almanac"       => "Almanac",
+    "science_hamiltonian"   => "Hamiltonian integrators",
+    "science_spacecraft"    => "Spacecraft: attitude & wheels",
+    "science_observatory"   => "Observatory: sessions",
+    "science_spaceweather"  => "Space weather",
+    "science_grid"          => "Fields on a grid",
+    "science_pure_raster"   => "Pure rasterizer",
+    # Анализ (17)
+    "analysis_selftest"     => "Structural tests S1–S24",
+    "analysis_lombscargle"  => "Lomb-Scargle",
+    "analysis_ttvs"         => "TTV analysis",
+    "analysis_bls"          => "BLS transits",
+    "analysis_mcmc"         => "MCMC (Metropolis)",
+    "analysis_wavelets"     => "Morlet wavelets",
+    "analysis_fitting"      => "Levenberg-Marquardt",
+    "analysis_iod"          => "Orbit determination (IOD)",
+    "analysis_proper"       => "Proper elements",
+    "analysis_sky"          => "Sky coordinates",
+    "analysis_tle"          => "TLE ephemerides",
+    "analysis_metrics"      => "Current scene metrics",
+    "analysis_rmt"          => "RMT spectra statistics",
+    "analysis_entropy"      => "Series entropies",
+    "analysis_lightcurves"  => "Transit light curves",
+    "analysis_benchmark"    => "Benchmark B1–B8",
+    "analysis_field"        => "Field studies",
+    # Рендер (6)
+    "render_raytracer"      => "Ray tracer",
+    "render_particles"      => "Particles",
+    "render_camera"         => "Cinematic cameras",
+    "render_spectrum"       => "Star colors",
+    "render_ascii_sky"      => "Sky map (ASCII)",
+    "render_compositor"     => "Frame compositor",
+    # Отчёты (4)
+    "reports_generate"      => "Generate reports",
+    "reports_xlsx"          => "XLSX report",
+    "reports_pptx"          => "PPTX report",
+    "reports_odt"           => "ODT report",
+    # Инструменты (5)
+    "tools_data_export"     => "Data export",
+    "tools_pipeline"        => "Data pipeline",
+    "tools_benchmark"       => "Benchmark B1–B8",
+    "tools_apiref"          => "API reference",
+    "tools_gate"            => "Quality gate (full CI)",
+    # Лаборатория (6)
+    "scene_create"          => "New scene from preset",
+    "scene_custom"          => "Custom scene (N bodies)",
+    "scene_info"            => "Show current scene",
+    "scene_catalog"         => "Object catalogue (search)",
+    "scene_matrix"          => "Body matrix (grid/ring/disk…)",
+    "scene_matrix_scale"    => "Scale matrix ×k",
+    # Визуализация (2)
+    "viz_render"            => "Visualize (2D/3D)",
+    "viz_ascii"             => "ASCII frame in terminal",
+    # Симуляции (2)
+    "sim_run"               => "Run simulation",
+    "sim_trajectory"        => "Plan a trajectory",
+    # Анимации (2)
+    "anim_gif"              => "Build GIF animation",
+    "anim_mp4"              => "Build MP4 video",
+    # Настройки (5)
+    "settings_profile"      => "Configuration profile",
+    "settings_sim"          => "Simulation parameters",
+    "settings_limits"       => "Limits: max_bodies/Havelok",
+    "settings_physics"      => "Reality physics",
+    "settings_save"         => "Save/load config",
+    # Справка (3)
+    "help_engines"          => "Engines & dependencies",
+    "help_literature"       => "Literature & sources",
+    "help_about"            => "About the complex",
+)
+
+"""Название режима на языке интерфейса (EN — из MODE_TITLES_EN, иначе RU)."""
+mode_title(m) = get_lang() == :en ? get(MODE_TITLES_EN, m.name, m.title) : m.title
+
+# ═══════════════════════════════════════════════════════════════════════════
+# БЛОК: render/banners.py + hud.banner — БАННЕР TRIVORTEX (светофор, v2.2.0)
+# ═══════════════════════════════════════════════════════════════════════════
 
 const BANNER_PLAIN = [
     "  ____  _ ____  _       ____  _                _             ",
@@ -203,7 +628,17 @@ const BANNER_PLAIN = [
     "                                                    |___/   ",
 ]
 
-"""truecolor-градиент лёд→золото по строке."""
+"""Фиглет-баннер TRIVORTEX в цветах светофора (6 строк × ~70 колонок)."""
+const BANNER_TRIVORTEX = [
+"████████╗██████╗ ██╗██╗   ██╗ ██████╗ ██████╗ ████████╗███████╗██╗  ██╗",
+"╚══██╔══╝██╔══██╗██║██║   ██║██╔═══██╗██╔══██╗╚══██╔══╝██╔════╝╚██╗██╔╝",
+"   ██║   ██████╔╝██║██║   ██║██║   ██║██████╔╝   ██║   █████╗   ╚███╔╝ ",
+"   ██║   ██╔══██╗██║╚██╗ ██╔╝██║   ██║██╔══██╗   ██║   ██╔══╝   ██╔██╗ ",
+"   ██║   ██║  ██║██║ ╚████╔╝ ╚██████╔╝██║  ██║   ██║   ███████╗██╔╝ ██╗",
+"   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═╝",
+]
+
+"""truecolor-градиент лёд→золото по строке (утилита отчётов/рамок)."""
 function gradient_text(ln::String, c1::Tuple{Int,Int,Int}, c2::Tuple{Int,Int,Int})
     n = max(length(ln), 1)
     out = IOBuffer()
@@ -217,30 +652,145 @@ function gradient_text(ln::String, c1::Tuple{Int,Int,Int}, c2::Tuple{Int,Int,Int
     String(take!(out))
 end
 
-"""Баннер ACLL: truecolor-градиент или плоский (Non-TTY)."""
+"""Диагональный светофорный градиент по баннеру (кэш результата)."""
+const _BANNER_CACHE = Ref{Union{Nothing,Vector{String}}}(nothing)
+const _BANNER_CACHE_MODE = Ref{String}("")
+
+function banner_trivortex_colored()
+    if !COLOR_ENABLED || COLOR_MODE == "none"
+        return copy(BANNER_TRIVORTEX)
+    end
+    if _BANNER_CACHE[] !== nothing && _BANNER_CACHE_MODE[] == COLOR_MODE
+        return _BANNER_CACHE[]
+    end
+    H = length(BANNER_TRIVORTEX)
+    out = String[]
+    for (r, line) in enumerate(BANNER_TRIVORTEX)
+        n = max(length(line), 1)
+        buf = IOBuffer()
+        for (c, ch) in enumerate(line)
+            tc = (c - 1) / max(n - 1, 1)
+            tr_ = (r - 1) / max(H - 1, 1)
+            t = clamp(0.72 * tc + 0.28 * tr_, 0.0, 1.0)
+            rgb = multistop(t)
+            write(buf, colorize(string(ch), rgb, true))
+        end
+        push!(out, String(take!(buf)))
+    end
+    _BANNER_CACHE[] = out
+    _BANNER_CACHE_MODE[] = COLOR_MODE
+    out
+end
+
+"""Баннер TRIVORTEX: светофор-градиент (truecolor) или плоский (Non-TTY)."""
 function banner(version::String=VERSION, subtitle::String="")
     if !COLOR_ENABLED || COLOR_MODE == "none"
-        lines = [replace(ln, "vVERSION" => "v" * version) for ln in BANNER_PLAIN]
+        lines = copy(BANNER_PLAIN)
     else
-        lines = [gradient_text(ln, ICE, GOLD) for ln in BANNER_ACLL]
+        lines = banner_trivortex_colored()
     end
     push!(lines, colorize(
-        "T R I V O R T E X   M A S T E R   ·   v$version   ·   AURORA EDITION",
-        GOLD, true))
-    sub = isempty(subtitle) ?
-        "лаборатория N тел · траектории · 2D/3D/4D · отчёты 10 форматов · stdlib-first" :
-        subtitle
+        "T R I V O R T E X   M A S T E R   ·   v$version   ·   SIGNAL EDITION",
+        GOLD_B, true))
+    sub = isempty(subtitle) ? tr("banner.subtitle") : subtitle
     push!(lines, colorize(sub, GRY))
     lines
 end
 
-"""Печать баннера: строки + орнамент-линия."""
+"""Печать баннера: строки + орнамент-линия золотом."""
 function print_banner(version::String=VERSION, subtitle::String="")
     print_lines(banner(version, subtitle))
-    println(COLOR_ENABLED ? colorize(orn(74), SKY) : orn(74))
+    println(COLOR_ENABLED ? colorize(orn(74), GOLD_B) : orn(74))
     nothing
 end
 
+# ═══════════════════════════════════════════════════════════════════════════
+# БЛОК: progress — прогресс-бар: спиннер, ETA, скорость, светофор-градиент
+# ═══════════════════════════════════════════════════════════════════════════
+
+const _SPINNER = ["⠋","⠙","⠹","⠸","⠼","⠴","⠦","⠧","⠇","⠏"]
+
+mutable struct ProgressBar
+    total::Int
+    current::Int
+    width::Int
+    label::String
+    t0::Float64
+    spin_i::Int
+    last_tick::Float64
+    finished::Bool
+end
+
+ProgressBar(total::Integer; width::Int=40, label::String="") =
+    ProgressBar(max(Int(total), 1), 0, width, label, time(), 1, 0.0, false)
+
+"""Обновить прогресс и (с троттлингом ~20 Гц) перерисовать."""
+function render!(pb::ProgressBar; force::Bool=false, suffix::String="")
+    now_ = time()
+    if !force && !pb.finished && now_ - pb.last_tick < 0.05
+        return
+    end
+    pb.last_tick = now_
+
+    pct     = clamp(pb.current / pb.total, 0.0, 1.0)
+    elapsed = now_ - pb.t0
+    speed   = elapsed > 0 ? pb.current / elapsed : 0.0
+    eta     = speed > 0 ? (pb.total - pb.current) / speed : 0.0
+
+    sp = _SPINNER[(pb.spin_i - 1) % length(_SPINNER) + 1]
+    pb.spin_i += 1
+
+    filled_n = clamp(round(Int, pct * pb.width), 0, pb.width)
+    empty_n  = pb.width - filled_n
+
+    buf = IOBuffer()
+    for i in 1:filled_n
+        u = (i - 0.5) / pb.width
+        col = multistop(u)
+        write(buf, colorize("█", col, true))
+    end
+    write(buf, colorize(repeat("░", empty_n), INK_SOFT))
+
+    tag = if pb.finished
+        colorize("✓ " * tr("pb.done"), TL_GREEN, true)
+    else
+        colorize(@sprintf("%s %-8s %.1fs  %s %.1f/s  %s %.1fs",
+                sp, tr("pb.elapsed"), elapsed,
+                tr("pb.speed"),   speed,
+                tr("pb.eta"),     eta), TL_AMBER, false)
+    end
+
+    lbl = isempty(pb.label) ? "" : " " * colorize(pb.label, PAPER, true)
+    @printf("\r  [%s] %5.1f%%%s  %s%s",
+            String(take!(buf)), pct * 100, lbl, tag, suffix)
+    flush(stdout)
+    nothing
+end
+
+track!(pb::ProgressBar; step::Integer=1, suffix::String="") = begin
+    pb.current = min(pb.current + step, pb.total)
+    render!(pb; suffix=suffix)
+    pb.current
+end
+
+finish!(pb::ProgressBar; suffix::String="") = begin
+    pb.current = pb.total; pb.finished = true
+    render!(pb; force=true, suffix=suffix)
+    println()
+    nothing
+end
+
+"""Обёртка: pb = with_progress(N) do track! end."""
+function with_progress(f::Function, total::Integer;
+                       width::Int=40, label::String="")
+    pb = ProgressBar(total; width=width, label=label)
+    render!(pb; force=true)
+    try
+        f(pb)
+    finally
+        pb.finished || finish!(pb)
+    end
+end
 # ═══════════════════════════════════════════════════════════════════════════
 # БЛОК: README (Julia edition) — описание запуска и профилей для A10/bundle
 # ═══════════════════════════════════════════════════════════════════════════
@@ -249,12 +799,12 @@ const TV_README_LOCAL = """# TRIVORTEX MASTER v2.0.3-jl — single-file Julia ed
 
 Лабораторный комплекс задачи N тел: хореографии, вихри Кирхгофа,
 планетная динамика, постньютон, анализ данных, отчёты 10 форматов.
-Порт однофайлового Python-издания v2.0.3 (73 режима, каталог 538
+Порт однофайлового Python-издания v2.0.3 (77 режимов, каталог 538
 объектов, 20 пресетов, selftest S1–S24, приёмка A1–A20).
 
 ## Запуск
 
-    julia trivortex_master_single.jl                       # интерактивное меню (73 режима)
+    julia trivortex_master_single.jl                       # интерактивное меню (77 режимов)
     julia trivortex_master_single.jl --selftest            # структурные тесты S1–S24
     julia trivortex_master_single.jl --acceptance          # приёмка A1–A20
     julia trivortex_master_single.jl --gate                # полный CI-гейт
@@ -263,6 +813,47 @@ const TV_README_LOCAL = """# TRIVORTEX MASTER v2.0.3-jl — single-file Julia ed
     julia trivortex_master_single.jl --preset earth_moon --steps 500 --report
     julia trivortex_master_single.jl --selftest --quiet
     julia trivortex_master_single.jl --version
+
+### Автозапуск после include (v2.1.0)
+
+    include("trivortex_master_single.jl")   # REPL/скрипт → меню сразу, без exit
+
+Меню стартует сразу после include — сессия не закрывается (без exit).
+Библиотечный режим: `ENV["TRIVORTEX_NO_AUTORUN"] = "1"` до include.
+Во время прекомпиляции пакета автозапуск не срабатывает.
+
+### Матрицы тел и масштабирование (v2.1.0)
+
+Семь матриц начальных конфигураций — grid2d, grid3d, ring, disk, shell,
+chain, cloud — со скалярным увеличением ×k без верхнего предела:
+
+    julia trivortex_master_single.jl --matrix grid2d --matrix-rows 8 \
+        --matrix-cols 8 --matrix-scale 2 --allow-unphysical --simulate
+    julia trivortex_master_single.jl --matrix ring --matrix-rows 100 \
+        --matrix-scale 10 --engine barnes_hut --steps 50 --history-every 5
+
+В меню: «Лаборатория → Матрица тел» и «Лаборатория → Увеличить
+матрицу ×k» (множитель применяется к накопленному масштабу — до
+бесконечности). Движок barnes_hut идёт через квадродерево O(N log N);
+history-every=k пишет каждый k-й кадр истории — регулятор памяти.
+
+### Переопределение параметров (v2.1.0)
+
+Поверх профиля любой параметр задаётся явно — без искусственных границ:
+
+    --dt X          шаг интегрирования (любой > 0)
+    --steps N       число шагов (любое ≥ 1)
+    --soften X      смягчение (≥ 0)
+    --G X           гравитационная постоянная
+    --engine NAME   native_newton | native_vortex | barnes_hut
+    --theta X       угол раскрытия квадродерева Barnes-Hut
+    --max-bodies N  потолок числа тел (0 = ∞, по умолчанию 0)
+    --havelok N     порог Хавелока unphysical-протокола (0 = выключить)
+    --history-every N  прореживание истории (регулятор памяти)
+
+Те же параметры — в меню «Настройки» (параметры симуляции, потолки),
+значения переживают сохранение/загрузку конфига (runs/config.json).
+Окружение: TRIVORTEX_MAX_BODIES, TRIVORTEX_HAVLOK, TRIVORTEX_BH_THETA.
 
 Требуется Julia 1.10+ и ТОЛЬКО стандартная библиотека (stdlib-first).
 Опционально: ffmpeg в PATH — MP4-сборка кадров (без него — честный
@@ -277,15 +868,17 @@ fallback-протокол в events сцены, как в Python без imageio)
 | precision | 0.001  | 5000  | 1e-6      | txt, md, html, csv, json, docx, pdf      |
 | demo      | 0.005  | 400   | 1e-4      | txt, md, html, csv, json, docx, pdf, odt |
 
-Флаг `--allow-unphysical` разрешает N=8 (порог Хавелока) с пометкой
-сцены unphysical_flag=True и записью события в протокол; N=9 — жёсткий
-отказ всегда.
+Флаг `--allow-unphysical` разрешает N ≥ 8 (порог Хавелока) с пометкой
+сцены unphysical_flag=True и записью события в протокол. Жёсткого
+отказа нет (v2.1.0): N не ограничен; потолок и порог настраиваются
+(`--max-bodies`, `--havelok`; 0 = без ограничения).
 
 ## Структура (портированные модули Python-издания)
 
-- **core**: config, registry (73 режима в 11 категориях), jsonmini
+- **core**: config, registry (77 режимов в 11 категориях), jsonmini
 - **lab**: body, scene, units, integrators (RK4/leapfrog/Yoshida-4),
   engines (newton/vortex/Barnes-Hut), kepler+lambert, orbital_maneuvers,
+  matrix_generator (7 матриц, ×k-масштабирование, v2.1.0),
   trajectory+choreography (Теорема 3.1), halo_orbits (CR3BP), trojan_points,
   resonances, tissot, tides, radiation, relativity (1PN/2PN/ISCO/LT),
   chaos (FLI/Пуанкаре/Ласкар), collisions, hamiltonian_split, grid_fields,
@@ -676,8 +1269,8 @@ each engine reports its status in the menu ("Help -> Engine status").
 
 | Area | How it is implemented |
 |---|---|
-| **N-body lab** | 20 presets (Solar System, Lagrange, figure-eight, vortex rings, Barnard's system from NASA TAP, Laplace resonance) + manual scene assembly |
-| **Body range** | N = 3..7; N = 8 only with `allow_unphysical` (Havelock threshold, POLYVORTEX W4: max Re lambda = +0.4502); N >= 9 hard-refused |
+| **N-body lab** | 20 presets (Solar System, Lagrange, figure-eight, vortex rings, Barnard's system from NASA TAP, Laplace resonance) + manual scene assembly + matrix generator v2.1.0 (grid2d/grid3d/ring/disk/shell/chain/cloud, scalar xk rescaling, unlimited N) |
+| **Body range** | N = 3..7; N >= 8 requires `allow_unphysical` (Havelock threshold, POLYVORTEX W4: max Re lambda = +0.4502); no hard refusal since v2.1.0 — the ceiling (`--max-bodies`, default 0 = unlimited) and the threshold itself (`--havelok`) are configurable |
 | **Physics** | Newtonian gravity RK4 (+ dissipation), Kirchhoff vortices with H/P/Q/I integrals, Barnes-Hut O(N log N), 1PN/2PN relativity, tides, radiation, CR3BP, Hamiltonian split integrators of orders 2/4/6, spacecraft (quaternions/reaction wheels/PID) |
 | **Trajectories** | planners: Theorem 3.1 (omega = 1.3748022274393588), Lagrange 1772, Chenciner-Montgomery figure-eight, Keplerian orbits, waypoints + Catmull-Rom splines |
 | **Rendering** | 4 engines: `ascii` (truecolor terminal), `pure` (own 3D rasterizer: 4x4 matrices, scanline, z-buffer, Lambert + Blinn-Phong), `mpl` (2D/3D/4D), `gl` (optional); a software raytracer with shadows and reflections; particles; cinematic cameras |
@@ -910,7 +1503,7 @@ TOTAL: `PASSED`, exit code 0.
 
 ## Menu & CLI
 
-The launch menu exposes **73 modes in 11 categories** (Laboratory,
+The launch menu exposes **77 modes in 11 categories** (Laboratory,
 Visualization, Simulations, Animations, Analysis, Science, Render,
 Reports, Tools, Settings, Help). Batch mode without a tty (cron/CI) is
 supported: EOF on any question selects the default.
@@ -919,6 +1512,10 @@ supported: EOF on any question selects the default.
 CLI flags: --selftest - --preset <id> - --simulate - --steps N - --render
            --gif - --report - --profile <p> - --allow-unphysical
            --banner-only - --no-color
+           v2.1.0: --matrix <type> - --matrix-rows/cols/layers/scale/
+           extent/mass/spin/dt/seed - --engine <name> - --dt - --soften
+           - --G - --theta - --max-bodies (0 = inf) - --havelok (0 = off)
+           - --history-every N
 ```
 
 ## Profiles
@@ -1005,9 +1602,11 @@ feature set (see the collapsible table above).
 
 Linear stability: an N-point equal-vortex ring is stable for N<=7 and
 unstable from N=8 (Havelock 1893; POLYVORTEX W4 pins max Re lambda =
-+0.4502). MASTER makes physics explicit: N=8 requires the
-`allow_unphysical` flag and is marked as such in every report; N>=9 is a
-hard refusal (test S12).
++0.4502). MASTER makes physics explicit: N>=8 requires the
+`allow_unphysical` flag and is marked as such in every report. Since
+v2.1.0 there is no hard refusal: N is unbounded, the ceiling
+(`--max-bodies`, default 0 = infinity) and the threshold itself
+(`--havelok 0`) are configurable (test S12).
 
 </details>
 
@@ -10701,7 +11300,7 @@ const TV_EMBEDDED_PRESETS = raw"""{
    "scale_mode": "macro",
    "time_span_years": 50.0,
    "unphysical": true,
-   "note": "N=9: превышение hard_max_bodies=8 — конфигурация вне физической вселенной модели; включается только с флагом allow_unphysical.",
+   "note": "N=9: за порогом Хавелока — конфигурация помечается unphysical; собирается с флагом allow_unphysical (жёсткого отказа нет с v2.1.0).",
    "suggested_backend": "mpl"
   },
   {
@@ -11268,22 +11867,33 @@ end
 
 n_bodies(sc::Scene) = length(sc.bodies)
 
+"""Добавить тело с проверкой лимитов.
+
+Протокол v2.1.0: жёсткого отказа больше нет —
+- потолок max_bodies() (0 = ∞) — единственный безусловный предел;
+- порог Хавелока havelok_threshold() (по умолчанию 8, 0 = выкл.):
+  N ≥ порога без allow_unphysical → UnphysicalConfiguration (ворота),
+  с флагом — конфигурация помечается unphysical_flag + событие."""
 function add_body!(sc::Scene, b::Body)
     n = n_bodies(sc)
     new_n = n + 1
-    if new_n > HARD_MAX_BODIES
+    cap = max_bodies()
+    hav = havelok_threshold()
+    if cap > 0 && new_n > cap
         throw(UnphysicalConfiguration(
-            "N=$new_n > $HARD_MAX_BODIES: жёсткий отказ (hard_max_bodies=8)"))
-    elseif new_n == HARD_MAX_BODIES && !sc.config.allow_unphysical && !sc.unphysical_flag
+            "N=$new_n > max_bodies=$cap: настраиваемый потолок " *
+            "(--max-bodies / меню «Настройки», 0 = без ограничения)"))
+    elseif hav > 0 && new_n >= hav && !sc.config.allow_unphysical &&
+           !sc.unphysical_flag
         throw(UnphysicalConfiguration(
-            "N=$new_n = $HARD_MAX_BODIES: порог Хавелока; " *
-            "разрешите флагом --allow-unphysical"))
+            "N=$new_n ≥ $hav: порог Хавелока; " *
+            "разрешите флагом --allow-unphysical (или --havelok 0)"))
     end
     push!(sc.bodies, b)
-    if n_bodies(sc) >= HARD_MAX_BODIES
+    if hav > 0 && n_bodies(sc) >= hav
         sc.unphysical_flag = true
         push!(sc.events,
-              "unphysical N=$(n_bodies(sc)): конфигурация на пороге физической вселенной")
+              "unphysical N=$(n_bodies(sc)): конфигурация за порогом Хавелока")
     end
     b
 end
@@ -11292,10 +11902,15 @@ end
 function validate(sc::Scene)
     problems = String[]
     n = n_bodies(sc)
+    cap = max_bodies()
+    hav = havelok_threshold()
     if n < 2
         push!(problems, "N=$n < 2: задача одного тела тривиальна")
-    elseif n > HARD_MAX_BODIES && !sc.unphysical_flag
-        push!(problems, "N=$n > $HARD_MAX_BODIES: вне теоремы Хавелока")
+    elseif hav > 0 && n >= hav && !sc.unphysical_flag
+        push!(problems, "N=$n ≥ $hav: вне теоремы Хавелока")
+    end
+    if cap > 0 && n > cap
+        push!(problems, "N=$n > max_bodies=$cap: потолок числа тел")
     end
     for b in sc.bodies, p in validate_body(b)
         push!(problems, "$(b.id): $p")
@@ -11660,31 +12275,83 @@ function get_engine(sc::Scene, name::String)
     name
 end
 
-"""Прогон симуляции: интегрирование + запись истории (кадр = t + 6N координат)."""
+"""Один шаг Barnes-Hut на сцене: конвертация ↔ SimBody, квадродерево,
+плоскость xy (z переносится без эволюции — модель 2D, как в nbody_tree)."""
+function barnes_hut_step!(sc::Scene; theta::Union{Float64,Nothing}=nothing)
+    θ = theta === nothing ? bh_theta() : theta
+    bodies = [SimBody(b.position[1], b.position[2], b.position[3], b.mass,
+                      b.velocity[1], b.velocity[2], b.velocity[3], i)
+              for (i, b) in enumerate(sc.bodies)]
+    bh_step_all!(bodies, sc.dt, sc.config.G, θ, sc.config.n_soften)
+    for (i, b) in enumerate(bodies)
+        sc.bodies[i].position .= (b.x, b.y, b.z)
+        sc.bodies[i].velocity .= (b.vx, b.vy, b.vz)
+    end
+    sc.t += sc.dt
+    sc
+end
+
+"""Прогон симуляции: интегрирование + запись истории (кадр = t + 6N координат).
+
+v2.1.0:
+- движок barnes_hut использует квадродерево (быстрый путь: конвертация в
+  SimBody один раз на прогон, O(N log N) на шаг);
+- history_every = k записывает каждый k-й кадр (плюс первый и последний) —
+  регулятор памяти при больших N: (6N+1)·8·(шаги/k) байт."""
 function run_simulation!(sc::Scene; n_steps::Union{Int,Nothing}=nothing,
                          engine::Union{String,Nothing}=nothing,
-                         circulations::Vector{Float64}=Float64[])
+                         circulations::Vector{Float64}=Float64[],
+                         history_every::Int=1,
+                         progress::Union{Bool,Nothing}=nothing)
     n = n_steps === nothing ? sc.config.n_steps : n_steps
+    hev = max(1, history_every)
     eng = get_engine(sc, engine === nothing ? sc.config.physics_engine : engine)
     sc.engine_name = eng
     hist = Any[]
-    push!(hist, vcat(sc.t,
+    push_frame!() = push!(hist, vcat(sc.t,
         [c for b in sc.bodies for c in b.position],
         [c for b in sc.bodies for c in b.velocity]))
-    for _ in 1:n
-        if eng == "native_vortex"
-            circ = isempty(circulations) ? [b.circulation for b in sc.bodies] : circulations
+    push_frame!()
+    # v2.2.0: прогресс-бар (авто: TTY и достаточно долгий прогон)
+    show_pb = progress === nothing ? (stdout isa Base.TTY && n >= 500) : progress
+    pb = show_pb ? ProgressBar(n; width=34, label=eng) : nothing
+    if eng == "native_vortex"
+        circ = isempty(circulations) ? [b.circulation for b in sc.bodies] : circulations
+        for s in 1:n
             vortex_step!(sc, circ)
-        elseif eng == "barnes_hut"
-            leapfrog_step!(sc)
-        else
-            rk4_step!(sc)
+            pb === nothing || track!(pb)
+            (s % hev == 0 || s == n) && push_frame!()
         end
-        push!(hist, vcat(sc.t,
-            [c for b in sc.bodies for c in b.position],
-            [c for b in sc.bodies for c in b.velocity]))
+    elseif eng == "barnes_hut"
+        # быстрый путь: конвертация один раз, шаги в SimBody-пространстве
+        bodies = [SimBody(b.position[1], b.position[2], b.position[3], b.mass,
+                          b.velocity[1], b.velocity[2], b.velocity[3], i)
+                  for (i, b) in enumerate(sc.bodies)]
+        θ = bh_theta()
+        for s in 1:n
+            bh_step_all!(bodies, sc.dt, sc.config.G, θ, sc.config.n_soften)
+            pb === nothing || track!(pb)
+            sc.t += sc.dt
+            if s % hev == 0 || s == n
+                for (i, b) in enumerate(bodies)
+                    sc.bodies[i].position .= (b.x, b.y, b.z)
+                    sc.bodies[i].velocity .= (b.vx, b.vy, b.vz)
+                end
+                push_frame!()
+            end
+        end
+    else
+        for s in 1:n
+            rk4_step!(sc)
+            pb === nothing || track!(pb)
+            (s % hev == 0 || s == n) && push_frame!()
+        end
     end
     sc.trajectory_history = hist
+    if pb !== nothing
+        finish!(pb; suffix="  " * colorize(
+            "✓ " * @sprintf("%d %s", n, tr("pb.steps")), TL_GREEN, true))
+    end
     sc
 end
 
@@ -11876,12 +12543,21 @@ function bh_self_check()
                                  bench["speedup"] > 1.0)
 end
 
-"""Бенчмарк BH: точность против прямого + ускорение по времени."""
+"""Бенчмарк BH: точность против прямого + ускорение по времени.
+
+Прогрев перед @elapsed: JIT-компиляция не должна попадать в замер
+(v2.1.0 — раньше скорость «плавала» от ×1.1 до ×1.3 из-за компиляции)."""
 function bh_benchmark(n_bodies::Int=300)
     rng = MersenneTwister(11)
     bodies = [SimBody(0.0, 0.0, 0.0, 1 / n_bodies, 0.0, 0.0, 0.0, i) for i in 1:n_bodies]
     for b in bodies
         b.x = rand(rng) * 2 - 1; b.y = rand(rng) * 2 - 1
+    end
+    # прогрев: компилируем оба пути ВНЕ замера
+    direct_forces(bodies, 1.0, 0.02)
+    warm_tree = build_tree(bodies)
+    for i in 1:min(8, n_bodies)
+        tree_force(warm_tree, bodies, i, 0.6, 0.02, 1.0)
     end
     t_direct = @elapsed fdir = direct_forces(bodies, 1.0, 0.02)
     tree = build_tree(bodies)
@@ -12150,6 +12826,248 @@ function _autotune_dt!(sc::Scene)
     end
     isfinite(best) && best > 0 && (sc.dt = max(best / 200.0, 1e-9))
     sc
+end
+
+# ═══════════════════════════════════════════════════════════════════════════
+# БЛОК: lab/matrix_generator.py — матрицы тел и скалярное масштабирование (v2.1.0)
+# ═══════════════════════════════════════════════════════════════════════════
+
+"""Каталог матриц начальных конфигураций: (ключ, описание)."""
+const MATRIX_TYPES = [
+    ("grid2d", "прямоугольная решётка rows×cols (плоскость xy)"),
+    ("grid3d", "кубическая решётка rows×cols×layers (3D)"),
+    ("ring",   "кольцо: правильный N-угольник (точное круговое вращение)"),
+    ("disk",   "диск: спираль Фибоначчи с золотым углом (2D)"),
+    ("shell",  "сферическая оболочка: сфера Фибоначчи (3D)"),
+    ("chain",  "цепочка вдоль x — «лестница Кирхгофа» (1D)"),
+    ("cloud",  "случайное облако в кубе (3D, воспроизводимый seed)"),
+]
+
+const GOLDEN_ANGLE = 2.399963229728653   # рад, спираль Фибоначчи
+
+"""Эффективные размеры матрицы после скалярного увеличения ×scale.
+
+grid2d/grid3d умножают каждую сторону (N растёт как k²/k³),
+остальные типы принимают rows·cols за базовое число тел и умножают его.
+Любое scale > 0 (в т.ч. дробное); верхнего предела нет."""
+function matrix_dims(matrix::String; rows::Int=4, cols::Int=4, layers::Int=1,
+                     scale::Real=1.0)
+    k = max(Float64(scale), 0.0)
+    ri(x) = max(1, round(Int, x * k))
+    if matrix == "grid2d"
+        (rows=ri(rows), cols=ri(cols), layers=1)
+    elseif matrix == "grid3d"
+        (rows=ri(rows), cols=ri(cols), layers=ri(layers))
+    else
+        (rows=max(1, round(Int, rows * cols * k)), cols=1, layers=1)
+    end
+end
+
+"""Позиции тел матрицы: Vector{Vector{Float64}} + характерный минимальный шаг d_min."""
+function matrix_positions(matrix::String, dims; extent::Real=1.0, seed::Int=42)
+    R = Float64(extent)
+    pos = Vector{Vector{Float64}}()
+    d_min = R
+    if matrix == "grid2d"
+        r, c = dims.rows, dims.cols
+        s = R / max(r - 1, c - 1, 1)
+        for i in 1:r, j in 1:c
+            push!(pos, [(i - (r + 1) / 2) * s, (j - (c + 1) / 2) * s, 0.0])
+        end
+        d_min = s
+    elseif matrix == "grid3d"
+        r, c, l = dims.rows, dims.cols, dims.layers
+        s = R / max(r - 1, c - 1, l - 1, 1)
+        for i in 1:r, j in 1:c, k in 1:l
+            push!(pos, [(i - (r + 1) / 2) * s, (j - (c + 1) / 2) * s,
+                        (k - (l + 1) / 2) * s])
+        end
+        d_min = s
+    elseif matrix == "ring"
+        n = dims.rows
+        rad = R / 2
+        for i in 0:n-1
+            phi = 2 * pi * i / n
+            push!(pos, [rad * cos(phi), rad * sin(phi), 0.0])
+        end
+        d_min = 2 * rad * sin(pi / max(n, 2))
+    elseif matrix == "disk"
+        n = dims.rows
+        rad = R / 2
+        for i in 1:n
+            push!(pos, [rad * sqrt(i / n) * cos(i * GOLDEN_ANGLE),
+                        rad * sqrt(i / n) * sin(i * GOLDEN_ANGLE), 0.0])
+        end
+        d_min = rad / max(sqrt(n), 1)
+    elseif matrix == "shell"
+        n = dims.rows
+        rad = R / 2
+        for i in 1:n
+            y = 1 - 2 * (i - 0.5) / n
+            rr = sqrt(max(1 - y * y, 0.0))
+            phi = i * GOLDEN_ANGLE
+            push!(pos, [rad * rr * cos(phi), rad * rr * sin(phi), rad * y])
+        end
+        d_min = 2 * rad / max(sqrt(n), 1)
+    elseif matrix == "chain"
+        n = dims.rows
+        s = R / max(n - 1, 1)
+        for i in 1:n
+            push!(pos, [(i - (n + 1) / 2) * s, 0.0, 0.0])
+        end
+        d_min = s
+    else  # cloud
+        rng = MersenneTwister(seed)
+        for _ in 1:dims.rows
+            push!(pos, [rand(rng) * R - R / 2, rand(rng) * R - R / 2,
+                        rand(rng) * R - R / 2])
+        end
+        d_min = R / max(cbrt(dims.rows), 1)
+    end
+    (pos=pos, d_min=max(d_min, 1e-12))
+end
+
+"""Точная угловая скорость правильного N-угольника равных масс
+(аналитические круговые орбиты): ω² = G·m/(4R³)·Σ_{k=1}^{N−1} 1/sin(πk/N)."""
+function ring_omega(n::Int, m::Real, G::Real, R::Real)
+    n < 2 && return 0.0
+    s = 0.0
+    for k in 1:n-1
+        s += 1 / sin(pi * k / n)
+    end
+    sqrt(G * m / (4 * R^3) * s)
+end
+
+"""Оценка памяти истории: байты (6N+1)·8·(шаги/every + 2)."""
+history_bytes(n::Int, steps::Int, every::Int=1) =
+    (6 * n + 1) * 8 * (div(steps, max(every, 1)) + 2)
+
+"""Подобрать history_every под бюджет памяти (МБ), минимум 1."""
+suggest_history_every(n::Int, steps::Int, budget_mb::Real=512) =
+    max(1, ceil(Int, history_bytes(n, steps, 1) / (1024 * 1024 * budget_mb)))
+
+"""Собрать сцену из матрицы начальных конфигураций.
+
+Модельные единицы (G = 1): масса каждого тела `mass`, размер `extent`.
+scale — скалярный множитель размеров матрицы (×2 → решётка вдвое крупнее
+по каждой стороне; применяется многократно — «до бесконечности»).
+spin: -1 = авто (вириальное вращение), 0 = покой, >0 = заданная ω.
+dt = 0 → автоподбор (кольцо: период/200; прочие: min(t_ff, t_пары)/50;
+вихри: как _vortex_scene). Смягчение поднимается до 0.1·d_min при
+плотных матрицах (событие в протоколе). Порог Хавелока соблюдается как
+в add_body! (флаг — allow_unphysical / base.allow_unphysical)."""
+function build_matrix_scene(matrix::String; rows::Int=4, cols::Int=4, layers::Int=1,
+                            scale::Real=1.0, extent::Real=1.0, mass::Real=1.0,
+                            spin::Real=0.1, dt::Real=0.0, circulation::Real=1.0,
+                            seed::Int=42, engine::String="native_newton",
+                            cfg::Union{MasterConfig,Nothing}=nothing,
+                            allow_unphysical::Bool=false)
+    known = first.(MATRIX_TYPES)
+    matrix in known || throw(ArgumentError(
+        "неизвестная матрица «$matrix» (доступны: $(join(known, ", ")))"))
+    (rows >= 1 && cols >= 1 && layers >= 1) ||
+        throw(ArgumentError("rows/cols/layers должны быть ≥ 1"))
+    scale > 0 || throw(ArgumentError("scale должен быть > 0"))
+    extent > 0 || throw(ArgumentError("extent должен быть > 0"))
+    mass > 0 || throw(ArgumentError("mass должен быть > 0"))
+
+    base = cfg === nothing ? from_profile("quick") : cfg
+    dims = matrix_dims(matrix; rows=rows, cols=cols, layers=layers, scale=scale)
+    layout = matrix_positions(matrix, dims; extent=extent, seed=seed)
+    pos = layout.pos
+    n = length(pos)
+    m = Float64(mass)
+    Γ = Float64(circulation)
+
+    # unphysical-протокол: N ≥ порога Хавелока требует флага
+    hav = havelok_threshold()
+    (hav > 0 && n >= hav && !allow_unphysical && !base.allow_unphysical) &&
+        throw(UnphysicalConfiguration(
+            "N=$n ≥ $hav: порог Хавелока; --allow-unphysical / --havelok 0"))
+
+    # движок: неизвестное имя → честный fallback-протокол (событие ниже)
+    eng_fallback = !(engine in available_engines() || engine == "native_newton")
+    engine = eng_fallback ? "native_newton" : engine
+    # смягчение: матрицы содержат близкие пары — поднимаем soften до
+    # доли d_min (честно фиксируем в протоколе events), если профиль меньше
+    soften_eff = max(base.n_soften, 0.1 * layout.d_min)
+    icfg = MasterConfig(1.0, dt > 0 ? Float64(dt) : 0.01, base.n_steps,
+                        soften_eff, allow_unphysical || base.allow_unphysical,
+                        base.profile, engine, base.root, base.report_formats)
+    sc = Scene(icfg; name="Матрица $(matrix) ×$(scale)")
+    eng_fallback && push!(sc.events,
+        "fallback движок: недоступен → native_newton (матричный генератор)")
+    soften_eff > base.n_soften && push!(sc.events,
+        @sprintf("soften поднят %.2e → %.2e (матрица: близкие пары, d_min=%.2e)",
+                 base.n_soften, soften_eff, layout.d_min))
+
+    # радиус тел: без перекрытий для решёток/кольца/цепочки
+    r_body = matrix in ("grid2d", "grid3d", "ring", "chain") ?
+             0.4 * layout.d_min : 0.05 * extent / max(sqrt(n), 1)
+    r_body = max(min(r_body, 0.4 * extent), 1e-9)
+
+    is_vortex = engine == "native_vortex"
+    # спин: -1 = авто (вириальное вращение ω = √(GM)/R^1.5 — край почти
+    # круговой), 0 = без вращения, >0 = заданная угловая скорость
+    spin_eff = Float64(spin)
+    if spin_eff < 0 && matrix != "ring" && !is_vortex
+        M_tot = m * n
+        spin_eff = sqrt(M_tot) / (extent / 2)^1.5
+    end
+    ω_ring = matrix == "ring" && !is_vortex ?
+             ring_omega(n, m, 1.0, extent / 2) : 0.0
+    for (i, p) in enumerate(pos)
+        if is_vortex
+            vel = [0.0, 0.0, 0.0]
+        elseif matrix == "ring"
+            vel = [-ω_ring * p[2], ω_ring * p[1], 0.0]
+        else
+            vel = [-spin_eff * p[2], spin_eff * p[1], 0.0]
+        end
+        add_body!(sc, Body("m$i", "$(matrix)_$i", m, r_body, p, vel,
+                           color=PALETTE[(i - 1) % 8 + 1],
+                           type=matrix == "ring" && is_vortex ? "vortex" : "matrix",
+                           source="matrix:$matrix", circulation=is_vortex ? Γ : 0.0))
+    end
+
+    # автоподбор dt: минимум из времени свободного падения системы
+    # и парного времени по ближайшей паре d_min (иначе плотные диски
+    # с близкими парами взрываются на первом же шаге)
+    if dt > 0
+        sc.dt = Float64(dt)
+    elseif is_vortex
+        omega_max = abs(Γ) / (2 * pi * layout.d_min^2)
+        sc.dt = (2 * pi / max(omega_max, 1e-9)) / 2000
+    elseif matrix == "ring"
+        sc.dt = ω_ring > 0 ? 2 * pi / ω_ring / 200 : 0.01
+    else
+        t_ff = sqrt(extent^3 / (1.0 * m * n))          # G = 1
+        t_pair = sqrt(layout.d_min^3 / (2.0 * m))       # ближайшая пара
+        sc.dt = max(0.02 * min(t_ff, t_pair), 1e-12)
+    end
+    sc.metadata["matrix"] = Dict{String,Any}(
+        "type" => matrix, "rows" => rows, "cols" => cols, "layers" => layers,
+        "scale" => Float64(scale), "extent" => Float64(extent),
+        "mass" => m, "spin" => Float64(spin), "dt" => Float64(dt),
+        "circulation" => Γ, "seed" => seed, "engine" => engine,
+        "n" => n)
+    sc
+end
+
+"""Пересобрать матричную сцену с новым скаляром: масштаб ×k применяется
+к текущему масштабу (scale_new = scale_old · k) — рост без предела."""
+function scale_matrix_scene(sc::Scene, k::Real; cfg::Union{MasterConfig,Nothing}=nothing)
+    md = get(sc.metadata, "matrix", nothing)
+    md === nothing && throw(ArgumentError(
+        "сцена «$(sc.name)» не матричная (нет параметров matrix)"))
+    Float64(k) > 0 || throw(ArgumentError("множитель k должен быть > 0"))
+    build_matrix_scene(String(md["type"]);
+        rows=Int(md["rows"]), cols=Int(md["cols"]), layers=Int(md["layers"]),
+        scale=Float64(md["scale"]) * Float64(k), extent=Float64(md["extent"]),
+        mass=Float64(md["mass"]), spin=Float64(md["spin"]), dt=Float64(md["dt"]),
+        circulation=Float64(md["circulation"]), seed=Int(md["seed"]),
+        engine=String(md["engine"]), cfg=cfg,
+        allow_unphysical=sc.config.allow_unphysical || sc.unphysical_flag)
 end
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -15075,9 +15993,12 @@ function render_bodies(bodies, width::Int=320, height::Int=240;
     fr
 end
 
-"""Сохранить кадр в PNG."""
-frame_save(fr::Frame, path::String) =
+"""Сохранить кадр в PNG. Возвращает путь (v2.1.0: раньше протекал размер
+файла из write_png_rgb — CLI/меню печатали «рендер 230723» вместо пути)."""
+function frame_save(fr::Frame, path::String)
     PNGCodec.write_png_rgb(path, fr.rgb, fr.w, fr.h)
+    path
+end
 
 """self_check pure-растеризатора: непустой кадр, шрифт читается."""
 function self_check_pure_raster()
@@ -16851,7 +17772,7 @@ function test_s11()
 end
 
 function test_s12()
-    r = TestResult("S12", "лимит N=8: порог Хавелока")
+    r = TestResult("S12", "лимиты N: порог Хавелока + настраиваемый потолок")
     # N=8 без флага: UnphysicalConfiguration
     threw = false
     try
@@ -16873,8 +17794,9 @@ function test_s12()
     end
     check!(r, sc2.unphysical_flag && length(sc2.events) >= 1,
            "N=8 с флагом: unphysical_flag=True + событие в протоколе")
-    # N=9: жёсткий отказ даже с флагом
-    cfg9 = from_profile("quick", allow_unphysical=false)
+    # v2.1.0: N=9 с флагом — больше НЕ жёсткий отказ (раньше пресет
+    # sun_all_planets было невозможно собрать вообще)
+    cfg9 = from_profile("quick", allow_unphysical=true)
     sc9 = Scene(cfg9; name="n9")
     refused = try
         for i in 1:9
@@ -16884,7 +17806,61 @@ function test_s12()
     catch e
         true
     end
-    check!(r, refused, "N=9: жёсткий отказ (hard_max_bodies=8)")
+    check!(r, !refused && n_bodies(sc9) == 9 && sc9.unphysical_flag,
+           "N=9 с флагом: собирается (N=9), помечен unphysical")
+    sc_sp = try
+        build_preset("sun_all_planets", from_profile("quick"; allow_unphysical=true))
+    catch
+        nothing
+    end
+    check!(r, sc_sp !== nothing && n_bodies(sc_sp) == 9,
+           "пресет sun_all_planets (N=9) собирается с флагом")
+    # настраиваемый потолок: max_bodies=10 → 11-е тело отказ; 0 = ∞
+    old_cap = max_bodies()
+    set_max_bodies!(10)
+    cfg10 = from_profile("quick", allow_unphysical=true)
+    sc10 = Scene(cfg10; name="n11")
+    cap_threw = try
+        for i in 1:11
+            add_body!(sc10, Body("b$i", "b$i", 1.0, 0.01, [i * 0.1, 0.0, 0.0],
+                                 zeros(3)))
+        end
+        false
+    catch e
+        e isa UnphysicalConfiguration
+    end
+    check!(r, cap_threw, "max_bodies=10: N=11 — отказ по потолку")
+    set_max_bodies!(0)
+    cfg20 = from_profile("quick", allow_unphysical=true)
+    sc20 = Scene(cfg20; name="n200")
+    for i in 1:200
+        add_body!(sc20, Body("b$i", "b$i", 1.0, 0.005,
+                             [cos(2 * pi * i / 200), sin(2 * pi * i / 200), 0.0],
+                             zeros(3)))
+    end
+    check!(r, n_bodies(sc20) == 200 && max_bodies() == 0,
+           "max_bodies=0 (∞): N=200 собирается свободно")
+    set_max_bodies!(old_cap)
+    # порог Хавелока отключается: --havelok 0
+    old_hav = havelok_threshold()
+    set_havelok_threshold!(0)
+    cfg_h = from_profile("quick")
+    sc_h = Scene(cfg_h; name="n9free")
+    for i in 1:9
+        add_body!(sc_h, Body("b$i", "b$i", 1.0, 0.01, [i * 0.1, 0.0, 0.0], zeros(3)))
+    end
+    check!(r, n_bodies(sc_h) == 9 && !sc_h.unphysical_flag,
+           "havelok=0: N=9 без флага — без пометок unphysical")
+    set_havelok_threshold!(old_hav)
+    # матрица ×k: масштабирование задачи (grid2d 4×4 → scale 3 → 144 тела)
+    sc_m = build_matrix_scene("grid2d"; rows=4, cols=4, scale=3.0,
+                              allow_unphysical=true)
+    sc_m2 = scale_matrix_scene(sc_m, 2.0)
+    check!(r, n_bodies(sc_m) == 144 && n_bodies(sc_m2) == 576,
+           "матрица grid2d ×3 → N=144, ×k ещё раз → N=576")
+    run_simulation!(sc_m2; n_steps=2, engine="barnes_hut", history_every=1)
+    check!(r, length(sc_m2.trajectory_history) == 3,
+           "Barnes-Hut на сцене: 3 кадра истории за 2 шага (квадродерево)")
     mark_ok!(r)
 end
 
@@ -17183,7 +18159,7 @@ function run_acceptance_base()
     end
     results["A1"] = gate_check("A1 запуск без пакетов", banner_ok)
 
-    # A2: диапазон N=3…7, 8 с флагом, 9 — отказ
+    # A2: диапазон N=3…7 свободно, ≥8 с флагом, потолок настраиваемый (v2.1.0)
     ok2 = true
     for pid in ("lagrange_triangle", "vortex_ring_5", "vortex_ring_7")
         try
@@ -17208,7 +18184,37 @@ function run_acceptance_base()
     add_body!(sc8b, Body("v8", "V8", 1.0, 0.02, [2.0, 0.0, 0.0], zeros(3),
                          circulation=1.0))
     ok2 &= sc8b.unphysical_flag
-    results["A2"] = gate_check("A2 диапазон N=3…7, 8 с флагом, 9 — отказ", ok2)
+    # v2.1.0: N=9 с флагом собирается (жёсткого отказа больше нет)
+    sc9b = build_preset("vortex_ring_7", cfg8)
+    add_body!(sc9b, Body("v9", "V9", 1.0, 0.02, [2.5, 0.0, 0.0], zeros(3),
+                         circulation=1.0))
+    add_body!(sc9b, Body("v10", "V10", 1.0, 0.02, [3.0, 0.0, 0.0], zeros(3),
+                         circulation=1.0))
+    ok2 &= n_bodies(sc9b) == 9
+    # v2.1.0: «мёртвый» пресет sun_all_planets (N=9) оживает с флагом
+    try
+        sc_sp = build_preset("sun_all_planets", cfg8)
+        ok2 &= n_bodies(sc_sp) == 9
+    catch
+        ok2 = false
+    end
+    # v2.1.0: настраиваемый потолок max_bodies
+    old_cap = max_bodies()
+    set_max_bodies!(9)
+    cap_threw = try
+        sc10 = build_preset("vortex_ring_7", cfg8)
+        for i in 10:12
+            add_body!(sc10, Body("v$i", "V$i", 1.0, 0.02,
+                                 [2.0 + 0.1 * i, 0.0, 0.0], zeros(3),
+                                 circulation=1.0))
+        end
+        false
+    catch e
+        e isa UnphysicalConfiguration
+    end
+    ok2 &= cap_threw
+    set_max_bodies!(old_cap)
+    results["A2"] = gate_check("A2 диапазон N=3…7, ≥8 флаг, потолок настраиваемый", ok2)
 
     # A3: рендер ascii/pure всегда доступны
     be = available_backends()
@@ -17462,7 +18468,237 @@ function self_check_tles()
 end
 
 # ═══════════════════════════════════════════════════════════════════════════
-# БЛОК: core/registry.py — реестр режимов (73 режима, 11 категорий)
+# БЛОК: monitor — живой HUD: CPU, RAM, load, uptime, N тел, движок
+#   Linux: /proc/stat, /proc/uptime, /proc/loadavg; память — Sys.*_memory.
+#   На не-Linux возвращается «n/a» (не падаем).
+# ═══════════════════════════════════════════════════════════════════════════
+
+_fmt_bytes(b::Real) =
+    b < 1024       ? @sprintf("%.0f B",   b)         :
+    b < 1024^2     ? @sprintf("%.1f KiB", b/1024)    :
+    b < 1024^3     ? @sprintf("%.1f MiB", b/1024^2)  :
+    b < 1024^4     ? @sprintf("%.2f GiB", b/1024^3)  :
+                     @sprintf("%.2f TiB", b/1024^4)
+
+_fmt_dur(s::Real) =
+    s < 60     ? @sprintf("%.0fs", s)  :
+    s < 3600   ? @sprintf("%dm%02ds", floor(Int, s/60), floor(Int, s) % 60) :
+    s < 86400  ? @sprintf("%dh%02dm", floor(Int, s/3600), floor(Int, s % 3600) ÷ 60) :
+                 @sprintf("%.1fd", s/86400)
+
+"""Прочитать /proc/stat; вернуть (idle, total) или nothing (не Linux)."""
+function _cpu_sample()
+    try
+        fields = split(readline("/proc/stat"), r"\s+"; keepempty=false)
+        startswith(fields[1], "cpu") || return nothing
+        v = parse.(Int64, fields[2:end])
+        idle = v[4] + (length(v) ≥ 5 ? v[5] : 0)
+        return (idle, sum(v))
+    catch
+        return nothing
+    end
+end
+
+"""% CPU между двумя сэмплами; nothing на первом вызове."""
+function _cpu_pct(prev)
+    cur = _cpu_sample()
+    cur === nothing && return (nothing, nothing)
+    prev === nothing && return (nothing, cur)
+    didle, dtot = cur[1] - prev[1], cur[2] - prev[2]
+    dtot ≤ 0 && return (0.0, cur)
+    (clamp((1 - didle / dtot) * 100, 0.0, 100.0), cur)
+end
+
+function _mem_info()
+    try
+        t = Sys.total_memory(); f = Sys.free_memory()
+        return (used = t - f, total = t, pct = 100.0 * (t - f) / t)
+    catch
+        return nothing
+    end
+end
+
+function _uptime_s()
+    try
+        parse(Float64, split(read("/proc/uptime", String), ' ')[1])
+    catch
+        nothing
+    end
+end
+
+function _loadavg()
+    try
+        p = split(read("/proc/loadavg", String), ' ')
+        (parse(Float64, p[1]), parse(Float64, p[2]), parse(Float64, p[3]))
+    catch
+        nothing
+    end
+end
+
+"""Мини-полоска gauge: значение 0..100, цвет по зонам светофора."""
+function gauge(pct::Real, width::Int=14)
+    filled = clamp(round(Int, pct / 100 * width), 0, width)
+    col = pct < 55 ? TL_GREEN : pct < 80 ? TL_AMBER : TL_RED
+    string(colorize("█"^filled, col, true),
+           colorize("░"^(width - filled), INK_SOFT))
+end
+
+mutable struct Monitor
+    cpu_prev::Union{Nothing,Tuple{Int64,Int64}}
+    cpu_pct::Float64
+    n_bodies::Int
+    engine::String
+    extra::Dict{String,String}
+end
+Monitor() = Monitor(nothing, 0.0, 0, "native_newton", Dict{String,String}())
+
+"""Обновить и вернуть 3 строки HUD (CPU | RAM | load + uptime)."""
+function refresh!(m::Monitor)
+    cpu, m.cpu_prev = _cpu_pct(m.cpu_prev)
+    cpu !== nothing && (m.cpu_pct = cpu)
+
+    mem = _mem_info()
+    up  = _uptime_s()
+    la  = _loadavg()
+
+    ram_str = mem === nothing ? "n/a" :
+        @sprintf("%s / %s  %s", _fmt_bytes(mem.used), _fmt_bytes(mem.total),
+                 gauge(mem.pct, 12))
+    up_str  = up  === nothing ? "n/a" : _fmt_dur(up)
+    la_str  = la  === nothing ? "n/a" : @sprintf("%.2f %.2f %.2f", la...)
+
+    l1 = colorize("  " * tr("hud.cpu") * " ", INK_SOFT) *
+         gauge(m.cpu_pct, 18) * " " *
+         colorize(@sprintf("%5.1f%%", m.cpu_pct), TL_AMBER, true) * "  " *
+         colorize(tr("hud.load") * " ", INK_SOFT) * colorize(la_str, PAPER)
+    l2 = colorize("  " * tr("hud.ram") * " ", INK_SOFT) * ram_str * "  " *
+         colorize(tr("hud.uptime") * " ", INK_SOFT) * colorize(up_str, PAPER)
+    l3 = colorize("  " * tr("hud.bodies") * " ", INK_SOFT) *
+         colorize(string(m.n_bodies), TL_GREEN, true) * "   " *
+         colorize(tr("hud.engine") * " ", INK_SOFT) *
+         colorize(m.engine, GOLD_B, true)
+    (l1, l2, l3)
+end
+
+"""Отрисовать HUD: рамка светофора + три строки."""
+function draw_monitor!(m::Monitor; width::Int=80)
+    l1, l2, l3 = refresh!(m)
+    println()
+    println(box_top(width, TL_AMBER))
+    println(box_row(l1, width, TL_AMBER))
+    println(box_row(l2, width, TL_AMBER))
+    println(box_row(l3, width, TL_AMBER))
+    println(box_bot(width, TL_AMBER))
+    nothing
+end
+
+# ═══════════════════════════════════════════════════════════════════════════
+# БЛОК: menu_v2 — стилизованный интерфейс: рамки, карточки, ▶ на активном,
+#   HUD-футер. Ширина по умолчанию 80 (две колонки пунктов по 38).
+# ═══════════════════════════════════════════════════════════════════════════
+
+const MENU_UI_W = 80          # ширина меню/монитора/футера
+const MENU_COL_W = 38         # ширина колонки пункта (5 + название ≤33)
+const MENU_ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX",
+                    "X", "XI", "XII"]
+const LAST_MODE_REF = Ref{String}("")   # ▶-маркер последнего запуска
+
+"""Видимая длина строки (ANSI-последовательности не считаются)."""
+_visible_len(s::AbstractString) =
+    length(replace(String(s), r"\e\[[0-9;]*m" => ""))
+
+"""Дополнить до видимой ширины w (цвета в длину не входят)."""
+function _pad_vis(s::AbstractString, w::Int)
+    d = w - _visible_len(s)
+    d > 0 ? String(s) * repeat(" ", d) : String(s)
+end
+
+"""Обрезать с многоточием до w видимых символов."""
+function _clip(s::AbstractString, w::Int)
+    _visible_len(s) <= w ? String(s) : first(String(s), w - 1) * "…"
+end
+
+"""Центрировать по видимой ширине (фикс наивного length у colorize)."""
+function _center(s::AbstractString, w::Int)
+    pad = max(w - _visible_len(s), 0)
+    l = div(pad, 2); r = pad - l
+    repeat(" ", l) * String(s) * repeat(" ", r)
+end
+
+# — рамки: верх/низ/строка с контентом (контент добивается до w-2) —————————
+box_top(w::Int=MENU_UI_W, col::Tuple{Int,Int,Int}=GOLD_B) =
+    colorize("╭" * "─"^(w - 2) * "╮", col)
+box_bot(w::Int=MENU_UI_W, col::Tuple{Int,Int,Int}=GOLD_B) =
+    colorize("╰" * "─"^(w - 2) * "╯", col)
+box_row(content::AbstractString, w::Int=MENU_UI_W,
+        col::Tuple{Int,Int,Int}=GOLD_B) =
+    colorize("│", col) * _pad_vis(" " * content, w - 2) * colorize("│", col)
+
+function menu_header(title::String; width::Int=MENU_UI_W)
+    println()
+    println(box_top(width, GOLD_B))
+    println(box_row(colorize(_center("✦ " * title * " ✦", width - 4),
+                             TL_AMBER, true), width, GOLD_B))
+    println(box_bot(width, GOLD_B))
+end
+
+function menu_section(label::String; width::Int=MENU_UI_W)
+    lbl = " " * label * " "
+    bar = "─" ^ max(div(width - length(lbl) - 2, 2), 2)
+    println(colorize("  $bar", TL_DIM_G) *
+            colorize(lbl, TL_GREEN, true) *
+            colorize("$bar", TL_DIM_G))
+end
+
+function menu_item(num::Int, key::String, label::String;
+                   hint::String="", active::Bool=false, width::Int=MENU_UI_W)
+    icon = active ? colorize("▶", TL_AMBER, true) : colorize("·", INK_SOFT)
+    n    = @sprintf("%2d", num)
+    sym  = cat_icon(key)
+    lab_col = active ? TL_AMBER : PAPER
+    line = colorize("  ", INK_SOFT) * icon * " " *
+           colorize(n, GOLD_B, active) * " " *
+           colorize(sym, TL_GREEN, true) * " " *
+           colorize(label, lab_col, active)
+    if !isempty(hint)
+        line *= colorize("  ·  " * hint, INK_SOFT)
+    end
+    println(line)
+end
+
+"""Футер меню: живой HUD-монитор + строка подсказок."""
+function menu_footer(mon::Monitor; width::Int=MENU_UI_W)
+    println()
+    println(box_top(width, TL_DIM_G))
+    for line in refresh!(mon)
+        println(box_row(line, width, TL_DIM_G))
+    end
+    hints = colorize(tr("menu.lang") * ": ", INK_SOFT) *
+            colorize(lang_label(), GOLD_B, true) *
+            colorize(" · " * tr("menu.hint.search") *
+                     " · " * tr("menu.hint.hud") *
+                     " · " * tr("menu.hint.help") *
+                     " · " * tr("menu.hint.exit"), INK_SOFT)
+    println(box_row(hints, width, TL_DIM_G))
+    println(box_bot(width, TL_DIM_G))
+end
+
+"""Интерактивный prompt с цветным приглашением; EOF → default."""
+function ask_prompt(prompt::String; default::String="")
+    print(colorize("  " * prompt * " ", TL_AMBER, true) *
+          colorize("▸ ", GOLD_B, true))
+    flush(stdout)
+    line = try
+        readline()
+    catch e
+        e isa EOFError && return default
+        rethrow()
+    end
+    isempty(strip(line)) ? default : strip(line)
+end
+
+# ═══════════════════════════════════════════════════════════════════════════
+# БЛОК: core/registry.py — реестр режимов (77 режимов, 11 категорий)
 # ═══════════════════════════════════════════════════════════════════════════
 
 struct ModeEntry
@@ -17512,7 +18748,7 @@ count_modes() = length(_entries)
 end # module REGISTRY
 
 # ═══════════════════════════════════════════════════════════════════════════
-# БЛОК: trivortex_master.py — App-сессия, 73 режима, CLI, интерактив
+# БЛОК: trivortex_master.py — App-сессия, 77 режимов, CLI, интерактив
 # ═══════════════════════════════════════════════════════════════════════════
 
 """Сессия лаборатории: конфиг, сцена, результаты."""
@@ -17555,8 +18791,7 @@ end
 """Требовать сцену: сообщение, если не создана."""
 function require_scene(app::App)
     if app.scene === nothing
-        println(colorize("\n  сцена не создана — сначала «Создать сцену из пресета»",
-                         ORG))
+        println(colorize("\n  ⚠ " * tr("err.noscene"), ORG))
         return nothing
     end
     app.scene
@@ -17593,7 +18828,62 @@ end
 
 _scene_var_str(v) = v isa Real ? @sprintf("%.6g", v) : string(v)
 
-# ── регистрация всех 73 режимов ─────────────────────────────────────────────
+# ── v2.1.0: ввод с значением по умолчанию (Enter = текущее, EOF = текущее) ──
+
+"""Спросить Float: Enter сохраняет текущее; повтор при не-числе или < lo."""
+function _ask_f(label::String, cur::Real; lo::Real=-Inf)
+    while true
+        print("  $label [$cur] > ")
+        s = strip(readline())
+        isempty(s) && return Float64(cur)
+        v = tryparse(Float64, s)
+        if v === nothing
+            println("  не число — повторите (или Enter для $cur)")
+        elseif v < lo
+            println("  значение должно быть ≥ $lo — повторите")
+        else
+            return v
+        end
+    end
+end
+
+"""Спросить Int: Enter сохраняет текущее; повтор при не-целом или < lo."""
+function _ask_i(label::String, cur::Integer; lo::Int=typemin(Int))
+    while true
+        print("  $label [$cur] > ")
+        s = strip(readline())
+        isempty(s) && return Int(cur)
+        v = tryparse(Int, s)
+        if v === nothing
+            println("  не целое — повторите (или Enter для $cur)")
+        elseif v < lo
+            println("  значение должно быть ≥ $lo — повторите")
+        else
+            return v
+        end
+    end
+end
+
+"""Спросить выбор из списка (ключ, описание): номер, ключ или Enter=default."""
+function _ask_choice(label::String, options::Vector{Tuple{String,String}},
+                     default::String)
+    println("  $label:")
+    for (i, (k, descr)) in enumerate(options)
+        d = k == default ? "  ← по умолчанию" : ""
+        println("    [$(i)] $(rpad(k, 13)) $(descr)$(d)")
+    end
+    print("  выбор [1-$(length(options)), Enter=$(default)] > ")
+    s = String(strip(readline()))
+    isempty(s) && return default
+    i = tryparse(Int, s)
+    if i !== nothing && 1 <= i <= length(options)
+        return options[i][1]
+    end
+    s in first.(options) && return s
+    default
+end
+
+# ── регистрация всех 77 режимов ─────────────────────────────────────────────
 
 function _register_all_modes()
     R = REGISTRY.register_mode
@@ -17948,7 +19238,7 @@ function _register_all_modes()
     R("tools_gate", "Quality gate (полный CI)", "Инструменты",
       () -> run_acceptance(), "A1–A20")
 
-    # Лаборатория (4)
+    # Лаборатория (6)
     R("scene_create", "Создать сцену из пресета", "Лаборатория",
       () -> begin
           presets = load_presets()
@@ -17973,27 +19263,35 @@ function _register_all_modes()
     R("scene_custom", "Своя сцена (N тел вручную)", "Лаборатория",
       () -> begin
           a = app()
-          cfg = from_profile("standard")
+          # модельные единицы G=1 (v2.1.0: раньше G_SI при массах 1 кг —
+          # гравитация ~1e-11, тела разлетались по прямым)
+          cfg = MasterConfig(1.0, 0.005, a.config.n_steps, 1e-6,
+                             a.config.allow_unphysical, a.config.profile,
+                             "native_newton", a.config.root,
+                             a.config.report_formats)
           sc = Scene(cfg; name="Своя сцена")
-          print("  N тел (3–7) > ")
+          print("  N тел (3–7, Enter=5) > ")
           n = tryparse(Int, strip(readline()))
-          (n === nothing || !(3 <= n <= 7)) && begin
-              println("  N вне диапазона 3–7")
+          n === nothing && (n = 5)
+          (n < 2 || n > 7) && begin
+              println("  N вне диапазона 3–7 (без флага unphysical)")
               return nothing
           end
+          Rr = 1.0
+          # точная круговая скорость правильного N-угольника равных масс
+          omega = ring_omega(n, 1.0, 1.0, Rr)
           for i in 1:n
               phi = 2 * pi * i / n
-              R = 1.0
-              omega = sqrt(n / (2.0 * R)^3 * 2.0)  # грубая круговая оценка
-              add_body!(sc, Body("b$i", "Тело $i", 1.0, 0.02,
-                                 [R * cos(phi), R * sin(phi), 0.0],
-                                 [-omega * R * sin(phi), omega * R * cos(phi), 0.0],
+              add_body!(sc, Body("b$i", "Тело $i", 1.0, 0.4 * 2 * Rr * sin(pi / n),
+                                 [Rr * cos(phi), Rr * sin(phi), 0.0],
+                                 [-omega * Rr * sin(phi), omega * Rr * cos(phi), 0.0],
                                  color=PALETTE[(i - 1) % 8 + 1],
                                  type="synthetic", source="вручную"))
           end
           _autotune_dt!(sc)
           a.scene = sc
           println(kv("сцена", "$(sc.name) (N=$n)"))
+          println(kv("ω", @sprintf("%.6f рад/с (точный многоугольник)", omega)))
           sc
       end, "вручную")
     R("scene_info", "Показать текущую сцену", "Лаборатория",
@@ -18025,6 +19323,75 @@ function _register_all_modes()
           end
           res
       end, "538 объектов")
+    R("scene_matrix", "Матрица тел (решётка/кольцо/диск…)", "Лаборатория",
+      () -> begin
+          mtype = _ask_choice("тип матрицы", collect(MATRIX_TYPES), "grid2d")
+          rows = _ask_i("rows (строк; для кольца и пр. — базовое N)", 4; lo=1)
+          cols = _ask_i("cols (столбцов)", 4; lo=1)
+          layers = _ask_i("layers (слоёв, grid3d)", 1; lo=1)
+          scale = _ask_f("scale — скалярное увеличение ×k", 1.0; lo=1e-9)
+          extent = _ask_f("extent — пространственный размер", 1.0; lo=1e-12)
+          mass = _ask_f("mass — масса каждого тела", 1.0; lo=1e-12)
+          spin = _ask_f("spin — вращение (-1 = авто-вириальное, 0 = покой)", -1.0)
+          dt = _ask_f("dt (0 = автоподбор)", 0.0; lo=0.0)
+          engine = _ask_choice("движок", [
+              ("native_newton", "RK4, полное 3D, O(N²) на шаг"),
+              ("barnes_hut",    "квадродерево O(N log N), плоскость xy"),
+              ("native_vortex", "вихри Кирхгофа: циркуляция Γ у каждого тела"),
+          ], "native_newton")
+          dims = matrix_dims(mtype; rows=rows, cols=cols, layers=layers,
+                             scale=scale)
+          n = mtype == "grid2d" ? dims.rows * dims.cols :
+              mtype == "grid3d" ? dims.rows * dims.cols * dims.layers : dims.rows
+          println(kv("план", "матрица $mtype → N=$n тел"))
+          println(kv("память истории",
+              @sprintf("%.1f МБ за %d шагов (каждый кадр)",
+                       history_bytes(n, app().config.n_steps) / 1048576,
+                       app().config.n_steps)))
+          a = app()
+          allow = a.config.allow_unphysical
+          if havelok_threshold() > 0 && n >= havelok_threshold() && !allow
+              ans = _ask_choice(
+                  "N=$n ≥ порога Хавелока ($(havelok_threshold())) — пометить unphysical?",
+                  [("y", "да, продолжить с честной пометкой"),
+                   ("n", "отмена")], "y")
+              ans == "y" || (println("  отмена"); return nothing)
+              allow = true
+          end
+          a.scene = build_matrix_scene(mtype; rows=rows, cols=cols,
+              layers=layers, scale=scale, extent=extent, mass=mass, spin=spin,
+              dt=dt, engine=engine, cfg=a.config, allow_unphysical=allow)
+          println(kv("сцена", "$(a.scene.name) (N=$(n_bodies(a.scene)))"))
+          println(kv("dt", @sprintf("%.3g", a.scene.dt) *
+                     (dt > 0 ? "" : " (автоподбор)")))
+          a.scene
+      end, "7 типов, ×k до ∞")
+    R("scene_matrix_scale", "Увеличить матрицу ×k", "Лаборатория",
+      () -> begin
+          a = app()
+          sc = require_scene(a)
+          sc === nothing && return nothing
+          md = get(sc.metadata, "matrix", nothing)
+          if md === nothing
+              println(colorize("  текущая сцена не матричная — постройте «Матрица тел»",
+                               ORG))
+              return nothing
+          end
+          k = _ask_f("множитель k (N растёт ∝ k…k³, потолка нет)", 2.0; lo=1e-9)
+          old_n = n_bodies(sc)
+          try
+              a.scene = scale_matrix_scene(sc, k; cfg=a.config)
+          catch e
+              e isa UnphysicalConfiguration ?
+                  (println(colorize("✗ $e", RED)); return nothing) : rethrow()
+          end
+          println(kv("было N", string(old_n)))
+          println(kv("стало N", string(n_bodies(a.scene))))
+          println(kv("масштаб накопленный",
+                     "×$(round(Float64(a.scene.metadata["matrix"]["scale"]), digits=3))"))
+          println(kv("dt", @sprintf("%.3g (переподобран)", a.scene.dt)))
+          a.scene
+      end, "масштабирование задачи")
 
     # Визуализация (2)
     R("viz_render", "Визуализировать (2D/3D)", "Визуализация",
@@ -18050,15 +19417,51 @@ function _register_all_modes()
       () -> begin
           sc = require_scene(app())
           sc === nothing && return nothing
-          e0 = total_energy(sc)
+          n = n_bodies(sc)
           run_simulation!(sc)
-          e1 = total_energy(sc)
-          drift = abs(e1 - e0) / max(abs(e0), 1e-12)
-          println(kv("шагов", string(app().config.n_steps)))
-          println(kv("дрейф энергии", @sprintf("%.1e", drift)))
+          if occursin("vortex", sc.engine_name)
+              # (v2.1.0) вихревой движок: честная метрика — интегралы Кирхгофа
+              d = integral_drifts(sc, [b.circulation for b in sc.bodies])
+              println(kv("H Кирхгофа, дрейф",
+                         @sprintf("%.1e (порог V3/V4 1e-10)",
+                                  Float64(get(d, "H_drift", NaN)))))
+          elseif n <= 5000
+              first_frame = sc.trajectory_history[1]
+              # энергия по начальному и конечному кадрам истории (O(N²) один раз)
+              calc = st -> begin
+                  flat = st[2:end]
+                  ke = sum(0.5 * sc.bodies[i].mass *
+                           (flat[3*n+3*i-2]^2 + flat[3*n+3*i-1]^2 +
+                            flat[3*n+3*i]^2) for i in 1:n)
+                  pe = 0.0
+                  for i in 1:n, j in i+1:n
+                      dx = flat[3*j-2] - flat[3*i-2]
+                      dy = flat[3*j-1] - flat[3*i-1]
+                      dz = flat[3*j] - flat[3*i]
+                      pe -= sc.config.G * sc.bodies[i].mass *
+                           sc.bodies[j].mass /
+                           sqrt(dx^2 + dy^2 + dz^2)
+                  end
+                  ke + pe
+              end
+              e_0 = calc(first_frame)
+              e_1 = calc(sc.trajectory_history[end])
+              drift = abs(e_1 - e_0) / max(abs(e_0), 1e-12)
+              println(kv("дрейф энергии", @sprintf("%.1e", drift)))
+          else
+              println(kv("дрейф энергии", "пропущен (N=$n велик, O(N²))"))
+          end
+          # (v2.1.0) фактические шаги — из конфига сцены, а не App-профиля
+          println(kv("шагов", string(sc.config.n_steps)))
+          println(kv("движок", sc.engine_name))
           println(kv("t", @sprintf("%.3g с", sc.t)))
+          println(kv("кадров истории", string(length(sc.trajectory_history))))
+          if n > 2000 && sc.engine_name != "barnes_hut"
+              println(colorize("  ⚠ N=$n: рассмотрите движок barnes_hut (O(N log N))",
+                               ORG))
+          end
           app().last_sim = sc
-          drift
+          sc
       end, "RK4/движок сцены")
     R("sim_trajectory", "Запланировать траекторию", "Симуляции",
       () -> begin
@@ -18104,7 +19507,7 @@ function _register_all_modes()
           path
       end, "ffmpeg при наличии")
 
-    # Настройки (3)
+    # Настройки (5)
     R("settings_profile", "Профиль конфигурации", "Настройки",
       () -> begin
           for p in keys(PROFILES)
@@ -18113,42 +19516,138 @@ function _register_all_modes()
           print("  профиль > ")
           p = strip(readline())
           if String(p) in keys(PROFILES)
-              app().config = from_profile(String(p))
+              a = app()
+              # v2.1.0: флаг unphysical и движок переживают смену профиля
+              keep_phys = a.config.physics_engine
+              keep_allow = a.config.allow_unphysical
+              a.config = from_profile(String(p), allow_unphysical=keep_allow,
+                                      physics_engine=keep_phys)
               println(kv("установлен", String(p)))
           else
               println("  профиль не найден — оставлен прежний")
           end
           app().config.profile
       end, "quick/standard/precision/demo")
+    R("settings_sim", "Параметры симуляции", "Настройки",
+      () -> begin
+          a = app()
+          c = a.config
+          println(colorize("  Enter — сохранить текущее значение", GRY))
+          c.dt = _ask_f("dt — шаг интегрирования", c.dt; lo=1e-15)
+          c.n_steps = _ask_i("n_steps — число шагов", c.n_steps; lo=1)
+          c.n_soften = _ask_f("n_soften — смягчение", c.n_soften; lo=0.0)
+          c.G = _ask_f("G — гравитационная постоянная", c.G; lo=1e-30)
+          set_bh_theta!(_ask_f("θ — угол раскрытия Barnes-Hut", bh_theta(); lo=1e-6))
+          c.physics_engine = _ask_choice("движок по умолчанию", [
+              ("native_newton", "RK4, полное 3D"),
+              ("native_vortex", "вихри Кирхгофа"),
+              ("barnes_hut",    "квадродерево O(N log N)"),
+          ], c.physics_engine)
+          # синхронизация существующей сцены: следующий прогон — с новыми
+          # параметрами (v2.1.0: раньше сцена жила со старой копией конфига)
+          if a.scene !== nothing && a.scene.config !== c
+              a.scene.config.dt = c.dt
+              a.scene.config.n_steps = c.n_steps
+              a.scene.config.n_soften = c.n_soften
+              a.scene.config.G = c.G
+              a.scene.config.physics_engine = c.physics_engine
+              a.scene.dt = c.dt
+          end
+          println(kv("dt", @sprintf("%.3g", c.dt)))
+          println(kv("шагов", string(c.n_steps)))
+          println(kv("смягчение", @sprintf("%.3g", c.n_soften)))
+          println(kv("G", @sprintf("%.6g", c.G)))
+          println(kv("θ", @sprintf("%.3g", bh_theta())))
+          c
+      end, "dt/шаги/G/θ/движок")
+    R("settings_limits", "Потолки: max_bodies / Хавелок", "Настройки",
+      () -> begin
+          println(kv("max_bodies", max_bodies() == 0 ? "0 = ∞ (без потолка)" :
+                                               string(max_bodies())))
+          println(kv("порог Хавелока", havelok_threshold() == 0 ? "0 = выключен" :
+                                                   string(havelok_threshold())))
+          set_max_bodies!(_ask_i("max_bodies (0 = бесконечно)", max_bodies(); lo=0))
+          set_havelok_threshold!(_ask_i("порог Хавелока (0 = выключить)",
+                                        havelok_threshold(); lo=0))
+          println(kv("установлен max_bodies",
+                     max_bodies() == 0 ? "∞" : string(max_bodies())))
+          println(kv("установлен порог", havelok_threshold() == 0 ? "выкл." :
+                                       string(havelok_threshold())))
+          max_bodies()
+      end, "0 = без ограничений")
     R("settings_physics", "Физика реальности", "Настройки",
       () -> begin
           a = app()
           println(kv("allow_unphysical",
-                     a.config.allow_unphysical ? "ВКЛ (N=8 помечается)" : "выкл"))
-          print("  включить unphysical (y/n) > ")
-          ans = strip(readline())
-          if lowercase(String(ans)) == "y"
-              a.config = from_profile(a.config.profile,
-                                      allow_unphysical=true)
-              println(colorize("  ⚠ allow_unphysical: ВКЛ", ORG, true))
+                     a.config.allow_unphysical ?
+                     "ВКЛ (N ≥ порога Хавелока помечается)" : "выкл"))
+          # v2.1.0: честное y/n (раньше флаг можно было только включить),
+          # без сброса остальных параметров (раньше from_profile затирал dt)
+          want = _ask_choice("allow_unphysical", [
+              ("y", "включить: N ≥ порога разрешено с пометкой"),
+              ("n", "выключить: порог Хавелока блокирует N ≥ порога"),
+          ], a.config.allow_unphysical ? "y" : "n") == "y"
+          a.config.allow_unphysical = want
+          if a.scene !== nothing
+              a.scene.config.allow_unphysical = want
           end
+          want && println(colorize("  ⚠ allow_unphysical: ВКЛ", ORG, true))
           a.config.allow_unphysical
-      end, "N=8-флаг")
+      end, "порог Хавелока")
     R("settings_save", "Сохранить/загрузить конфиг", "Настройки",
       () -> begin
           path = joinpath(app().runs_dir, "config.json")
-          d = Dict{String,Any}("profile" => app().config.profile,
-                               "dt" => app().config.dt,
-                               "n_steps" => app().config.n_steps,
-                               "allow_unphysical" => app().config.allow_unphysical)
-          open(path, "w") do fh
-              write(fh, json_write(d))
+          c = app().config
+          print("  [s] сохранить / [l] загрузить / Enter — выход > ")
+          ans = lowercase(String(strip(readline())))
+          if ans in ("s", "с", "save", "сохранить")
+              d = Dict{String,Any}(
+                  "version" => VERSION, "profile" => c.profile, "dt" => c.dt,
+                  "n_steps" => c.n_steps, "n_soften" => c.n_soften, "G" => c.G,
+                  "physics_engine" => c.physics_engine,
+                  "report_formats" => c.report_formats,
+                  "allow_unphysical" => c.allow_unphysical,
+                  "max_bodies" => max_bodies(),
+                  "havelok_threshold" => havelok_threshold(),
+                  "bh_theta" => bh_theta())
+              open(path, "w") do fh
+                  write(fh, json_write(d))
+              end
+              d2 = json_parse(read(path, String))
+              println(kv("сохранён", path))
+              println(kv("полей", string(length(d))))
+              println(kv("проверка", d2["dt"] == d["dt"] ? "OK" : "ОШИБКА"))
+              path
+          elseif ans in ("l", "л", "load", "загрузить")
+              # v2.1.0: загрузка реально применяет конфиг (раньше только
+              # сохраняли и читали назад)
+              isfile(path) || begin
+                  println(colorize("  нет файла $path", RED))
+                  return nothing
+              end
+              d = json_parse(read(path, String))
+              c.profile = String(get(d, "profile", c.profile))
+              c.dt = Float64(get(d, "dt", c.dt))
+              c.n_steps = Int(get(d, "n_steps", c.n_steps))
+              c.n_soften = Float64(get(d, "n_soften", c.n_soften))
+              c.G = Float64(get(d, "G", c.G))
+              c.physics_engine = String(get(d, "physics_engine", c.physics_engine))
+              haskey(d, "report_formats") &&
+                  (c.report_formats = String.(d["report_formats"]))
+              c.allow_unphysical = Bool(get(d, "allow_unphysical", c.allow_unphysical))
+              haskey(d, "max_bodies") && set_max_bodies!(Int(d["max_bodies"]))
+              haskey(d, "havelok_threshold") &&
+                  set_havelok_threshold!(Int(d["havelok_threshold"]))
+              haskey(d, "bh_theta") && set_bh_theta!(Float64(d["bh_theta"]))
+              println(kv("загружен", path))
+              println(kv("dt", @sprintf("%.3g", c.dt)))
+              println(kv("шагов", string(c.n_steps)))
+              c
+          else
+              println("  пропущено")
+              nothing
           end
-          d2 = json_parse(read(path, String))
-          println(kv("сохранён", path))
-          println(kv("проверка", d2["profile"] == d["profile"] ? "OK" : "ОШИБКА"))
-          path
-      end, "JSON-круговорот")
+      end, "JSON: все параметры")
 
     # Справка (3)
     R("help_engines", "Статус движков и зависимостей", "Справка",
@@ -18202,64 +19701,263 @@ function menu_index()
     idx
 end
 
-"""Печать меню по категориям."""
-function print_menu()
-    println(colorize(orn(74), SKY))
+"""Справка по флагам CLI (--help)."""
+function print_usage()
+    println("TRIVORTEX MASTER · v" * VERSION * " · SIGNAL EDITION")
+    println(tr("banner.subtitle"))
+    println()
+    println(colorize("Запуск / usage:", GOLD_B, true))
+    println("  julia trivortex_master_single.jl                 # интерактивное меню")
+    println("  julia trivortex_master_single.jl --selftest      # тесты S1–S24")
+    println("  julia trivortex_master_single.jl --acceptance    # приёмка A1–A20")
+    println("  julia trivortex_master_single.jl --gate          # полный CI-гейт")
+    println("  julia trivortex_master_single.jl --banner-only   # только баннер")
+    println("  julia trivortex_master_single.jl --help          # эта справка")
+    println()
+    println(colorize("Ключи интерфейса:", GOLD_B, true))
+    println("  --lang ru|en        язык интерфейса (без флага — автодетект окружения)")
+    println("  --version           версия")
+    println()
+    println(colorize("Батч-режим:", GOLD_B, true))
+    println("  --preset ID         сцена из пресета (20 пресетов, каталог 538 объектов)")
+    println("  --matrix TYPE       матрица тел, 7 типов (см. Лаборатория → Матрица тел)")
+    println("  --simulate          прогнать симуляцию    --render    PNG-кадр")
+    println("  --gif               GIF-анимация          --report    отчёты 10 форматов")
+    println()
+    println(colorize("Параметры:", GOLD_B, true))
+    println("  --profile P         quick | standard | precision | demo")
+    println("  --steps N --dt X --engine NAME --G X --soften X")
+    println("  --max-bodies N --havelok N --theta X --history-every N")
+    println("  --allow-unphysical  разрешить конфигурации за порогом Хавелока")
+    println()
+    println(colorize("Меню:", GOLD_B, true))
+    println("  NN — запуск режима · /текст — поиск · lang — язык · st — монитор")
+    println("  ? — команды · 0/q — выход")
+    nothing
+end
+
+"""Ячейка пункта меню: NN ▶/· Название (▶ и янтарь — на последнем запуске)."""
+function _menu_cell(m, numstr::String; width::Int=MENU_COL_W)
+    active = LAST_MODE_REF[] == m.name
+    marker = active ? colorize("▶", TL_AMBER, true) : colorize("·", INK_SOFT)
+    title = _clip(mode_title(m), width - 5)
+    tcol = active ? TL_AMBER : PAPER
+    _pad_vis(colorize(numstr, GOLD_B, active) * " " * marker * " " *
+             colorize(title, tcol, active), width)
+end
+
+"""Меню-оглавление (v2.2.0): рамка, главы римскими цифрами, две колонки,
+шапка с версией/счётчиками/движками и живой HUD-футер."""
+function print_menu(mon::Union{Monitor,Nothing}=nothing; width::Int=MENU_UI_W)
+    numbering = Dict{String,String}()
     i = 1
     for cat in REGISTRY.categories()
-        println(colorize(" ── $cat:", CYN, true))
         for m in REGISTRY.modes_by_category(cat)
-            println("   [$(pad_to(string(i), 2))] $(m.title)")
+            numbering[m.name] = @sprintf("%2d", i)
             i += 1
         end
     end
-    println(colorize(orn(74), SKY))
-    println(colorize("  0/q — выход", GRY))
+    # ── шапка ──────────────────────────────────────────────────────────────
+    println()
+    println(box_top(width, GOLD_B))
+    ver = "v" * VERSION
+    head_l = " " * colorize("✦ " * tr("menu.title"), TL_AMBER, true)
+    head_r = colorize(ver, GOLD_B, true) * " "
+    println(colorize("│", GOLD_B) *
+            _pad_vis(head_l, width - 2 - _visible_len(head_r)) * head_r *
+            colorize("│", GOLD_B))
+    counts = colorize(string(REGISTRY.count_modes()), GOLD_B, true) * " " *
+             colorize(tr("unit.modes"), PAPER) * colorize(" · ", INK_SOFT) *
+             colorize(string(length(REGISTRY.categories())), GOLD_B, true) *
+             " " * colorize(tr("unit.cats"), PAPER) * colorize(" · ", INK_SOFT) *
+             colorize(tr("unit.bodies") * " ", INK_SOFT) *
+             colorize(mon === nothing ? "0" : string(mon.n_bodies), TL_GREEN, true)
+    if mon !== nothing
+        counts *= colorize(" · " * tr("menu.maxn") * " ", INK_SOFT) *
+                  colorize(max_bodies() == 0 ? "∞" : string(max_bodies()),
+                           TL_GREEN, true)
+        counts *= colorize(" · " * tr("hud.engine") * " ", INK_SOFT) *
+                  colorize(app().config.physics_engine, GOLD_B)
+        app().config.allow_unphysical &&
+            (counts *= colorize(" · ⚠ unphys", TL_AMBER, true))
+    end
+    println(box_row(counts, width, GOLD_B))
+    eng = colorize(tr("menu.engines") * " ", INK_SOFT) *
+          colorize("[✓]newton [✓]vortex [✓]barnes_hut ", TL_GREEN) *
+          colorize("[−]rebound [−]dedalus", INK_SOFT)
+    println(box_row(eng, width, GOLD_B))
+    println(box_bot(width, GOLD_B))
+    # ── главы: «оглавление» нефикшн-книги ──────────────────────────────────
+    i0 = 1
+    for (ci, cat) in enumerate(REGISTRY.categories())
+        modes = REGISTRY.modes_by_category(cat)
+        i1 = i0 + length(modes) - 1
+        n = length(modes)
+        roman = ci <= length(MENU_ROMAN) ? MENU_ROMAN[ci] : @sprintf("%02d", ci)
+        name = uppercase(cat_label(cat))
+        rng = n == 1 ? @sprintf("%02d", i0) : @sprintf("%02d–%02d", i0, i1)
+        tail = " $(n) · $(rng)"
+        left_plain = " $(roman) · $(cat_icon(cat)) $(name) "
+        leader_w = max(width - 2 - length(left_plain) - length(tail), 4)
+        println()
+        print("  " * colorize(roman, GOLD_B, true) *
+              colorize(" · ", INK_SOFT) * colorize(cat_icon(cat), TL_GREEN, true) *
+              " " * colorize(name, TL_AMBER, true) * " ")
+        println(colorize("─"^leader_w, TL_DIM_G) * colorize(tail, GRY))
+        half = cld(n, 2)
+        for r in 1:half
+            lm = modes[r]
+            rm = r + half <= n ? modes[r + half] : nothing
+            cell_l = _menu_cell(lm, numbering[lm.name])
+            cell_r = rm === nothing ? "" : _menu_cell(rm, numbering[rm.name])
+            println("  " * cell_l * "  " * cell_r)
+        end
+        i0 = i1 + 1
+    end
+    # ── футер: HUD-монитор + подсказки ─────────────────────────────────────
+    if mon !== nothing
+        menu_footer(mon; width=width)
+    else
+        println()
+    end
+    nothing
 end
 
-"""Интерактивный цикл: EOF-safe, ошибки режимов не валят сессию."""
+"""Панель команд меню (?)."""
+function print_menu_help(width::Int=MENU_UI_W)
+    println()
+    println(box_top(width, TL_DIM_G))
+    println(box_row(colorize("✦ " * tr("help.title"), TL_AMBER, true),
+                    width, TL_DIM_G))
+    rows = Tuple{String,String}[
+        ("NN",             tr("help.cmd.run")),
+        ("lang · ru · en", tr("help.cmd.lang")),
+        ("/text · /текст", tr("help.cmd.search")),
+        ("st",             tr("help.cmd.hud")),
+        ("?",              tr("help.cmd.help")),
+        ("0 · q",          tr("menu.exit")),
+        ("Enter",          tr("help.cmd.back")),
+    ]
+    for (cmd, d) in rows
+        println(box_row("  " * colorize(pad_to(cmd, 17), GOLD_B, true) *
+                        colorize(d, PAPER), width, TL_DIM_G))
+    end
+    println(box_bot(width, TL_DIM_G))
+end
+
+"""Поиск режимов: по имени, названию (RU/EN) и описанию; печать попаданий."""
+function _menu_search(query::AbstractString)
+    q = lowercase(strip(String(query)))
+    println()
+    if isempty(q)
+        println(colorize("  » " * tr("search.query") * ": " *
+                         tr("menu.hint.search"), GRY))
+        return
+    end
+    hits = Tuple{String,Any}[]
+    i = 1
+    for cat in REGISTRY.categories()
+        for m in REGISTRY.modes_by_category(cat)
+            en = get(MODE_TITLES_EN, m.name, "")
+            if occursin(q, lowercase(m.name)) ||
+               occursin(q, lowercase(m.title)) ||
+               occursin(q, lowercase(en)) ||
+               occursin(q, lowercase(m.description))
+                push!(hits, (@sprintf("%2d", i), m))
+            end
+            i += 1
+        end
+    end
+    println(colorize("  » " * tr("search.query") * " «$q» — " *
+                     string(length(hits)) * " " * tr("search.found"),
+                     TL_AMBER, true))
+    for (num, m) in hits
+        println(colorize("    " * num, GOLD_B, true) * " " *
+                colorize("▸", TL_GREEN, true) * " " *
+                colorize(_clip(mode_title(m), 60), PAPER) *
+                colorize("  ·  " * m.name, INK_SOFT))
+    end
+    isempty(hits) && println(colorize("    ∅ " * tr("search.empty"), GRY))
+    nothing
+end
+
+"""Интерактивный цикл (v2.2.0): EOF-safe, команды lang/st/?//поиск,
+ошибки режимов не валят сессию; ▶ помечает последний запущенный режим."""
 function interactive()
     detect_color_mode!()
     print_banner()
     a = app()
-    println(colorize("  движки: [✓]newton [✓]vortex [✓]barnes_hut [−]rebound [−]dedalus", GRY))
-    a.config.allow_unphysical &&
-        println(colorize("  ⚠ allow_unphysical: ВКЛ — конфигурации N=8 помечаются", YLW, true))
+    mon = Monitor()
     idx = menu_index()
     empty_reads = 0
     while true
-        print_menu()
-        print("  номер пункта > ")
-        choice = strip(readline())
+        # v2.1.0: чистый выход по EOF пайпа; в интерактивном TTY не срабатывает
+        if !(stdin isa Base.TTY) && eof(stdin)
+            println(colorize("  " * tr("err.eof"), GRY))
+            break
+        end
+        mon.n_bodies = a.scene === nothing ? 0 : n_bodies(a.scene)
+        mon.engine = a.config.physics_engine
+        print_menu(mon)
+        choice = ask_prompt(tr("menu.prompt"))
         if isempty(choice)
             empty_reads += 1
-            empty_reads > 50 && begin
-                println("  слишком много пустых вводов — выходим")
+            if empty_reads > 50
+                println(colorize("  " * tr("err.toomany"), GRY))
                 break
             end
             continue
         end
         empty_reads = 0
+        low = lowercase(choice)
         if choice in ("0", "q", "q!", "exit", "quit", "выход")
             break
+        elseif low in ("lang", "язык", "language", "l")
+            newl = toggle_lang!()
+            println(colorize("  ✓ " * tr("lang.switched.$(newl)"), TL_GREEN, true))
+            continue
+        elseif low in ("ru", "рус")
+            set_lang!(:ru)
+            println(colorize("  ✓ " * tr("lang.switched.ru"), TL_GREEN, true))
+            continue
+        elseif low in ("en", "eng")
+            set_lang!(:en)
+            println(colorize("  ✓ " * tr("lang.switched.en"), TL_GREEN, true))
+            continue
+        elseif low in ("st", "стат", "статус", "status", "hud", "мон")
+            draw_monitor!(mon)
+            continue
+        elseif low in ("?", "h", "help", "помощь", "команды")
+            print_menu_help()
+            continue
+        elseif startswith(choice, "/")
+            _menu_search(choice[2:end])
+            continue
+        elseif startswith(low, "поиск ") || startswith(low, "f ") ||
+               startswith(low, "find ")
+            parts = split(choice, " "; limit=2)
+            _menu_search(length(parts) == 2 ? strip(parts[2]) : "")
+            continue
         end
         mode_name = get(idx, String(choice), nothing)
         mode_name === nothing && begin
-            println(colorize("  нет пункта $choice", RED))
+            println(colorize("  ✗ " * tr("err.pick") * ": $choice", RED))
             continue
         end
         entry = REGISTRY.get_mode(mode_name)
         entry === nothing && continue
+        LAST_MODE_REF[] = mode_name
         try
             entry.fn()
         catch e
             if e isa InterruptException
-                println(colorize("\n  прервано — возврат в меню", YLW))
+                println(colorize("\n  ⚠ " * tr("err.interrupt"), YLW))
             else
-                println(colorize("\n  ✗ ошибка режима: $(typeof(e)): $e", RED))
+                println(colorize("\n  ✗ " * tr("err.mode") *
+                                 ": $(typeof(e)): $e", RED))
             end
         end
-        print(colorize("\n  Enter — в меню…", GRY))
+        print(colorize("\n  " * tr("menu.back"), GRY))
         try
             readline()
         catch
@@ -18282,6 +19980,17 @@ function main(args::Vector{String}=ARGS)
         i = findfirst(==(f), args)
         i === nothing ? default :
             (i < length(args) ? String(args[i + 1]) : default)
+    end
+
+    # v2.2.0: язык интерфейса (--lang ru|en; без флага — автодетект окружения)
+    lang_arg = lowercase(arg_value("--lang", ""))
+    lang_arg == "ru" && set_lang!(:ru)
+    lang_arg == "en" && set_lang!(:en)
+
+    # v2.2.0: --help — справка по флагам
+    if has_flag("--help")
+        print_usage()
+        return 0
     end
 
     if has_flag("--selftest")
@@ -18311,9 +20020,10 @@ function main(args::Vector{String}=ARGS)
         return 0
     end
 
-    # батч-режим: --preset / --simulate / --render / --report / --gif
+    # батч-режим: --preset / --matrix / --simulate / --render / --report / --gif
     has_any_batch = any(f -> has_flag(f),
-                        ("--preset", "--simulate", "--render", "--report", "--gif"))
+                        ("--preset", "--matrix", "--simulate", "--render",
+                         "--report", "--gif"))
     if !has_any_batch
         return interactive()
     end
@@ -18323,6 +20033,35 @@ function main(args::Vector{String}=ARGS)
     a.config = from_profile(profile)
     has_flag("--allow-unphysical") &&
         (a.config = from_profile(profile, allow_unphysical=true))
+
+    # v2.1.0: точечные переопределения поверх профиля — все параметры
+    # без искусственных границ (значения проверяются, ошибки — с сообщением)
+    function apply_num!(flag::String, set!::Function, kind::Type)
+        s = arg_value(flag, "")
+        isempty(s) && return false
+        v = tryparse(kind, s)
+        if v === nothing
+            println(colorize("✗ $flag: не распознано значение «$s»", RED))
+            return false
+        end
+        set!(v)
+        true
+    end
+    apply_num!("--dt", x -> x > 0 && (a.config.dt = x), Float64)
+    apply_num!("--steps", x -> x > 0 && (a.config.n_steps = x), Int)
+    apply_num!("--soften", x -> x >= 0 && (a.config.n_soften = x), Float64)
+    apply_num!("--G", x -> x != 0 && (a.config.G = x), Float64)
+    apply_num!("--max-bodies", x -> set_max_bodies!(x), Int)
+    apply_num!("--havelok", x -> set_havelok_threshold!(x), Int)
+    apply_num!("--theta", x -> set_bh_theta!(x), Float64)
+    # строковые флаги без tryparse (трюк: tryparse(String, …) не существует)
+    for (flag, setter) in (("--engine", x -> a.config.physics_engine = x),)
+        s = arg_value(flag, "")
+        isempty(s) || setter(s)
+    end
+    hev = (v = tryparse(Int, arg_value("--history-every", ""));
+           v === nothing ? 1 : max(1, v))
+
     steps_s = arg_value("--steps", "")
     steps = isempty(steps_s) ? nothing : tryparse(Int, steps_s)
 
@@ -18339,12 +20078,43 @@ function main(args::Vector{String}=ARGS)
         end
     end
 
+    # v2.1.0: матрица тел как альтернатива пресету —
+    # --matrix grid2d --matrix-rows 8 --matrix-cols 8 --matrix-scale 2 …
+    matrix_id = arg_value("--matrix", "")
+    if !isempty(matrix_id)
+        mi(s, d) = (v = tryparse(Int, arg_value(s, "")); v === nothing ? d : v)
+        mf(s, d) = (v = tryparse(Float64, arg_value(s, "")); v === nothing ? d : v)
+        try
+            a.scene = build_matrix_scene(matrix_id;
+                rows=mi("--matrix-rows", 4), cols=mi("--matrix-cols", 4),
+                layers=mi("--matrix-layers", 1), scale=mf("--matrix-scale", 1.0),
+                extent=mf("--matrix-extent", 1.0), mass=mf("--matrix-mass", 1.0),
+                spin=mf("--matrix-spin", -1.0), dt=mf("--matrix-dt", 0.0),
+                seed=mi("--matrix-seed", 42),
+                engine=a.config.physics_engine == "native_newton" ?
+                       arg_value("--matrix-engine", "native_newton") :
+                       a.config.physics_engine,
+                cfg=a.config, allow_unphysical=a.config.allow_unphysical)
+            println("сцена: $(a.scene.name) (N=$(n_bodies(a.scene)))")
+            println(kv("dt", @sprintf("%.3g", a.scene.dt)))
+        catch e
+            println(colorize("✗ $e", RED))
+            return 1
+        end
+    end
+
     if has_flag("--simulate")
         sc = require_scene(a)
         sc === nothing && return 1
-        run_simulation!(sc; n_steps=steps)
+        run_simulation!(sc; n_steps=steps, history_every=hev)
         println(kv("шагов", string(steps === nothing ? a.config.n_steps : steps)))
-        println(kv("E", @sprintf("%.6e Дж", observables(sc).energy)))
+        if n_bodies(sc) <= 5000
+            println(kv("E", @sprintf("%.6e Дж", observables(sc).energy)))
+        else
+            println(kv("E", "пропущено (N велик, O(N²))"))
+        end
+        println(kv("t", @sprintf("%.3g с", sc.t)))
+        println(kv("кадров истории", string(length(sc.trajectory_history))))
     end
 
     if has_flag("--render")
@@ -18378,7 +20148,17 @@ end
 
 end # module TrivortexJulia
 
-# точка входа (include как скрипта)
+# ═════════════════════════════════════════════════════════════════════════════
+# точка входа: скрипт ИЛИ include — меню стартует сразу (v2.1.0)
+# ═════════════════════════════════════════════════════════════════════════════
 if abspath(PROGRAM_FILE) == @__FILE__
+    # julia trivortex_master_single.jl [--selftest | --gate | --preset …]
     exit(TrivortexJulia.main(ARGS))
+elseif get(ENV, "TRIVORTEX_NO_AUTORUN", "") != "1" &&
+       ccall(:jl_generating_output, Cint, ()) == 0
+    # include(...) из REPL или другого скрипта → сразу меню, БЕЗ exit(…),
+    # чтобы не убить сессию. Ошибки режимов не валят сессию (EOF-safe).
+    # Выключить автозапуск (библиотечный режим): ENV["TRIVORTEX_NO_AUTORUN"]="1"
+    # до include. Во время прекомпиляции пакета автозапуск не срабатывает.
+    TrivortexJulia.main(String[])
 end
