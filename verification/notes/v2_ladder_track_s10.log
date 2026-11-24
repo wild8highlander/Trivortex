@@ -1,0 +1,18 @@
+=== V0: Section 9 spectral re-check (genLin eigen-structure) ===
+[PASS] V0.1 equilateral rotates rigidly (3-point omega agreement)
+[PASS] V0.2 omega = G/(2 pi a^2) with G = 3, a = 1
+[PASS] V0.3 spectral ladder: translation pair iG and the shape-pair regime over the gamma sweep
+=== V1: Section 10.1 Lyapunov H/I ladder ===
+[PASS] V1.1 rigid identity sum d2 = 3 on the level set (866 annulus samples, max err 1.78e-15)
+[PASS] V1.2 coercive certificate H >= (G^2/12pi) sum (d2-1)^2 (worst margin 1.05e-05)
+[PASS] V1.3 initial data: energy excess H0 = 5.588e-05 <= (G^2/12pi)(1/16)^2
+[PASS] V1.4 initial d2 deviations within the deep-interior target
+[PASS] V1.5 in-time Lyapunov bound sum (d2-1)^2 <= (12pi/G^2) H0 for all t in [0, 12.0] (worst excess 0.00e+00)
+[PASS] V1.6 Hamiltonian conserved along the run (max drift 2.23e-15)
+=== V2: Section 10.2 collinear bifurcation ladder ===
+[PASS] V2.1 symmetric branch rotates rigidly for the gamma sweep (max err 1.11e-16)
+[PASS] V2.2 static equilibrium at gamma = -1/2 (max |field| 0.00e+00)
+[PASS] V2.3 root-count ladder across the pitchfork (distinct, s=1 excluded): gamma=-2: [0.0], gamma=-5/4: [0.0] (triple root, the pitchfork point), gamma=-1/4: [np.float64(-3.2), 0.0, np.float64(1.777778)]
+[PASS] V2.4 exact asymmetric REs at gamma0 = -1/4 match the rigid rotation (max err 2.78e-17)
+
+V2-LADDER: ALL RUNGS PASS

@@ -4,7 +4,7 @@ SPDX-License-Identifier: LicenseRef-Proprietary-Wild8Highlander-1.0
 -/
 /-
 ==========================================================================
-TRIVORTEX — LEAN 4 FORMALIZATION: THE FULL STATEMENT LAYER (v5.0)
+TRIVORTEX — LEAN 4 FORMALIZATION: THE FULL STATEMENT LAYER (v6.0)
 ==========================================================================
 Milestone M4/M5 artifact: `verification/lean4/Trivortex.lean`.
 
@@ -4871,6 +4871,1520 @@ theorem s9_growth_norm (t : ℝ) :
   ring_nf
   linear_combination (2 * Real.exp (Real.sqrt 3 * t) ^ 2) * s3sq
 
+/-!
+## Section 10 — nonlinear Lyapunov stability via H/I and collinear bifurcations (v6.0)
+
+### 10.1  The energy–Casimir (Lyapunov H/I) stability of the Lagrange triangle
+
+The conserved quantities of §3/§5 — the Hamiltonian H, the angular impulse
+I and the linear impulses P, Q — are now used as a Lyapunov (energy–Casimir)
+certificate.  At the unit anchor (side a = 1) the level set
+
+    {P = 0, Q = 0, I = Γ}
+
+carries a rigid identity: the sum of the three squared sides is EXACTLY 3.
+On that set, whenever every squared side stays in the annulus [1/2, 3/2],
+the Hamiltonian dominates the squared shape deviation:
+
+    H ≥ (Γ²/(12π)) · Σ_{pairs} (d2_ij − 1)²,
+
+with the anchor value H₀ = 0 as the minimum.  This is the coercive
+Lyapunov inequality; the closing theorems `s10_lyapunov_stab` /
+`s10_lyapunov_dist` propagate it in time and yield nonlinear (Lyapunov)
+stability of the triangle orbit: the shape deviation is bounded by the
+conserved energy excess FOR ALL TIME.
+-/
+
+private theorem s10_gsq_pos (g : ℝ) (hg : g ≠ 0) : (0:ℝ) < g * g := by
+  rcases lt_or_gt_of_ne hg with h | h <;> nlinarith
+
+/-- Continuity of the square of a continuous real function. -/
+private theorem s10_sq_cont {f : ℝ → ℝ} (hf : Continuous f) :
+    Continuous (fun s => f s ^ 2) := by
+  have h2 : (fun s => f s ^ 2) = (fun s => f s * f s) := by
+    funext s
+    rw [pow_two]
+  rw [h2]
+  exact hf.mul hf
+
+/-- Derivative of t ↦ t². -/
+private theorem s10_id_sq_deriv (t : ℝ) :
+    HasDerivAt (fun s : ℝ => s ^ 2) (2 * t) t := by
+  have h : HasDerivAt (fun s : ℝ => s * s) (t + t) t := by
+    refine HasDerivAt.congr_deriv ((hasDerivAt_id t).mul (hasDerivAt_id t)) ?_
+    simp only [id_eq]
+    ring
+  have h2 : (fun s : ℝ => s ^ 2) = (fun s : ℝ => s * s) := by
+    funext s
+    rw [pow_two]
+  rw [h2]
+  exact h.congr_deriv (by ring)
+
+/-- Derivative of w ↦ w − w²/3 at any point. -/
+private theorem s10_Bderiv_lemma (v : ℝ) :
+    HasDerivAt (fun w : ℝ => w - w ^ 2 / 3) (1 - 2 * v / 3) v := by
+  have hfun : (fun w : ℝ => w - w ^ 2 / 3)
+      = (fun w : ℝ => id w - (fun s : ℝ => s ^ 2) w / 3) := by
+    funext w
+    simp only [id_eq]
+  rw [hfun]
+  exact (hasDerivAt_id v).sub ((s10_id_sq_deriv v).div_const 3)
+
+/-- Derivative of w ↦ −w − w²/3 at any point. -/
+private theorem s10_Bderiv2_lemma (v : ℝ) :
+    HasDerivAt (fun w : ℝ => -w - w ^ 2 / 3) (-1 - 2 * v / 3) v := by
+  have hfun : (fun w : ℝ => -w - w ^ 2 / 3)
+      = (fun w : ℝ => -id w - (fun s : ℝ => s ^ 2) w / 3) := by
+    funext w
+    simp only [id_eq]
+  rw [hfun]
+  exact (hasDerivAt_id v).neg.sub ((s10_id_sq_deriv v).div_const 3)
+
+/-! ### the one-dimensional logarithmic Lyapunov inequality -/
+
+/-- **The logarithmic Lyapunov inequality.**  For every `u` in the
+    annulus [−1/2, 1/2],  ln(1+u) ≤ u − u²/3.  Both sides are compared
+    by the fencing theorem on the two half-intervals, anchored at the
+    exact contact point u = 0 where both sides equal 0. -/
+theorem s10_log_bound (u : ℝ) (h1 : -(1/2 : ℝ) ≤ u) (h2 : u ≤ 1/2) :
+    Real.log (1 + u) ≤ u - u ^ 2 / 3 := by
+  have hfpos : ContinuousOn (fun v : ℝ => Real.log (1 + v)) (Set.Icc 0 (1/2)) := by
+    intro v hv
+    have hne : (1 + v : ℝ) ≠ 0 := by
+      have h := (Set.mem_Icc.mp hv).1
+      linarith
+    exact ((Real.continuousAt_log hne).comp_continuousWithinAt
+      ((continuous_const.add continuous_id).continuousWithinAt))
+  have hfneg : ContinuousOn (fun v : ℝ => Real.log (1 - v)) (Set.Icc 0 (1/2)) := by
+    intro v hv
+    have hne : (1 - v : ℝ) ≠ 0 := by
+      have h := (Set.mem_Icc.mp hv).2
+      linarith
+    exact ((Real.continuousAt_log hne).comp_continuousWithinAt
+      ((continuous_const.sub continuous_id).continuousWithinAt))
+  have hBcont : ContinuousOn (fun v : ℝ => v - v ^ 2 / 3) (Set.Icc 0 (1/2)) :=
+    (continuous_id.sub ((s10_sq_cont continuous_id).div_const 3)).continuousOn
+  have hBcont2 : ContinuousOn (fun v : ℝ => -v - v ^ 2 / 3) (Set.Icc 0 (1/2)) :=
+    ((continuous_id.neg).sub ((s10_sq_cont continuous_id).div_const 3)).continuousOn
+  have hBderiv : ∀ v ∈ Set.Ico (0:ℝ) (1/2),
+      HasDerivWithinAt (fun w : ℝ => w - w ^ 2 / 3) (1 - 2 * v / 3) (Set.Ici v) v :=
+    fun v _ => (s10_Bderiv_lemma v).hasDerivWithinAt
+  have hBderiv2 : ∀ v ∈ Set.Ico (0:ℝ) (1/2),
+      HasDerivWithinAt (fun w : ℝ => -w - w ^ 2 / 3) (-1 - 2 * v / 3) (Set.Ici v) v :=
+    fun v _ => (s10_Bderiv2_lemma v).hasDerivWithinAt
+  -- positive half: log(1+v) ≤ v − v²/3 on [0, 1/2]
+  have hpos : ∀ v ∈ Set.Icc (0:ℝ) (1/2), Real.log (1 + v) ≤ v - v ^ 2 / 3 := by
+    refine image_le_of_deriv_right_le_deriv_boundary (f' := fun v => 1 / (1 + v)) hfpos ?_
+      (by simp) hBcont hBderiv ?_
+    · intro v hv
+      have hne : (1 + v : ℝ) ≠ 0 := by
+        have h := (Set.mem_Ico.mp hv).1
+        linarith
+      exact (((hasDerivAt_const v (1:ℝ)).add (hasDerivAt_id v)).log hne).hasDerivWithinAt.congr_deriv
+        (by simp only [zero_add, id_eq])
+    · intro v hv
+      have hx1 : (0:ℝ) < 1 + v := by
+        have hq := (Set.mem_Ico.mp hv).1
+        linarith
+      have hx2 : v ≤ 1/2 := by
+        have hq := (Set.mem_Ico.mp hv).2
+        linarith
+      have hx0 : 0 ≤ v := by
+        have hq := (Set.mem_Ico.mp hv).1
+        linarith
+      have h2v : 0 ≤ 1 - 2 * v := by linarith
+      rw [div_le_iff hx1]
+      nlinarith [hx0, h2v]
+  -- negative half: log(1−v) ≤ −v − v²/3 on [0, 1/2]
+  have hneg : ∀ v ∈ Set.Icc (0:ℝ) (1/2), Real.log (1 - v) ≤ -v - v ^ 2 / 3 := by
+    refine image_le_of_deriv_right_le_deriv_boundary (f' := fun v => -1 / (1 - v)) hfneg ?_
+      (by simp) hBcont2 hBderiv2 ?_
+    · intro v hv
+      have hne : (1 - v : ℝ) ≠ 0 := by
+        have h := (Set.mem_Ico.mp hv).2
+        linarith
+      exact (((hasDerivAt_const v (1:ℝ)).sub (hasDerivAt_id v)).log hne).hasDerivWithinAt.congr_deriv
+        (by simp only [zero_sub, id_eq])
+    · intro v hv
+      have hx1 : (0:ℝ) < 1 - v := by
+        have hq := (Set.mem_Ico.mp hv).2
+        linarith
+      have hx0 : 0 ≤ v := by
+        have hq := (Set.mem_Ico.mp hv).1
+        linarith
+      have h3 : (1:ℝ) / (1 - v) ≥ 1 + 2 * v / 3 := by
+        rw [ge_iff_le, le_div_iff hx1]
+        nlinarith [hx0]
+      show -1 / (1 - v) ≤ -1 - 2 * v / 3
+      rw [show -1 / (1 - v) = -((1:ℝ) / (1 - v)) from by ring]
+      linarith
+  rcases le_or_lt u 0 with hle | hlt
+  · -- u ≤ 0: apply the negative half with v = −u
+    have hv : -u ∈ Set.Icc (0:ℝ) (1/2) := by
+      constructor
+      · linarith
+      · linarith
+    have h := hneg (-u) hv
+    have e1 : Real.log (1 + u) = Real.log (1 - -u) := by
+      rw [show 1 - -u = 1 + u from by ring]
+    rw [e1]
+    have e2 : u - u ^ 2 / 3 = -(-u) - (-u) ^ 2 / 3 := by ring
+    rw [e2]
+    exact h
+  · -- u ≥ 0: apply the positive half
+    have hv : u ∈ Set.Icc (0:ℝ) (1/2) := by
+      constructor
+      · linarith
+      · linarith
+    exact hpos u hv
+
+/-! ### the sum-of-squares identity on the momentum level set -/
+
+/-- The sum of the three squared sides is 3·Σ|w|² − |Σw|²: pure algebra. -/
+theorem s10_sumsq (x1 y1 x2 y2 x3 y3 : ℝ) :
+    d2 x1 y1 x2 y2 + d2 x1 y1 x3 y3 + d2 x2 y2 x3 y3
+      = 3 * (x1 ^ 2 + y1 ^ 2 + x2 ^ 2 + y2 ^ 2 + x3 ^ 2 + y3 ^ 2)
+        - ((x1 + x2 + x3) ^ 2 + (y1 + y2 + y3) ^ 2) := by
+  unfold d2
+  ring
+
+/-- **The rigid identity on the anchor level set.**  For equal circulations
+    with P = Q = 0 and I = Γ (the unit-anchor values), the sum of the three
+    squared sides is EXACTLY 3 — the shape space is compact without any
+    further normalization. -/
+theorem s10_sumsq_anchor (g x1 y1 x2 y2 x3 y3 : ℝ) (hg : g ≠ 0)
+    (hP : Pvortex g g g x1 x2 x3 = 0) (hQ : Qvortex g g g y1 y2 y3 = 0)
+    (hI : Ivortex g g g x1 y1 x2 y2 x3 y3 = g) :
+    d2 x1 y1 x2 y2 + d2 x1 y1 x3 y3 + d2 x2 y2 x3 y3 = 3 := by
+  have hx : x1 + x2 + x3 = 0 := by
+    have h2 : g * (x1 + x2 + x3) = 0 := by
+      unfold Pvortex at hP
+      rw [show g * (x1 + x2 + x3) = g * x1 + g * x2 + g * x3 from by ring]
+      exact hP
+    rcases mul_eq_zero.mp h2 with h | h
+    · exact absurd h hg
+    · linarith
+  have hy : y1 + y2 + y3 = 0 := by
+    have h2 : g * (y1 + y2 + y3) = 0 := by
+      unfold Qvortex at hQ
+      rw [show g * (y1 + y2 + y3) = g * y1 + g * y2 + g * y3 from by ring]
+      exact hQ
+    rcases mul_eq_zero.mp h2 with h | h
+    · exact absurd h hg
+    · linarith
+  have hsq : x1 ^ 2 + y1 ^ 2 + x2 ^ 2 + y2 ^ 2 + x3 ^ 2 + y3 ^ 2 = 1 := by
+    have h2 : Ivortex g g g x1 y1 x2 y2 x3 y3
+        = g * (x1 ^ 2 + y1 ^ 2 + x2 ^ 2 + y2 ^ 2 + x3 ^ 2 + y3 ^ 2) := by
+      unfold Ivortex
+      ring
+    rw [h2] at hI
+    have hI4 : g * (x1 ^ 2 + y1 ^ 2 + x2 ^ 2 + y2 ^ 2 + x3 ^ 2 + y3 ^ 2) = g * 1 := by
+      rw [mul_one]
+      exact hI
+    exact mul_left_cancel₀ hg hI4
+  rw [s10_sumsq x1 y1 x2 y2 x3 y3, hx, hy]
+  rw [show (0:ℝ) ^ 2 + (0:ℝ) ^ 2 = 0 from by ring]
+  linarith
+
+/-- **AM–GM for three positive reals with sum 3**: xyz ≤ 1, proved by pure
+    algebra (4xy ≤ (x+y)² and s²(3−s) ≤ 4 via (2−s)²(s+1) ≥ 0). -/
+private theorem s10_amgm3 (x y z : ℝ) (hx : 0 < x) (hy : 0 < y) (hz : 0 < z)
+    (hsum : x + y + z = 3) : x * y * z ≤ 1 := by
+  have h1 : 4 * x * y ≤ (x + y) ^ 2 := by nlinarith [sq_nonneg (x - y)]
+  have hzs : z = 3 - x - y := by linarith
+  subst hzs
+  have hs : 0 < x + y := by linarith
+  have hz2 : 0 ≤ 3 - x - y := le_of_lt hz
+  have hprod : 0 ≤ (2 - (x + y)) ^ 2 * ((x + y) + 1) := by
+    have hp2 : 0 ≤ (2 - (x + y)) ^ 2 := sq_nonneg _
+    have hp3 : 0 ≤ (x + y) + 1 := le_of_lt (by linarith)
+    nlinarith [hp2, hp3]
+  have hid : 4 - (x + y) ^ 2 * (3 - (x + y)) = (2 - (x + y)) ^ 2 * ((x + y) + 1) := by
+    ring
+  have k1 : 4 * (x * y * (3 - x - y)) ≤ (x + y) ^ 2 * (3 - x - y) := by
+    nlinarith [h1, hz2]
+  have k2 : (x + y) ^ 2 * (3 - (x + y)) ≤ 4 := by
+    linarith [hid, hprod]
+  linarith
+
+/-- **H is globally nonnegative on the anchor level set.**  With P = Q = 0,
+    I = Γ and pairwise distinct vortices, the Hamiltonian satisfies
+    H ≥ 0 = H(anchor): the equilateral triangle is the global energy
+    minimum of the level set (AM–GM on the three squared sides). -/
+theorem s10_H_nonneg (g x1 y1 x2 y2 x3 y3 : ℝ) (hg : g ≠ 0)
+    (hP : Pvortex g g g x1 x2 x3 = 0) (hQ : Qvortex g g g y1 y2 y3 = 0)
+    (hI : Ivortex g g g x1 y1 x2 y2 x3 y3 = g)
+    (e12 : d2 x1 y1 x2 y2 ≠ 0) (e13 : d2 x1 y1 x3 y3 ≠ 0) (e23 : d2 x2 y2 x3 y3 ≠ 0) :
+    0 ≤ Hvortex g g g x1 y1 x2 y2 x3 y3 := by
+  have hp12 : 0 < d2 x1 y1 x2 y2 := by
+    have hle : (0:ℝ) ≤ d2 x1 y1 x2 y2 := by unfold d2; positivity
+    exact lt_of_le_of_ne hle (Ne.symm e12)
+  have hp13 : 0 < d2 x1 y1 x3 y3 := by
+    have hle : (0:ℝ) ≤ d2 x1 y1 x3 y3 := by unfold d2; positivity
+    exact lt_of_le_of_ne hle (Ne.symm e13)
+  have hp23 : 0 < d2 x2 y2 x3 y3 := by
+    have hle : (0:ℝ) ≤ d2 x2 y2 x3 y3 := by unfold d2; positivity
+    exact lt_of_le_of_ne hle (Ne.symm e23)
+  have hprod : d2 x1 y1 x2 y2 * d2 x1 y1 x3 y3 * d2 x2 y2 x3 y3 ≤ 1 :=
+    s10_amgm3 (d2 x1 y1 x2 y2) (d2 x1 y1 x3 y3) (d2 x2 y2 x3 y3) hp12 hp13 hp23
+      (by linarith [s10_sumsq_anchor g x1 y1 x2 y2 x3 y3 hg hP hQ hI])
+  have hlog : Real.log (d2 x1 y1 x2 y2) + Real.log (d2 x1 y1 x3 y3)
+      + Real.log (d2 x2 y2 x3 y3) ≤ 0 := by
+    have e1 : Real.log (d2 x1 y1 x2 y2) + Real.log (d2 x1 y1 x3 y3)
+        + Real.log (d2 x2 y2 x3 y3)
+        = Real.log (d2 x1 y1 x2 y2 * d2 x1 y1 x3 y3 * d2 x2 y2 x3 y3) := by
+      rw [Real.log_mul (ne_of_gt (mul_pos hp12 hp13)) (ne_of_gt hp23),
+        Real.log_mul (ne_of_gt hp12) (ne_of_gt hp13)]
+    rw [e1]
+    have h2 : Real.log (d2 x1 y1 x2 y2 * d2 x1 y1 x3 y3 * d2 x2 y2 x3 y3)
+        ≤ Real.log 1 := Real.log_le_log (mul_pos (mul_pos hp12 hp13) hp23) hprod
+    rwa [Real.log_one] at h2
+  have hpos2 : (0:ℝ) < g * g / (4 * Real.pi) :=
+    div_pos (s10_gsq_pos g hg) (by linarith [Real.pi_pos])
+  have hHv : Hvortex g g g x1 y1 x2 y2 x3 y3
+      = (g * g / (4 * Real.pi)) * -(Real.log (d2 x1 y1 x2 y2)
+        + Real.log (d2 x1 y1 x3 y3) + Real.log (d2 x2 y2 x3 y3)) := by
+    unfold Hvortex
+    rw [vortexDist_eq x1 y1 x2 y2, Real.log_sqrt (by unfold d2; positivity),
+      vortexDist_eq x1 y1 x3 y3, Real.log_sqrt (by unfold d2; positivity),
+      vortexDist_eq x2 y2 x3 y3, Real.log_sqrt (by unfold d2; positivity)]
+    ring
+  rw [hHv]
+  exact mul_nonneg hpos2.le (by linarith)
+
+/-! ### the coercive Lyapunov inequality -/
+
+/-- **The coercive Lyapunov inequality (energy–Casimir certificate).**  On
+    the anchor level set {P = 0, Q = 0, I = Γ} with every squared side in
+    the annulus [1/2, 3/2], the Hamiltonian dominates the squared shape
+    deviation:
+      H ≥ (Γ²/(12π)) · ((d2_12 − 1)² + (d2_13 − 1)² + (d2_23 − 1)²).
+    The proof chains the logarithmic Lyapunov inequality over the three
+    sides with the rigid identity Σd2 = 3. -/
+theorem s10_coercive (g x1 y1 x2 y2 x3 y3 : ℝ) (hg : g ≠ 0)
+    (hP : Pvortex g g g x1 x2 x3 = 0) (hQ : Qvortex g g g y1 y2 y3 = 0)
+    (hI : Ivortex g g g x1 y1 x2 y2 x3 y3 = g)
+    (hA : (1/2 : ℝ) ≤ d2 x1 y1 x2 y2) (hA2 : d2 x1 y1 x2 y2 ≤ 3/2)
+    (hB : (1/2 : ℝ) ≤ d2 x1 y1 x3 y3) (hB2 : d2 x1 y1 x3 y3 ≤ 3/2)
+    (hC : (1/2 : ℝ) ≤ d2 x2 y2 x3 y3) (hC2 : d2 x2 y2 x3 y3 ≤ 3/2) :
+    (g * g / (12 * Real.pi)) * ((d2 x1 y1 x2 y2 - 1) ^ 2 + (d2 x1 y1 x3 y3 - 1) ^ 2
+        + (d2 x2 y2 x3 y3 - 1) ^ 2)
+      ≤ Hvortex g g g x1 y1 x2 y2 x3 y3 := by
+  have u12 : -(1/2 : ℝ) ≤ d2 x1 y1 x2 y2 - 1 ∧ d2 x1 y1 x2 y2 - 1 ≤ 1/2 := by
+    constructor <;> linarith
+  have u13 : -(1/2 : ℝ) ≤ d2 x1 y1 x3 y3 - 1 ∧ d2 x1 y1 x3 y3 - 1 ≤ 1/2 := by
+    constructor <;> linarith
+  have u23 : -(1/2 : ℝ) ≤ d2 x2 y2 x3 y3 - 1 ∧ d2 x2 y2 x3 y3 - 1 ≤ 1/2 := by
+    constructor <;> linarith
+  have l12 : Real.log (d2 x1 y1 x2 y2) ≤ (d2 x1 y1 x2 y2 - 1)
+      - (d2 x1 y1 x2 y2 - 1) ^ 2 / 3 := by
+    have e1 : Real.log (d2 x1 y1 x2 y2) = Real.log (1 + (d2 x1 y1 x2 y2 - 1)) := by
+      rw [show 1 + (d2 x1 y1 x2 y2 - 1) = d2 x1 y1 x2 y2 from by ring]
+    rw [e1]
+    exact s10_log_bound _ u12.1 u12.2
+  have l13 : Real.log (d2 x1 y1 x3 y3) ≤ (d2 x1 y1 x3 y3 - 1)
+      - (d2 x1 y1 x3 y3 - 1) ^ 2 / 3 := by
+    have e1 : Real.log (d2 x1 y1 x3 y3) = Real.log (1 + (d2 x1 y1 x3 y3 - 1)) := by
+      rw [show 1 + (d2 x1 y1 x3 y3 - 1) = d2 x1 y1 x3 y3 from by ring]
+    rw [e1]
+    exact s10_log_bound _ u13.1 u13.2
+  have l23 : Real.log (d2 x2 y2 x3 y3) ≤ (d2 x2 y2 x3 y3 - 1)
+      - (d2 x2 y2 x3 y3 - 1) ^ 2 / 3 := by
+    have e1 : Real.log (d2 x2 y2 x3 y3) = Real.log (1 + (d2 x2 y2 x3 y3 - 1)) := by
+      rw [show 1 + (d2 x2 y2 x3 y3 - 1) = d2 x2 y2 x3 y3 from by ring]
+    rw [e1]
+    exact s10_log_bound _ u23.1 u23.2
+  have hsum3 := s10_sumsq_anchor g x1 y1 x2 y2 x3 y3 hg hP hQ hI
+  have hzero : (d2 x1 y1 x2 y2 - 1) + (d2 x1 y1 x3 y3 - 1) + (d2 x2 y2 x3 y3 - 1) = 0 := by
+    linarith
+  have hL : Real.log (d2 x1 y1 x2 y2) + Real.log (d2 x1 y1 x3 y3)
+      + Real.log (d2 x2 y2 x3 y3)
+      ≤ -((d2 x1 y1 x2 y2 - 1) ^ 2 + (d2 x1 y1 x3 y3 - 1) ^ 2
+        + (d2 x2 y2 x3 y3 - 1) ^ 2) / 3 := by
+    linarith
+  set U := (d2 x1 y1 x2 y2 - 1) ^ 2 + (d2 x1 y1 x3 y3 - 1) ^ 2
+    + (d2 x2 y2 x3 y3 - 1) ^ 2 with hUdef
+  have hs12 : 0 ≤ d2 x1 y1 x2 y2 := by unfold d2; positivity
+  have hs13 : 0 ≤ d2 x1 y1 x3 y3 := by unfold d2; positivity
+  have hs23 : 0 ≤ d2 x2 y2 x3 y3 := by unfold d2; positivity
+  have hpos : (0:ℝ) < g * g / (4 * Real.pi) :=
+    div_pos (s10_gsq_pos g hg) (by linarith [Real.pi_pos])
+  have hHv : Hvortex g g g x1 y1 x2 y2 x3 y3
+      = -(g * g / (4 * Real.pi)) * (Real.log (d2 x1 y1 x2 y2)
+        + Real.log (d2 x1 y1 x3 y3) + Real.log (d2 x2 y2 x3 y3)) := by
+    unfold Hvortex
+    rw [vortexDist_eq x1 y1 x2 y2, Real.log_sqrt hs12,
+      vortexDist_eq x1 y1 x3 y3, Real.log_sqrt hs13,
+      vortexDist_eq x2 y2 x3 y3, Real.log_sqrt hs23]
+    ring
+  have h1 : (g * g / (4 * Real.pi)) * (Real.log (d2 x1 y1 x2 y2)
+      + Real.log (d2 x1 y1 x3 y3) + Real.log (d2 x2 y2 x3 y3))
+      ≤ (g * g / (4 * Real.pi)) * (-U / 3) := by
+    exact mul_le_mul_of_nonneg_left hL (le_of_lt hpos)
+  rw [hHv, show (g * g / (12 * Real.pi)) * U
+      = -((g * g / (4 * Real.pi)) * (-U / 3)) from by ring, neg_mul]
+  exact neg_le_neg h1
+
+/-- **The distance form of the certificate.**  (r_ij − 1)² ≤ (d2_ij − 1)²
+    pointwise, since (r²−1)² − (r−1)² = (r−1)²·r·(r+2) ≥ 0. -/
+private theorem s10_dist_sq (x1 y1 x2 y2 : ℝ) :
+    (vortexDist x1 y1 x2 y2 - 1) ^ 2 ≤ (d2 x1 y1 x2 y2 - 1) ^ 2 := by
+  have hr : 0 ≤ vortexDist x1 y1 x2 y2 := by unfold vortexDist; positivity
+  have he : d2 x1 y1 x2 y2 = vortexDist x1 y1 x2 y2 ^ 2 := by
+    rw [vortexDist_eq, Real.sq_sqrt (by unfold d2; positivity)]
+  rw [he]
+  have p1 : 0 ≤ (vortexDist x1 y1 x2 y2 - 1) ^ 2 := sq_nonneg _
+  have p2 : 0 ≤ vortexDist x1 y1 x2 y2 * (vortexDist x1 y1 x2 y2 + 2) := by
+    have h2 : 0 ≤ vortexDist x1 y1 x2 y2 ^ 2 := sq_nonneg _
+    nlinarith [hr]
+  have p3 : 0 ≤ (vortexDist x1 y1 x2 y2 - 1) ^ 2
+      * (vortexDist x1 y1 x2 y2 * (vortexDist x1 y1 x2 y2 + 2)) := by
+    nlinarith [p1, p2]
+  have e2 : (vortexDist x1 y1 x2 y2 ^ 2 - 1) ^ 2
+      - (vortexDist x1 y1 x2 y2 - 1) ^ 2
+      = (vortexDist x1 y1 x2 y2 - 1) ^ 2
+        * (vortexDist x1 y1 x2 y2 * (vortexDist x1 y1 x2 y2 + 2)) := by
+    ring
+  linarith [e2 ▸ p3]
+
+/-- **Corollary — the Lyapunov certificate in distance form.**  Under the
+    hypotheses of `s10_coercive`,
+      Σ (r_ij − 1)² ≤ (12π/Γ²) · H. -/
+theorem s10_dist_bound (g x1 y1 x2 y2 x3 y3 : ℝ) (hg : g ≠ 0)
+    (hP : Pvortex g g g x1 x2 x3 = 0) (hQ : Qvortex g g g y1 y2 y3 = 0)
+    (hI : Ivortex g g g x1 y1 x2 y2 x3 y3 = g)
+    (hA : (1/2 : ℝ) ≤ d2 x1 y1 x2 y2) (hA2 : d2 x1 y1 x2 y2 ≤ 3/2)
+    (hB : (1/2 : ℝ) ≤ d2 x1 y1 x3 y3) (hB2 : d2 x1 y1 x3 y3 ≤ 3/2)
+    (hC : (1/2 : ℝ) ≤ d2 x2 y2 x3 y3) (hC2 : d2 x2 y2 x3 y3 ≤ 3/2) :
+    (vortexDist x1 y1 x2 y2 - 1) ^ 2 + (vortexDist x1 y1 x3 y3 - 1) ^ 2
+      + (vortexDist x2 y2 x3 y3 - 1) ^ 2
+      ≤ (12 * Real.pi / (g * g)) * Hvortex g g g x1 y1 x2 y2 x3 y3 := by
+  have hpos : (0:ℝ) < g * g / (12 * Real.pi) :=
+    div_pos (s10_gsq_pos g hg) (by linarith [Real.pi_pos])
+  have h := s10_coercive g x1 y1 x2 y2 x3 y3 hg hP hQ hI hA hA2 hB hB2 hC hC2
+  have hcomm : (g * g / (12 * Real.pi)) * ((d2 x1 y1 x2 y2 - 1) ^ 2
+      + (d2 x1 y1 x3 y3 - 1) ^ 2 + (d2 x2 y2 x3 y3 - 1) ^ 2)
+      = ((d2 x1 y1 x2 y2 - 1) ^ 2 + (d2 x1 y1 x3 y3 - 1) ^ 2
+        + (d2 x2 y2 x3 y3 - 1) ^ 2) * (g * g / (12 * Real.pi)) := by
+    rw [mul_comm]
+  rw [hcomm] at h
+  have hdiv : (d2 x1 y1 x2 y2 - 1) ^ 2 + (d2 x1 y1 x3 y3 - 1) ^ 2
+      + (d2 x2 y2 x3 y3 - 1) ^ 2
+      ≤ (12 * Real.pi / (g * g)) * Hvortex g g g x1 y1 x2 y2 x3 y3 := by
+    rw [show (12 * Real.pi / (g * g)) * Hvortex g g g x1 y1 x2 y2 x3 y3
+        = Hvortex g g g x1 y1 x2 y2 x3 y3 / (g * g / (12 * Real.pi)) from by
+          field_simp [hg, Real.pi_pos]; ring]
+    exact (le_div_iff hpos).mpr h
+  have e1 := s10_dist_sq x1 y1 x2 y2
+  have e2 := s10_dist_sq x1 y1 x3 y3
+  have e3 := s10_dist_sq x2 y2 x3 y3
+  linarith [hdiv, e1, e2, e3]
+
+/-! ### the variational principle: partial gradients at the anchor
+
+The four slot-derivatives of a pair logarithm (which coordinate slot
+varies), then the six partial gradients of H and of I at the equilateral
+anchor, and the Lagrange multiplier identity: the energy–Casimir
+functional  H + (3Γ/(4π))·I  has ZERO gradient at the anchor — the
+variational statement that the triangle is a critical point of H on every
+I-level (with multiplier ω_L = 3Γ/(4π); the factor 2 relative to the §8
+rotation rate ω = 3Γ/(2π) reflects the convention I = ΣΓ|w|²). -/
+
+private theorem s10_inv_s3 : (1:ℝ) / Real.sqrt 3 = Real.sqrt 3 / 3 := by
+  have hs3ne : Real.sqrt 3 ≠ 0 := by positivity
+  rw [div_eq_iff hs3ne, show (Real.sqrt 3 / 3) * Real.sqrt 3
+      = (Real.sqrt 3) ^ 2 / 3 from by ring, s3sq]
+  norm_num
+
+private theorem s10_inv_2s3 : (1:ℝ) / (2 * Real.sqrt 3) = Real.sqrt 3 / 6 := by
+  rw [div_eq_iff (by exact mul_ne_zero two_ne_zero (ne_of_gt (Real.sqrt_pos.mpr (by norm_num : (0:ℝ) < 3)))),
+    show (Real.sqrt 3 / 6) * (2 * Real.sqrt 3) = (Real.sqrt 3) ^ 2 / 3 from by ring, s3sq]
+  norm_num
+
+/-- Slot 1 (x of the first point) of the pair log. -/
+private theorem s10_dlog1 (t Y P Q : ℝ) (hne : d2 t Y P Q ≠ 0) :
+    HasDerivAt (fun w : ℝ => Real.log (vortexDist w Y P Q))
+      ((t - P) / d2 t Y P Q) t := by
+  have h := deriv_log_dist (hasDerivAt_id t) (hasDerivAt_const t Y)
+    (hasDerivAt_const t P) (hasDerivAt_const t Q) hne
+  exact (deriv_congr h (by intro s; rfl)).congr_deriv (by
+    simp only [id_eq]
+    ring)
+
+/-- Slot 2 (y of the first point) of the pair log. -/
+private theorem s10_dlog2 (t X P Q : ℝ) (hne : d2 X t P Q ≠ 0) :
+    HasDerivAt (fun w : ℝ => Real.log (vortexDist X w P Q))
+      ((t - Q) / d2 X t P Q) t := by
+  have h := deriv_log_dist (hasDerivAt_const t X) (hasDerivAt_id t)
+    (hasDerivAt_const t P) (hasDerivAt_const t Q) hne
+  exact (deriv_congr h (by intro s; rfl)).congr_deriv (by
+    simp only [id_eq]
+    ring)
+
+/-- Slot 3 (x of the second point) of the pair log. -/
+private theorem s10_dlog3 (t X Y Q : ℝ) (hne : d2 X Y t Q ≠ 0) :
+    HasDerivAt (fun w : ℝ => Real.log (vortexDist X Y w Q))
+      ((t - X) / d2 X Y t Q) t := by
+  have h := deriv_log_dist (hasDerivAt_const t X) (hasDerivAt_const t Y)
+    (hasDerivAt_id t) (hasDerivAt_const t Q) hne
+  exact (deriv_congr h (by intro s; rfl)).congr_deriv (by
+    simp only [id_eq]
+    ring)
+
+/-- Slot 4 (y of the second point) of the pair log. -/
+private theorem s10_dlog4 (t X Y P : ℝ) (hne : d2 X Y P t ≠ 0) :
+    HasDerivAt (fun w : ℝ => Real.log (vortexDist X Y P w))
+      ((t - Y) / d2 X Y P t) t := by
+  have h := deriv_log_dist (hasDerivAt_const t X) (hasDerivAt_const t Y)
+    (hasDerivAt_const t P) (hasDerivAt_id t) hne
+  exact (deriv_congr h (by intro s; rfl)).congr_deriv (by
+    simp only [id_eq]
+    ring)
+
+private theorem s10_dH_x1 (g : ℝ) :
+    HasDerivAt (fun w => Hvortex g g g w eqY1 eqX2 eqY2 eqX3 eqY3)
+      (-(3 * g * g / (2 * Real.pi)) * eqX1) eqX1 := by
+  have hs3ne : Real.sqrt 3 ≠ 0 := by positivity
+  have hA : HasDerivAt (fun w : ℝ => Real.log (vortexDist w eqY1 eqX2 eqY2))
+      (Real.sqrt 3 / 2) eqX1 :=
+    (s10_dlog1 eqX1 eqY1 eqX2 eqY2 (by rw [d2_anchor12]; norm_num)).congr_deriv
+      (by rw [eqdx12, d2_anchor12]; ring)
+  have hB : HasDerivAt (fun w : ℝ => Real.log (vortexDist w eqY1 eqX3 eqY3))
+      (Real.sqrt 3 / 2) eqX1 :=
+    (s10_dlog1 eqX1 eqY1 eqX3 eqY3 (by rw [d2_anchor13]; norm_num)).congr_deriv
+      (by rw [eqdx13, d2_anchor13]; ring)
+  have hC : HasDerivAt (fun w : ℝ => Real.log (vortexDist eqX2 eqY2 eqX3 eqY3)) 0 eqX1 :=
+    hasDerivAt_const _ _
+  have hsum := ((hA.const_mul (g * g)).add (hB.const_mul (g * g))).add (hC.const_mul (g * g))
+  have hsum2 := deriv_mul_const_left hsum (c := -(1 / (2 * Real.pi)))
+  exact (deriv_congr hsum2 (by intro w; unfold Hvortex; ring)).congr_deriv
+    (by unfold eqX1; rw [s10_inv_s3]; ring)
+
+private theorem s10_dH_y1 (g : ℝ) :
+    HasDerivAt (fun w => Hvortex g g g eqX1 w eqX2 eqY2 eqX3 eqY3)
+      (-(3 * g * g / (2 * Real.pi)) * eqY1) eqY1 := by
+  have hA : HasDerivAt (fun w : ℝ => Real.log (vortexDist eqX1 w eqX2 eqY2))
+      (-(1 / 2)) eqY1 :=
+    (s10_dlog2 eqY1 eqX1 eqX2 eqY2 (by rw [d2_anchor12]; norm_num)).congr_deriv
+      (by rw [eqdy12, d2_anchor12]; ring)
+  have hB : HasDerivAt (fun w : ℝ => Real.log (vortexDist eqX1 w eqX3 eqY3))
+      (1 / 2) eqY1 :=
+    (s10_dlog2 eqY1 eqX1 eqX3 eqY3 (by rw [d2_anchor13]; norm_num)).congr_deriv
+      (by rw [eqdy13, d2_anchor13]; ring)
+  have hC : HasDerivAt (fun w : ℝ => Real.log (vortexDist eqX2 eqY2 eqX3 eqY3)) 0 eqY1 :=
+    hasDerivAt_const _ _
+  have hsum := ((hA.const_mul (g * g)).add (hB.const_mul (g * g))).add (hC.const_mul (g * g))
+  have hsum2 := deriv_mul_const_left hsum (c := -(1 / (2 * Real.pi)))
+  exact (deriv_congr hsum2 (by intro w; unfold Hvortex; ring)).congr_deriv
+    (by unfold eqY1; ring)
+
+private theorem s10_dH_x2 (g : ℝ) :
+    HasDerivAt (fun w => Hvortex g g g eqX1 eqY1 w eqY2 eqX3 eqY3)
+      (-(3 * g * g / (2 * Real.pi)) * eqX2) eqX2 := by
+  have hs3ne : Real.sqrt 3 ≠ 0 := by positivity
+  have hA : HasDerivAt (fun w : ℝ => Real.log (vortexDist eqX1 eqY1 w eqY2))
+      (-(Real.sqrt 3 / 2)) eqX2 :=
+    (s10_dlog3 eqX2 eqX1 eqY1 eqY2 (by rw [d2_anchor12]; norm_num)).congr_deriv
+      (by rw [eqdx21, d2_anchor12]; ring)
+  have hB : HasDerivAt (fun w : ℝ => Real.log (vortexDist w eqY2 eqX3 eqY3))
+      0 eqX2 :=
+    (s10_dlog1 eqX2 eqY2 eqX3 eqY3 (by rw [d2_anchor23]; norm_num)).congr_deriv
+      (by rw [eqdx23, d2_anchor23]; ring)
+  have hC : HasDerivAt (fun w : ℝ => Real.log (vortexDist eqX1 eqY1 eqX3 eqY3)) 0 eqX2 :=
+    hasDerivAt_const _ _
+  have hsum := ((hA.const_mul (g * g)).add (hB.const_mul (g * g))).add (hC.const_mul (g * g))
+  have hsum2 := deriv_mul_const_left hsum (c := -(1 / (2 * Real.pi)))
+  exact (deriv_congr hsum2 (by intro w; unfold Hvortex; ring)).congr_deriv
+    (by unfold eqX2; rw [s10_inv_2s3]; ring)
+
+private theorem s10_dH_y2 (g : ℝ) :
+    HasDerivAt (fun w => Hvortex g g g eqX1 eqY1 eqX2 w eqX3 eqY3)
+      (-(3 * g * g / (2 * Real.pi)) * eqY2) eqY2 := by
+  have hA : HasDerivAt (fun w : ℝ => Real.log (vortexDist eqX1 eqY1 eqX2 w))
+      (1 / 2) eqY2 :=
+    (s10_dlog4 eqY2 eqX1 eqY1 eqX2 (by rw [d2_anchor12]; norm_num)).congr_deriv
+      (by rw [eqdy21, d2_anchor12]; ring)
+  have hB : HasDerivAt (fun w : ℝ => Real.log (vortexDist eqX2 w eqX3 eqY3))
+      1 eqY2 :=
+    (s10_dlog2 eqY2 eqX2 eqX3 eqY3 (by rw [d2_anchor23]; norm_num)).congr_deriv
+      (by rw [eqdy23, d2_anchor23]; ring)
+  have hC : HasDerivAt (fun w : ℝ => Real.log (vortexDist eqX1 eqY1 eqX3 eqY3)) 0 eqY2 :=
+    hasDerivAt_const _ _
+  have hsum := ((hA.const_mul (g * g)).add (hB.const_mul (g * g))).add (hC.const_mul (g * g))
+  have hsum2 := deriv_mul_const_left hsum (c := -(1 / (2 * Real.pi)))
+  exact (deriv_congr hsum2 (by intro w; unfold Hvortex; ring)).congr_deriv
+    (by unfold eqY2; ring)
+
+private theorem s10_dH_x3 (g : ℝ) :
+    HasDerivAt (fun w => Hvortex g g g eqX1 eqY1 eqX2 eqY2 w eqY3)
+      (-(3 * g * g / (2 * Real.pi)) * eqX3) eqX3 := by
+  have hs3ne : Real.sqrt 3 ≠ 0 := by positivity
+  have hA : HasDerivAt (fun w : ℝ => Real.log (vortexDist eqX1 eqY1 w eqY3))
+      (-(Real.sqrt 3 / 2)) eqX3 :=
+    (s10_dlog3 eqX3 eqX1 eqY1 eqY3 (by rw [d2_anchor13]; norm_num)).congr_deriv
+      (by rw [eqdx31, d2_anchor13]; ring)
+  have hB : HasDerivAt (fun w : ℝ => Real.log (vortexDist eqX2 eqY2 w eqY3))
+      0 eqX3 :=
+    (s10_dlog3 eqX3 eqX2 eqY2 eqY3 (by rw [d2_anchor23]; norm_num)).congr_deriv
+      (by
+        have e : eqX3 - eqX2 = 0 := by unfold eqX2 eqX3; ring
+        rw [e, d2_anchor23]; ring)
+  have hC : HasDerivAt (fun w : ℝ => Real.log (vortexDist eqX1 eqY1 eqX2 eqY2)) 0 eqX3 :=
+    hasDerivAt_const _ _
+  have hsum := ((hA.const_mul (g * g)).add (hB.const_mul (g * g))).add (hC.const_mul (g * g))
+  have hsum2 := deriv_mul_const_left hsum (c := -(1 / (2 * Real.pi)))
+  exact (deriv_congr hsum2 (by intro w; unfold Hvortex; ring)).congr_deriv
+    (by unfold eqX3; rw [s10_inv_2s3]; ring)
+
+private theorem s10_dH_y3 (g : ℝ) :
+    HasDerivAt (fun w => Hvortex g g g eqX1 eqY1 eqX2 eqY2 eqX3 w)
+      (-(3 * g * g / (2 * Real.pi)) * eqY3) eqY3 := by
+  have hA : HasDerivAt (fun w : ℝ => Real.log (vortexDist eqX1 eqY1 eqX3 w))
+      (-(1 / 2)) eqY3 :=
+    (s10_dlog4 eqY3 eqX1 eqY1 eqX3 (by rw [d2_anchor13]; norm_num)).congr_deriv
+      (by rw [eqdy31, d2_anchor13]; ring)
+  have hB : HasDerivAt (fun w : ℝ => Real.log (vortexDist eqX2 eqY2 eqX3 w))
+      (-1) eqY3 :=
+    (s10_dlog4 eqY3 eqX2 eqY2 eqX3 (by rw [d2_anchor23]; norm_num)).congr_deriv
+      (by
+        have e : eqY3 - eqY2 = -1 := by unfold eqY2 eqY3; ring
+        rw [e, d2_anchor23]; ring)
+  have hC : HasDerivAt (fun w : ℝ => Real.log (vortexDist eqX1 eqY1 eqX2 eqY2)) 0 eqY3 :=
+    hasDerivAt_const _ _
+  have hsum := ((hA.const_mul (g * g)).add (hB.const_mul (g * g))).add (hC.const_mul (g * g))
+  have hsum2 := deriv_mul_const_left hsum (c := -(1 / (2 * Real.pi)))
+  exact (deriv_congr hsum2 (by intro w; unfold Hvortex; ring)).congr_deriv
+    (by unfold eqY3; ring)
+
+/-! the six partial gradients of the angular impulse (pure polynomials) -/
+
+private theorem s10_dI_x1 (g : ℝ) :
+    HasDerivAt (fun w => Ivortex g g g w eqY1 eqX2 eqY2 eqX3 eqY3) (2 * g * eqX1) eqX1 := by
+  have h1 : HasDerivAt (fun w : ℝ => w * w) (eqX1 + eqX1) eqX1 := by
+    refine HasDerivAt.congr_deriv ((hasDerivAt_id eqX1).mul (hasDerivAt_id eqX1)) ?_
+    simp only [id_eq]
+    ring
+  have h2 : HasDerivAt (fun w : ℝ => eqY1 * eqY1) 0 eqX1 := hasDerivAt_const _ _
+  have h3 : HasDerivAt (fun w : ℝ => eqX2 * eqX2 + eqY2 * eqY2) 0 eqX1 :=
+    hasDerivAt_const _ _
+  have h4 : HasDerivAt (fun w : ℝ => eqX3 * eqX3 + eqY3 * eqY3) 0 eqX1 :=
+    hasDerivAt_const _ _
+  have h := ((h1.add h2).const_mul g).add ((h3.const_mul g).add (h4.const_mul g))
+  exact (deriv_congr h (by intro w; unfold Ivortex; ring)).congr_deriv (by ring)
+
+private theorem s10_dI_y1 (g : ℝ) :
+    HasDerivAt (fun w => Ivortex g g g eqX1 w eqX2 eqY2 eqX3 eqY3) (2 * g * eqY1) eqY1 := by
+  have h1 : HasDerivAt (fun w : ℝ => eqX1 * eqX1) 0 eqY1 := hasDerivAt_const _ _
+  have h2 : HasDerivAt (fun w : ℝ => w * w) (eqY1 + eqY1) eqY1 := by
+    refine HasDerivAt.congr_deriv ((hasDerivAt_id eqY1).mul (hasDerivAt_id eqY1)) ?_
+    simp only [id_eq]
+    ring
+  have h3 : HasDerivAt (fun w : ℝ => eqX2 * eqX2 + eqY2 * eqY2) 0 eqY1 :=
+    hasDerivAt_const _ _
+  have h4 : HasDerivAt (fun w : ℝ => eqX3 * eqX3 + eqY3 * eqY3) 0 eqY1 :=
+    hasDerivAt_const _ _
+  have h := ((h1.add h2).const_mul g).add ((h3.const_mul g).add (h4.const_mul g))
+  exact (deriv_congr h (by intro w; unfold Ivortex; ring)).congr_deriv (by ring)
+
+private theorem s10_dI_x2 (g : ℝ) :
+    HasDerivAt (fun w => Ivortex g g g eqX1 eqY1 w eqY2 eqX3 eqY3) (2 * g * eqX2) eqX2 := by
+  have h1 : HasDerivAt (fun w : ℝ => eqX1 * eqX1 + eqY1 * eqY1) 0 eqX2 :=
+    hasDerivAt_const _ _
+  have h2 : HasDerivAt (fun w : ℝ => w * w) (eqX2 + eqX2) eqX2 := by
+    refine HasDerivAt.congr_deriv ((hasDerivAt_id eqX2).mul (hasDerivAt_id eqX2)) ?_
+    simp only [id_eq]
+    ring
+  have h3 : HasDerivAt (fun w : ℝ => eqY2 * eqY2) 0 eqX2 := hasDerivAt_const _ _
+  have h4 : HasDerivAt (fun w : ℝ => eqX3 * eqX3 + eqY3 * eqY3) 0 eqX2 :=
+    hasDerivAt_const _ _
+  have h := ((h1.add h2).const_mul g).add ((h3.const_mul g).add (h4.const_mul g))
+  exact (deriv_congr h (by intro w; unfold Ivortex; ring)).congr_deriv (by ring)
+
+private theorem s10_dI_y2 (g : ℝ) :
+    HasDerivAt (fun w => Ivortex g g g eqX1 eqY1 eqX2 w eqX3 eqY3) (2 * g * eqY2) eqY2 := by
+  have h1 : HasDerivAt (fun w : ℝ => eqX1 * eqX1 + eqY1 * eqY1) 0 eqY2 :=
+    hasDerivAt_const _ _
+  have h2 : HasDerivAt (fun w : ℝ => eqX2 * eqX2) 0 eqY2 := hasDerivAt_const _ _
+  have h3 : HasDerivAt (fun w : ℝ => w * w) (eqY2 + eqY2) eqY2 := by
+    refine HasDerivAt.congr_deriv ((hasDerivAt_id eqY2).mul (hasDerivAt_id eqY2)) ?_
+    simp only [id_eq]
+    ring
+  have h4 : HasDerivAt (fun w : ℝ => eqX3 * eqX3 + eqY3 * eqY3) 0 eqY2 :=
+    hasDerivAt_const _ _
+  have h := ((h1.add h2).const_mul g).add ((h3.const_mul g).add (h4.const_mul g))
+  exact (deriv_congr h (by intro w; unfold Ivortex; ring)).congr_deriv (by ring)
+
+private theorem s10_dI_x3 (g : ℝ) :
+    HasDerivAt (fun w => Ivortex g g g eqX1 eqY1 eqX2 eqY2 w eqY3) (2 * g * eqX3) eqX3 := by
+  have h1 : HasDerivAt (fun w : ℝ => eqX1 * eqX1 + eqY1 * eqY1) 0 eqX3 :=
+    hasDerivAt_const _ _
+  have h2 : HasDerivAt (fun w : ℝ => eqX2 * eqX2 + eqY2 * eqY2) 0 eqX3 :=
+    hasDerivAt_const _ _
+  have h3 : HasDerivAt (fun w : ℝ => w * w) (eqX3 + eqX3) eqX3 := by
+    refine HasDerivAt.congr_deriv ((hasDerivAt_id eqX3).mul (hasDerivAt_id eqX3)) ?_
+    simp only [id_eq]
+    ring
+  have h4 : HasDerivAt (fun w : ℝ => eqY3 * eqY3) 0 eqX3 := hasDerivAt_const _ _
+  have h := ((h1.add h2).const_mul g).add ((h3.const_mul g).add (h4.const_mul g))
+  exact (deriv_congr h (by intro w; unfold Ivortex; ring)).congr_deriv (by ring)
+
+private theorem s10_dI_y3 (g : ℝ) :
+    HasDerivAt (fun w => Ivortex g g g eqX1 eqY1 eqX2 eqY2 eqX3 w) (2 * g * eqY3) eqY3 := by
+  have h1 : HasDerivAt (fun w : ℝ => eqX1 * eqX1 + eqY1 * eqY1) 0 eqY3 :=
+    hasDerivAt_const _ _
+  have h2 : HasDerivAt (fun w : ℝ => eqX2 * eqX2 + eqY2 * eqY2) 0 eqY3 :=
+    hasDerivAt_const _ _
+  have h3 : HasDerivAt (fun w : ℝ => eqX3 * eqX3) 0 eqY3 := hasDerivAt_const _ _
+  have h4 : HasDerivAt (fun w : ℝ => w * w) (eqY3 + eqY3) eqY3 := by
+    refine HasDerivAt.congr_deriv ((hasDerivAt_id eqY3).mul (hasDerivAt_id eqY3)) ?_
+    simp only [id_eq]
+    ring
+  have h := ((h1.add h2).const_mul g).add ((h3.const_mul g).add (h4.const_mul g))
+  exact (deriv_congr h (by intro w; unfold Ivortex; ring)).congr_deriv (by ring)
+
+/-! ### the Lagrange multiplier identity (energy–Casimir criticality) -/
+
+/-- **Variational principle, x₁-slot.**  The energy–Casimir functional
+    H + (3Γ/(4π))·I has zero x₁-gradient at the anchor:
+    ∇H = −(3Γ/(4π))·∇I there (Lagrange multiplier ω_L = 3Γ/(4π)). -/
+theorem s10_casimir_x1 (g : ℝ) :
+    HasDerivAt (fun w => Hvortex g g g w eqY1 eqX2 eqY2 eqX3 eqY3
+      + (3 * g / (4 * Real.pi)) * Ivortex g g g w eqY1 eqX2 eqY2 eqX3 eqY3) 0 eqX1 := by
+  have hH := s10_dH_x1 g
+  have hI := s10_dI_x1 g
+  exact (hH.add (deriv_mul_const_left hI (c := 3 * g / (4 * Real.pi)))).congr_deriv (by ring)
+
+/-- **Variational principle, y₁-slot.** -/
+theorem s10_casimir_y1 (g : ℝ) :
+    HasDerivAt (fun w => Hvortex g g g eqX1 w eqX2 eqY2 eqX3 eqY3
+      + (3 * g / (4 * Real.pi)) * Ivortex g g g eqX1 w eqX2 eqY2 eqX3 eqY3) 0 eqY1 := by
+  have hH := s10_dH_y1 g
+  have hI := s10_dI_y1 g
+  exact (hH.add (deriv_mul_const_left hI (c := 3 * g / (4 * Real.pi)))).congr_deriv (by ring)
+
+/-- **Variational principle, x₂-slot.** -/
+theorem s10_casimir_x2 (g : ℝ) :
+    HasDerivAt (fun w => Hvortex g g g eqX1 eqY1 w eqY2 eqX3 eqY3
+      + (3 * g / (4 * Real.pi)) * Ivortex g g g eqX1 eqY1 w eqY2 eqX3 eqY3) 0 eqX2 := by
+  have hH := s10_dH_x2 g
+  have hI := s10_dI_x2 g
+  exact (hH.add (deriv_mul_const_left hI (c := 3 * g / (4 * Real.pi)))).congr_deriv (by ring)
+
+/-- **Variational principle, y₂-slot.** -/
+theorem s10_casimir_y2 (g : ℝ) :
+    HasDerivAt (fun w => Hvortex g g g eqX1 eqY1 eqX2 w eqX3 eqY3
+      + (3 * g / (4 * Real.pi)) * Ivortex g g g eqX1 eqY1 eqX2 w eqX3 eqY3) 0 eqY2 := by
+  have hH := s10_dH_y2 g
+  have hI := s10_dI_y2 g
+  exact (hH.add (deriv_mul_const_left hI (c := 3 * g / (4 * Real.pi)))).congr_deriv (by ring)
+
+/-- **Variational principle, x₃-slot.** -/
+theorem s10_casimir_x3 (g : ℝ) :
+    HasDerivAt (fun w => Hvortex g g g eqX1 eqY1 eqX2 eqY2 w eqY3
+      + (3 * g / (4 * Real.pi)) * Ivortex g g g eqX1 eqY1 eqX2 eqY2 w eqY3) 0 eqX3 := by
+  have hH := s10_dH_x3 g
+  have hI := s10_dI_x3 g
+  exact (hH.add (deriv_mul_const_left hI (c := 3 * g / (4 * Real.pi)))).congr_deriv (by ring)
+
+/-- **Variational principle, y₃-slot.** -/
+theorem s10_casimir_y3 (g : ℝ) :
+    HasDerivAt (fun w => Hvortex g g g eqX1 eqY1 eqX2 eqY2 eqX3 w
+      + (3 * g / (4 * Real.pi)) * Ivortex g g g eqX1 eqY1 eqX2 eqY2 eqX3 w) 0 eqY3 := by
+  have hH := s10_dH_y3 g
+  have hI := s10_dI_y3 g
+  exact (hH.add (deriv_mul_const_left hI (c := 3 * g / (4 * Real.pi)))).congr_deriv (by ring)
+
+/-! ### the in-time Lyapunov stability theorem
+
+The annulus in which the coercive inequality holds is propagated along the
+whole trajectory by a continuous-induction argument: the deep-interior
+target [15/16, 17/16] has a margin of 7/16 on both sides of the annulus
+[1/2, 3/2], so no trajectory that starts in the target with a small energy
+excess can ever leave the annulus. -/
+
+/-- A squared-deviation bound of (1/16)² pins each squared side inside the
+    deep-interior target [15/16, 17/16]. -/
+private theorem s10_mem16 {d : ℝ} (h : (d - 1) ^ 2 ≤ (1/16 : ℝ) ^ 2) :
+    d ∈ Set.Icc (15/16 : ℝ) (17/16) := by
+  rw [Set.mem_Icc]
+  constructor
+  · rcases lt_or_le d (15/16) with hlt | hle
+    · exfalso
+      have hid : (d - 1) ^ 2 - (1/16 : ℝ) ^ 2
+          = (-(d - 1) - 1/16) * (-(d - 1) + 1/16) := by ring
+      have hp : (0:ℝ) < -(d - 1) - 1/16 := by linarith
+      have hq : (0:ℝ) < -(d - 1) + 1/16 := by linarith
+      have hpr : (0:ℝ) < (-(d - 1) - 1/16) * (-(d - 1) + 1/16) := by nlinarith [hp, hq]
+      linarith [hid ▸ hpr, h]
+    · linarith
+  · rcases lt_or_le (17/16) d with hgt | hle
+    · exfalso
+      have hid : (d - 1) ^ 2 - (1/16 : ℝ) ^ 2
+          = ((d - 1) - 1/16) * ((d - 1) + 1/16) := by ring
+      have hp : (0:ℝ) < (d - 1) - 1/16 := by linarith
+      have hq : (0:ℝ) < (d - 1) + 1/16 := by linarith
+      have hpr : (0:ℝ) < ((d - 1) - 1/16) * ((d - 1) + 1/16) := by nlinarith [hp, hq]
+      linarith [hid ▸ hpr, h]
+    · linarith
+
+/-- **The annulus propagation (continuous induction).**  If the three
+    squared-side functions are continuous, start in the deep-interior
+    target at 0, and satisfy the coercive bound whenever they are in the
+    annulus, then they stay in the annulus forever (for t ≥ 0). -/
+private theorem s10_propagate {dA dB dC : ℝ → ℝ}
+    (hcA : Continuous dA) (hcB : Continuous dB) (hcC : Continuous dC)
+    (h0 : dA 0 ∈ Set.Icc (15/16 : ℝ) (17/16) ∧ dB 0 ∈ Set.Icc (15/16 : ℝ) (17/16)
+      ∧ dC 0 ∈ Set.Icc (15/16 : ℝ) (17/16))
+    (hbound : ∀ s : ℝ, dA s ∈ Set.Icc (1/2 : ℝ) (3/2) → dB s ∈ Set.Icc (1/2 : ℝ) (3/2) →
+      dC s ∈ Set.Icc (1/2 : ℝ) (3/2) →
+      (dA s - 1) ^ 2 + (dB s - 1) ^ 2 + (dC s - 1) ^ 2 ≤ (1/16 : ℝ) ^ 2)
+    (t0 : ℝ) (ht0 : 0 ≤ t0) :
+    dA t0 ∈ Set.Icc (1/2 : ℝ) (3/2) ∧ dB t0 ∈ Set.Icc (1/2 : ℝ) (3/2)
+      ∧ dC t0 ∈ Set.Icc (1/2 : ℝ) (3/2) := by
+  set P : Set ℝ := dA ⁻¹' (Set.Icc (1/2 : ℝ) (3/2))
+    ∩ (dB ⁻¹' (Set.Icc (1/2 : ℝ) (3/2)) ∩ dC ⁻¹' (Set.Icc (1/2 : ℝ) (3/2))) with hPdef
+  have hPcl : IsClosed P := by
+    have e1 : IsClosed ((Set.univ : Set ℝ) ∩ dA ⁻¹' (Set.Icc (1/2 : ℝ) (3/2))) :=
+      hcA.continuousOn.preimage_isClosed_of_isClosed isClosed_univ isClosed_Icc
+    have e2 : IsClosed ((Set.univ : Set ℝ) ∩ dB ⁻¹' (Set.Icc (1/2 : ℝ) (3/2))) :=
+      hcB.continuousOn.preimage_isClosed_of_isClosed isClosed_univ isClosed_Icc
+    have e3 : IsClosed ((Set.univ : Set ℝ) ∩ dC ⁻¹' (Set.Icc (1/2 : ℝ) (3/2))) :=
+      hcC.continuousOn.preimage_isClosed_of_isClosed isClosed_univ isClosed_Icc
+    rw [Set.univ_inter] at e1 e2 e3
+    exact e1.inter (e2.inter e3)
+  have h0P : (0 : ℝ) ∈ P := by
+    rcases h0 with ⟨h1, h2, h3⟩
+    refine ⟨?_, ?_, ?_⟩
+    · exact Set.mem_preimage.mpr (by
+        rcases Set.mem_Icc.mp h1 with ⟨m1, m2⟩
+        exact Set.mem_Icc.mpr ⟨by linarith, by linarith⟩)
+    · exact Set.mem_preimage.mpr (by
+        rcases Set.mem_Icc.mp h2 with ⟨m1, m2⟩
+        exact Set.mem_Icc.mpr ⟨by linarith, by linarith⟩)
+    · exact Set.mem_preimage.mpr (by
+        rcases Set.mem_Icc.mp h3 with ⟨m1, m2⟩
+        exact Set.mem_Icc.mpr ⟨by linarith, by linarith⟩)
+  set E : Set ℝ := {s | 0 ≤ s ∧ s ≤ t0 ∧ ∀ r ∈ Set.Icc (0 : ℝ) s, r ∈ P} with hEdef
+  have hE0 : (0 : ℝ) ∈ E := by
+    refine ⟨le_refl _, ht0, ?_⟩
+    intro r hr
+    rcases Set.mem_Icc.mp hr with ⟨m1, m2⟩
+    have hr0 : r = 0 := by linarith
+    rw [hr0]
+    exact h0P
+  have hEne : E.Nonempty := ⟨0, hE0⟩
+  set T := sSup E with hTdef
+  have hTle : T ≤ t0 := Real.sSup_le (fun s hs => hs.2.1) ht0
+  have hEbdd : BddAbove E := ⟨t0, fun x hx => hx.2.1⟩
+  have hTge : (0 : ℝ) ≤ T := le_csSup hEbdd hE0
+  -- approximation: every point of [0, T) lies in P
+  have happ : ∀ r : ℝ, 0 ≤ r → r < T → r ∈ P := by
+    intro r hr1 hr2
+    by_contra hcon
+    have hall : ∀ s ∈ E, s ≤ r := by
+      intro s hs
+      by_contra hgt
+      exact hcon (hs.2.2 r ⟨hr1, by linarith⟩)
+    have hsup : T ≤ r := Real.sSup_le hall hr1
+    linarith
+  -- T belongs to P (closedness of P plus the approximation property)
+  have hTP : T ∈ P := by
+    rw [← hPcl.closure_eq]
+    rw [Metric.mem_closure_iff]
+    intro ε hε
+    rcases le_or_lt ε T with hle | hlt
+    · exact ⟨T - ε / 2, happ (T - ε / 2) (by linarith) (by linarith),
+        by rw [Real.dist_eq, abs_lt]; constructor <;> linarith⟩
+    · exact ⟨0, h0P, by rw [Real.dist_eq, sub_zero, abs_lt]; constructor <;> linarith⟩
+  -- the deep-interior margin at T
+  have hTPA : dA T ∈ Set.Icc (1/2 : ℝ) (3/2) := Set.mem_preimage.mp hTP.1
+  have hTPB : dB T ∈ Set.Icc (1/2 : ℝ) (3/2) := Set.mem_preimage.mp hTP.2.1
+  have hTPC : dC T ∈ Set.Icc (1/2 : ℝ) (3/2) := Set.mem_preimage.mp hTP.2.2
+  have hsum := hbound T hTPA hTPB hTPC
+  have kA : (dA T - 1) ^ 2 ≤ (1/16 : ℝ) ^ 2 := by
+    have z2 : 0 ≤ (dB T - 1) ^ 2 := sq_nonneg _
+    have z3 : 0 ≤ (dC T - 1) ^ 2 := sq_nonneg _
+    linarith
+  have kB : (dB T - 1) ^ 2 ≤ (1/16 : ℝ) ^ 2 := by
+    have z1 : 0 ≤ (dA T - 1) ^ 2 := sq_nonneg _
+    have z3 : 0 ≤ (dC T - 1) ^ 2 := sq_nonneg _
+    linarith
+  have kC : (dC T - 1) ^ 2 ≤ (1/16 : ℝ) ^ 2 := by
+    have z1 : 0 ≤ (dA T - 1) ^ 2 := sq_nonneg _
+    have z2 : 0 ≤ (dB T - 1) ^ 2 := sq_nonneg _
+    linarith
+  rcases Set.mem_Icc.mp (s10_mem16 kA) with ⟨a1, a2⟩
+  rcases Set.mem_Icc.mp (s10_mem16 kB) with ⟨b1, b2⟩
+  rcases Set.mem_Icc.mp (s10_mem16 kC) with ⟨c1, c2⟩
+  rcases lt_or_eq_of_le hTle with hTlt | hTeq
+  · -- T < t0: extend beyond T and contradict the supremum
+    have oA : IsOpen {s | dA s ∈ Set.Ioo (1/2 : ℝ) (3/2)} :=
+      hcA.isOpen_preimage _ isOpen_Ioo
+    have oB : IsOpen {s | dB s ∈ Set.Ioo (1/2 : ℝ) (3/2)} :=
+      hcB.isOpen_preimage _ isOpen_Ioo
+    have oC : IsOpen {s | dC s ∈ Set.Ioo (1/2 : ℝ) (3/2)} :=
+      hcC.isOpen_preimage _ isOpen_Ioo
+    have mA : T ∈ {s | dA s ∈ Set.Ioo (1/2 : ℝ) (3/2)} :=
+      Set.mem_Ioo.mpr ⟨by linarith, by linarith⟩
+    have mB : T ∈ {s | dB s ∈ Set.Ioo (1/2 : ℝ) (3/2)} :=
+      Set.mem_Ioo.mpr ⟨by linarith, by linarith⟩
+    have mC : T ∈ {s | dC s ∈ Set.Ioo (1/2 : ℝ) (3/2)} :=
+      Set.mem_Ioo.mpr ⟨by linarith, by linarith⟩
+    obtain ⟨εA, hεA⟩ := Metric.isOpen_iff.mp oA T mA
+    obtain ⟨εB, hεB⟩ := Metric.isOpen_iff.mp oB T mB
+    obtain ⟨εC, hεC⟩ := Metric.isOpen_iff.mp oC T mC
+    set δ := min (min εA εB) (min εC (t0 - T)) with hδdef
+    have hδA : δ ≤ εA := le_trans (min_le_left _ _) (min_le_left _ _)
+    have hδB : δ ≤ εB := le_trans (min_le_left _ _) (min_le_right _ _)
+    have hδC : δ ≤ εC := le_trans (min_le_right (min εA εB) _) (min_le_left _ _)
+    have hδt : δ ≤ t0 - T := le_trans (min_le_right (min εA εB) _) (min_le_right _ _)
+    have hδpos : 0 < δ := by
+      have p1 : 0 < εA := hεA.1
+      have p2 : 0 < εB := hεB.1
+      have p3 : 0 < εC := hεC.1
+      have p4 : 0 < t0 - T := by linarith
+      rw [hδdef]
+      exact lt_min (lt_min p1 p2) (lt_min p3 p4)
+    have hTE : T + δ / 2 ∈ E := by
+      refine ⟨by linarith, by linarith, ?_⟩
+      intro r hr
+      rcases Set.mem_Icc.mp hr with ⟨m1, m2⟩
+      rcases lt_or_le r T with h1 | h2
+      · exact happ r m1 h1
+      · rcases lt_or_eq_of_le h2 with h3 | h4
+        · -- T < r ≤ T + δ/2: inside all three open preimages
+          refine ⟨?_, ?_, ?_⟩
+          · have hbA : r ∈ Metric.ball T εA := by
+              rw [Metric.mem_ball, Real.dist_eq, abs_lt]
+              constructor <;> linarith only [hδA, hδpos, h3, m2, hεA.1]
+            have hmem := hεA.right hbA
+            exact Set.mem_preimage.mpr (Set.mem_Icc.mpr
+              ⟨le_of_lt (Set.mem_Ioo.mp hmem).1, le_of_lt (Set.mem_Ioo.mp hmem).2⟩)
+          · have hbB : r ∈ Metric.ball T εB := by
+              rw [Metric.mem_ball, Real.dist_eq, abs_lt]
+              constructor <;> linarith only [hδB, hδpos, h3, m2, hεB.1]
+            have hmem := hεB.right hbB
+            exact Set.mem_preimage.mpr (Set.mem_Icc.mpr
+              ⟨le_of_lt (Set.mem_Ioo.mp hmem).1, le_of_lt (Set.mem_Ioo.mp hmem).2⟩)
+          · have hbC : r ∈ Metric.ball T εC := by
+              rw [Metric.mem_ball, Real.dist_eq, abs_lt]
+              constructor <;> linarith only [hδC, hδpos, h3, m2, hεC.1]
+            have hmem := hεC.right hbC
+            exact Set.mem_preimage.mpr (Set.mem_Icc.mpr
+              ⟨le_of_lt (Set.mem_Ioo.mp hmem).1, le_of_lt (Set.mem_Ioo.mp hmem).2⟩)
+        · rw [← h4]
+          exact hTP
+    -- contradiction: T + δ/2 > T = sSup E
+    have hsup := le_csSup hEbdd hTE
+    linarith
+  · -- T = t0: t0 itself is in the annulus
+    rw [← hTeq]
+    exact ⟨Set.mem_preimage.mp hTP.1, Set.mem_preimage.mp hTP.2.1,
+      Set.mem_preimage.mp hTP.2.2⟩
+
+/-- **Nonlinear Lyapunov stability of the Lagrange triangle (H/I form).**
+    Let a Kirchhoff solution with equal circulations Γ > 0 stay on the
+    anchor level set (P = Q = 0, I = Γ at every time) and start with energy
+    excess at most (Γ²/(12π))·(1/16)² and all squared sides in the
+    deep-interior target [15/16, 17/16].  Then at EVERY time t ∈ ℝ the
+    squared shape deviation is controlled by the conserved energy excess:
+      Σ_pairs (d2_ij(t) − 1)² ≤ (12π/Γ²) · H(0).
+    This is the energy–Casimir Lyapunov theorem: the equilateral triangle
+    is nonlinearly stable modulo the symmetries, with the explicit
+    Lyapunov inequality as the certificate. -/
+theorem s10_lyapunov_stab (g : ℝ) (hg : 0 < g) (sol : KirchhoffSol g g g)
+    (hP : ∀ t, Pvortex g g g (sol.x1 t) (sol.x2 t) (sol.x3 t) = 0)
+    (hQ : ∀ t, Qvortex g g g (sol.y1 t) (sol.y2 t) (sol.y3 t) = 0)
+    (hI : ∀ t, Ivortex g g g (sol.x1 t) (sol.y1 t) (sol.x2 t) (sol.y2 t)
+      (sol.x3 t) (sol.y3 t) = g)
+    (hH : Hvortex g g g (sol.x1 0) (sol.y1 0) (sol.x2 0) (sol.y2 0)
+      (sol.x3 0) (sol.y3 0) ≤ (g * g / (12 * Real.pi)) * ((1/16 : ℝ) ^ 2))
+    (h0 : d2 (sol.x1 0) (sol.y1 0) (sol.x2 0) (sol.y2 0) ∈ Set.Icc (15/16 : ℝ) (17/16)
+      ∧ d2 (sol.x1 0) (sol.y1 0) (sol.x3 0) (sol.y3 0) ∈ Set.Icc (15/16 : ℝ) (17/16)
+      ∧ d2 (sol.x2 0) (sol.y2 0) (sol.x3 0) (sol.y3 0) ∈ Set.Icc (15/16 : ℝ) (17/16))
+    (t : ℝ) :
+    (d2 (sol.x1 t) (sol.y1 t) (sol.x2 t) (sol.y2 t) - 1) ^ 2
+      + (d2 (sol.x1 t) (sol.y1 t) (sol.x3 t) (sol.y3 t) - 1) ^ 2
+      + (d2 (sol.x2 t) (sol.y2 t) (sol.x3 t) (sol.y3 t) - 1) ^ 2
+      ≤ (12 * Real.pi / (g * g)) * Hvortex g g g (sol.x1 0) (sol.y1 0) (sol.x2 0)
+        (sol.y2 0) (sol.x3 0) (sol.y3 0) := by
+  set dA : ℝ → ℝ := fun s => d2 (sol.x1 s) (sol.y1 s) (sol.x2 s) (sol.y2 s) with hdAdef
+  set dB : ℝ → ℝ := fun s => d2 (sol.x1 s) (sol.y1 s) (sol.x3 s) (sol.y3 s) with hdBdef
+  set dC : ℝ → ℝ := fun s => d2 (sol.x2 s) (sol.y2 s) (sol.x3 s) (sol.y3 s) with hdCdef
+  -- continuity of the three squared-side functions
+  have hc1 : Continuous (fun s => sol.x1 s) :=
+    continuous_iff_continuousAt.mpr (fun u => (sol.hx1 u).continuousAt)
+  have hc2 : Continuous (fun s => sol.y1 s) :=
+    continuous_iff_continuousAt.mpr (fun u => (sol.hy1 u).continuousAt)
+  have hc3 : Continuous (fun s => sol.x2 s) :=
+    continuous_iff_continuousAt.mpr (fun u => (sol.hx2 u).continuousAt)
+  have hc4 : Continuous (fun s => sol.y2 s) :=
+    continuous_iff_continuousAt.mpr (fun u => (sol.hy2 u).continuousAt)
+  have hc5 : Continuous (fun s => sol.x3 s) :=
+    continuous_iff_continuousAt.mpr (fun u => (sol.hx3 u).continuousAt)
+  have hc6 : Continuous (fun s => sol.y3 s) :=
+    continuous_iff_continuousAt.mpr (fun u => (sol.hy3 u).continuousAt)
+  have hcA : Continuous dA := by
+    rw [hdAdef]
+    show Continuous (fun s => (sol.x1 s - sol.x2 s) ^ 2 + (sol.y1 s - sol.y2 s) ^ 2)
+    exact (s10_sq_cont (hc1.sub hc3)).add (s10_sq_cont (hc2.sub hc4))
+  have hcB : Continuous dB := by
+    rw [hdBdef]
+    show Continuous (fun s => (sol.x1 s - sol.x3 s) ^ 2 + (sol.y1 s - sol.y3 s) ^ 2)
+    exact (s10_sq_cont (hc1.sub hc5)).add (s10_sq_cont (hc2.sub hc6))
+  have hcC : Continuous dC := by
+    rw [hdCdef]
+    show Continuous (fun s => (sol.x2 s - sol.x3 s) ^ 2 + (sol.y2 s - sol.y3 s) ^ 2)
+    exact (s10_sq_cont (hc3.sub hc5)).add (s10_sq_cont (hc4.sub hc6))
+  -- the coercive bound on the annulus, with the conserved energy
+  have hcons0 : ∀ s : ℝ, Hvortex g g g (sol.x1 s) (sol.y1 s) (sol.x2 s) (sol.y2 s)
+      (sol.x3 s) (sol.y3 s) = Hvortex g g g (sol.x1 0) (sol.y1 0) (sol.x2 0) (sol.y2 0)
+      (sol.x3 0) (sol.y3 0) := fun s => H_kirchhoff_conserved g g g sol s 0
+  have hbound : ∀ s : ℝ, dA s ∈ Set.Icc (1/2 : ℝ) (3/2) → dB s ∈ Set.Icc (1/2 : ℝ) (3/2) →
+      dC s ∈ Set.Icc (1/2 : ℝ) (3/2) →
+      (dA s - 1) ^ 2 + (dB s - 1) ^ 2 + (dC s - 1) ^ 2 ≤ (1/16 : ℝ) ^ 2 := by
+    intro s mA mB mC
+    have hcoer := s10_coercive g (sol.x1 s) (sol.y1 s) (sol.x2 s) (sol.y2 s)
+      (sol.x3 s) (sol.y3 s) (ne_of_gt hg) (hP s) (hQ s) (hI s)
+      mA.1 mA.2 mB.1 mB.2 mC.1 mC.2
+    rw [hcons0 s] at hcoer
+    have hpos : (0:ℝ) < g * g / (12 * Real.pi) := by positivity
+    have h2 : (g * g / (12 * Real.pi)) * ((dA s - 1) ^ 2 + (dB s - 1) ^ 2 + (dC s - 1) ^ 2)
+        ≤ (g * g / (12 * Real.pi)) * ((1/16 : ℝ) ^ 2) := le_trans hcoer hH
+    exact le_of_mul_le_mul_left h2 hpos
+  -- propagate the annulus to all times and conclude
+  have hpos : (0:ℝ) < g * g / (12 * Real.pi) := by positivity
+  have hgoal : ∀ u : ℝ, dA u ∈ Set.Icc (1/2 : ℝ) (3/2) → dB u ∈ Set.Icc (1/2 : ℝ) (3/2) →
+      dC u ∈ Set.Icc (1/2 : ℝ) (3/2) →
+      (dA u - 1) ^ 2 + (dB u - 1) ^ 2 + (dC u - 1) ^ 2
+        ≤ (12 * Real.pi / (g * g)) * Hvortex g g g (sol.x1 0) (sol.y1 0) (sol.x2 0)
+          (sol.y2 0) (sol.x3 0) (sol.y3 0) := by
+    intro u mA mB mC
+    have hcoer := s10_coercive g (sol.x1 u) (sol.y1 u) (sol.x2 u) (sol.y2 u)
+      (sol.x3 u) (sol.y3 u) (ne_of_gt hg) (hP u) (hQ u) (hI u)
+      mA.1 mA.2 mB.1 mB.2 mC.1 mC.2
+    rw [hcons0 u] at hcoer
+    rw [show (12 * Real.pi / (g * g)) * Hvortex g g g (sol.x1 0) (sol.y1 0) (sol.x2 0)
+        (sol.y2 0) (sol.x3 0) (sol.y3 0)
+        = Hvortex g g g (sol.x1 0) (sol.y1 0) (sol.x2 0) (sol.y2 0) (sol.x3 0) (sol.y3 0)
+          / (g * g / (12 * Real.pi)) from by field_simp; ring]
+    rw [mul_comm (g * g / (12 * Real.pi))] at hcoer
+    exact (le_div_iff hpos).mpr hcoer
+  rcases le_or_lt 0 t with htp | htn
+  · have h3 := s10_propagate hcA hcB hcC h0 hbound t htp
+    exact hgoal t h3.1 h3.2.1 h3.2.2
+  · -- t < 0: mirror the trajectory in time
+    have hcA' : Continuous (fun s => dA (-s)) := hcA.comp continuous_neg
+    have hcB' : Continuous (fun s => dB (-s)) := hcB.comp continuous_neg
+    have hcC' : Continuous (fun s => dC (-s)) := hcC.comp continuous_neg
+    have h0' : (fun s => dA (-s)) 0 ∈ Set.Icc (15/16 : ℝ) (17/16)
+        ∧ (fun s => dB (-s)) 0 ∈ Set.Icc (15/16 : ℝ) (17/16)
+        ∧ (fun s => dC (-s)) 0 ∈ Set.Icc (15/16 : ℝ) (17/16) := by
+      constructor
+      · show dA (-(0:ℝ)) ∈ Set.Icc (15/16 : ℝ) (17/16)
+        rw [neg_zero]; exact h0.1
+      · constructor
+        · show dB (-(0:ℝ)) ∈ Set.Icc (15/16 : ℝ) (17/16)
+          rw [neg_zero]; exact h0.2.1
+        · show dC (-(0:ℝ)) ∈ Set.Icc (15/16 : ℝ) (17/16)
+          rw [neg_zero]; exact h0.2.2
+    have hbound' : ∀ s : ℝ, (fun s => dA (-s)) s ∈ Set.Icc (1/2 : ℝ) (3/2) →
+        (fun s => dB (-s)) s ∈ Set.Icc (1/2 : ℝ) (3/2) →
+        (fun s => dC (-s)) s ∈ Set.Icc (1/2 : ℝ) (3/2) →
+        ((fun s => dA (-s)) s - 1) ^ 2 + ((fun s => dB (-s)) s - 1) ^ 2
+          + ((fun s => dC (-s)) s - 1) ^ 2 ≤ (1/16 : ℝ) ^ 2 := by
+      intro s mA mB mC
+      exact hbound (-s) mA mB mC
+    have h3 := s10_propagate hcA' hcB' hcC' h0' hbound' (-t) (by linarith)
+    have h4 : dA t ∈ Set.Icc (1/2 : ℝ) (3/2) ∧ dB t ∈ Set.Icc (1/2 : ℝ) (3/2)
+        ∧ dC t ∈ Set.Icc (1/2 : ℝ) (3/2) := by
+      simp only [neg_neg] at h3
+      exact h3
+    exact hgoal t h4.1 h4.2.1 h4.2.2
+
+/-- **Nonlinear Lyapunov stability, distance form.**  Under the hypotheses
+    of `s10_lyapunov_stab`, at every time the three squared distances
+    (from the side-1 values) are bounded by the conserved energy excess:
+      Σ_pairs (r_ij(t) − 1)² ≤ (12π/Γ²) · H(0). -/
+theorem s10_lyapunov_dist (g : ℝ) (hg : 0 < g) (sol : KirchhoffSol g g g)
+    (hP : ∀ t, Pvortex g g g (sol.x1 t) (sol.x2 t) (sol.x3 t) = 0)
+    (hQ : ∀ t, Qvortex g g g (sol.y1 t) (sol.y2 t) (sol.y3 t) = 0)
+    (hI : ∀ t, Ivortex g g g (sol.x1 t) (sol.y1 t) (sol.x2 t) (sol.y2 t)
+      (sol.x3 t) (sol.y3 t) = g)
+    (hH : Hvortex g g g (sol.x1 0) (sol.y1 0) (sol.x2 0) (sol.y2 0)
+      (sol.x3 0) (sol.y3 0) ≤ (g * g / (12 * Real.pi)) * ((1/16 : ℝ) ^ 2))
+    (h0 : d2 (sol.x1 0) (sol.y1 0) (sol.x2 0) (sol.y2 0) ∈ Set.Icc (15/16 : ℝ) (17/16)
+      ∧ d2 (sol.x1 0) (sol.y1 0) (sol.x3 0) (sol.y3 0) ∈ Set.Icc (15/16 : ℝ) (17/16)
+      ∧ d2 (sol.x2 0) (sol.y2 0) (sol.x3 0) (sol.y3 0) ∈ Set.Icc (15/16 : ℝ) (17/16))
+    (t : ℝ) :
+    (vortexDist (sol.x1 t) (sol.y1 t) (sol.x2 t) (sol.y2 t) - 1) ^ 2
+      + (vortexDist (sol.x1 t) (sol.y1 t) (sol.x3 t) (sol.y3 t) - 1) ^ 2
+      + (vortexDist (sol.x2 t) (sol.y2 t) (sol.x3 t) (sol.y3 t) - 1) ^ 2
+      ≤ (12 * Real.pi / (g * g)) * Hvortex g g g (sol.x1 0) (sol.y1 0) (sol.x2 0)
+        (sol.y2 0) (sol.x3 0) (sol.y3 0) := by
+  have h := s10_lyapunov_stab g hg sol hP hQ hI hH h0 t
+  have e1 := s10_dist_sq (sol.x1 t) (sol.y1 t) (sol.x2 t) (sol.y2 t)
+  have e2 := s10_dist_sq (sol.x1 t) (sol.y1 t) (sol.x3 t) (sol.y3 t)
+  have e3 := s10_dist_sq (sol.x2 t) (sol.y2 t) (sol.x3 t) (sol.y3 t)
+  linarith
+
+/-!
+### 10.2  Collinear central configurations and their bifurcations
+
+For the circulation family Γ = (1, 1, γ) the collinear relative equilibria
+centered at the origin are classified exactly.  A triple (x₁, x₂, x₃) on
+the x-axis, pairwise distinct, rotates rigidly about the origin with rate
+w exactly when the S-conditions hold: S₁ = 2πx₁w, S₂ = 2πx₂w,
+S₃ = 2πx₃w with S₁ = 1/(x₁−x₂) + γ/(x₁−x₃), S₂ = 1/(x₂−x₁) +
+γ/(x₂−x₃), S₃ = 1/(x₃−x₁) + 1/(x₃−x₂).  With the ratio s = x₃/x₁
+(the centering x₂ = −x₁ − γx₃ built in) the condition reduces to the
+polynomial N(s, γ) = s(s−1)·M̃(s, γ) = 0 with
+M̃(s,γ) = (γ+1)²(γ−1)s² + γ(4γ+5)s + (4γ+5) of discriminant
+(4γ+5)(γ+2)².  The symmetric branch s = 0 exists for every γ (rate
+ω = (γ+½)/(2πd²), vanishing at γ = −½); the asymmetric branch
+bifurcates exactly at the pitchfork γ = −5/4; at γ₀ = −1/4 both
+asymmetric solutions are exactly rational (s = 16/9 and s = −16/5),
+so the solution count jumps from one to three.
+-/
+
+/-- The rotation rate of the symmetric collinear family (d, −d, 0). -/
+noncomputable def colOmega (gamma d : ℝ) : ℝ :=
+  (1 / 2 + gamma) / (2 * Real.pi * d ^ 2)
+
+/-- The cleared bifurcation polynomial M̃(s, γ). -/
+noncomputable def s10ColM (s gamma : ℝ) : ℝ :=
+  (gamma + 1) ^ 2 * (gamma - 1) * s ^ 2 + gamma * (4 * gamma + 5) * s + (4 * gamma + 5)
+
+/-- The cleared bifurcation polynomial N(s, γ) = s(s−1)·M̃(s, γ). -/
+noncomputable def s10ColN (s gamma : ℝ) : ℝ :=
+  s * (s - 1) * s10ColM s gamma
+
+/-- Distance of two rigidly rotated collinear points is the squared
+    difference of their abscissas. -/
+private theorem s10_rot_d2 (a b w t : ℝ) :
+    d2 (a * Real.cos (w * t)) (a * Real.sin (w * t))
+      (b * Real.cos (w * t)) (b * Real.sin (w * t)) = (a - b) ^ 2 := by
+  unfold d2
+  rw [show a * Real.cos (w * t) - b * Real.cos (w * t)
+        = (a - b) * Real.cos (w * t) from by ring,
+    show a * Real.sin (w * t) - b * Real.sin (w * t)
+        = (a - b) * Real.sin (w * t) from by ring,
+    show ((a - b) * Real.cos (w * t)) ^ 2
+        + ((a - b) * Real.sin (w * t)) ^ 2
+        = (a - b) ^ 2 * (Real.sin (w * t) ^ 2 + Real.cos (w * t) ^ 2) from by ring,
+    Real.sin_sq_add_cos_sq]
+  ring
+
+/-- Rational cancellation on a rotated-collinear pair: the field term
+    reduces to the S-sum form. -/
+private theorem s10_pair_cancel (p q r v gamma : ℝ) (hq : p - q ≠ 0) (hr : p - r ≠ 0) :
+    1 * ((p - q) * v) / ((p - q) ^ 2) + gamma * ((p - r) * v) / ((p - r) ^ 2)
+      = v * (1 / (p - q) + gamma / (p - r)) := by
+  rw [one_mul, show (p - q) ^ 2 = (p - q) * (p - q) from by ring,
+    mul_div_mul_left v (p - q) hq,
+    show (p - r) ^ 2 = (p - r) * (p - r) from by ring,
+    show gamma * ((p - r) * v) = (p - r) * (gamma * v) from by ring,
+    mul_div_mul_left (gamma * v) (p - r) hr]
+  ring
+
+/-- Cancellation of the 2π factor in the rigid-rotation identification. -/
+private theorem s10_2pi_mul (z : ℝ) : 1 / (2 * Real.pi) * (2 * Real.pi * z) = z := by
+  have hpi : (2:ℝ) * Real.pi ≠ 0 := mul_ne_zero two_ne_zero Real.pi_pos.ne'
+  field_simp
+  ring
+
+/-- Multiplicative self-cancellation. -/
+private theorem s10_dinv (d : ℝ) (hd : d ≠ 0) : d * d⁻¹ = 1 := by
+  field_simp [hd]
+
+/-- Squared-times-inverse cancellation. -/
+private theorem s10_d2inv (d : ℝ) (hd : d ≠ 0) : d ^ 2 * d⁻¹ = d := by
+  rw [pow_two]
+  rw [mul_assoc d d d⁻¹, s10_dinv d hd]
+  ring
+
+/-- The rotation-rate cancellation: 2πd·(q/(2πd²)) = q/d. -/
+private theorem s10_rate_cancel (d q : ℝ) (hd : d ≠ 0) :
+    2 * Real.pi * d * (q / (2 * Real.pi * d ^ 2)) = q / d := by
+  have hpi : (2:ℝ) * Real.pi ≠ 0 := mul_ne_zero two_ne_zero Real.pi_pos.ne'
+  field_simp [hpi]
+  ring
+private theorem s10_neg_ne {a b : ℝ} (h : a - b ≠ 0) : b - a ≠ 0 := by
+  intro h0
+  apply h
+  linarith
+
+/-- The x-velocity component of vortex 1 at the rotated
+    collinear configuration. -/
+private theorem s10_cfx1 (gamma x1 x2 x3 w t : ℝ)
+    (e12 : x1 - x2 ≠ 0) (e13 : x1 - x3 ≠ 0)
+    (h1 : 1 / (x1 - x2) + gamma / (x1 - x3) = 2 * Real.pi * x1 * w) :
+    kx1 1 1 gamma (x1 * Real.cos (w * t)) (x1 * Real.sin (w * t))
+      (x2 * Real.cos (w * t)) (x2 * Real.sin (w * t))
+      (x3 * Real.cos (w * t)) (x3 * Real.sin (w * t))
+      = -w * (x1 * Real.sin (w * t)) := by
+  simp only [kx1]
+  rw [s10_rot_d2 x1 x2 w t, s10_rot_d2 x1 x3 w t,
+    show x1 * Real.sin (w * t) - x2 * Real.sin (w * t) = (x1 - x2) * Real.sin (w * t) from by ring,
+    show x1 * Real.sin (w * t) - x3 * Real.sin (w * t) = (x1 - x3) * Real.sin (w * t) from by ring,
+show 1 * ((x1 - x2) * Real.sin (w * t)) / ((x1 - x2) ^ 2)
+        + gamma * ((x1 - x3) * Real.sin (w * t)) / ((x1 - x3) ^ 2)
+        = Real.sin (w * t) * (1 / (x1 - x2) + gamma / (x1 - x3)) from
+      s10_pair_cancel x1 x2 x3 (Real.sin (w * t)) gamma e12 e13,
+    h1]
+  rw [show Real.sin (w * t) * (2 * Real.pi * x1 * w) = 2 * Real.pi * (Real.sin (w * t) * x1 * w) from by ring]
+  linarith [s10_2pi_mul (Real.sin (w * t) * x1 * w)]
+
+/-- The y-velocity component of vortex 1 at the rotated
+    collinear configuration. -/
+private theorem s10_cfy1 (gamma x1 x2 x3 w t : ℝ)
+    (e12 : x1 - x2 ≠ 0) (e13 : x1 - x3 ≠ 0)
+    (h1 : 1 / (x1 - x2) + gamma / (x1 - x3) = 2 * Real.pi * x1 * w) :
+    ky1 1 1 gamma (x1 * Real.cos (w * t)) (x1 * Real.sin (w * t))
+      (x2 * Real.cos (w * t)) (x2 * Real.sin (w * t))
+      (x3 * Real.cos (w * t)) (x3 * Real.sin (w * t))
+      = w * (x1 * Real.cos (w * t)) := by
+  simp only [ky1]
+  rw [s10_rot_d2 x1 x2 w t, s10_rot_d2 x1 x3 w t,
+    show x1 * Real.cos (w * t) - x2 * Real.cos (w * t) = (x1 - x2) * Real.cos (w * t) from by ring,
+    show x1 * Real.cos (w * t) - x3 * Real.cos (w * t) = (x1 - x3) * Real.cos (w * t) from by ring,
+show 1 * ((x1 - x2) * Real.cos (w * t)) / ((x1 - x2) ^ 2)
+        + gamma * ((x1 - x3) * Real.cos (w * t)) / ((x1 - x3) ^ 2)
+        = Real.cos (w * t) * (1 / (x1 - x2) + gamma / (x1 - x3)) from
+      s10_pair_cancel x1 x2 x3 (Real.cos (w * t)) gamma e12 e13,
+    h1]
+  rw [show Real.cos (w * t) * (2 * Real.pi * x1 * w) = 2 * Real.pi * (Real.cos (w * t) * x1 * w) from by ring]
+  linarith [s10_2pi_mul (Real.cos (w * t) * x1 * w)]
+
+/-- The x-velocity component of vortex 2 at the rotated
+    collinear configuration. -/
+private theorem s10_cfx2 (gamma x1 x2 x3 w t : ℝ)
+    (e12 : x2 - x1 ≠ 0) (e23 : x2 - x3 ≠ 0)
+    (h2 : 1 / (x2 - x1) + gamma / (x2 - x3) = 2 * Real.pi * x2 * w) :
+    kx2 1 1 gamma (x1 * Real.cos (w * t)) (x1 * Real.sin (w * t))
+      (x2 * Real.cos (w * t)) (x2 * Real.sin (w * t))
+      (x3 * Real.cos (w * t)) (x3 * Real.sin (w * t))
+      = -w * (x2 * Real.sin (w * t)) := by
+  simp only [kx2]
+  rw [s10_rot_d2 x1 x2 w t, s10_rot_d2 x2 x3 w t,
+    show x2 * Real.sin (w * t) - x1 * Real.sin (w * t) = (x2 - x1) * Real.sin (w * t) from by ring,
+    show x2 * Real.sin (w * t) - x3 * Real.sin (w * t) = (x2 - x3) * Real.sin (w * t) from by ring,
+show 1 * ((x2 - x1) * Real.sin (w * t)) / ((x1 - x2) ^ 2)
+        + gamma * ((x2 - x3) * Real.sin (w * t)) / ((x2 - x3) ^ 2)
+        = Real.sin (w * t) * (1 / (x2 - x1) + gamma / (x2 - x3)) from by
+      rw [show (x1 - x2) ^ 2 = (x2 - x1) ^ 2 from by ring,
+    ]
+      exact s10_pair_cancel x2 x1 x3 (Real.sin (w * t)) gamma e12 e23,
+    h2]
+  rw [show Real.sin (w * t) * (2 * Real.pi * x2 * w) = 2 * Real.pi * (Real.sin (w * t) * x2 * w) from by ring]
+  linarith [s10_2pi_mul (Real.sin (w * t) * x2 * w)]
+
+/-- The y-velocity component of vortex 2 at the rotated
+    collinear configuration. -/
+private theorem s10_cfy2 (gamma x1 x2 x3 w t : ℝ)
+    (e12 : x2 - x1 ≠ 0) (e23 : x2 - x3 ≠ 0)
+    (h2 : 1 / (x2 - x1) + gamma / (x2 - x3) = 2 * Real.pi * x2 * w) :
+    ky2 1 1 gamma (x1 * Real.cos (w * t)) (x1 * Real.sin (w * t))
+      (x2 * Real.cos (w * t)) (x2 * Real.sin (w * t))
+      (x3 * Real.cos (w * t)) (x3 * Real.sin (w * t))
+      = w * (x2 * Real.cos (w * t)) := by
+  simp only [ky2]
+  rw [s10_rot_d2 x1 x2 w t, s10_rot_d2 x2 x3 w t,
+    show x2 * Real.cos (w * t) - x1 * Real.cos (w * t) = (x2 - x1) * Real.cos (w * t) from by ring,
+    show x2 * Real.cos (w * t) - x3 * Real.cos (w * t) = (x2 - x3) * Real.cos (w * t) from by ring,
+show 1 * ((x2 - x1) * Real.cos (w * t)) / ((x1 - x2) ^ 2)
+        + gamma * ((x2 - x3) * Real.cos (w * t)) / ((x2 - x3) ^ 2)
+        = Real.cos (w * t) * (1 / (x2 - x1) + gamma / (x2 - x3)) from by
+      rw [show (x1 - x2) ^ 2 = (x2 - x1) ^ 2 from by ring,
+    ]
+      exact s10_pair_cancel x2 x1 x3 (Real.cos (w * t)) gamma e12 e23,
+    h2]
+  rw [show Real.cos (w * t) * (2 * Real.pi * x2 * w) = 2 * Real.pi * (Real.cos (w * t) * x2 * w) from by ring]
+  linarith [s10_2pi_mul (Real.cos (w * t) * x2 * w)]
+
+/-- The x-velocity component of vortex 3 at the rotated
+    collinear configuration. -/
+private theorem s10_cfx3 (gamma x1 x2 x3 w t : ℝ)
+    (e13 : x3 - x1 ≠ 0) (e23 : x3 - x2 ≠ 0)
+    (h3 : 1 / (x3 - x1) + 1 / (x3 - x2) = 2 * Real.pi * x3 * w) :
+    kx3 1 1 gamma (x1 * Real.cos (w * t)) (x1 * Real.sin (w * t))
+      (x2 * Real.cos (w * t)) (x2 * Real.sin (w * t))
+      (x3 * Real.cos (w * t)) (x3 * Real.sin (w * t))
+      = -w * (x3 * Real.sin (w * t)) := by
+  simp only [kx3]
+  rw [s10_rot_d2 x1 x3 w t, s10_rot_d2 x2 x3 w t,
+    show x3 * Real.sin (w * t) - x1 * Real.sin (w * t) = (x3 - x1) * Real.sin (w * t) from by ring,
+    show x3 * Real.sin (w * t) - x2 * Real.sin (w * t) = (x3 - x2) * Real.sin (w * t) from by ring,
+show 1 * ((x3 - x1) * Real.sin (w * t)) / ((x1 - x3) ^ 2)
+        + 1 * ((x3 - x2) * Real.sin (w * t)) / ((x2 - x3) ^ 2)
+        = Real.sin (w * t) * (1 / (x3 - x1) + 1 / (x3 - x2)) from by
+      rw [show (x1 - x3) ^ 2 = (x3 - x1) ^ 2 from by ring,
+    show (x2 - x3) ^ 2 = (x3 - x2) ^ 2 from by ring,
+    ]
+      exact s10_pair_cancel x3 x1 x2 (Real.sin (w * t)) (1:ℝ) e13 e23,
+    h3]
+  rw [show Real.sin (w * t) * (2 * Real.pi * x3 * w) = 2 * Real.pi * (Real.sin (w * t) * x3 * w) from by ring]
+  linarith [s10_2pi_mul (Real.sin (w * t) * x3 * w)]
+
+/-- The y-velocity component of vortex 3 at the rotated
+    collinear configuration. -/
+private theorem s10_cfy3 (gamma x1 x2 x3 w t : ℝ)
+    (e13 : x3 - x1 ≠ 0) (e23 : x3 - x2 ≠ 0)
+    (h3 : 1 / (x3 - x1) + 1 / (x3 - x2) = 2 * Real.pi * x3 * w) :
+    ky3 1 1 gamma (x1 * Real.cos (w * t)) (x1 * Real.sin (w * t))
+      (x2 * Real.cos (w * t)) (x2 * Real.sin (w * t))
+      (x3 * Real.cos (w * t)) (x3 * Real.sin (w * t))
+      = w * (x3 * Real.cos (w * t)) := by
+  simp only [ky3]
+  rw [s10_rot_d2 x1 x3 w t, s10_rot_d2 x2 x3 w t,
+    show x3 * Real.cos (w * t) - x1 * Real.cos (w * t) = (x3 - x1) * Real.cos (w * t) from by ring,
+    show x3 * Real.cos (w * t) - x2 * Real.cos (w * t) = (x3 - x2) * Real.cos (w * t) from by ring,
+show 1 * ((x3 - x1) * Real.cos (w * t)) / ((x1 - x3) ^ 2)
+        + 1 * ((x3 - x2) * Real.cos (w * t)) / ((x2 - x3) ^ 2)
+        = Real.cos (w * t) * (1 / (x3 - x1) + 1 / (x3 - x2)) from by
+      rw [show (x1 - x3) ^ 2 = (x3 - x1) ^ 2 from by ring,
+    show (x2 - x3) ^ 2 = (x3 - x2) ^ 2 from by ring,
+    ]
+      exact s10_pair_cancel x3 x1 x2 (Real.cos (w * t)) (1:ℝ) e13 e23,
+    h3]
+  rw [show Real.cos (w * t) * (2 * Real.pi * x3 * w) = 2 * Real.pi * (Real.cos (w * t) * x3 * w) from by ring]
+  linarith [s10_2pi_mul (Real.cos (w * t) * x3 * w)]
+
+
+/-- **The general collinear rotating relative equilibrium.**  Three
+    vortices with circulations (1, 1, γ) at the collinear positions
+    (x₁, x₂, x₃), pairwise distinct, rotate rigidly about the origin with
+    rate w exactly when the three S-conditions hold. -/
+theorem s10_col_sol_gen (gamma x1 x2 x3 w : ℝ)
+    (e12 : x1 - x2 ≠ 0) (e13 : x1 - x3 ≠ 0) (e23 : x2 - x3 ≠ 0)
+    (h1 : 1 / (x1 - x2) + gamma / (x1 - x3) = 2 * Real.pi * x1 * w)
+    (h2 : 1 / (x2 - x1) + gamma / (x2 - x3) = 2 * Real.pi * x2 * w)
+    (h3 : 1 / (x3 - x1) + 1 / (x3 - x2) = 2 * Real.pi * x3 * w) :
+    KirchhoffSol 1 1 gamma where
+  x1 := fun t => x1 * Real.cos (w * t)
+  y1 := fun t => x1 * Real.sin (w * t)
+  x2 := fun t => x2 * Real.cos (w * t)
+  y2 := fun t => x2 * Real.sin (w * t)
+  x3 := fun t => x3 * Real.cos (w * t)
+  y3 := fun t => x3 * Real.sin (w * t)
+  hd12 := fun t => by
+    rw [s10_rot_d2 x1 x2 w t]
+    exact pow_ne_zero 2 e12
+  hd13 := fun t => by
+    rw [s10_rot_d2 x1 x3 w t]
+    exact pow_ne_zero 2 e13
+  hd23 := fun t => by
+    rw [s10_rot_d2 x2 x3 w t]
+    exact pow_ne_zero 2 e23
+  hx1 := fun t => by
+    rw [s10_cfx1 gamma x1 x2 x3 w t e12 e13 h1]
+    exact (deriv_mul_const_left (cos_comp w t) (c := x1)).congr_deriv (by ring)
+  hy1 := fun t => by
+    rw [s10_cfy1 gamma x1 x2 x3 w t e12 e13 h1]
+    exact (deriv_mul_const_left (sin_comp w t) (c := x1)).congr_deriv (by ring)
+  hx2 := fun t => by
+    rw [s10_cfx2 gamma x1 x2 x3 w t (s10_neg_ne e12) e23 h2]
+    exact (deriv_mul_const_left (cos_comp w t) (c := x2)).congr_deriv (by ring)
+  hy2 := fun t => by
+    rw [s10_cfy2 gamma x1 x2 x3 w t (s10_neg_ne e12) e23 h2]
+    exact (deriv_mul_const_left (sin_comp w t) (c := x2)).congr_deriv (by ring)
+  hx3 := fun t => by
+    rw [s10_cfx3 gamma x1 x2 x3 w t (s10_neg_ne e13) (s10_neg_ne e23) h3]
+    exact (deriv_mul_const_left (cos_comp w t) (c := x3)).congr_deriv (by ring)
+  hy3 := fun t => by
+    rw [s10_cfy3 gamma x1 x2 x3 w t (s10_neg_ne e13) (s10_neg_ne e23) h3]
+    exact (deriv_mul_const_left (sin_comp w t) (c := x3)).congr_deriv (by ring)
+
+/-- **The symmetric collinear family** (d, −d, 0) with circulations
+    (1, 1, γ) is a rotating relative equilibrium for EVERY γ and every
+    d ≠ 0, with rotation rate ω = (γ+½)/(2πd²) — the centering and the
+    S-conditions hold by the exact cancellation at the midpoint. -/
+theorem s10_col_sym (gamma d : ℝ) (hd : d ≠ 0) :
+    KirchhoffSol 1 1 gamma := by
+  have he12 : d - (-d) ≠ 0 := by
+    rcases lt_or_gt_of_ne hd with h | h <;> linarith
+  have he13 : d - 0 ≠ 0 := by
+    rcases lt_or_gt_of_ne hd with h | h <;> linarith
+  have he23 : (-d) - 0 ≠ 0 := by
+    rcases lt_or_gt_of_ne hd with h | h <;> linarith
+  have h2pi : (2:ℝ) * Real.pi ≠ 0 := mul_ne_zero two_ne_zero Real.pi_pos.ne'
+  have hw : 2 * Real.pi * d * (colOmega gamma d) = (1 / 2 + gamma) / d := by
+    unfold colOmega
+    exact s10_rate_cancel d (1 / 2 + gamma) hd
+  have h1 : 1 / (d - (-d)) + gamma / (d - 0)
+      = 2 * Real.pi * d * (colOmega gamma d) := by
+    rw [show d - (-d) = 2 * d from by ring, show d - 0 = d from by ring, hw,
+      show (1:ℝ) / (2 * d) = 1 / 2 / d from by field_simp [hd, h2pi], add_div]
+  have h2 : 1 / ((-d) - d) + gamma / ((-d) - 0)
+      = 2 * Real.pi * (-d) * (colOmega gamma d) := by
+    rw [show 2 * Real.pi * (-d) * (colOmega gamma d)
+        = -(2 * Real.pi * d * (colOmega gamma d)) from by ring, hw,
+      show (1:ℝ) / ((-d) - d) = -((1: ℝ) / (2 * d)) from by
+        rw [show (-d) - d = -(2 * d) from by ring, div_neg],
+      show gamma / ((-d) - 0) = -(gamma / d) from by
+        rw [show (-d) - 0 = -d from by ring, div_neg]]
+    rw [show -((1: ℝ) / (2 * d)) + -(gamma / d)
+        = -((1 / 2 + gamma) / d) from by
+      rw [show (1:ℝ) / (2 * d) = 1 / 2 / d from by field_simp [hd, h2pi],
+        ← neg_add, ← add_div]]
+  have h3 : 1 / (0 - d) + 1 / (0 - (-d)) = 2 * Real.pi * 0 * (colOmega gamma d) := by
+    rw [show 2 * Real.pi * 0 * (colOmega gamma d) = 0 from by ring,
+      show (1:ℝ) / (0 - d) = -((1: ℝ) / d) from by
+        rw [show 0 - d = -d from by ring, div_neg],
+      show 1 / (0 - (-d)) = 1 / d from by
+        rw [show 0 - (-d) = d from by ring]]
+    linarith
+  exact s10_col_sol_gen gamma d (-d) 0 (colOmega gamma d) he12 he13 he23 h1 h2 h3
+
+/-- **The stationary collinear equilibrium.**  At γ = −½ the symmetric
+    collinear configuration (d, −d, 0) has rotation rate ω = 0: it is a
+    genuine stationary point of the Kirchhoff field (a constant solution
+    with xₖ(t) = xₖ cos(0) , yₖ(t) = xₖ sin(0)) — the steady-state
+    bifurcation point of the collinear family. -/
+theorem s10_col_static (d : ℝ) (hd : d ≠ 0) :
+    KirchhoffSol 1 1 (-1 / 2) := by
+  have he12 : d - (-d) ≠ 0 := by
+    rcases lt_or_gt_of_ne hd with h | h <;> linarith
+  have he13 : d - 0 ≠ 0 := by
+    rcases lt_or_gt_of_ne hd with h | h <;> linarith
+  have he23 : (-d) - 0 ≠ 0 := by
+    rcases lt_or_gt_of_ne hd with h | h <;> linarith
+  have h1 : 1 / (d - (-d)) + (-1 / 2) / (d - 0) = 2 * Real.pi * d * 0 := by
+    rw [show d - (-d) = 2 * d from by ring, show d - 0 = d from by ring,
+      show 2 * Real.pi * d * 0 = 0 from by ring]
+    field_simp [hd]
+  have h2 : 1 / ((-d) - d) + (-1 / 2) / ((-d) - 0) = 2 * Real.pi * (-d) * 0 := by
+    rw [show (-d) - d = -(2 * d) from by ring, show (-d) - 0 = -d from by ring,
+      show 2 * Real.pi * (-d) * 0 = 0 from by ring]
+    field_simp [hd]
+  have h3 : 1 / (0 - d) + 1 / (0 - (-d)) = 2 * Real.pi * 0 * 0 := by
+    rw [show 0 - d = -d from by ring, show 0 - (-d) = d from by ring,
+      show 2 * Real.pi * 0 * 0 = 0 from by ring]
+    field_simp [hd]
+  exact s10_col_sol_gen (-1 / 2) d (-d) 0 0 he12 he13 he23 h1 h2 h3
+
+/-- **The pitchfork.**  The constant coefficient of the bifurcation
+    polynomial vanishes EXACTLY at γ = −5/4: this is where the asymmetric
+    collinear branch is born (M̃(0, γ) = 4γ + 5). -/
+theorem s10_col_pitchfork (gamma : ℝ) :
+    s10ColM 0 gamma = 0 ↔ gamma = -5 / 4 := by
+  constructor
+  · intro h
+    unfold s10ColM at h
+    linarith
+  · intro h
+    unfold s10ColM
+    rw [h]
+    ring
+
+/-- **The discriminant identity.**  The discriminant of the quadratic
+    M̃(s, γ) in s is (4γ+5)(γ+2)² — the complete bifurcation diagram of
+    the collinear family: two asymmetric roots exactly when γ > −5/4
+    (γ ≠ −2), the double root at the pitchfork γ = −5/4, and the
+    degenerate collision root at γ = −2. -/
+theorem s10_col_disc (gamma : ℝ) :
+    (gamma * (4 * gamma + 5)) ^ 2
+      - 4 * ((gamma + 1) ^ 2 * (gamma - 1)) * (4 * gamma + 5)
+      = (4 * gamma + 5) * (gamma + 2) ^ 2 := by
+  ring
+
+/-- **The asymmetric-branch count at γ₀ = −1/4.**  The chart equation
+    N(s, −1/4) = 0 has exactly the roots s = 0, s = 16/9, s = −16/5 and
+    s = 1 (the last excluded by distinctness): the symmetric
+    configuration plus TWO asymmetric collinear relative equilibria. -/
+theorem s10_col_count_quarter (s : ℝ) :
+    s10ColN s (-1 / 4) = 0 ↔ s = 0 ∨ s = 16 / 9 ∨ s = -16 / 5 ∨ s = 1 := by
+  have hform : ∀ s : ℝ, s10ColN s (-1 / 4)
+      = s * (s - 1) * (-(9 * s - 16) * (5 * s + 16) / 64) := by
+    intro s
+    unfold s10ColN s10ColM
+    ring
+  constructor
+  · intro h
+    rw [hform s] at h
+    rcases mul_eq_zero.mp h with h1 | h1
+    · rcases mul_eq_zero.mp h1 with h2 | h2
+      · exact Or.inl (by linarith)
+      · exact Or.inr (Or.inr (Or.inr (by linarith)))
+    · rw [div_eq_zero_iff] at h1
+      rcases h1 with h1 | h1
+      · rcases mul_eq_zero.mp h1 with h2 | h2
+        · rw [neg_eq_zero] at h2
+          exact Or.inr (Or.inl (by linarith))
+        · exact Or.inr (Or.inr (Or.inl (by linarith)))
+      · exact absurd h1 (by norm_num : ((64:ℝ) ≠ 0))
+  · intro h
+    rcases h with h | h | h | h
+    · rw [hform s, h]
+      ring
+    · rw [hform s, h]
+      ring
+    · rw [hform s, h]
+      ring
+    · rw [hform s, h]
+      ring
+
+/-- **No asymmetric branch at equal circulations.**  For Γ = (1, 1, 1) the
+    chart equation N(s, 1) = 0 has only the roots s = 0, s = −1 and
+    s = 1 — every collinear relative equilibrium has a vortex at the
+    midpoint (all roots correspond to symmetric configurations). -/
+theorem s10_col_count_eq1 (s : ℝ) :
+    s10ColN s 1 = 0 ↔ s = 0 ∨ s = -1 ∨ s = 1 := by
+  have hform : ∀ s : ℝ, s10ColN s 1 = 9 * s * (s - 1) * (s + 1) := by
+    intro s
+    unfold s10ColN s10ColM
+    ring
+  constructor
+  · intro h
+    rw [hform s] at h
+    rcases mul_eq_zero.mp h with h1 | h1
+    · rcases mul_eq_zero.mp h1 with h2 | h2
+      · exact Or.inl (by linarith)
+      · exact Or.inr (Or.inr (by linarith))
+    · exact Or.inr (Or.inl (by linarith))
+  · intro h
+    rcases h with h | h | h
+    · rw [hform s, h]
+      ring
+    · rw [hform s, h]
+      ring
+    · rw [hform s, h]
+      ring
+
+/-- **The exact asymmetric collinear relative equilibrium** at
+    Γ = (1, 1, −1/4): the configuration (1, −5/9, 16/9) — the middle
+    vortex is vortex 1 — rotates at ω = 27/(56π).  Together with the
+    symmetric branch this realizes the post-bifurcation count of three
+    collinear relative equilibria (up to scaling). -/
+theorem s10_col_asym :
+    KirchhoffSol 1 1 (-1 / 4) := by
+  have he12 : (1: ℝ) - (-5: ℝ) / 9 ≠ 0 := by norm_num
+  have e13 : (1: ℝ) - (16: ℝ) / 9 ≠ 0 := by norm_num
+  have e23 : ((-5: ℝ) / 9) - (16: ℝ) / 9 ≠ 0 := by norm_num
+  have h1r : (2:ℝ) * Real.pi * 1 * (27 / 56 / Real.pi) = 27 / 28 := by
+    field_simp [Real.pi_pos.ne']
+    ring
+  have h2r : (2:ℝ) * Real.pi * ((-5:ℝ) / 9) * (27 / 56 / Real.pi) = -15 / 28 := by
+    field_simp [Real.pi_pos.ne']
+    ring
+  have h3r : (2:ℝ) * Real.pi * ((16:ℝ) / 9) * (27 / 56 / Real.pi) = 12 / 7 := by
+    field_simp [Real.pi_pos.ne']
+    ring
+  have h1 : 1 / ((1: ℝ) - (-5: ℝ) / 9) + (-1 / 4) / ((1: ℝ) - (16: ℝ) / 9)
+      = 2 * Real.pi * 1 * (27 / 56 / Real.pi) := by
+    rw [h1r]
+    norm_num
+  have h2 : 1 / ((-5: ℝ) / 9 - 1) + (-1 / 4) / ((-5: ℝ) / 9 - (16: ℝ) / 9)
+      = 2 * Real.pi * ((-5:ℝ) / 9) * (27 / 56 / Real.pi) := by
+    rw [h2r]
+    norm_num
+  have h3 : 1 / ((16: ℝ) / 9 - 1) + 1 / ((16: ℝ) / 9 - (-5: ℝ) / 9)
+      = 2 * Real.pi * ((16:ℝ) / 9) * (27 / 56 / Real.pi) := by
+    rw [h3r]
+    norm_num
+  exact s10_col_sol_gen (-1 / 4) 1 ((-5: ℝ) / 9) ((16: ℝ) / 9) (27 / 56 / Real.pi)
+    he12 e13 e23 h1 h2 h3
+
 /-! ### Section 9 axiom footprint -/
 
 #print axioms s9_gen_deriv_x
@@ -4911,5 +6425,30 @@ theorem s9_growth_norm (t : ℝ) :
 #print axioms s9_exp_comp
 #print axioms s9_lin_sol_unst
 #print axioms s9_growth_norm
+
+/-! ### Section 10 axiom footprint -/
+
+#print axioms s10_log_bound
+#print axioms s10_sumsq
+#print axioms s10_sumsq_anchor
+#print axioms s10_H_nonneg
+#print axioms s10_coercive
+#print axioms s10_dist_bound
+#print axioms s10_casimir_x1
+#print axioms s10_casimir_y1
+#print axioms s10_casimir_x2
+#print axioms s10_casimir_y2
+#print axioms s10_casimir_x3
+#print axioms s10_casimir_y3
+#print axioms s10_lyapunov_stab
+#print axioms s10_lyapunov_dist
+#print axioms s10_col_sol_gen
+#print axioms s10_col_sym
+#print axioms s10_col_static
+#print axioms s10_col_asym
+#print axioms s10_col_pitchfork
+#print axioms s10_col_disc
+#print axioms s10_col_count_quarter
+#print axioms s10_col_count_eq1
 
 end Trivortex

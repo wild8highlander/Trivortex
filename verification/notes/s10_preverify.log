@@ -1,0 +1,43 @@
+[PASS] log-bound f'(u) = u*(1-2u)/(3*(1+u))
+[PASS] log-bound f(0)=0
+[PASS] log-bound criticals {0, 1/2}
+[PASS] log-bound f(-1/2) = ln 2 - 7/12 > 0
+[PASS] log-bound f(1/2) = 5/12 - ln(3/2) > 0
+[PASS] log-bound numeric sweep f >= 0
+[PASS] coercivity numeric margin H - (G^2/12pi)sum(d2-1)^2 >= 0 (worst=9.152e-06)
+[PASS] sumsq identity
+[PASS] gradH_x1(anchor) = -(3g^2/(2pi))x1
+[PASS] gradH_x2(anchor) = -(3g^2/(2pi))x2
+   N(s,gamma) = s*(s - 1)*(gamma**3*s**2 + gamma**2*s**2 + 4*gamma**2*s - gamma*s**2 + 5*gamma*s + 4*gamma - s**2 + 5)
+[PASS] N has factor s
+   M(0, gamma) = -4*gamma - 5
+[PASS] pitchfork M(0,gamma) = (4*gamma+5)*(...)/... with root gamma=-5/4
+   M(s,gamma) factored = (s - 1)*(gamma**3*s**2 + gamma**2*s**2 + 4*gamma**2*s - gamma*s**2 + 5*gamma*s + 4*gamma - s**2 + 5)
+   (S2 - S1*x2)/(s*S1 - S3) = (gamma, 1)
+[PASS] third condition: S2 - S1*x2 = C*(s*S1 - S3) identically
+[PASS] multiplier C = gamma*s*(...)-type constant-free
+   C = gamma
+   rational (gamma0, s0) candidates: []
+   N(s,1) = 9*s*(s - 1)*(s + 1)
+[PASS] gamma=1: chart roots exactly {0, -1}, both with a central vortex (no asymmetric)
+[PASS] symmetric branch omega = (1/2+gamma)/(2 pi d^2)
+[PASS] static gamma=-1/2: omega=0
+
+ALL PASS
+--- extras ---
+[PASS] disc Mtilde = (4*gamma+5)*(gamma+2)^2
+[PASS] Mtilde collected form
+[PASS] Mtilde = a s^2 + b s + c
+[PASS] Mtilde(s,-1/4) = -(9s-16)(5s+16)/64
+[PASS] roots at gamma=-1/4: {16/9, -16/5}
+[PASS] gamma=-1/4 root s=-16/5: full RE conditions, omega=(1/2pi)*25/42 
+      x = (1, -9/5, -16/5), S1 = 25/84, omega*2pi = 25/84
+[PASS] gamma=-1/4 root s=16/9: full RE conditions, omega=(1/2pi)*27/14 
+      x = (1, -5/9, 16/9), S1 = 27/28, omega*2pi = 27/28
+[PASS] N(s,1) = 9*s*(s-1)*(s+1)
+[PASS] 4xy <= (x+y)^2 (i.e. -(x-y)^2)
+[PASS] 4 - s^2(3-s) = (2-s)^2(s+1)
+   N(s,-5/4) = -9*s**3*(s - 1)/64
+[PASS] pitchfork: N(s,-5/4) = -9/64 s^2 (s-1) s
+
+ALL PASS
