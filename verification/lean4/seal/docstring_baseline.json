@@ -1,0 +1,49 @@
+{
+ "note": "ракет докстрингов: обновление — явное действие (видно в ревью)",
+ "overall": {
+  "covered": 258,
+  "total": 363
+ },
+ "by_section": {
+  "1": {
+   "covered": 13,
+   "total": 13
+  },
+  "10": {
+   "covered": 52,
+   "total": 65
+  },
+  "2": {
+   "covered": 2,
+   "total": 2
+  },
+  "3": {
+   "covered": 12,
+   "total": 21
+  },
+  "4": {
+   "covered": 2,
+   "total": 2
+  },
+  "5": {
+   "covered": 16,
+   "total": 17
+  },
+  "6": {
+   "covered": 22,
+   "total": 36
+  },
+  "7": {
+   "covered": 45,
+   "total": 46
+  },
+  "8": {
+   "covered": 46,
+   "total": 111
+  },
+  "9": {
+   "covered": 48,
+   "total": 50
+  }
+ }
+}

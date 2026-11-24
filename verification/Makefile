@@ -2,7 +2,8 @@
 
 .PHONY: help run run-quick run-full lab lab-smoke test ports \
 	rust rust-test cpp cpp-test haskell haskell-test \
-	coq lean4 isabelle agda docker-build clean
+	coq lean4 lean4-gate isabelle agada docker-build \
+	master-regression clean
 
 PYTHON ?= python3
 COMPOSE ?= docker compose
@@ -61,6 +62,12 @@ coq: ## Coq statement layer: coqc + Print Assumptions
 
 lean4: ## Lean 4 Mathlib formalization: lake build
 	cd lean4 && lake build
+
+lean4-gate: ## Lean 4: полный CI-гейт (сборка, аксиомы, seal, конвенции, мост)
+	cd lean4 && bash tools/ci_gate.sh
+
+master-regression: ## MASTER: регрессии против верифицированных констант Lean
+	cd trivortex_master && $(PYTHON) -m pytest tests/ -v --tb=short
 
 isabelle: ## Isabelle HOL session build
 	isabelle build -D isabelle

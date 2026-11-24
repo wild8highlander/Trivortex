@@ -4,7 +4,7 @@ SPDX-License-Identifier: LicenseRef-Proprietary-Wild8Highlander-1.0
 -/
 /-
 ==========================================================================
-TRIVORTEX — LEAN 4 FORMALIZATION: THE FULL STATEMENT LAYER (v6.0)
+TRIVORTEX — LEAN 4 FORMALIZATION: THE FULL STATEMENT LAYER (v7.0)
 ==========================================================================
 Milestone M4/M5 artifact: `verification/lean4/Trivortex.lean`.
 
@@ -87,6 +87,22 @@ release still left to the numerical ladders only:
          |m(t)|^2 = 12*e^(2*sqrt(3)*t) (s9_lin_sol_unst, s9_growth_norm)
          — linear instability across the hypersurface
          G1G2+G2G3+G3G1 = 0.
+
+  6''. Section 10.3 (v7.0): THE BIFURCATION PICTURE COMPLETED — the
+     deepening of the §10 collinear analysis certified by
+     verification/notes/s10b_preverify.py (27 SymPy checks):
+       • s10_pitchfork_double: at the pitchfork γ = −5/4 the chart
+         polynomial is N(s, −5/4) = −(9/64)·s³·(s−1) — the symmetric
+         root s = 0 is TRIPLE, the two asymmetric roots collide with it;
+       • s10_col_count_neg1 / s10_col_count_neg2: at the degenerate
+         circulations γ = −1 ((γ+1)² = 0) and γ = −2 ((γ+2)² = 0) the
+         chart equation has only the symmetric root s = 0 plus the
+         excluded collision s = 1 — the asymmetric branch has merged
+         back, the count returns to ONE distinct relative equilibrium;
+       • s10_col_asym2: the SECOND exact rational asymmetric relative
+         equilibrium at γ₀ = −1/4 — the configuration (1, −9/5, −16/5)
+         with ω = 25/(168π) — so both asymmetric roots s = 16/9 and
+         s = −16/5 of the chart are now realized as KirchhoffSolutions.
 
 AXIOM FOOTPRINT: no `axiom`/`sorry` anywhere — `#print axioms` at the
 bottom demonstrates that every theorem depends only on Mathlib's standard
@@ -6385,6 +6401,121 @@ theorem s10_col_asym :
   exact s10_col_sol_gen (-1 / 4) 1 ((-5: ℝ) / 9) ((16: ℝ) / 9) (27 / 56 / Real.pi)
     he12 e13 e23 h1 h2 h3
 
+/-! ### 10.3 — the deepening: pitchfork triple root, degenerate
+      circulations, and the second asymmetric equilibrium
+
+    The three statements below complete the bifurcation picture that the
+    `s10_preverify` extras certified symbolically: the pitchfork is a
+    TRIPLE root of the chart equation, the degenerate circulations
+    γ = −1 ((γ+1)² = 0 kills the quadratic term) and γ = −2
+    ((γ+2)² = 0 kills the discriminant) both collapse the asymmetric
+    branch back onto the symmetric one, and at γ₀ = −1/4 BOTH asymmetric
+    roots s = 16/9 and s = −16/5 are realized by exact rational
+    Kirchhoff solutions. -/
+
+/-- **The pitchfork is a triple root.**  At the pitchfork γ = −5/4 the
+    chart polynomial collapses to N(s, −5/4) = −(9/64)·s³·(s−1): the
+    quadratic factor degenerates to −(9/64)·s², so the symmetric root
+    s = 0 is TRIPLE — the two asymmetric roots collide with it exactly
+    at the pitchfork (the birth of the asymmetric branch). -/
+theorem s10_pitchfork_double (s : ℝ) :
+    s10ColN s (-5 / 4) = -9 / 64 * s ^ 3 * (s - 1) := by
+  unfold s10ColN s10ColM
+  ring
+
+/-- **The degenerate circulation γ = −1.**  Because (γ+1)² vanishes, the
+    quadratic factor of the chart equation collapses to a linear one:
+    N(s, −1) = −s·(s−1)², so the only roots are the symmetric s = 0 and
+    the excluded collision s = 1 — the asymmetric branch has already
+    merged back into the symmetric one and the count drops to ONE
+    distinct collinear relative equilibrium (up to scaling). -/
+theorem s10_col_count_neg1 (s : ℝ) :
+    s10ColN s (-1) = 0 ↔ s = 0 ∨ s = 1 := by
+  have hform : ∀ t : ℝ, s10ColN t (-1) = t * (t - 1) * (1 - t) := by
+    intro t
+    unfold s10ColN s10ColM
+    ring
+  constructor
+  · intro h
+    rw [hform s] at h
+    rcases mul_eq_zero.mp h with h1 | h1
+    · exact Or.inl (by linarith)
+    · rcases mul_eq_zero.mp h1 with h2 | h2
+      · exact Or.inr (by linarith)
+      · exact Or.inr (by linarith)
+  · intro h
+    rcases h with h | h
+    · rw [hform s, h]
+      ring
+    · rw [hform s, h]
+      ring
+
+/-- **The discriminant-zero circulation γ = −2.**  The discriminant
+    (4γ+5)(γ+2)² vanishes because of (γ+2)²: the quadratic factor is the
+    perfect square −3·(s−1)² and N(s, −2) = −3·s·(s−1)³ — again only the
+    symmetric root s = 0 plus the TRIPLE excluded collision root s = 1
+    (a secondary tangency of the collision root, distinct from the
+    pitchfork tangency at s = 0). -/
+theorem s10_col_count_neg2 (s : ℝ) :
+    s10ColN s (-2) = 0 ↔ s = 0 ∨ s = 1 := by
+  have hform : ∀ t : ℝ, s10ColN t (-2) = t * (t - 1) * (-3 * (t - 1) ^ 2) := by
+    intro t
+    unfold s10ColN s10ColM
+    ring
+  constructor
+  · intro h
+    rw [hform s] at h
+    rcases mul_eq_zero.mp h with h1 | h1
+    · exact Or.inl (by linarith)
+    · rcases mul_eq_zero.mp h1 with h2 | h2
+      · exact Or.inr (by linarith)
+      · rcases mul_eq_zero.mp h2 with h3 | h3
+        · exact absurd h3 (by norm_num : ((-3:ℝ) ≠ 0))
+        · rw [sq_eq_zero_iff] at h3
+          exact Or.inr (by linarith)
+  · intro h
+    rcases h with h | h
+    · rw [hform s, h]
+      ring
+    · rw [hform s, h]
+      ring
+
+/-- **The second asymmetric collinear relative equilibrium** at
+    Γ = (1, 1, −1/4): the configuration (1, −9/5, −16/5) — vortex 3 is
+    the outer one on the negative side — rotates at ω = 25/(168π).
+    Together with `s10_col_asym` this realizes BOTH asymmetric roots
+    s = 16/9 and s = −16/5 of the post-bifurcation chart: the count of
+    three collinear relative equilibria (symmetric + two asymmetric) is
+    now realized by exact rational configurations on both branches. -/
+theorem s10_col_asym2 :
+    KirchhoffSol 1 1 (-1 / 4) := by
+  have he12 : (1: ℝ) - ((-9: ℝ) / 5) ≠ 0 := by norm_num
+  have e13 : (1: ℝ) - ((-16: ℝ) / 5) ≠ 0 := by norm_num
+  have e23 : ((-9: ℝ) / 5) - ((-16: ℝ) / 5) ≠ 0 := by norm_num
+  have h1r : (2:ℝ) * Real.pi * 1 * (25 / 168 / Real.pi) = 25 / 84 := by
+    field_simp [Real.pi_pos.ne']
+    ring
+  have h2r : (2:ℝ) * Real.pi * ((-9:ℝ) / 5) * (25 / 168 / Real.pi) = -15 / 28 := by
+    field_simp [Real.pi_pos.ne']
+    ring
+  have h3r : (2:ℝ) * Real.pi * ((-16:ℝ) / 5) * (25 / 168 / Real.pi) = -20 / 21 := by
+    field_simp [Real.pi_pos.ne']
+    ring
+  have h1 : 1 / ((1: ℝ) - ((-9: ℝ) / 5)) + (-1 / 4) / ((1: ℝ) - ((-16: ℝ) / 5))
+      = 2 * Real.pi * 1 * (25 / 168 / Real.pi) := by
+    rw [h1r]
+    norm_num
+  have h2 : 1 / ((-9: ℝ) / 5 - 1) + (-1 / 4) / ((-9: ℝ) / 5 - ((-16: ℝ) / 5))
+      = 2 * Real.pi * ((-9:ℝ) / 5) * (25 / 168 / Real.pi) := by
+    rw [h2r]
+    norm_num
+  have h3 : 1 / ((-16: ℝ) / 5 - 1) + 1 / ((-16: ℝ) / 5 - ((-9: ℝ) / 5))
+      = 2 * Real.pi * ((-16:ℝ) / 5) * (25 / 168 / Real.pi) := by
+    rw [h3r]
+    norm_num
+  exact s10_col_sol_gen (-1 / 4) 1 ((-9: ℝ) / 5) ((-16: ℝ) / 5) (25 / 168 / Real.pi)
+    he12 e13 e23 h1 h2 h3
+
 /-! ### Section 9 axiom footprint -/
 
 #print axioms s9_gen_deriv_x
@@ -6446,6 +6577,10 @@ theorem s10_col_asym :
 #print axioms s10_col_sym
 #print axioms s10_col_static
 #print axioms s10_col_asym
+#print axioms s10_pitchfork_double
+#print axioms s10_col_count_neg1
+#print axioms s10_col_count_neg2
+#print axioms s10_col_asym2
 #print axioms s10_col_pitchfork
 #print axioms s10_col_disc
 #print axioms s10_col_count_quarter

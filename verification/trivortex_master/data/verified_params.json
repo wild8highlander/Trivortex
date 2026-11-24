@@ -1,0 +1,172 @@
+{
+ "file": "Trivortex.lean",
+ "section_span": "§1–§10",
+ "generated_utc": "2026-11-24T22:59:26+00:00",
+ "entries": [
+  {
+   "id": "lagrange_omega",
+   "symbol": "ω",
+   "formula": "3Γ/(2π·a²)",
+   "value": 0.477464829275686,
+   "units": "Γ=1, a=1 (нормировка лестницы)",
+   "source": "lagrangeOmega",
+   "source_kind": "def",
+   "statement_sha256": "ffd2bb846e1a030db97dff0f438a872e343ec508866255d12d3a5ed8fe745762",
+   "note": "частота вращения лагранжева треугольника (§7)"
+  },
+  {
+   "id": "lagrange_period",
+   "symbol": "T",
+   "formula": "4π²·a²/(3Γ)",
+   "value": 13.159472534785811,
+   "units": "Γ=1, a=1 (нормировка лестницы)",
+   "source": "lag_period_closed",
+   "source_kind": "theorem",
+   "statement_sha256": "6949782ab524f9346e1d9ad8f7bbdeb25830461b73deb757790b31c839b741b1",
+   "note": "период: 2π/ω = 4π²a²/(3Γ) (§7)"
+  },
+  {
+   "id": "anchor_H",
+   "symbol": "H₀",
+   "formula": "0",
+   "value": 0.0,
+   "units": "Γ=1, a=1 (нормировка лестницы)",
+   "source": "lagrange_anchor_H",
+   "source_kind": "theorem",
+   "statement_sha256": "f14407ca9c6240faf14cc946666c4ae562ed0a785c0d4874a6de47bf9e1f8323",
+   "note": "якорь гамильтониана на лагранжевом решении, a=1 (§7)"
+  },
+  {
+   "id": "anchor_P",
+   "symbol": "P₀",
+   "formula": "0",
+   "value": 0.0,
+   "units": "Γ=1, a=1 (нормировка лестницы)",
+   "source": "lagrange_anchor_P",
+   "source_kind": "theorem",
+   "statement_sha256": "25be9928da1d9fbf0b0ca2cc9e2a0a9beeaf014eb1ae3ae71f6366798341c80b",
+   "note": "якорь импульса P (центроид в нуле) (§7)"
+  },
+  {
+   "id": "anchor_Q",
+   "symbol": "Q₀",
+   "formula": "0",
+   "value": 0.0,
+   "units": "Γ=1, a=1 (нормировка лестницы)",
+   "source": "lagrange_anchor_Q",
+   "source_kind": "theorem",
+   "statement_sha256": "2f3684ff8a5fbf441ebe6451a5ff1966b8f9b8be274fbc563eec3a8e38b8ddfc",
+   "note": "якорь импульса Q (§7)"
+  },
+  {
+   "id": "anchor_I",
+   "symbol": "I₀",
+   "formula": "Γ",
+   "value": 1.0,
+   "units": "Γ=1, a=1 (нормировка лестницы)",
+   "source": "lagrange_anchor_I",
+   "source_kind": "theorem",
+   "statement_sha256": "56b1293cdab684f38402ddfde07d9c8fe42509dddfcd279735681860bf591b68",
+   "note": "якорь углового импульса I = ΣΓ|r|² = Γ при a=1 (§7)"
+  },
+  {
+   "id": "gamma_static",
+   "symbol": "γ_stat",
+   "formula": "−1/2",
+   "value": -0.5,
+   "units": "Γ=1, a=1 (нормировка лестницы)",
+   "source": "s10_col_static",
+   "source_kind": "theorem",
+   "statement_sha256": "c8721b651f693f18daaee4e402511050ac74747e1c8a7b66d505e493dd78b5ff",
+   "note": "стационарная точка симметричной коллинеарной ветви (ω=0) (§10)"
+  },
+  {
+   "id": "gamma_pitchfork",
+   "symbol": "γ_c",
+   "formula": "−5/4",
+   "value": -1.25,
+   "units": "Γ=1, a=1 (нормировка лестницы)",
+   "source": "s10_col_pitchfork",
+   "source_kind": "theorem",
+   "statement_sha256": "f430beb3b9a551f03a9dce47447e6490695551d2f52b11ea277c62cdf46b291c",
+   "note": "бифуркация вил коллинеарных центр-конфигураций (§10)"
+  },
+  {
+   "id": "coercivity_coeff",
+   "symbol": "c_coer",
+   "formula": "Γ²/(12π·a⁴)",
+   "value": 0.026525823848649224,
+   "units": "Γ=1, a=1 (нормировка лестницы)",
+   "source": "s10_coercive",
+   "source_kind": "theorem",
+   "statement_sha256": "fb0bb8708a2ee0fe2551340dbdc0842fc965b8a13b3e12eb4d78d317189cc177",
+   "note": "коэрцитивная константа H − H₀ ≥ (Γ²/12πa⁴)·Σ(r²ᵢⱼ−a²)² (§10, a=1)"
+  },
+  {
+   "id": "eig_translation",
+   "symbol": "λ_trans",
+   "formula": "±i·(2π/Γ)·ω = ±3i",
+   "value": 3.0,
+   "units": "Γ=1, a=1 (нормировка лестницы)",
+   "source": "eig_trans1",
+   "source_kind": "theorem",
+   "statement_sha256": "cde822eab33b9e87cfd4dee2881577d762c09e077ca33f7dade4c515bb4cf92f",
+   "note": "трансляционные моды: |λ| = 3 в 2π/Γ-масштабе (§8)"
+  },
+  {
+   "id": "eig_shape",
+   "symbol": "λ_shape",
+   "formula": "±i·(2π/Γ)·ω = ±3i",
+   "value": 3.0,
+   "units": "Γ=1, a=1 (нормировка лестницы)",
+   "source": "eig_shapeU",
+   "source_kind": "theorem",
+   "statement_sha256": "fb7e6ffb1398aa446d404712e90bcf14d4978bfb89cc1895f188d16b5b34661c",
+   "note": "мода колебания формы: |λ| = 3 в 2π/Γ-масштабе (§8)"
+  },
+  {
+   "id": "conservation_H",
+   "symbol": "dH/dt",
+   "formula": "0",
+   "value": null,
+   "units": "Γ=1, a=1 (нормировка лестницы)",
+   "source": "H_kirchhoff_conserved",
+   "source_kind": "theorem",
+   "statement_sha256": "a3bcde75314116bf3ee56d185734a4f0d5008aa0fa85a44818924d4b97b6b5fc",
+   "note": "сохранение H вдоль любого решения Кирхгофа (§4)"
+  },
+  {
+   "id": "conservation_P",
+   "symbol": "dP/dt",
+   "formula": "0",
+   "value": null,
+   "units": "Γ=1, a=1 (нормировка лестницы)",
+   "source": "P_kirchhoff_conserved",
+   "source_kind": "theorem",
+   "statement_sha256": "82833a044648eb34440c3610386687d0c84eef399199e304d881090d394e18d2",
+   "note": "сохранение P (§4)"
+  },
+  {
+   "id": "conservation_Q",
+   "symbol": "dQ/dt",
+   "formula": "0",
+   "value": null,
+   "units": "Γ=1, a=1 (нормировка лестницы)",
+   "source": "Q_kirchhoff_conserved",
+   "source_kind": "theorem",
+   "statement_sha256": "356a4dda74cfa8585f9a9404c6cd53e9f06433a82685d7be232234d033482999",
+   "note": "сохранение Q (§4)"
+  },
+  {
+   "id": "conservation_I",
+   "symbol": "dI/dt",
+   "formula": "0",
+   "value": null,
+   "units": "Γ=1, a=1 (нормировка лестницы)",
+   "source": "I_kirchhoff_conserved",
+   "source_kind": "theorem",
+   "statement_sha256": "b7d0f319702ed7a6fa61f2f89c14a9bc64c3f81891a24db486ea2529612ed4eb",
+   "note": "сохранение I (§4)"
+  }
+ ]
+}

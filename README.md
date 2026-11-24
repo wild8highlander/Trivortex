@@ -323,6 +323,15 @@ and in the [verification framework README](verification/README.md).
 
 ## 5. Verification ladder V1–V4
 
+**The two levels — and the bridge between them.** The repository verifies every
+core claim twice, and the levels are linked, not parallel:
+
+| Level | Artifact | What it guarantees | One command |
+|---|---|---|---|
+| **Formal certificate** | [`verification/lean4/Trivortex.lean`](verification/lean4/) | §1–§10 of the vortex dynamics (187 theorems: closed form, Kirchhoff integrals, Lagrange solution, linear stability, nonlinear continuation, Lyapunov H/I stability, collinear bifurcations) — machine-checked in Lean 4 + Mathlib, every theorem on exactly `[propext, Classical.choice, Quot.sound]`, zero `sorry` | `make lean-gate` |
+| **Numerical laboratory** | [`verification/trivortex_master/`](verification/trivortex_master/) | the same dynamics integrated, rendered and stress-tested by the stdlib-first N-body lab (Kirchhoff engine with H, P, Q, I) | `make master-regression` |
+| **The bridge** | `verification/trivortex_master/data/verified_params.json` | the 15 certified constants (ω = 3Γ/(2πa²), T = 4π²a²/(3Γ), γ_c = −5/4, γ_stat = −1/2, coercivity Γ²/(12πa⁴), …) are *exported from the sealed Lean statements* with their SHA-256 digests; the MASTER regression suite reads them as its expected values — simulations run on verified data, and any drift between the two levels fails CI | `bash verification/lean4/tools/ci_gate.sh` |
+
 `verification/trivortex/python/verify.py` re-implements — independently, from
 scratch, numpy-only — everything it checks: the closed form, the Chaplygin
 combination, the Kirchhoff right-hand side, its own RK4 stepper. It runs in three
@@ -357,7 +366,7 @@ protocol per run. Registered criteria and the latest reference results:
 
 ---
 
-## 6. The pytest guard — 206 tests
+## 6. The pytest guard — 220 tests
 
 The suite in [`verification/tests/`](verification/tests/) pins the analytic layer
 to hard reference values, guards all seven landed language ports and wraps the
@@ -366,8 +375,11 @@ whole research program in CI-friendly form; the mini-repositories
 [`cycloring/tests/`](cycloring/tests/) and
 [`planetvortex/tests/`](planetvortex/tests/) add 26, 37 and 80 more (the
 N-vortex bench, the Gamma-period ring laboratory and the planetary
-gravity–geometry bench, all self-contained). Together:
-**206 tests** in ≈ 75 s, only `numpy`, `scipy` and `pytest` required.
+gravity–geometry bench, all self-contained). Together with the 14 MASTER
+regressions (`verification/trivortex_master/tests/` — the Lagrange anchors,
+the §8 modal spectrum and the §10 collinear bifurcations, all pinned to the
+Lean-exported bridge): **220 tests** in ≈ 80 s, only `numpy`, `scipy` and
+`pytest` required.
 
 | Suite | Tests | What they guard |
 |---|---|---|
@@ -935,6 +947,7 @@ python3 verification/trivortex/python/verify.py --preset full      # ~35 s
 
 # ── the pytest guard ─────────────────────────────────────
 python -m pytest verification/tests/ -v                            # 63 tests
+python -m pytest verification/trivortex_master/tests/ -v           # 14 regressions vs the Lean bridge
 python -m pytest polyvortex/tests/ cycloring/tests/ planetvortex/tests/ -v   # 143 mini-repo tests
 python -m pytest -v                                                # all 206 from the root
 
@@ -958,6 +971,10 @@ make pdf-library                                      # 28 PDFs + 28 DOCX
 #   → publications/pdf/TRX-01…12_<RU|EN>.pdf           (study monographs)
 #   → publications/pdf/TRIVORTEX-Core-Monograph_<RU|EN>.pdf
 #   → publications/pdf/TRIVORTEX-Research-Compendium_<RU|EN>.pdf
+
+# ── the formal certificate (Lean 4 + Mathlib, ~3 min + Mathlib cache) ──
+make lean-gate         # build + per-theorem axioms gate + seal + conventions + bridge
+make master-regression # numerical lab regressions against the verified constants
 
 # ── everything at once (Make) ────────────────────────────
 make verify            # ladder, default preset

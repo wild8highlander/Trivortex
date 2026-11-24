@@ -39,6 +39,15 @@ other.
 | [`numeric_mirror_s8.log`](numeric_mirror_s8.log) | 1 337 B | the committed run: `G = 1, ω = 0.477464829275686`; **19 PASS verdicts, 0 FAIL**; largest residual 1.7e-8 (spectrum), the rest ≤ 1e-10 … 5.6e-17 |
 | [`numeric_mirror_s9.py`](numeric_mirror_s9.py) | 8 108 B | numeric mirror for §9 (header: "mpmath high-precision", implemented on NumPy/SymPy): Kirchhoff integration for `Γ = (1, 1, 2)` vs the closed rotation form, the centroid identity along the trajectory, eigenvalues vs `λ²(λ²+G²)(λ²+3P)` for `γ ∈ {4, −1/2, −1}`, the growing mode `|m(t)|² = 12·e^{2√3·t}`, the bounded (1,1,4) oscillation norm |
 | [`numeric_mirror_s9.log`](numeric_mirror_s9.log) | 697 B | the committed run: **15/15 PASS**, including `ω = G/(2πa²) = 2/π` for `G = 4` and the growing-mode norm to `rel err < 1e-6` |
+| [`s10_preverify.py`](s10_preverify.py) | 247+ lines | SymPy pre-verification of §10 (Lean v6.0): the log-Lyapunov inequality constants, the coercive certificate constant `Γ²/(12π)`, the energy–Casimir multiplier `3Γ/(4π)`, the collinear bifurcation polynomial `N(s,γ)` and its discriminant `(4γ+5)(γ+2)²`, the rational asymmetric roots |
+| [`s10_preverify.log`](s10_preverify.log) | 43 lines | the committed run: **30 PASS** (+ the pitchfork extras block), closing line `ALL PASS` |
+| [`v2_ladder_track_s10.py`](v2_ladder_track_s10.py) | 237+ lines | the V2-ladder numerical track for §10: V0 spectral re-check, V1 Lyapunov H/I ladder (RK4 of the true Kirchhoff ODE, 6 000 steps, Hamiltonian drift 2e−15), V2 collinear bifurcation ladder |
+| [`v2_ladder_track_s10.log`](v2_ladder_track_s10.log) | 18 lines | the committed run: **all rungs PASS** |
+| [`s10b_preverify.py`](s10b_preverify.py) | 120+ lines | SymPy pre-verification of the §10.3 deepening (Lean v7.0): the second rational asymmetric relative equilibrium `(1, −9/5, −16/5)` with `ω = 25/(168π)`, the pitchfork triple root `N(s,−5/4) = −(9/64)s³(s−1)`, the degenerate-circulation root counts at `γ = −1` and `γ = −2` |
+| [`s10b_preverify.log`](s10b_preverify.log) | 27 lines | the committed run: **27/27 PASS**, closing line `ALL PASS` |
+| [`make_s10_gifs.py`](make_s10_gifs.py) | 350+ lines | generator of the two §10 GIF assets (`lean4/assets/lyapunov_stability.gif`, `lean4/assets/collinear_bifurcation.gif`) in the repository traffic-light palette |
+| [`make_statement_index.py`](make_statement_index.py) | 140+ lines | regenerates `lean4/docs/STATEMENTS.md` — the auto-generated index of all theorems, grouped by section, with the axiom-footprint counters |
+| [`update_readme_v7.py`](update_readme_v7.py) | 400+ lines | the exact-anchor sync script that brought `lean4/README.md` + `README_RU.md` from the v5.0 state to v7.0 (every replacement asserted unique) |
 
 ## 🧭 How the layers certify each other
 
@@ -46,7 +55,7 @@ other.
 flowchart LR
     SP["SymPy scripts<br/>verify_identities*.py<br/>(exact, symbolic)"] -->|"identities hold<br/>before writing Lean"| LEAN["lean4/Trivortex.lean<br/>ring_nf + simp proofs"]
     NM["NumPy mirrors<br/>numeric_mirror_s*.py<br/>(float64 / high precision)"] -->|"same numbers<br/>from the same formulas"| LEAN
-    LEAN --> LOGS[".log files committed<br/>57 + 19 + 15 PASS, 0 FAIL"]
+    LEAN --> LOGS[".log files committed<br/>57 + 19 + 15 + 30 + 27 PASS, 0 FAIL"]
 ```
 
 ## ▶️ How to Run
@@ -59,6 +68,11 @@ python3 verification/notes/verify_identities.py        # prints one True/False l
 python3 verification/notes/verify_identities_s9.py     # PASS/FAIL harness, non-zero exit on failure
 python3 verification/notes/numeric_mirror_s8.py        # 16 numeric checks with PASS bands
 python3 verification/notes/numeric_mirror_s9.py        # 15 numeric checks
+python3 verification/notes/s10_preverify.py            # §10 symbolic pre-verification (30 checks)
+python3 verification/notes/v2_ladder_track_s10.py      # §10 V2-ladder numerical track
+python3 verification/notes/s10b_preverify.py           # §10.3 deepening pre-verification (27 checks)
+python3 verification/notes/make_s10_gifs.py            # regenerate the two §10 GIF assets
+python3 verification/notes/make_statement_index.py     # regenerate lean4/docs/STATEMENTS.md
 ```
 
 `verify_identities_s8.py` prints its full audit (equilibrium, `M0`,
@@ -74,6 +88,9 @@ outputs committed verbatim.
 | `verify_identities_s9.log` | 57 PASS / 0 FAIL | `charpoly(1,1,γ) = λ²(λ²+G²)(λ²+3P)`; all 24 general-circulation row identities; the (1,1,4) oscillation norm `33c²+77s²−33cs = 165/2 − (11/2)(3c+s)² ≤ 165/2` |
 | `numeric_mirror_s8.log` | 19 PASS / 0 FAIL | `ω = 0.477464829275686` (= 3G/2π, G = 1); `det(xI−M0) = x²(x²+9)²` to 4.5e-14; ODE residuals ~1e-16; the size-drift bound margin exactly ≥ 0 |
 | `numeric_mirror_s9.log` | 15 PASS / 0 FAIL | rigid rotation of the translated (1,1,2) triangle (err < 1e-5); the growing mode `|m|² = 12·e^{2√3·t}` to rel err < 1e-6; the three γ-instances of `λ²(λ²+G²)(λ²+3P)` |
+| `s10_preverify.log` | 30 PASS / 0 FAIL | `ln(1+u) ≤ u − u²/3` on \|u\| ≤ 1/2; coercivity worst margin 9.2e−06; `N(s,γ)` chart equation; pitchfork `M̃(0,γ) = 4γ+5` at γ = −5/4; rational roots s = 16/9, −16/5 with full RE conditions |
+| `v2_ladder_track_s10.log` | all rungs PASS | rigid identity Σd² = 3 (6 000 samples); in-time Lyapunov bound with RK4 (Hamiltonian drift 2e−15); symmetric-branch rigid rotation over the γ-sweep; exact asymmetric relative equilibria |
+| `s10b_preverify.log` | 27 PASS / 0 FAIL | second rational asymmetric RE `(1, −9/5, −16/5)`, `ω = 25/(168π)`, all three S-conditions; pitchfork triple root; `N(s,−1) = −s(s−1)²` and `N(s,−2) = −3s(s−1)³` |
 
 ## 🔗 Cross-References
 

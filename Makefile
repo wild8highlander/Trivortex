@@ -1,6 +1,6 @@
 # TRIVORTEX — Top-level Makefile
 
-.PHONY: help install run run-ru run-en verify verify-quick verify-full test doctor doctor-fix mini-test mini-ladders mini-figures cycloring-ladder cycloring-test polyvortex-ladder polyvortex-test planetvortex-ladder planetvortex-hardcore planetvortex-vregister planetvortex-crosslang planetvortex-test docs docs-serve lint clean
+.PHONY: help install run run-ru run-en verify verify-quick verify-full lean-gate master-regression test doctor doctor-fix mini-test mini-ladders mini-figures cycloring-ladder cycloring-test polyvortex-ladder polyvortex-test planetvortex-ladder planetvortex-hardcore planetvortex-vregister planetvortex-crosslang planetvortex-test docs docs-serve lint clean
 
 .DEFAULT_GOAL := help
 
@@ -33,6 +33,12 @@ verify-quick: ## Fast ladder smoke run (~0.5 s, what CI runs)
 
 verify-full: ## Long ladder run with tight integration (~35 s)
 	$(PYTHON) verification/trivortex/python/verify.py --preset full
+
+lean-gate: ## LEAN: полный формальный гейт — сборка + аксиомы + seal + конвенции + мост (~3 мин локально)
+	cd verification/lean4 && bash tools/ci_gate.sh
+
+master-regression: ## MASTER: 14 регрессий против констант, верифицированных в Lean
+	cd verification/trivortex_master && $(PYTHON) -m pytest tests/ -v --tb=short
 
 test: ## Run the pytest guard (27 tests)
 	$(PYTHON) -m pytest verification/tests/ -v --tb=short

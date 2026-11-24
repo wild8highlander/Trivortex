@@ -3,7 +3,10 @@
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # ─── TRIVORTEX verification outputs ───
+verification/lean4/axioms_gate.log
 verification/outputs/
+verification/trivortex_master/runs/*
+!verification/trivortex_master/runs/.gitkeep
 docs/site/.jekyll-cache/
 
 # ─── Python caches and build artifacts ───

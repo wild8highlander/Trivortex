@@ -3,7 +3,7 @@ FROM ubuntu:24.04
 # SPDX-FileCopyrightText: 2026 Isaev Iskhak Khamzatovich
 # SPDX-License-Identifier: LicenseRef-Proprietary-Wild8Highlander-1.0
 RUN apt-get update \
- && apt-get install -y --no-install-recommends curl git ca-certificates \
+ && apt-get install -y --no-install-recommends curl git ca-certificates python3 \
  && rm -rf /var/lib/apt/lists/*
 # elan + the pinned toolchain of verification/lean4/lean-toolchain
 # (v2.0: Lean v4.6.0, paired with Mathlib4 tag v4.6.0 pinned in lakefile.lean)
@@ -18,4 +18,10 @@ WORKDIR /app/lean4
 # formalization builds (Mathlib is resolved at the pinned tag and its
 # olean cache is fetched at image build time)
 RUN lake update && lake exe cache get! && lake build
+# v3.0 (замечание научрука №1): полный гейт — полная компиляция с
+# предупреждение=ошибка, аксиомный whitelist по КАЖДОЙ теореме, печать
+# утверждений (seal), конвенции/докстринги. Шаг-мост в trivortex_master
+# пропущен: в образ копируется только lean4/ (мост проверяет workflow
+# verification-lean.yml на уровне репозитория).
+RUN GATE_SKIP=bridge bash tools/ci_gate.sh
 ENTRYPOINT ["lake", "build"]

@@ -116,15 +116,18 @@ jobs:
             coqc verification/coq/Trivortex.v
 
   formal-lean4:
-    name: Lean 4 Mathlib formalization — lake build (M1)
+    name: Lean 4 Mathlib formalization — pinned image + full gate (M1)
     runs-on: ubuntu-24.04
     continue-on-error: true
+    # NOTE: BLOCKING-гейт формального уровня — отдельный workflow
+    # verification-lean.yml (native, с Mathlib-кэшем actions/cache);
+    # здесь — pinned-Docker-дубль по контракту портов: сборка образа
+    # сама прогоняет tools/ci_gate.sh (см. Dockerfile), включая
+    # аксиомный whitelist по каждой теореме и печать утверждений.
     steps:
       - uses: actions/checkout@v5
-      - name: build Trivortex.lean in the pinned image
-        run: |
-          docker build -t trivortex-lean verification/docker/lean4
-          docker run --rm trivortex-lean lake build
+      - name: build the image (lake build + ci_gate inside)
+        run: docker build -t trivortex-lean verification/docker/lean4
 
   formal-isabelle:
     name: Isabelle HOL session — isabelle build (M2)

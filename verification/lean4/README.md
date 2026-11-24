@@ -6,17 +6,18 @@
 <!-- ══════════════════════════════════════════════════════════════ -->
 <img src="assets/logo-lean-trivortex.svg" width="118" alt="The Lean 4 verification mark: three vortex arms over the Lagrange triangle"/>
 
-<img src="assets/banner-lean4-hero.svg" width="100%" alt="LEAN 4 VERIFICATION — TRIVORTEX Mathlib formalization: 144 axioms closed, 0 sorry, 0 axiom"/>
+<img src="assets/banner-lean4-hero.svg" width="100%" alt="LEAN 4 VERIFICATION — TRIVORTEX Mathlib formalization: 170 axioms closed, 0 sorry, 0 axiom"/>
 
 ### Lean 4 — the Machine-Checked Heart of TRIVORTEX
 
-**The formalization layer, landed at v5.0.** One file — `Trivortex.lean`, 4,915 lines —
+**The formalization layer, landed at v7.0.** One file — `Trivortex.lean`, 6,589 lines —
 re-derives the analytic core of the vortex three-body program inside
 [Lean 4](https://lean-lang.org) + [Mathlib](https://github.com/leanprover-community/mathlib4):
 Theorem 3.1 (the closed-form Lagrange-type choreography), the Chaplygin topological
 integral, the Kirchhoff conservation laws, the Lagrange equilateral solution, the
-complete triangle theory, linear stability, and the bifurcation at unequal circulations —
-**144 `#print axioms` statements, zero `sorry`, zero `axiom`**, every footprint closed on
+complete triangle theory, linear stability, the bifurcation at unequal circulations,
+nonlinear Lyapunov stability via H/I, and the completed collinear bifurcation picture —
+**170 `#print axioms` statements, zero `sorry`, zero `axiom`**, every footprint closed on
 exactly `propext · Classical.choice · Quot.sound`.
 
 **[Isaev Iskhak Khamzatovich](https://orcid.org/0009-0003-7299-0701)** · ORCID `0009-0003-7299-0701` · Independent Researcher
@@ -33,16 +34,16 @@ exactly `propext · Classical.choice · Quot.sound`.
 <!-- ROW 2 — FORMAL STATUS -->
 [![Lean](https://img.shields.io/badge/Lean%204-v4.6.0-blue?style=for-the-badge&logo=lean&logoColor=white)](lean-toolchain)
 [![Mathlib](https://img.shields.io/badge/Mathlib-tag%20v4.6.0-blueviolet?style=for-the-badge&logo=bookstack)](lakefile.lean)
-[![Axioms](https://img.shields.io/badge/%23print%20axioms-144%20closed-2EA043?style=for-the-badge&logo=lean)](Trivortex.lean)
+[![Axioms](https://img.shields.io/badge/%23print%20axioms-170%20closed-2EA043?style=for-the-badge&logo=lean)](Trivortex.lean)
 [![sorry](https://img.shields.io/badge/sorry-0-critical?style=for-the-badge&logo=lean)](Trivortex.lean)
 [![axiom](https://img.shields.io/badge/axiom-0-critical?style=for-the-badge&logo=lean)](Trivortex.lean)
 
 <!-- ROW 3 — PROJECT VITALS -->
-[![Status](https://img.shields.io/badge/status-landed%20v5.0%20(%C2%A71%E2%80%93%C2%A79)-gold?style=for-the-badge&label=Release)](README.md#11-version-timeline--v11--v50)
-[![Artifact](https://img.shields.io/badge/artifact-4%2C915%20lines-1284BA?style=for-the-badge)](Trivortex.lean)
-[![Theorems](https://img.shields.io/badge/theorems-243-9558B2?style=for-the-badge)](#appendix-a--full-declaration-census)
-[![Defs](https://img.shields.io/badge/defs%20%2B%20structures-55%20%2B%202-9558B2?style=for-the-badge)](#appendix-a--full-declaration-census)
-[![Milestone](https://img.shields.io/badge/milestone-M1%20%2B%20M4%2FM5%20depth-2EA043?style=for-the-badge)](../README.md)
+[![Status](https://img.shields.io/badge/status-landed%20v7.0%20(%C2%A71%E2%80%93%C2%A710.3)-gold?style=for-the-badge&label=Release)](README.md#11-version-timeline--v11--v70)
+[![Artifact](https://img.shields.io/badge/artifact-6%2C589%20lines-1284BA?style=for-the-badge)](Trivortex.lean)
+[![Theorems](https://img.shields.io/badge/theorems-309-9558B2?style=for-the-badge)](#appendix-a--full-declaration-census)
+[![Defs](https://img.shields.io/badge/defs%20%2B%20structures-58%20%2B%202-9558B2?style=for-the-badge)](#appendix-a--full-declaration-census)
+[![Milestone](https://img.shields.io/badge/milestone-M1%20%2B%20M4%2FM5%20%2B%20%C2%A710%20depth-2EA043?style=for-the-badge)](../README.md)
 [![REUSE](https://img.shields.io/badge/REUSE-compliant-2EA043?style=for-the-badge&logo=fsfe&logoColor=white)](https://github.com/wild8highlander/Trivortex/blob/main/REUSE.toml)
 
 <!-- ROW 4 — COMMUNITY PULSE -->
@@ -74,12 +75,12 @@ exactly `propext · Classical.choice · Quot.sound`.
 3. [Why Lean 4 + Mathlib](#3-why-lean-4--mathlib)
 4. [What is proven here — the five fixed objects](#4-what-is-proven-here--the-five-fixed-objects)
 5. [Architecture in pictures](#5-architecture-in-pictures)
-6. [Deep dive — section by section (§1–§9)](#6-deep-dive--section-by-section-19)
+6. [Deep dive — section by section (§1–§10)](#6-deep-dive--section-by-section-110)
 7. [The axiom footprint — nothing but classical foundations](#7-the-axiom-footprint--nothing-but-classical-foundations)
 8. [Complete file inventory](#8-complete-file-inventory)
 9. [Build, run, CI](#9-build-run-ci)
 10. [Reproducibility pins](#10-reproducibility-pins)
-11. [Version timeline — v1.1 → v5.0](#11-version-timeline--v11--v50)
+11. [Version timeline — v1.1 → v7.0](#11-version-timeline--v11--v70)
 12. [The verification constellation — every sibling folder](#12-the-verification-constellation--every-sibling-folder)
 13. [The eight-language comparison matrix](#13-the-eight-language-comparison-matrix)
 14. [Gallery — animations of the proven objects](#14-gallery--animations-of-the-proven-objects)
@@ -103,13 +104,13 @@ A port fixes exactly the objects of the ladder, so every language proves or comp
 
 | Vital | Value |
 |---|---|
-| **Artifact** | [`Trivortex.lean`](Trivortex.lean) — 4,915 lines, one namespace, one file |
-| **Sections** | §1–§9 (+ two axiom-footprint blocks) — see the [deep dive](#6-deep-dive--section-by-section-19) |
-| **Declarations** | 243 theorems/lemmas (144 public + 99 `private` helpers) · 55 defs · 2 structures |
-| **Machine-checked closure** | **144 `#print axioms` statements — all closed** on `propext`, `Classical.choice`, `Quot.sound` |
+| **Artifact** | [`Trivortex.lean`](Trivortex.lean) — 6,589 lines, one namespace, one file |
+| **Sections** | §1–§10.3 (+ three axiom-footprint blocks) — see the [deep dive](#6-deep-dive--section-by-section-110) |
+| **Declarations** | 309 theorems/lemmas (170 public + 139 `private` helpers) · 58 defs · 2 structures |
+| **Machine-checked closure** | **170 `#print axioms` statements — all closed** on `propext`, `Classical.choice`, `Quot.sound` |
 | **Escape hatches** | **0 `sorry` · 0 `axiom`** (verified by `grep`, and by the file's own footer block) |
 | **Toolchain** | Lean 4 **v4.6.0** + Mathlib **tag v4.6.0** (both pinned; see [§10](#10-reproducibility-pins)) |
-| **Status** | ✅ **landed — v5.0** (statement layer §1–§9; M1 + the M4/M5 depth tracks) |
+| **Status** | ✅ **landed — v7.0** (§1–§10.3; M1 + the M4/M5 depth tracks + the §10 stability/bifurcation track) |
 | **CI** | workflow [`verification-ports.yml`](https://github.com/wild8highlander/Trivortex/actions/workflows/verification-ports.yml), job **`formal-lean4`** |
 | **Provenance** | mirrors the analytic layer of `verify.py` @ commit `557bff8` (the M0 release) |
 | **License** | IPL-RP-1.0 (proprietary) · SPDX header in every file · [REUSE](https://github.com/wild8highlander/Trivortex/blob/main/REUSE.toml) |
@@ -135,7 +136,7 @@ What you are looking at, mapped to the artifact:
 | `elan show` | the pinned toolchain resolves (`leanprover/lean4:v4.6.0`) | [`lean-toolchain`](lean-toolchain) |
 | `lake exe cache get` | the Mathlib olean cache for the pinned tag is fetched | [`lakefile.lean`](lakefile.lean) |
 | `lake build` ×9 | every section type-checks: no `sorry`, no new axioms | §1–§9 |
-| `#print axioms` ×144 | every load-bearing statement reports its full dependency footprint | the two footprint blocks |
+| `#print axioms` ×170 | every load-bearing statement reports its full dependency footprint | the three footprint blocks |
 
 Then jump into the physics — the closed form the file proves, animated:
 
@@ -256,7 +257,7 @@ flowchart TB
     DOC["TRIVORTEX core document<br/>22 sections · executable"]:::gold
     PY["verification/trivortex/python<br/>ladder V1–V4 · JSON protocol<br/>(M0, the original)"]:::gold
     TESTS["verification/tests<br/>pytest guard · 63 collected tests"]
-    LEAN["verification/lean4<br/>Trivortex.lean · §1–§9<br/>144 axioms closed · 0 sorry"]:::lean
+    LEAN["verification/lean4<br/>Trivortex.lean · §1–§10.3<br/>170 axioms closed · 0 sorry"]:::lean
     COQ["verification/coq<br/>statement layer · zero axioms"]
     RUST["verification/rust<br/>floating-point twin · 14/14"]
     ISA["verification/isabelle<br/>HOL + SMT bounds"]
@@ -291,7 +292,7 @@ flowchart BT
     S7["§7 Triangle theory<br/>forcing · period · scaling"]:::s
     S8["§8 Linear stability<br/>six eigenmodes · bounds"]:::s
     S9["§9 Nonlinear continuation<br/>bifurcation at Π = 0"]:::s
-    FOOT["axiom footprint<br/>144 × #print axioms"]:::f
+    FOOT["axiom footprint<br/>170 × #print axioms"]:::f
 
     M --> S1 & S2 & S3 & S4 & S5
     S3 --> S5
@@ -305,13 +306,14 @@ flowchart BT
     classDef f fill:#1A3A2F,stroke:#43B78D,stroke-width:2.5px,color:#F5F1E6
 ```
 
-### 5.3 What the 4,915 lines are made of
+### 5.3 What the 6,589 lines are made of
 
 ```mermaid
 pie showData
     title Lines per section (approximate share)
     "§8 linear stability" : 1595
-    "§9 continuation/bifurcation" : 1379
+    "§9 continuation/bifurcation" : 1380
+    "§10 Lyapunov/bifurcation" : 1698
     "§7 triangle theory" : 574
     "§6 Lagrange solution" : 515
     "§5 Kirchhoff conservation" : 309
@@ -322,14 +324,14 @@ pie showData
 ```
 
 The shape is deliberate: §1–§4 pin the objects, §5–§6 prove the dynamical core,
-and §7–§9 (over half the file) are the v3.0–v5.0 depth tracks.
+and §7–§10 (over half the file) are the v3.0–v7.0 depth tracks.
 
 ---
 
-## 6. Deep dive — section by section (§1–§9)
+## 6. Deep dive — section by section (§1–§10)
 
 Every section is a self-contained landing pad: the statement, the landmark names,
-and where the corresponding ladder check lives. The full list of *all* 243+
+and where the corresponding ladder check lives. The full list of *all* 309+
 declaration names is in [Appendix A](#appendix-a--full-declaration-census).
 
 ### 6.1 §1 Theorem 3.1: the closed form (lines 114–225)
@@ -447,12 +449,57 @@ Linear instability across the hypersurface `Π = 0` — not a simulation, a proo
 
 ![Bifurcation at unequal circulations: Π>0 oscillation, Π=0 linear drift, Π<0 exponential growth](assets/bifurcation_window.gif)
 
+### 6.10 Section 10 — nonlinear Lyapunov stability and the completed collinear bifurcation (§10.1–§10.3)
+
+The v6.0–v7.0 depth tracks, in three moves:
+
+1. **10.1 — energy–Casimir (Lyapunov H/I) stability.** On the momentum level set
+   `{P = 0, Q = 0, I = Γ}` the rigid identity `Σᵢ<ⱼ d²ᵢⱼ = 3` holds exactly
+   (`s10_sumsq_anchor`); the logarithmic inequality `ln(1+u) ≤ u − u²/3`
+   (`s10_log_bound`) drives the **coercive certificate**
+   `H ≥ (Γ²/(12π))·Σ(d²ᵢⱼ−1)²` over the annulus `d²ᵢⱼ ∈ [1/2, 3/2]`
+   (`s10_coercive`) — and AM–GM makes the triangle the global energy minimum
+   (`s10_H_nonneg`). The energy–Casimir functional `H + (3Γ/(4π))·I` has zero
+   gradient at the anchor in all six slots (`s10_casimir_x1…y3`, multiplier
+   `ω_L = 3Γ/(4π)`), and the in-time theorem `s10_lyapunov_stab` closes the
+   loop: any level-set solution starting in the deep-interior target
+   `[15/16, 17/16]` satisfies `Σ(d²ᵢⱼ(t)−1)² ≤ (12π/Γ²)·H(0)` at **every**
+   `t ∈ ℝ` — continuous-induction annulus propagation plus the exact
+   conservation of `H, I, P, Q` (`s10_lyapunov_dist` is the distance form).
+
+![Lyapunov stability: the perturbed triangle under the true Kirchhoff flow, the certified bound held for all t](assets/lyapunov_stability.gif)
+
+2. **10.2 — collinear central configurations and their bifurcations.** The
+   general collinear rotating relative equilibrium (`s10_col_sol_gen`), the
+   symmetric branch `(d, −d, 0)` for every γ (`s10_col_sym`), the static point
+   at `γ = −½` (`s10_col_static`); the chart equation `N(s, γ) = s(s−1)·M̃(s, γ)`
+   with the pitchfork `M̃(0, γ) = 4γ+5` vanishing exactly at `γ = −5/4`
+   (`s10_col_pitchfork`), the discriminant `(4γ+5)(γ+2)²` (`s10_col_disc`), the
+   root-count ladder at `γ₀ = −1/4` (`s10_col_count_quarter`) and `γ = 1`
+   (`s10_col_count_eq1`), and the exact asymmetric relative equilibrium
+   `(1, −5/9, 16/9)` at `ω = 27/(56π)` (`s10_col_asym`).
+3. **10.3 — the bifurcation picture completed (v7.0).** The pitchfork is a
+   **triple root**: `N(s, −5/4) = −(9/64)·s³·(s−1)` (`s10_pitchfork_double`).
+   At the degenerate circulations the asymmetric branch merges back into the
+   symmetric one: `γ = −1` ((γ+1)² = 0 → `N = −s(s−1)²`,
+   `s10_col_count_neg1`) and `γ = −2` ((γ+2)² = 0 → `N = −3·s·(s−1)³`,
+   `s10_col_count_neg2`). And the **second** exact rational asymmetric
+   relative equilibrium at `γ₀ = −1/4` lands: `(1, −9/5, −16/5)` with
+   `ω = 25/(168π)` (`s10_col_asym2`) — both asymmetric roots `s = 16/9` and
+   `s = −16/5` of the chart are now realized as exact `KirchhoffSol` values.
+   Every identity was SymPy-certified before the Lean encoding
+   ([`../notes/s10b_preverify.py`](../notes/s10b_preverify.py), 27/27 PASS).
+
+![The collinear bifurcation across the pitchfork γ = −5/4: the chart equation, the live root sweep, and the rotating relative equilibria](assets/collinear_bifurcation.gif)
+
+
 ---
 
 ## 7. The axiom footprint — nothing but classical foundations
 
-Every load-bearing statement ends in the two footprint blocks of the artifact
-(lines 3373–3494 for §1–§8, lines 4874–4913 for §9). The contract they enforce:
+Every load-bearing statement ends in one of the three footprint blocks of the
+artifact (lines 3389–3510 for §1–§8, lines 6519–6559 for §9, lines 6560–6589 for
+§10). The contract they enforce:
 
 | `#print axioms` says | Meaning |
 |---|---|
@@ -465,7 +512,7 @@ Anything *else* appearing in a footprint — an `axiom`, a `sorry` (which prints
 closes with:
 
 ```text
-144 / 144  #print axioms statements closed   ·   0 sorry   ·   0 axiom
+170 / 170  #print axioms statements closed   ·   0 sorry   ·   0 axiom
 footprint: propext · Classical.choice · Quot.sound — nothing else
 ```
 
@@ -482,11 +529,12 @@ Everything in this directory, byte-for-byte:
 
 | File | Lines | Size | Role |
 |---|---|---|---|
-| [`Trivortex.lean`](Trivortex.lean) | 4,915 | 243 KB | the artifact: §1–§9 + axiom footprint (see [§6](#6-deep-dive--section-by-section-19)) |
+| [`Trivortex.lean`](Trivortex.lean) | 6,589 | 331 KB | the artifact: §1–§10.3 + axiom footprint (see [§6](#6-deep-dive--section-by-section-110)) |
 | [`lakefile.lean`](lakefile.lean) | 20 | 729 B | package definition: `lean_lib Trivortex`, `autoImplicit false`, Mathlib pinned |
 | [`lean-toolchain`](lean-toolchain) | 1 | 24 B | the pin: `leanprover/lean4:v4.6.0` |
 | [`README.md`](README.md) | — | — | this overview (English) |
 | [`README_RU.md`](README_RU.md) | — | — | the same overview, in Russian |
+| [`docs/STATEMENTS.md`](docs/STATEMENTS.md) | auto | 24 KB | the auto-generated index of all 170 theorems, grouped by section (regenerate: `python3 ../notes/make_statement_index.py`) |
 
 The lakefile, in full, because every line is a reproducibility decision:
 
@@ -566,10 +614,16 @@ non-blocking (`continue-on-error: true`) per the framework's CI contract; the M4
 flowchart LR
     A["checkout main"] --> B["docker build<br/>verification/docker/lean4<br/>elan · v4.6.0 · Mathlib tag"]
     B --> C["docker run<br/>lake build"]
-    C --> D{"footprint check<br/>#print axioms × 144"}
+    C --> D{"footprint check<br/>#print axioms × 170"}
     D -->|"0 sorry · 0 axiom"| E["green · job logged"]
     D -->|"any leak"| F["red · port blocked"]
 ```
+
+**v7.0 addition — a dedicated `lean-verify.yml` workflow** (`.github/workflows/`):
+the same pinned build, standalone — elan from `lean-toolchain`, `lake exe cache
+get`, `lake build`, then the axiom-footprint guard: every printed footprint must
+equal `[propext, Classical.choice, Quot.sound]`, and any `sorryAx` fails the run
+on the spot.
 
 ---
 
@@ -580,8 +634,8 @@ flowchart LR
 | Toolchain | Lean 4 **v4.6.0** ([`lean-toolchain`](lean-toolchain)) |
 | Mathlib | **tag v4.6.0** (pinned in [`lakefile.lean`](lakefile.lean); 2024-06 pairing) |
 | Docker pin | [`docker/lean4/Dockerfile`](../docker/lean4/Dockerfile) (ubuntu 24.04 + elan) |
-| Artifact | [`Trivortex.lean`](Trivortex.lean) — §1–§9, 144 `#print axioms` statements |
-| Milestone | M1 + the M4/M5 depth tracks (conservation + Lagrange + stability + bifurcation) |
+| Artifact | [`Trivortex.lean`](Trivortex.lean) — §1–§10.3, 170 `#print axioms` statements |
+| Milestone | M1 + the depth tracks §7–§10 (triangle theory + stability + bifurcation + Lyapunov) |
 | CI status | non-blocking job in [`verification-ports.yml`](https://github.com/wild8highlander/Trivortex/actions/workflows/verification-ports.yml) |
 
 > **Toolchain note.** v1.1 pinned Lean v4.4.0 with Mathlib `@ "master"` — a
@@ -593,7 +647,7 @@ flowchart LR
 
 ---
 
-## 11. Version timeline — v1.1 → v5.0
+## 11. Version timeline — v1.1 → v7.0
 
 ```mermaid
 timeline
@@ -603,6 +657,8 @@ timeline
     v3.0 : Section 7 — the complete triangle theory : forcing theorem lag_omega_unique : period T = 4π²a²/(3Γ) : scaling laws + distance certificates
     v4.0 : Section 8 — linear stability : six eigenmodes : certification lin_cert_* : bounds — no exponential growth
     v5.0 : Section 9 — nonlinear continuation : general-circulation family s9_rel_eq : exact mode persistence : bifurcation at Π = 0 with explicit instances
+    v6.0 : Section 10 — Lyapunov stability via H/I : coercive certificate Γ²/(12π) : energy–Casimir criticality : collinear pitchfork at γ = −5/4
+    v7.0 : §10.3 — bifurcation completed : pitchfork triple root : degenerate γ = −1, −2 : second rational asymmetric RE (1, −9/5, −16/5) · ω = 25/(168π)
 ```
 
 | Release | Section(s) | Headline | Statement layer after release |
@@ -612,6 +668,8 @@ timeline
 | v3.0 | §7 | the complete triangle theory | forcing, period, scaling, certificates |
 | v4.0 | §8 | linear stability of the triangle | six eigenmodes, no exponential growth |
 | v5.0 | §9 | nonlinear continuation + bifurcation | instability across `Π = 0`, proven |
+| v6.0 | §10.1–§10.2 | nonlinear Lyapunov stability + the collinear bifurcation | coercive certificate, energy–Casimir criticality, pitchfork, asymmetric RE |
+| v7.0 | §10.3 | the bifurcation picture completed | pitchfork triple root, degenerate circulations, both rational asymmetric REs |
 
 ---
 
@@ -626,14 +684,14 @@ README — the links are the deep dives.
 | [`../trivortex/`](../trivortex/README.md) | Python | ladder **V1–V4** + JSON protocol — the original all ports mirror | **M0** ✅ | the ladder & the lab |
 | [`../tests/`](../tests/README.md) | pytest | the guard of the ladder + program (63 collected tests) | **M0** ✅ | the pytest shield |
 | [`../coq/`](../coq/README.md) | Coq/Rocq 8.18 | `Trivortex.v` — statement layer, zero axioms | **M1** ✅ | the Gallina twin |
-| **`./`** | **Lean 4 v4.6.0** | **`Trivortex.lean` — §1–§9, 144 axioms closed** | **M1 + depth** ✅ | **this document** |
+| **`./`** | **Lean 4 v4.6.0** | **`Trivortex.lean` — §1–§10.3, 170 axioms closed** | **M1 + depth** ✅ | **this document** |
 | [`../rust/`](../rust/README.md) | Rust (stable) | the floating-point twin, 14/14 tests, protocol committed | **M1** ✅ | the second float implementation |
 | [`../isabelle/`](../isabelle/README.md) | Isabelle/HOL 2024 | `Trivortex.thy` — invariant bounds; SMT session optional | **M2** ✅ | the HOL record |
 | [`../agda/`](../agda/README.md) | Agda 2.6.4 | `Trivortex.agda` — constructive `rot³ ≡ id` | **M2** ✅ | the constructive lattice |
 | [`../cpp/`](../cpp/README.md) | C++17 · CMake | CTest guard + `-O2` benchmark (`benchmark_rhs_per_s`) | **M3** ✅ | the compiled benchmark |
 | [`../haskell/`](../haskell/README.md) | GHC 9.4 | `Double` vs exact-rational dual run — ℚ(√3) anchors by computation | **M3** ✅ | the exact-arithmetic split |
 | [`../common/`](../common/README.md) | Python | shared verifier base (template-method `BaseVerifier`) | support | the common spine |
-| [`../notes/`](../notes/README.md) | Python + SymPy | §8/§9 numeric mirrors & identity checks (the SymPy pre-verification of the Lean algebra) | support | the scratch proofs |
+| [`../notes/`](../notes/README.md) | Python + SymPy | §8/§9/§10 numeric mirrors & identity checks (the SymPy pre-verification of the Lean algebra) | support | the scratch proofs |
 | [`../docker/`](../docker/README.md) | Dockerfiles | 7 pinned toolchain images, one per port | support | the reproducibility layer |
 | [`../trivortex_master/`](../trivortex_master/README.md) | Python | the 22-section interactive program (the laboratory this folder verifies) | app | the executable document |
 
@@ -652,7 +710,7 @@ What each port establishes about the shared objects, and in what style:
 |---|---|---|---|---|---|---|---|---|
 | Python (`M0`) | — | ✔ (the original) | ✔ measured | ✔ measured | ✔ measured | ✔ measured (`1e-10`) | ✔ measured | numeric mirror (`notes/`) |
 | Coq (`M1`) | ✔ zero axioms | — | ✔ proven | statement layer | ✔ proven | — | — | — |
-| **Lean 4 (M1+)** | ✔ **144 closed footprints** | — | ✔ **proven** | ✔ **proven** | ✔ **proven** | ✔ **proven (§5)** | ✔ **proven (§6–§7)** | ✔ **proven (§8–§9)** |
+| **Lean 4 (M1+)** | ✔ **170 closed footprints** | — | ✔ **proven** | ✔ **proven** | ✔ **proven** | ✔ **proven (§5)** | ✔ **proven (§6–§7)** | ✔ **proven (§8–§10)** |
 | Rust (`M1`) | — | ✔ 14/14 | ✔ measured | ✔ measured | ✔ measured | ✔ measured | ✔ measured | — |
 | Isabelle (`M2`) | ✔ HOL | — | statement layer | statement layer | band record (SMT, optional) | — | — | — |
 | Agda (`M2`) | ✔ constructive | — | C3 lattice `rot³ ≡ id` | — | — | — | — | — |
@@ -683,6 +741,8 @@ And inside this pack, the machine-checked views of the same physics:
 [`assets/kirchhoff_conservation.gif`](assets/kirchhoff_conservation.gif) (§5–§6),
 [`assets/stability_modes.gif`](assets/stability_modes.gif) (§8),
 [`assets/bifurcation_window.gif`](assets/bifurcation_window.gif) (§9),
+[`assets/lyapunov_stability.gif`](assets/lyapunov_stability.gif) (§10.1),
+[`assets/collinear_bifurcation.gif`](assets/collinear_bifurcation.gif) (§10.2–10.3),
 [`assets/axiom_footprint_console.gif`](assets/axiom_footprint_console.gif) (the build),
 [`assets/lake_build_pipeline.gif`](assets/lake_build_pipeline.gif) (CI).
 
@@ -700,7 +760,7 @@ program's honest boundaries are catalogued in [`verification/README.md`](../READ
 **Q: What exactly does `#print axioms` guarantee?**
 That the printed set is the *complete* transitive dependency footprint of a
 declaration. If a proof used an unproved `sorry`, the footprint would contain
-`sorryAx`; a new `axiom` would appear by name. Here every one of the 144 printed
+`sorryAx`; a new `axiom` would appear by name. Here every one of the 170 printed
 statements shows only `propext`, `Classical.choice`, `Quot.sound`.
 
 **Q: Are the numeric tolerances (`1e-12` etc.) proven too?**
@@ -727,13 +787,13 @@ the toolchain note in [§10](#10-reproducibility-pins).
 **Q: Where do the SymPy-checked §9 results live?**
 In [`../notes/`](../notes/README.md): the numeric mirrors and identity checks that
 pre-verified the §9 algebra before it was formalized (57 SymPy PASS lines for §9,
-19 for §8 — see the logs there).
+19 for §8, 30 for §10 and 27 more for the §10.3 deepening — see the logs there).
 
 **Q: What is `lagrangeSol` — a theorem or a definition?**
 A definition (an instance of the `KirchhoffSol` structure) whose *membership*
 conditions are the six `lag_kx0…lag_ky2` field theorems; it is printed in the
-footprint block alongside the theorems, which is why the census counts 144
-footprints over 243 theorems plus defs.
+footprint block alongside the theorems, which is why the census counts 170
+footprints over 309 theorems plus defs.
 
 **Q: Why one giant file instead of a tree of modules?**
 Reproducibility discipline: one file = one artifact = one build target = one
@@ -772,7 +832,12 @@ the tracks that touch this folder:
   deepens rather than opens. The 50-digit anchor re-derivation (mpmath) and the
   third numeric twin (Julia) live on the numeric side.
 - **M6 — widening.** V5 — the regular `N = 7` vortex ring lands in Python first,
-  then in at least two ports; if the Lean port takes it, expect a §10.
+  then in at least two ports. The §10 slot is taken: v6.0–v7.0 landed Lyapunov
+  stability via H/I and the completed collinear bifurcation; the next widening
+  candidate is the V5 `N = 7` ring — expect a §11. Two open-theory targets from
+  the §10 scope notes: the Crandall–Rabinowitz perturbation theorem for the
+  asymmetric branch beyond γ₀ = −1/4, and general-γ Lyapunov stability for
+  unequal circulations.
 
 The artifact's own header reserves the discipline that got it here: an acceptance
 criterion may be tightened before the artifacts land, never after.
@@ -837,7 +902,7 @@ at the repository root. SPDX headers in every source file; the repository is
 ## Appendix A — full declaration census
 
 <!--CENSUS-START-->
-**Full declaration census** — 243 theorems/lemmas (144 public + 99 `private` helpers) + 57 definitions/structures. Names are verbatim Lean identifiers.
+**Full declaration census** — 309 theorems/lemmas (170 public + 139 `private` helpers) + 60 definitions/structures. Names are verbatim Lean identifiers.
 
 <details>
 <summary><b>Section 1 — Theorem 3.1: the closed form and its properties</b> — lines 114–225: 9 theorems/lemmas, 4 defs · <i>click to expand</i></summary>
@@ -945,7 +1010,7 @@ at the repository root. SPDX headers in every source file; the repository is
 </details>
 
 <details>
-<summary><b>Axiom footprint (§1–§8 prints)</b> — lines 3373–4915: 39 theorems/lemmas, 11 defs · <i>click to expand</i></summary>
+<summary><b>Section 9 — nonlinear continuation and bifurcation (§9)</b> — lines 3511–4890: 39 theorems/lemmas, 11 defs · <i>click to expand</i></summary>
 
 **Definitions & structures:** `genOmega` · `tauX` · `tauY` · `genX` · `genY` · `genLinX1` · `genLinY1` · `genLinX2` · `genLinY2` · `genLinX3` · `genLinY3`
 
@@ -957,6 +1022,20 @@ at the repository root. SPDX headers in every source file; the repository is
 `s9_s3cu` · `s9_lin_trans` · `s9_lin_diag` · `s9_lin_kernel` · `s9_lin_chain` · `s9_shape_gen`
 `s9_shape4_a` · `s9_shape4_b` · `s9_lin_sol_shape4` · `s9_collision_a` · `s9_collision_b` · `s9_eig_unst`
 `s9_exp_comp` · `s9_lin_sol_unst` · `s9_growth_norm`
+
+</details>
+
+<details>
+<summary><b>Section 10 — nonlinear Lyapunov stability and the collinear bifurcation</b> — lines 4891–6518: 26 theorems/lemmas, 3 defs · <i>click to expand</i></summary>
+
+**Definitions & structures:** `colOmega` · `s10ColM` · `s10ColN`
+
+**Theorems & lemmas:**
+`s10_log_bound` · `s10_sumsq` · `s10_sumsq_anchor` · `s10_H_nonneg` · `s10_coercive` · `s10_dist_bound`
+`s10_casimir_x1` · `s10_casimir_y1` · `s10_casimir_x2` · `s10_casimir_y2` · `s10_casimir_x3` · `s10_casimir_y3`
+`s10_lyapunov_stab` · `s10_lyapunov_dist` · `s10_col_sol_gen` · `s10_col_sym` · `s10_col_static` · `s10_col_pitchfork`
+`s10_col_disc` · `s10_col_count_quarter` · `s10_col_count_eq1` · `s10_col_asym` · `s10_pitchfork_double` · `s10_col_count_neg1`
+`s10_col_count_neg2` · `s10_col_asym2`
 
 </details>
 

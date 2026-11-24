@@ -1,0 +1,61 @@
+# TRIVORTEX Lean 4 dedicated verification workflow (v7.0 feature).
+# SPDX-FileCopyrightText: 2026 Isaev Iskhak Khamzatovich
+# SPDX-License-Identifier: LicenseRef-Proprietary-Wild8Highlander-1.0
+#
+# The framework's main CI keeps running the non-blocking `formal-lean4` job in
+# verification-ports.yml (docker route); this workflow is the v7.0 dedicated
+# lane: same toolchain pin, cache-first, with an explicit axiom-footprint gate.
+
+name: lean-verify
+
+on:
+  push:
+    branches: [main]
+    paths: ["verification/lean4/**", ".github/workflows/lean-verify.yml"]
+  pull_request:
+    paths: ["verification/lean4/**", ".github/workflows/lean-verify.yml"]
+  workflow_dispatch:
+
+jobs:
+  verify:
+    name: lake build + axiom footprint guard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan (toolchain from lean-toolchain)
+        uses: leanprover/lean-action@v1
+        with:
+          lake-package-directory: verification/lean4
+          auto-config: true
+          use-github-cache: true
+
+      - name: Build the artifact (pinned Mathlib tag)
+        working-directory: verification/lean4
+        run: lake exe cache get! && lake build
+
+      - name: Axiom footprint guard
+        working-directory: verification/lean4
+        run: |
+          lake env lean Trivortex.lean > axioms.log 2>&1 || true
+          echo "footprint lines: $(grep -c 'depends on axioms' axioms.log || true)"
+          if grep -q "sorryAx" axioms.log; then
+            echo "::error::sorryAx leaked into a footprint — a proof is unfinished"
+            exit 1
+          fi
+          BAD=$(grep "depends on axioms" axioms.log \
+                | grep -vc "propext, Classical.choice, Quot.sound" || true)
+          if [ "$BAD" -ne 0 ]; then
+            echo "::error::$BAD footprint(s) not closed on the classical triad"
+            grep "depends on axioms" axioms.log | grep -v "propext, Classical.choice, Quot.sound"
+            exit 1
+          fi
+          echo "axiom footprint: all closed on propext · Classical.choice · Quot.sound"
+
+      - name: Statement index freshness
+        working-directory: verification/notes
+        run: |
+          python3 make_statement_index.py > /tmp/idx.log 2>&1
+          if ! git -C .. diff --exit-code --quiet -- verification/lean4/docs/STATEMENTS.md; then
+            echo "::warning::docs/STATEMENTS.md is stale — regenerate with make_statement_index.py"
+          fi

@@ -1,0 +1,75 @@
+---
+name: Lean 4 Gate
+
+# ── замечание научного руководителя №1: строгий CI-конвейер для Lean ────────
+# БЛОКИРУЮЩИЙ гейт формального уровня (в отличие от non-blocking портов из
+# verification-ports.yml). Любой push/PR, трогающий verification/lean4/**,
+# проходит:
+#   1. lake exe cache get  — воспроизводимая поставка оленов Mathlib;
+#   2. lake env lean       — полная компиляция Trivortex.lean; предупреждение
+#                            = ошибка (эквивалент --wfail/--iofail, которых нет
+#                            в пиннингованном Lake v4.6);
+#   3. #print axioms        — по КАЖДОЙ теореме, набор обязан быть точно
+#                            [propext, Classical.choice, Quot.sound];
+#                            sorry / axiom / native_decide / unsafe — запрет;
+#   4. seal_check          — печать утверждений не тронута (№2);
+#   5. lint_conventions    — конвенции Mathlib + ракет докстрингов (№3);
+#   6. export_verified_params --check — мост в trivortex_master синхронен (№6).
+# Всё вместе: bash tools/ci_gate.sh.
+
+on:
+  push:
+    branches: [main]
+    paths: ['verification/lean4/**', '.github/workflows/verification-lean.yml']
+  pull_request:
+    branches: [main]
+    paths: ['verification/lean4/**', '.github/workflows/verification-lean.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: trivortex-lean-gate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lean4-gate:
+    name: Lean 4 — build, axioms gate, seal, lint, bridge
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: elan + pinned Lean v4.6.0
+        run: |
+          curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y \
+            --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          elan toolchain install leanprover/lean4:v4.6.0
+
+      - name: Cache the Mathlib slice (.lake)
+        uses: actions/cache@v4
+        with:
+          path: verification/lean4/.lake
+          key: lean4-mathlib-v4.6.0-${{ hashFiles('verification/lean4/lakefile.lean', 'verification/lean4/lean-toolchain') }}
+          restore-keys: lean4-mathlib-v4.6.0-
+
+      - name: Fetch Mathlib oleans (pinned tag v4.6.0)
+        working-directory: verification/lean4
+        run: |
+          lake update
+          lake exe cache get
+
+      - name: The gate (imports → build+axioms → seal → lint → bridge)
+        working-directory: verification/lean4
+        run: bash tools/ci_gate.sh
+
+      - name: Upload the gate log
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: lean4-axioms-gate-log
+          path: verification/lean4/axioms_gate.log
+          if-no-files-found: warn
+          retention-days: 30

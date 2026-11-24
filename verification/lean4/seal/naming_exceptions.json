@@ -1,0 +1,25 @@
+{
+ "note": "Grandfather-список исторических имён, не удовлетворяющих snake_case. Переименование (hvortex и т.п.) — плановый рефакторинг, ломающий API; НОВЫЕ декларации обязаны быть snake_case — линтер не даёт расширять список.",
+ "names": [
+  "H_equilateral",
+  "H_kirchhoff_conserved",
+  "H_kirchhoff_deriv",
+  "Hvortex",
+  "Hvortex_scale",
+  "I_equilateral",
+  "I_kirchhoff_conserved",
+  "I_kirchhoff_deriv",
+  "Ivortex",
+  "Ivortex_scale",
+  "P_equilateral",
+  "P_kirchhoff_conserved",
+  "P_kirchhoff_deriv",
+  "Pvortex",
+  "Pvortex_scale",
+  "Q_equilateral",
+  "Q_kirchhoff_conserved",
+  "Q_kirchhoff_deriv",
+  "Qvortex",
+  "Qvortex_scale"
+ ]
+}

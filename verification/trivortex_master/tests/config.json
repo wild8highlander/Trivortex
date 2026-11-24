@@ -1,0 +1,32 @@
+{
+  "note": "Фиксированные параметры регрессионных прогонов (замечание №5: воспроизводимость). Шаги, длительности и допуски — константы: любое изменение видно в ревью. seed в MasterConfig = 42 (ядра без ГСЧ; seed задан для будущих MC-проверок).",
+  "seed": 42,
+  "lagrange": {
+    "dt": 0.005,
+    "n_periods": 2,
+    "band_integral_drift": 5e-9,
+    "band_shape_deviation": 1e-6,
+    "band_period_closure": 5e-3,
+    "band_omega_relative": 2e-4,
+    "band_anchor": 1e-12
+  },
+  "static_gamma_half": {
+    "dt": 0.01,
+    "t_total": 10.0,
+    "band_max_drift": 1e-10
+  },
+  "collinear_asym": {
+    "dt": 0.001,
+    "band_dist_deviation": 1e-5,
+    "band_closure": 5e-4
+  },
+  "linear_spectrum": {
+    "band_re": 1e-9,
+    "band_imag": 1e-9,
+    "band_modal": 1e-12
+  },
+  "bifurcation": {
+    "band_root": 1e-9,
+    "band_identity": 1e-10
+  }
+}
