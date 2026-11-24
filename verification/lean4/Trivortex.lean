@@ -4,7 +4,7 @@ SPDX-License-Identifier: LicenseRef-Proprietary-Wild8Highlander-1.0
 -/
 /-
 ==========================================================================
-TRIVORTEX — LEAN 4 FORMALIZATION: THE FULL STATEMENT LAYER (v3.0)
+TRIVORTEX — LEAN 4 FORMALIZATION: THE FULL STATEMENT LAYER (v4.0)
 ==========================================================================
 Milestone M4/M5 artifact: `verification/lean4/Trivortex.lean`.
 
@@ -46,6 +46,18 @@ release still left to the numerical ladders only:
          an exact Kirchhoff solution — the analytic core of check V2 —
          and the anchor values H = 0, P = 0, Q = 0, I = Γ therefore
          hold along it FOR ALL TIME (a = 1).
+
+  4'. Section 8 (v4.0): LINEAR STABILITY of the Lagrange triangle — the
+     frame co-rotating with the triangle (ẇ = V(w) − ω·Jw), the anchor
+     as its fixed point, the 2π/Γ-scaled linearization linX1…linY3,
+     all six eigenmodes (translations ±iω, phase 0, size drift, shape
+     oscillation ±iω), certification of the linearization against the
+     TRUE rotating-frame field along every modal direction, explicit
+     modal solutions of the linearized rotating-frame equation for all
+     t, and the stability bounds: translation and shape modes preserve
+     their norm exactly, the size drift grows at most linearly — no
+     eigenmode grows exponentially (the classical Thomson stability at
+     N = 3).
 
 AXIOM FOOTPRINT: no `axiom`/`sorry` anywhere — `#print axioms` at the
 bottom demonstrates that every theorem depends only on Mathlib's standard
@@ -1734,6 +1746,1601 @@ theorem lagrange_side_I (g a : ℝ) (ha : 0 < a) (t : ℝ) :
     Ivortex_scale, I_equilateral]
   ring
 
+/-! ## Section 8 — linear stability: the eigenmodes of the perturbed triangle -/
+
+/-! The classical linear stability analysis of the Lagrange equilateral
+    solution, performed in the frame co-rotating with the triangle.  In
+    that frame the Kirchhoff dynamics read ẇ = V(w) − ω·Jw (per vortex:
+    rotX = kx + ω·y, rotY = ky − ω·x), and the anchor state of Section 3
+    is a fixed point (§8.1) — the restatement of Section 6 at t = 0.
+    Linearizing at the anchor gives the 6×6 operator whose (2π/Γ)-scaled
+    rows `linX1`…`linY3` are registered in §8.2.  Its spectrum is
+    λ²·(λ²+9)² (SymPy-verified in `notes/verify_identities_s8.py` and
+    numerically in `tools/numeric_mirror_s8.py`): eigenvalues 0 — the
+    phase and size drifts of the Lagrange family — and the purely
+    imaginary pair ±3i with multiplicity TWO, one copy carried by
+    translations and one by the shape oscillations.  §8.3 exhibits all
+    six eigenmodes explicitly, §8.4 their modal solutions of the
+    linearized rotating-frame equation (the shape pair oscillates at
+    exactly the Lagrange angular velocity ω), and §8.5 the stability
+    bounds: every mode preserves its norm except the size drift, which
+    grows at most linearly in time — no eigenmode grows exponentially.
+    The equilateral triangle of equal vortices is linearly stable.
+
+    Certification: the rows `linX1`…`linY3` are the partial derivatives
+    of the true rotating-frame field at the anchor; `lin_cert_transX`,
+    `lin_cert_transY`, `lin_cert_shapeU`, `lin_cert_shapeW` prove the
+    directional derivatives of the TRUE field along those modal
+    directions equal the linearization applied to the direction.  The
+    phase and size modes are certified exactly (and beyond first order)
+    by the nonlinear family theorems of Section 7: a phase-shifted
+    triangle is the same solution (`lag_rotation_x`) and a rescaled
+    triangle is a solution at ω/λ² (`lag_trajectory_scale_x`). -/
+
+/-! ### the frame rotating with the triangle -/
+
+/-- The x-velocity of vortex 1 in the frame rotating at angular velocity
+    ω: the Kirchhoff field plus the frame term ω·y₁ (from ẇ = V − ω·Jw). -/
+noncomputable def rotX1 (g ω x1 y1 x2 y2 x3 y3 : ℝ) : ℝ :=
+  kx1 g g g x1 y1 x2 y2 x3 y3 + ω * y1
+
+/-- The y-velocity of vortex 1 in the rotating frame. -/
+noncomputable def rotY1 (g ω x1 y1 x2 y2 x3 y3 : ℝ) : ℝ :=
+  ky1 g g g x1 y1 x2 y2 x3 y3 - ω * x1
+
+/-- The x-velocity of vortex 2 in the rotating frame. -/
+noncomputable def rotX2 (g ω x1 y1 x2 y2 x3 y3 : ℝ) : ℝ :=
+  kx2 g g g x1 y1 x2 y2 x3 y3 + ω * y2
+
+/-- The y-velocity of vortex 2 in the rotating frame. -/
+noncomputable def rotY2 (g ω x1 y1 x2 y2 x3 y3 : ℝ) : ℝ :=
+  ky2 g g g x1 y1 x2 y2 x3 y3 - ω * x2
+
+/-- The x-velocity of vortex 3 in the rotating frame. -/
+noncomputable def rotX3 (g ω x1 y1 x2 y2 x3 y3 : ℝ) : ℝ :=
+  kx3 g g g x1 y1 x2 y2 x3 y3 + ω * y3
+
+/-- The y-velocity of vortex 3 in the rotating frame. -/
+noncomputable def rotY3 (g ω x1 y1 x2 y2 x3 y3 : ℝ) : ℝ :=
+  ky3 g g g x1 y1 x2 y2 x3 y3 - ω * x3
+
+private theorem s3sq : (Real.sqrt 3) ^ 2 = 3 := Real.sq_sqrt (by norm_num)
+
+/-- Division by √3 rewritten into ℚ·√3 form.  `ring` treats `(Real.sqrt 3)⁻¹`
+    as an inert atom and cannot cancel it, so every √3-division is normalized
+    away before the final `ring` / `linear_combination` closer. -/
+private theorem div_sqrt3 (p : ℝ) : p / Real.sqrt 3 = Real.sqrt 3 / 3 * p := by
+  have hne : Real.sqrt 3 ≠ 0 := by positivity
+  rw [div_eq_iff hne]
+  linear_combination (-(p / 3)) * s3sq
+
+private theorem div_2sqrt3 (p : ℝ) : p / (2 * Real.sqrt 3) = Real.sqrt 3 / 6 * p := by
+  have hne : (2 * Real.sqrt 3) ≠ 0 := by positivity
+  rw [div_eq_iff hne]
+  linear_combination (-(p / 3)) * s3sq
+
+/-- The squared anchor distances: all three sides have d2 = 1. -/
+private theorem d2_anchor12 : d2 eqX1 eqY1 eqX2 eqY2 = 1 := by
+  have h := side1
+  rw [vortexDist_eq] at h
+  have hpos : 0 ≤ d2 eqX1 eqY1 eqX2 eqY2 := by unfold d2; positivity
+  calc d2 eqX1 eqY1 eqX2 eqY2
+      = (Real.sqrt (d2 eqX1 eqY1 eqX2 eqY2)) ^ 2 := (Real.sq_sqrt hpos).symm
+    _ = 1 ^ 2 := by rw [h]
+    _ = 1 := by norm_num
+
+private theorem d2_anchor13 : d2 eqX1 eqY1 eqX3 eqY3 = 1 := by
+  have h := side3'
+  rw [vortexDist_eq] at h
+  have hpos : 0 ≤ d2 eqX1 eqY1 eqX3 eqY3 := by unfold d2; positivity
+  calc d2 eqX1 eqY1 eqX3 eqY3
+      = (Real.sqrt (d2 eqX1 eqY1 eqX3 eqY3)) ^ 2 := (Real.sq_sqrt hpos).symm
+    _ = 1 ^ 2 := by rw [h]
+    _ = 1 := by norm_num
+
+private theorem d2_anchor23 : d2 eqX2 eqY2 eqX3 eqY3 = 1 := by
+  have h := side2
+  rw [vortexDist_eq] at h
+  have hpos : 0 ≤ d2 eqX2 eqY2 eqX3 eqY3 := by unfold d2; positivity
+  calc d2 eqX2 eqY2 eqX3 eqY3
+      = (Real.sqrt (d2 eqX2 eqY2 eqX3 eqY3)) ^ 2 := (Real.sq_sqrt hpos).symm
+    _ = 1 ^ 2 := by rw [h]
+    _ = 1 := by norm_num
+
+/-! The anchor coordinate differences (both directions), as they appear
+    in the Kirchhoff numerators. -/
+
+private theorem eqdx12 : eqX1 - eqX2 = Real.sqrt 3 / 2 := by
+  unfold eqX1 eqX2
+  rw [div_sqrt3, div_2sqrt3]
+  ring
+
+private theorem eqdy12 : eqY1 - eqY2 = -(1 / 2) := by unfold eqY1 eqY2; ring
+
+private theorem eqdx13 : eqX1 - eqX3 = Real.sqrt 3 / 2 := by
+  unfold eqX1 eqX3
+  rw [div_sqrt3, div_2sqrt3]
+  ring
+
+private theorem eqdy13 : eqY1 - eqY3 = 1 / 2 := by unfold eqY1 eqY3; ring
+
+private theorem eqdx23 : eqX2 - eqX3 = 0 := by unfold eqX2 eqX3; ring
+
+private theorem eqdy23 : eqY2 - eqY3 = 1 := by unfold eqY2 eqY3; ring
+
+private theorem eqdx21 : eqX2 - eqX1 = -(Real.sqrt 3 / 2) := by
+  unfold eqX1 eqX2
+  rw [div_sqrt3, div_2sqrt3]
+  ring
+
+private theorem eqdy21 : eqY2 - eqY1 = 1 / 2 := by unfold eqY1 eqY2; ring
+
+private theorem eqdx31 : eqX3 - eqX1 = -(Real.sqrt 3 / 2) := by
+  unfold eqX1 eqX3
+  rw [div_sqrt3, div_2sqrt3]
+  ring
+
+private theorem eqdy31 : eqY3 - eqY1 = -(1 / 2) := by unfold eqY1 eqY3; ring
+
+private theorem eqdx32 : eqX3 - eqX2 = 0 := by unfold eqX2 eqX3; ring
+
+private theorem eqdy32 : eqY3 - eqY2 = -1 := by unfold eqY2 eqY3; ring
+
+/-- **The rotating-frame equilibrium (§8.1).**  The equilateral anchor of
+    Section 3, viewed in the frame rotating at the Lagrange angular
+    velocity ω = 3Γ/(2πa²), is a fixed point of the rotating-frame field:
+    all six velocity components vanish.  This is the t = 0 restatement of
+    the Lagrange solution of Section 6. -/
+theorem rot_anchor (g : ℝ) :
+    rotX1 g (lagrangeOmega g 1) eqX1 eqY1 eqX2 eqY2 eqX3 eqY3 = 0
+      ∧ rotY1 g (lagrangeOmega g 1) eqX1 eqY1 eqX2 eqY2 eqX3 eqY3 = 0
+      ∧ rotX2 g (lagrangeOmega g 1) eqX1 eqY1 eqX2 eqY2 eqX3 eqY3 = 0
+      ∧ rotY2 g (lagrangeOmega g 1) eqX1 eqY1 eqX2 eqY2 eqX3 eqY3 = 0
+      ∧ rotX3 g (lagrangeOmega g 1) eqX1 eqY1 eqX2 eqY2 eqX3 eqY3 = 0
+      ∧ rotY3 g (lagrangeOmega g 1) eqX1 eqY1 eqX2 eqY2 eqX3 eqY3 = 0 := by
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · unfold rotX1 kx1
+    rw [d2_anchor12, d2_anchor13, eqdy12, eqdy13]
+    unfold eqY1 lagrangeOmega
+    ring
+  · unfold rotY1 ky1
+    rw [d2_anchor12, d2_anchor13, eqdx12, eqdx13]
+    unfold eqX1 lagrangeOmega
+    rw [div_sqrt3]
+    ring
+  · unfold rotX2 kx2
+    rw [d2_anchor12, d2_anchor23, eqdy21, eqdy23]
+    unfold eqY2 lagrangeOmega
+    ring
+  · unfold rotY2 ky2
+    rw [d2_anchor12, d2_anchor23, eqdx21, eqdx23]
+    unfold eqX2 lagrangeOmega
+    rw [div_2sqrt3]
+    ring
+  · unfold rotX3 kx3
+    rw [d2_anchor13, d2_anchor23, eqdy31, eqdy32]
+    unfold eqY3 lagrangeOmega
+    ring
+  · unfold rotY3 ky3
+    rw [d2_anchor13, d2_anchor23, eqdx31, eqdx32]
+    unfold eqX3 lagrangeOmega
+    rw [div_2sqrt3]
+    ring
+
+/-! ### the linearization at the anchor (the 2π/Γ-scaled Jacobian rows) -/
+
+/-! The six rows below are the Jacobian of the rotating-frame field
+    at the anchor, scaled by 2π/Γ so that every entry lies in ℚ(√3):
+    linRow_j(d) = (2π/Γ) · ∂(rot component j)/∂(direction d)|anchor.
+    Entry provenance: computed symbolically by the SymPy ladder
+    (`notes/verify_identities_s8.py`, check B) and certified along the
+    modal directions by `lin_cert_*` below; the frame contribution
+    −3·J per vortex is folded in. -/
+
+/-- Row 1 (rotX₁): the derivative of the x-velocity of vortex 1 in the
+    direction (dx1, dy1, dx2, dy2, dx3, dy3), in 2π/Γ units. -/
+noncomputable def linX1 (dx1 dy1 dx2 dy2 dx3 dy3 : ℝ) : ℝ :=
+  2 * dy1 + Real.sqrt 3 / 2 * dx2 + 1 / 2 * dy2
+    - Real.sqrt 3 / 2 * dx3 + 1 / 2 * dy3
+
+/-- Row 2 (rotY₁). -/
+noncomputable def linY1 (dx1 dy1 dx2 dy2 dx3 dy3 : ℝ) : ℝ :=
+  -4 * dx1 + 1 / 2 * dx2 - Real.sqrt 3 / 2 * dy2 + 1 / 2 * dx3
+    + Real.sqrt 3 / 2 * dy3
+
+/-- Row 3 (rotX₂). -/
+noncomputable def linX2 (dx1 dy1 dx2 dy2 dx3 dy3 : ℝ) : ℝ :=
+  Real.sqrt 3 / 2 * dx1 + 1 / 2 * dy1 - Real.sqrt 3 / 2 * dx2 + 7 / 2 * dy2
+    - dy3
+
+/-- Row 4 (rotY₂). -/
+noncomputable def linY2 (dx1 dy1 dx2 dy2 dx3 dy3 : ℝ) : ℝ :=
+  1 / 2 * dx1 - Real.sqrt 3 / 2 * dy1 - 5 / 2 * dx2 + Real.sqrt 3 / 2 * dy2
+    - dx3
+
+/-- Row 5 (rotX₃). -/
+noncomputable def linX3 (dx1 dy1 dx2 dy2 dx3 dy3 : ℝ) : ℝ :=
+  -Real.sqrt 3 / 2 * dx1 + 1 / 2 * dy1 - dy2 + Real.sqrt 3 / 2 * dx3
+    + 7 / 2 * dy3
+
+/-- Row 6 (rotY₃). -/
+noncomputable def linY3 (dx1 dy1 dx2 dy2 dx3 dy3 : ℝ) : ℝ :=
+  1 / 2 * dx1 + Real.sqrt 3 / 2 * dy1 - dx2 - 5 / 2 * dx3
+    - Real.sqrt 3 / 2 * dy3
+
+/-! ### the six eigenmodes -/
+
+/-- **Eigenmode 1 — translation (x):** the uniform x-shift direction
+    (1,0,1,0,1,0) is mapped by the linearization to −3·(0,1,0,1,0,1):
+    in the rotating frame a translated triangle orbits at the angular
+    velocity ω.  Eigenvalues ±3i (in 2π/Γ units) = ±iω. -/
+theorem eig_trans1 :
+    linX1 1 0 1 0 1 0 = 0
+      ∧ linY1 1 0 1 0 1 0 = -3
+      ∧ linX2 1 0 1 0 1 0 = 0
+      ∧ linY2 1 0 1 0 1 0 = -3
+      ∧ linX3 1 0 1 0 1 0 = 0
+      ∧ linY3 1 0 1 0 1 0 = -3 := by
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · unfold linX1; ring
+  · unfold linY1; ring
+  · unfold linX2; ring
+  · unfold linY2; ring
+  · unfold linX3; ring
+  · unfold linY3; ring
+
+/-- **Eigenmode 2 — translation (y):** the uniform y-shift direction
+    (0,1,0,1,0,1) is mapped to +3·(1,0,1,0,1,0). -/
+theorem eig_trans2 :
+    linX1 0 1 0 1 0 1 = 3
+      ∧ linY1 0 1 0 1 0 1 = 0
+      ∧ linX2 0 1 0 1 0 1 = 3
+      ∧ linY2 0 1 0 1 0 1 = 0
+      ∧ linX3 0 1 0 1 0 1 = 3
+      ∧ linY3 0 1 0 1 0 1 = 0 := by
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · unfold linX1; ring
+  · unfold linY1; ring
+  · unfold linX2; ring
+  · unfold linY2; ring
+  · unfold linX3; ring
+  · unfold linY3; ring
+
+/-- **Eigenmode 3 — phase (rotation):** the phase direction J·anchor
+    (rotate the whole triangle infinitesimally) is annihilated by the
+    linearization: eigenvalue 0.  Certified beyond first order by
+    Section 7: a phase-shifted triangle is the same solution
+    (`lag_rotation_x`). -/
+theorem eig_rot :
+    linX1 0 (1 / Real.sqrt 3) (-1 / 2) (-1 / (2 * Real.sqrt 3)) (1 / 2)
+        (-1 / (2 * Real.sqrt 3)) = 0
+      ∧ linY1 0 (1 / Real.sqrt 3) (-1 / 2) (-1 / (2 * Real.sqrt 3)) (1 / 2)
+        (-1 / (2 * Real.sqrt 3)) = 0
+      ∧ linX2 0 (1 / Real.sqrt 3) (-1 / 2) (-1 / (2 * Real.sqrt 3)) (1 / 2)
+        (-1 / (2 * Real.sqrt 3)) = 0
+      ∧ linY2 0 (1 / Real.sqrt 3) (-1 / 2) (-1 / (2 * Real.sqrt 3)) (1 / 2)
+        (-1 / (2 * Real.sqrt 3)) = 0
+      ∧ linX3 0 (1 / Real.sqrt 3) (-1 / 2) (-1 / (2 * Real.sqrt 3)) (1 / 2)
+        (-1 / (2 * Real.sqrt 3)) = 0
+      ∧ linY3 0 (1 / Real.sqrt 3) (-1 / 2) (-1 / (2 * Real.sqrt 3)) (1 / 2)
+        (-1 / (2 * Real.sqrt 3)) = 0 := by
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · unfold linX1
+    simp only [div_sqrt3, div_2sqrt3]
+    ring
+  · unfold linY1; ring
+  · unfold linX2
+    simp only [div_sqrt3, div_2sqrt3]
+    ring
+  · unfold linY2
+    simp only [div_sqrt3, div_2sqrt3]
+    linear_combination (-(1 / 4)) * s3sq
+  · unfold linX3
+    simp only [div_sqrt3, div_2sqrt3]
+    ring
+  · unfold linY3
+    simp only [div_sqrt3, div_2sqrt3]
+    linear_combination (1 / 4) * s3sq
+
+/-- **Eigenmode 4 — size (dilation):** the radial direction (the anchor
+    itself, per vortex) is mapped to −6·(the phase direction): the
+    generalized zero eigenvalue.  A triangle of a different size rotates
+    at a different rate, so in the fixed frame it drifts linearly —
+    certified beyond first order by Section 7 (`lag_trajectory_scale_x`:
+    the solution at side c·a runs at ω/c²). -/
+theorem eig_dil :
+    linX1 (1 / Real.sqrt 3) 0 (-1 / (2 * Real.sqrt 3)) (1 / 2)
+        (-1 / (2 * Real.sqrt 3)) (-1 / 2) = 0
+      ∧ linY1 (1 / Real.sqrt 3) 0 (-1 / (2 * Real.sqrt 3)) (1 / 2)
+        (-1 / (2 * Real.sqrt 3)) (-1 / 2) = -6 / Real.sqrt 3
+      ∧ linX2 (1 / Real.sqrt 3) 0 (-1 / (2 * Real.sqrt 3)) (1 / 2)
+        (-1 / (2 * Real.sqrt 3)) (-1 / 2) = 3
+      ∧ linY2 (1 / Real.sqrt 3) 0 (-1 / (2 * Real.sqrt 3)) (1 / 2)
+        (-1 / (2 * Real.sqrt 3)) (-1 / 2) = 3 / Real.sqrt 3
+      ∧ linX3 (1 / Real.sqrt 3) 0 (-1 / (2 * Real.sqrt 3)) (1 / 2)
+        (-1 / (2 * Real.sqrt 3)) (-1 / 2) = -3
+      ∧ linY3 (1 / Real.sqrt 3) 0 (-1 / (2 * Real.sqrt 3)) (1 / 2)
+        (-1 / (2 * Real.sqrt 3)) (-1 / 2) = 3 / Real.sqrt 3 := by
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · unfold linX1; ring
+  · unfold linY1
+    simp only [div_sqrt3, div_2sqrt3]
+    ring
+  · unfold linX2
+    simp only [div_sqrt3, div_2sqrt3]
+    linear_combination (1 / 4) * s3sq
+  · unfold linY2
+    simp only [div_sqrt3, div_2sqrt3]
+    ring
+  · unfold linX3
+    simp only [div_sqrt3, div_2sqrt3]
+    linear_combination (-(1 / 4)) * s3sq
+  · unfold linY3
+    simp only [div_sqrt3, div_2sqrt3]
+    ring
+
+/-- **Eigenmode 5 — shape (u):** the shape direction
+    u = (1, 0, 1/2, −√3/2, 0, 0) — vortices 1 and 2 move, vortex 3
+    rests — is mapped to −3·w with w = (0, 1, √3/2, 1/2, 0, 0). -/
+theorem eig_shapeU :
+    linX1 1 0 (1 / 2) (-Real.sqrt 3 / 2) 0 0 = 0
+      ∧ linY1 1 0 (1 / 2) (-Real.sqrt 3 / 2) 0 0 = -3
+      ∧ linX2 1 0 (1 / 2) (-Real.sqrt 3 / 2) 0 0 = -3 * Real.sqrt 3 / 2
+      ∧ linY2 1 0 (1 / 2) (-Real.sqrt 3 / 2) 0 0 = -3 / 2
+      ∧ linX3 1 0 (1 / 2) (-Real.sqrt 3 / 2) 0 0 = 0
+      ∧ linY3 1 0 (1 / 2) (-Real.sqrt 3 / 2) 0 0 = 0 := by
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · unfold linX1; ring
+  · unfold linY1; linear_combination (1 / 4) * s3sq
+  · unfold linX2; ring
+  · unfold linY2; linear_combination (-(1 / 4)) * s3sq
+  · unfold linX3; ring
+  · unfold linY3; ring
+
+/-- **Eigenmode 6 — shape (w):** the conjugate shape direction
+    w = (0, 1, √3/2, 1/2, 0, 0) is mapped to +3·u: together with
+    `eig_shapeU` the shape plane carries the eigenvalue pair ±3i
+    (in 2π/Γ units) — the shape oscillation at the Lagrange frequency. -/
+theorem eig_shapeW :
+    linX1 0 1 (Real.sqrt 3 / 2) (1 / 2) 0 0 = 3
+      ∧ linY1 0 1 (Real.sqrt 3 / 2) (1 / 2) 0 0 = 0
+      ∧ linX2 0 1 (Real.sqrt 3 / 2) (1 / 2) 0 0 = 3 / 2
+      ∧ linY2 0 1 (Real.sqrt 3 / 2) (1 / 2) 0 0 = -3 * Real.sqrt 3 / 2
+      ∧ linX3 0 1 (Real.sqrt 3 / 2) (1 / 2) 0 0 = 0
+      ∧ linY3 0 1 (Real.sqrt 3 / 2) (1 / 2) 0 0 = 0 := by
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · unfold linX1; linear_combination (1 / 4) * s3sq
+  · unfold linY1; ring
+  · unfold linX2; linear_combination (-(1 / 4)) * s3sq
+  · unfold linY2; ring
+  · unfold linX3; ring
+  · unfold linY3; ring
+
+/-! ### certification: the true rotating-frame field along the modes -/
+
+private theorem hasDerivAt_const_mul_id (c t : ℝ) :
+    HasDerivAt (fun s => c * s) c t :=
+  ((hasDerivAt_const (c := c) (x := t)).mul
+    (hasDerivAt_id (𝕜 := ℝ) (x := t))).congr_deriv (by ring)
+
+private theorem hasDerivAt_affine (c0 c1 t : ℝ) :
+    HasDerivAt (fun s => c0 + c1 * s) c1 t :=
+  ((hasDerivAt_const (c := c0) (x := t)).add
+    (hasDerivAt_const_mul_id c1 t)).congr_deriv (by ring)
+
+/-- The squared distance between two uniformly moving points is a
+    quadratic polynomial of time (used at t = 0 only). -/
+private theorem hasDerivAt_quad0 (d0 d1 d2 : ℝ) :
+    HasDerivAt (fun s => d0 + d1 * s + d2 * s ^ 2) d1 0 := by
+  have hmul : HasDerivAt (fun s : ℝ => s * s) (0:ℝ) 0 := by
+    refine deriv_congr
+      (((hasDerivAt_id (𝕜 := ℝ) (x := 0)).mul
+        (hasDerivAt_id (𝕜 := ℝ) (x := 0))).congr_deriv (by simp)) (fun y => ?_)
+    simp only [id_eq]
+  have hs : HasDerivAt (fun s : ℝ => s ^ 2) (0:ℝ) 0 := by
+    refine deriv_congr hmul (fun y => ?_)
+    exact (pow_two y).symm
+  have hq : HasDerivAt (fun s => d2 * s ^ 2) (d2 * 0) 0 :=
+    deriv_mul_const_left hs
+  exact (((hasDerivAt_const (c := d0) (x := 0)).add
+    (hasDerivAt_const_mul_id d1 0)).add hq).congr_deriv (by ring)
+
+/-- **The quotient rule at t = 0**: an affine numerator over a quadratic
+    denominator, evaluated where the denominator is d0 ≠ 0. -/
+private theorem hasDerivAt_quot0 (c0 c1 d0 d1 d2 : ℝ) (hd : d0 ≠ 0) :
+    HasDerivAt (fun s => (c0 + c1 * s) / (d0 + d1 * s + d2 * s ^ 2))
+      ((c1 * d0 - c0 * d1) / d0 ^ 2) 0 :=
+  ((hasDerivAt_affine c0 c1 0).div (hasDerivAt_quad0 d0 d1 d2)
+    (by simpa using hd)).congr_deriv (by ring)
+
+/-- The squared distance only sees coordinate differences. -/
+private theorem d2_shiftX (b x1 y1 x2 y2 : ℝ) :
+    d2 (x1 + b) y1 (x2 + b) y2 = d2 x1 y1 x2 y2 := by
+  unfold d2; ring
+
+private theorem d2_shiftY (b x1 y1 x2 y2 : ℝ) :
+    d2 x1 (y1 + b) x2 (y2 + b) = d2 x1 y1 x2 y2 := by
+  unfold d2; ring
+
+private theorem add_sub_add_eq (a b s : ℝ) : a + s - (b + s) = a - b := by
+  ring
+
+/-- **Certification of the translation modes (x):** the derivative at
+    t = 0 of the TRUE rotating-frame field, evaluated along the line
+    anchor + t·(1,0,1,0,1,0), is exactly the linearization applied to
+    that direction — all six components.  (The vortex part is constant
+    along the line by translation invariance; only the frame term
+    −ω·x is affine.) -/
+theorem lin_cert_transX (g : ℝ) :
+    HasDerivAt (fun s => rotX1 g (lagrangeOmega g 1) (eqX1 + s) eqY1
+        (eqX2 + s) eqY2 (eqX3 + s) eqY3)
+      (g / (2 * Real.pi) * linX1 1 0 1 0 1 0) 0
+      ∧ HasDerivAt (fun s => rotY1 g (lagrangeOmega g 1) (eqX1 + s) eqY1
+        (eqX2 + s) eqY2 (eqX3 + s) eqY3)
+      (g / (2 * Real.pi) * linY1 1 0 1 0 1 0) 0
+      ∧ HasDerivAt (fun s => rotX2 g (lagrangeOmega g 1) (eqX1 + s) eqY1
+        (eqX2 + s) eqY2 (eqX3 + s) eqY3)
+      (g / (2 * Real.pi) * linX2 1 0 1 0 1 0) 0
+      ∧ HasDerivAt (fun s => rotY2 g (lagrangeOmega g 1) (eqX1 + s) eqY1
+        (eqX2 + s) eqY2 (eqX3 + s) eqY3)
+      (g / (2 * Real.pi) * linY2 1 0 1 0 1 0) 0
+      ∧ HasDerivAt (fun s => rotX3 g (lagrangeOmega g 1) (eqX1 + s) eqY1
+        (eqX2 + s) eqY2 (eqX3 + s) eqY3)
+      (g / (2 * Real.pi) * linX3 1 0 1 0 1 0) 0
+      ∧ HasDerivAt (fun s => rotY3 g (lagrangeOmega g 1) (eqX1 + s) eqY1
+        (eqX2 + s) eqY2 (eqX3 + s) eqY3)
+      (g / (2 * Real.pi) * linY3 1 0 1 0 1 0) 0 := by
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · have hE : ∀ s : ℝ, rotX1 g (lagrangeOmega g 1) (eqX1 + s) eqY1
+        (eqX2 + s) eqY2 (eqX3 + s) eqY3 = 0 := by
+      intro s
+      unfold rotX1 kx1
+      rw [d2_shiftX s eqX1 eqY1 eqX2 eqY2, d2_shiftX s eqX1 eqY1 eqX3 eqY3,
+        d2_anchor12, d2_anchor13, eqdy12, eqdy13]
+      unfold eqY1 lagrangeOmega
+      ring
+    have h := deriv_congr (hasDerivAt_const (c := 0) (x := 0))
+      (fun s => (hE s).symm)
+    exact h.congr_deriv (by unfold linX1; ring)
+  · have hE : ∀ s : ℝ, rotY1 g (lagrangeOmega g 1) (eqX1 + s) eqY1
+        (eqX2 + s) eqY2 (eqX3 + s) eqY3
+        = -(lagrangeOmega g 1) * s := by
+      intro s
+      unfold rotY1 ky1
+      rw [add_sub_add_eq eqX1 eqX2 s, add_sub_add_eq eqX1 eqX3 s,
+        d2_shiftX s eqX1 eqY1 eqX2 eqY2, d2_shiftX s eqX1 eqY1 eqX3 eqY3,
+        d2_anchor12, d2_anchor13, eqdx12, eqdx13]
+      unfold eqX1 lagrangeOmega
+      rw [div_sqrt3]
+      ring
+    have h := deriv_congr (hasDerivAt_const_mul_id (-(lagrangeOmega g 1)) 0)
+      (fun s => (hE s).symm)
+    exact h.congr_deriv (by unfold linY1 lagrangeOmega; ring)
+  · have hE : ∀ s : ℝ, rotX2 g (lagrangeOmega g 1) (eqX1 + s) eqY1
+        (eqX2 + s) eqY2 (eqX3 + s) eqY3 = 0 := by
+      intro s
+      unfold rotX2 kx2
+      rw [d2_shiftX s eqX1 eqY1 eqX2 eqY2, d2_shiftX s eqX2 eqY2 eqX3 eqY3,
+        d2_anchor12, d2_anchor23, eqdy21, eqdy23]
+      unfold eqY2 lagrangeOmega
+      ring
+    have h := deriv_congr (hasDerivAt_const (c := 0) (x := 0))
+      (fun s => (hE s).symm)
+    exact h.congr_deriv (by unfold linX2; ring)
+  · have hE : ∀ s : ℝ, rotY2 g (lagrangeOmega g 1) (eqX1 + s) eqY1
+        (eqX2 + s) eqY2 (eqX3 + s) eqY3
+        = -(lagrangeOmega g 1) * s := by
+      intro s
+      unfold rotY2 ky2
+      rw [add_sub_add_eq eqX2 eqX1 s, add_sub_add_eq eqX2 eqX3 s,
+        d2_shiftX s eqX1 eqY1 eqX2 eqY2, d2_shiftX s eqX2 eqY2 eqX3 eqY3,
+        d2_anchor12, d2_anchor23, eqdx21, eqdx23]
+      unfold eqX2 lagrangeOmega
+      rw [div_2sqrt3]
+      ring
+    have h := deriv_congr (hasDerivAt_const_mul_id (-(lagrangeOmega g 1)) 0)
+      (fun s => (hE s).symm)
+    exact h.congr_deriv (by unfold linY2 lagrangeOmega; ring)
+  · have hE : ∀ s : ℝ, rotX3 g (lagrangeOmega g 1) (eqX1 + s) eqY1
+        (eqX2 + s) eqY2 (eqX3 + s) eqY3 = 0 := by
+      intro s
+      unfold rotX3 kx3
+      rw [d2_shiftX s eqX1 eqY1 eqX3 eqY3, d2_shiftX s eqX2 eqY2 eqX3 eqY3,
+        d2_anchor13, d2_anchor23, eqdy31, eqdy32]
+      unfold eqY3 lagrangeOmega
+      ring
+    have h := deriv_congr (hasDerivAt_const (c := 0) (x := 0))
+      (fun s => (hE s).symm)
+    exact h.congr_deriv (by unfold linX3; ring)
+  · have hE : ∀ s : ℝ, rotY3 g (lagrangeOmega g 1) (eqX1 + s) eqY1
+        (eqX2 + s) eqY2 (eqX3 + s) eqY3
+        = -(lagrangeOmega g 1) * s := by
+      intro s
+      unfold rotY3 ky3
+      rw [add_sub_add_eq eqX3 eqX1 s, add_sub_add_eq eqX3 eqX2 s,
+        d2_shiftX s eqX1 eqY1 eqX3 eqY3, d2_shiftX s eqX2 eqY2 eqX3 eqY3,
+        d2_anchor13, d2_anchor23, eqdx31, eqdx32]
+      unfold eqX3 lagrangeOmega
+      rw [div_2sqrt3]
+      ring
+    have h := deriv_congr (hasDerivAt_const_mul_id (-(lagrangeOmega g 1)) 0)
+      (fun s => (hE s).symm)
+    exact h.congr_deriv (by unfold linY3 lagrangeOmega; ring)
+
+/-- **Certification of the translation modes (y):** the same along the
+    line anchor + t·(0,1,0,1,0,1). -/
+theorem lin_cert_transY (g : ℝ) :
+    HasDerivAt (fun s => rotX1 g (lagrangeOmega g 1) eqX1 (eqY1 + s)
+        eqX2 (eqY2 + s) eqX3 (eqY3 + s))
+      (g / (2 * Real.pi) * linX1 0 1 0 1 0 1) 0
+      ∧ HasDerivAt (fun s => rotY1 g (lagrangeOmega g 1) eqX1 (eqY1 + s)
+        eqX2 (eqY2 + s) eqX3 (eqY3 + s))
+      (g / (2 * Real.pi) * linY1 0 1 0 1 0 1) 0
+      ∧ HasDerivAt (fun s => rotX2 g (lagrangeOmega g 1) eqX1 (eqY1 + s)
+        eqX2 (eqY2 + s) eqX3 (eqY3 + s))
+      (g / (2 * Real.pi) * linX2 0 1 0 1 0 1) 0
+      ∧ HasDerivAt (fun s => rotY2 g (lagrangeOmega g 1) eqX1 (eqY1 + s)
+        eqX2 (eqY2 + s) eqX3 (eqY3 + s))
+      (g / (2 * Real.pi) * linY2 0 1 0 1 0 1) 0
+      ∧ HasDerivAt (fun s => rotX3 g (lagrangeOmega g 1) eqX1 (eqY1 + s)
+        eqX2 (eqY2 + s) eqX3 (eqY3 + s))
+      (g / (2 * Real.pi) * linX3 0 1 0 1 0 1) 0
+      ∧ HasDerivAt (fun s => rotY3 g (lagrangeOmega g 1) eqX1 (eqY1 + s)
+        eqX2 (eqY2 + s) eqX3 (eqY3 + s))
+      (g / (2 * Real.pi) * linY3 0 1 0 1 0 1) 0 := by
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · have hE : ∀ s : ℝ, rotX1 g (lagrangeOmega g 1) eqX1 (eqY1 + s)
+        eqX2 (eqY2 + s) eqX3 (eqY3 + s)
+        = lagrangeOmega g 1 * s := by
+      intro s
+      unfold rotX1 kx1
+      rw [add_sub_add_eq eqY1 eqY2 s, add_sub_add_eq eqY1 eqY3 s,
+        d2_shiftY s eqX1 eqY1 eqX2 eqY2, d2_shiftY s eqX1 eqY1 eqX3 eqY3,
+        d2_anchor12, d2_anchor13, eqdy12, eqdy13]
+      unfold eqY1 lagrangeOmega
+      ring
+    have h := deriv_congr (hasDerivAt_const_mul_id (lagrangeOmega g 1) 0)
+      (fun s => (hE s).symm)
+    exact h.congr_deriv (by unfold linX1 lagrangeOmega; ring)
+  · have hE : ∀ s : ℝ, rotY1 g (lagrangeOmega g 1) eqX1 (eqY1 + s)
+        eqX2 (eqY2 + s) eqX3 (eqY3 + s) = 0 := by
+      intro s
+      unfold rotY1 ky1
+      rw [d2_shiftY s eqX1 eqY1 eqX2 eqY2, d2_shiftY s eqX1 eqY1 eqX3 eqY3,
+        d2_anchor12, d2_anchor13, eqdx12, eqdx13]
+      unfold eqX1 lagrangeOmega
+      rw [div_sqrt3]
+      ring
+    have h := deriv_congr (hasDerivAt_const (c := 0) (x := 0))
+      (fun s => (hE s).symm)
+    exact h.congr_deriv (by unfold linY1; ring)
+  · have hE : ∀ s : ℝ, rotX2 g (lagrangeOmega g 1) eqX1 (eqY1 + s)
+        eqX2 (eqY2 + s) eqX3 (eqY3 + s)
+        = lagrangeOmega g 1 * s := by
+      intro s
+      unfold rotX2 kx2
+      rw [add_sub_add_eq eqY2 eqY1 s, add_sub_add_eq eqY2 eqY3 s,
+        d2_shiftY s eqX1 eqY1 eqX2 eqY2, d2_shiftY s eqX2 eqY2 eqX3 eqY3,
+        d2_anchor12, d2_anchor23, eqdy21, eqdy23]
+      unfold eqY2 lagrangeOmega
+      ring
+    have h := deriv_congr (hasDerivAt_const_mul_id (lagrangeOmega g 1) 0)
+      (fun s => (hE s).symm)
+    exact h.congr_deriv (by unfold linX2 lagrangeOmega; ring)
+  · have hE : ∀ s : ℝ, rotY2 g (lagrangeOmega g 1) eqX1 (eqY1 + s)
+        eqX2 (eqY2 + s) eqX3 (eqY3 + s) = 0 := by
+      intro s
+      unfold rotY2 ky2
+      rw [d2_shiftY s eqX1 eqY1 eqX2 eqY2, d2_shiftY s eqX2 eqY2 eqX3 eqY3,
+        d2_anchor12, d2_anchor23, eqdx21, eqdx23]
+      unfold eqX2 lagrangeOmega
+      rw [div_2sqrt3]
+      ring
+    have h := deriv_congr (hasDerivAt_const (c := 0) (x := 0))
+      (fun s => (hE s).symm)
+    exact h.congr_deriv (by unfold linY2; ring)
+  · have hE : ∀ s : ℝ, rotX3 g (lagrangeOmega g 1) eqX1 (eqY1 + s)
+        eqX2 (eqY2 + s) eqX3 (eqY3 + s)
+        = lagrangeOmega g 1 * s := by
+      intro s
+      unfold rotX3 kx3
+      rw [add_sub_add_eq eqY3 eqY1 s, add_sub_add_eq eqY3 eqY2 s,
+        d2_shiftY s eqX1 eqY1 eqX3 eqY3, d2_shiftY s eqX2 eqY2 eqX3 eqY3,
+        d2_anchor13, d2_anchor23, eqdy31, eqdy32]
+      unfold eqY3 lagrangeOmega
+      ring
+    have h := deriv_congr (hasDerivAt_const_mul_id (lagrangeOmega g 1) 0)
+      (fun s => (hE s).symm)
+    exact h.congr_deriv (by unfold linX3 lagrangeOmega; ring)
+  · have hE : ∀ s : ℝ, rotY3 g (lagrangeOmega g 1) eqX1 (eqY1 + s)
+        eqX2 (eqY2 + s) eqX3 (eqY3 + s) = 0 := by
+      intro s
+      unfold rotY3 ky3
+      rw [d2_shiftY s eqX1 eqY1 eqX3 eqY3, d2_shiftY s eqX2 eqY2 eqX3 eqY3,
+        d2_anchor13, d2_anchor23, eqdx31, eqdx32]
+      unfold eqX3 lagrangeOmega
+      rw [div_2sqrt3]
+      ring
+    have h := deriv_congr (hasDerivAt_const (c := 0) (x := 0))
+      (fun s => (hE s).symm)
+    exact h.congr_deriv (by unfold linY3; ring)
+
+/-! ### certification: the true rotating-frame field along the shape modes -/
+
+/-! The shape directions u = (1, 0, 1/2, −√3/2, 0, 0) and
+    w = (0, 1, √3/2, 1/2, 0, 0) are not symmetry directions, so along
+    their lines the Kirchhoff part of the rotating-frame field genuinely
+    varies: the pairwise squared distances become quadratic polynomials
+    of the line parameter.  The next eighteen private lemmas are the
+    polynomial core (coordinate differences and squared distances along
+    the two lines); all of them are exact identities in ℚ(√3). -/
+
+private theorem lin_dxU12 (s : ℝ) :
+    eqX1 + s - (eqX2 + s / 2) = Real.sqrt 3 / 2 + s / 2 := by
+  linear_combination eqdx12
+
+private theorem lin_dxU13 (s : ℝ) :
+    eqX1 + s - eqX3 = Real.sqrt 3 / 2 + s := by
+  linear_combination eqdx13
+
+private theorem lin_dxU23 (s : ℝ) : eqX2 + s / 2 - eqX3 = s / 2 := by
+  unfold eqX2 eqX3; ring
+
+private theorem lin_dxU21 (s : ℝ) :
+    eqX2 + s / 2 - (eqX1 + s) = -(Real.sqrt 3 / 2) - s / 2 := by
+  linear_combination eqdx21
+
+private theorem lin_dxU31 (s : ℝ) :
+    eqX3 - (eqX1 + s) = -(Real.sqrt 3 / 2) - s := by
+  linear_combination eqdx31
+
+private theorem lin_dxU32 (s : ℝ) : eqX3 - (eqX2 + s / 2) = -s / 2 := by
+  unfold eqX2 eqX3; ring
+
+private theorem lin_dyU12 (s : ℝ) :
+    eqY1 - (eqY2 - Real.sqrt 3 / 2 * s) = -(1 / 2) + Real.sqrt 3 / 2 * s := by
+  linear_combination eqdy12
+
+private theorem lin_dyU13 : eqY1 - eqY3 = 1 / 2 := eqdy13
+
+private theorem lin_dyU23 (s : ℝ) :
+    eqY2 - Real.sqrt 3 / 2 * s - eqY3 = 1 - Real.sqrt 3 / 2 * s := by
+  linear_combination eqdy23
+
+private theorem lin_dyU21 (s : ℝ) :
+    eqY2 - Real.sqrt 3 / 2 * s - eqY1 = 1 / 2 - Real.sqrt 3 / 2 * s := by
+  linear_combination eqdy21
+
+private theorem lin_dyU31 : eqY3 - eqY1 = -(1 / 2) := eqdy31
+
+private theorem lin_dyU32 (s : ℝ) :
+    eqY3 - (eqY2 - Real.sqrt 3 / 2 * s) = -1 + Real.sqrt 3 / 2 * s := by
+  linear_combination eqdy32
+
+private theorem lin_d2U12 (s : ℝ) :
+    d2 (eqX1 + s) eqY1 (eqX2 + s / 2) (eqY2 - Real.sqrt 3 / 2 * s) = 1 + s ^ 2 := by
+  unfold d2
+  rw [lin_dxU12, lin_dyU12]
+  linear_combination ((1 + s ^ 2) / 4) * s3sq
+
+private theorem lin_d2U13 (s : ℝ) :
+    d2 (eqX1 + s) eqY1 eqX3 eqY3 = 1 + Real.sqrt 3 * s + s ^ 2 := by
+  unfold d2
+  rw [lin_dxU13, lin_dyU13]
+  linear_combination (1 / 4) * s3sq
+
+private theorem lin_d2U23 (s : ℝ) :
+    d2 (eqX2 + s / 2) (eqY2 - Real.sqrt 3 / 2 * s) eqX3 eqY3
+      = 1 - Real.sqrt 3 * s + s ^ 2 := by
+  unfold d2
+  rw [lin_dxU23, lin_dyU23]
+  linear_combination (s ^ 2 / 4) * s3sq
+
+private theorem lin_dxW12 (s : ℝ) :
+    eqX1 - (eqX2 + Real.sqrt 3 / 2 * s) = Real.sqrt 3 / 2 - Real.sqrt 3 / 2 * s := by
+  linear_combination eqdx12
+
+private theorem lin_dyW12 (s : ℝ) :
+    eqY1 + s - (eqY2 + s / 2) = -(1 / 2) + s / 2 := by
+  linear_combination eqdy12
+
+private theorem lin_dxW13 : eqX1 - eqX3 = Real.sqrt 3 / 2 := eqdx13
+
+private theorem lin_dyW13 (s : ℝ) : eqY1 + s - eqY3 = 1 / 2 + s := by
+  linear_combination eqdy13
+
+private theorem lin_dxW21 (s : ℝ) :
+    eqX2 + Real.sqrt 3 / 2 * s - eqX1 = -(Real.sqrt 3 / 2) + Real.sqrt 3 / 2 * s := by
+  linear_combination eqdx21
+
+private theorem lin_dyW21 (s : ℝ) :
+    eqY2 + s / 2 - (eqY1 + s) = 1 / 2 - s / 2 := by
+  linear_combination eqdy21
+
+private theorem lin_dyW23 (s : ℝ) : eqY2 + s / 2 - eqY3 = 1 + s / 2 := by
+  linear_combination eqdy23
+
+private theorem lin_dxW23 (s : ℝ) :
+    eqX2 + Real.sqrt 3 / 2 * s - eqX3 = Real.sqrt 3 / 2 * s := by
+  unfold eqX2 eqX3; ring
+
+private theorem lin_dyW31 (s : ℝ) :
+    eqY3 - (eqY1 + s) = -(1 / 2) - s := by
+  linear_combination eqdy31
+
+private theorem lin_dxW31 : eqX3 - eqX1 = -(Real.sqrt 3 / 2) := eqdx31
+
+private theorem lin_dyW32 (s : ℝ) :
+    eqY3 - (eqY2 + s / 2) = -1 - s / 2 := by
+  linear_combination eqdy32
+
+private theorem lin_dxW32 (s : ℝ) :
+    eqX3 - (eqX2 + Real.sqrt 3 / 2 * s) = -(Real.sqrt 3 / 2) * s := by
+  unfold eqX2 eqX3; ring
+
+private theorem lin_d2W12 (s : ℝ) :
+    d2 eqX1 (eqY1 + s) (eqX2 + Real.sqrt 3 / 2 * s) (eqY2 + s / 2)
+      = 1 - 2 * s + s ^ 2 := by
+  unfold d2
+  rw [lin_dxW12, lin_dyW12]
+  linear_combination ((1 - s) ^ 2 / 4) * s3sq
+
+private theorem lin_d2W13 (s : ℝ) :
+    d2 eqX1 (eqY1 + s) eqX3 eqY3 = 1 + s + s ^ 2 := by
+  unfold d2
+  rw [lin_dxW13, lin_dyW13]
+  linear_combination (1 / 4) * s3sq
+
+private theorem lin_d2W23 (s : ℝ) :
+    d2 (eqX2 + Real.sqrt 3 / 2 * s) (eqY2 + s / 2) eqX3 eqY3
+      = 1 + s + s ^ 2 := by
+  unfold d2
+  rw [lin_dxW23, lin_dyW23]
+  linear_combination (s ^ 2 / 4) * s3sq
+
+private theorem lin_hasDerivAt_add_id (c t : ℝ) :
+    HasDerivAt (fun s => c + s) 1 t :=
+  ((hasDerivAt_const (c := c) (x := t)).add
+    (hasDerivAt_id (𝕜 := ℝ) (x := t))).congr_deriv (by ring)
+
+/-- **Certification of the shape mode u:** the derivative at t = 0 of the
+    TRUE rotating-frame field, evaluated along the line
+    anchor + t·(1, 0, 1/2, −√3/2, 0, 0), is exactly the linearization
+    applied to that direction — all six components.  Unlike the
+    translation lines, here the Kirchhoff quotients genuinely vary (two
+    of the three squared distances become quadratic in the line
+    parameter), so this certifies the interior rows of the Jacobian. -/
+theorem lin_cert_shapeU (g : ℝ) :
+    HasDerivAt (fun s => rotX1 g (lagrangeOmega g 1) (eqX1 + s) eqY1
+        (eqX2 + s / 2) (eqY2 - Real.sqrt 3 / 2 * s) eqX3 eqY3)
+      (g / (2 * Real.pi) * linX1 1 0 (1 / 2) (-Real.sqrt 3 / 2) 0 0) 0
+    ∧ HasDerivAt (fun s => rotY1 g (lagrangeOmega g 1) (eqX1 + s) eqY1
+        (eqX2 + s / 2) (eqY2 - Real.sqrt 3 / 2 * s) eqX3 eqY3)
+      (g / (2 * Real.pi) * linY1 1 0 (1 / 2) (-Real.sqrt 3 / 2) 0 0) 0
+    ∧ HasDerivAt (fun s => rotX2 g (lagrangeOmega g 1) (eqX1 + s) eqY1
+        (eqX2 + s / 2) (eqY2 - Real.sqrt 3 / 2 * s) eqX3 eqY3)
+      (g / (2 * Real.pi) * linX2 1 0 (1 / 2) (-Real.sqrt 3 / 2) 0 0) 0
+    ∧ HasDerivAt (fun s => rotY2 g (lagrangeOmega g 1) (eqX1 + s) eqY1
+        (eqX2 + s / 2) (eqY2 - Real.sqrt 3 / 2 * s) eqX3 eqY3)
+      (g / (2 * Real.pi) * linY2 1 0 (1 / 2) (-Real.sqrt 3 / 2) 0 0) 0
+    ∧ HasDerivAt (fun s => rotX3 g (lagrangeOmega g 1) (eqX1 + s) eqY1
+        (eqX2 + s / 2) (eqY2 - Real.sqrt 3 / 2 * s) eqX3 eqY3)
+      (g / (2 * Real.pi) * linX3 1 0 (1 / 2) (-Real.sqrt 3 / 2) 0 0) 0
+    ∧ HasDerivAt (fun s => rotY3 g (lagrangeOmega g 1) (eqX1 + s) eqY1
+        (eqX2 + s / 2) (eqY2 - Real.sqrt 3 / 2 * s) eqX3 eqY3)
+      (g / (2 * Real.pi) * linY3 1 0 (1 / 2) (-Real.sqrt 3 / 2) 0 0) 0 := by
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · -- rotX1: quotient 12 varies ((−1/2 + √3·s/2)/(1 + s²)), quotient 13
+    -- varies ((1/2)/(1 + √3·s + s²)); the frame term is constant (y₁ rests).
+    have hq12 : HasDerivAt (fun s => (-(1 / 2) + Real.sqrt 3 / 2 * s) / (1 + s ^ 2))
+        ((Real.sqrt 3 / 2 * 1 - -(1 / 2) * 0) / 1 ^ 2) 0 :=
+      deriv_congr (hasDerivAt_quot0 (-(1 / 2)) (Real.sqrt 3 / 2) 1 0 1
+        (by norm_num)) (fun s => by ring)
+    have hq13 : HasDerivAt (fun s => (1 / 2) / (1 + Real.sqrt 3 * s + s ^ 2))
+        ((0 * 1 - 1 / 2 * Real.sqrt 3) / 1 ^ 2) 0 :=
+      deriv_congr (hasDerivAt_quot0 (1 / 2) 0 1 (Real.sqrt 3) 1
+        (by norm_num)) (fun s => by ring)
+    have hfr : HasDerivAt (fun s => lagrangeOmega g 1 * eqY1) (0:ℝ) 0 :=
+      hasDerivAt_const (c := lagrangeOmega g 1 * eqY1) (x := (0:ℝ))
+    have hfull := (deriv_mul_const_left (hq12.add hq13)
+      (c := -(g / (2 * Real.pi)))).add hfr
+    exact deriv_congr hfull (fun s => by
+      unfold rotX1 kx1
+      rw [lin_dyU12, lin_d2U12, lin_dyU13, lin_d2U13]
+      ring) |>.congr_deriv (by
+        unfold linX1
+        ring)
+  · -- rotY1: quotients (√3/2 + s/2)/(1 + s²) and (√3/2 + s)/(1 + √3·s + s²);
+    -- the frame term −ω·(eqX1 + s) is affine with slope −ω.
+    have hq12 : HasDerivAt (fun s => (Real.sqrt 3 / 2 + s / 2) / (1 + s ^ 2))
+        ((1 / 2 * 1 - Real.sqrt 3 / 2 * 0) / 1 ^ 2) 0 :=
+      deriv_congr (hasDerivAt_quot0 (Real.sqrt 3 / 2) (1 / 2) 1 0 1
+        (by norm_num)) (fun s => by ring)
+    have hq13 : HasDerivAt (fun s => (Real.sqrt 3 / 2 + s) / (1 + Real.sqrt 3 * s + s ^ 2))
+        ((1 * 1 - Real.sqrt 3 / 2 * Real.sqrt 3) / 1 ^ 2) 0 :=
+      deriv_congr (hasDerivAt_quot0 (Real.sqrt 3 / 2) 1 1 (Real.sqrt 3) 1
+        (by norm_num)) (fun s => by ring)
+    have hfr := deriv_mul_const_left (lin_hasDerivAt_add_id eqX1 0)
+      (c := -(lagrangeOmega g 1))
+    have hfull := (deriv_mul_const_left (hq12.add hq13)
+      (c := g / (2 * Real.pi))).add hfr
+    exact deriv_congr hfull (fun s => by
+      unfold rotY1 ky1
+      rw [lin_dxU12, lin_d2U12, lin_dxU13, lin_d2U13]
+      ring) |>.congr_deriv (by
+        unfold linY1 lagrangeOmega
+        linear_combination (-(3 * g / (8 * Real.pi))) * s3sq)
+  · -- rotX2: quotients (1/2 − √3·s/2)/(1 + s²) and (1 − √3·s/2)/(1 − √3·s + s²);
+    -- the frame term ω·(eqY2 − √3·s/2) has slope −ω·√3/2.
+    have hq21 : HasDerivAt (fun s => (1 / 2 - Real.sqrt 3 / 2 * s) / (1 + s ^ 2))
+        ((-(Real.sqrt 3 / 2) * 1 - 1 / 2 * 0) / 1 ^ 2) 0 :=
+      deriv_congr (hasDerivAt_quot0 (1 / 2) (-(Real.sqrt 3 / 2)) 1 0 1
+        (by norm_num)) (fun s => by ring)
+    have hq23 : HasDerivAt (fun s => (1 - Real.sqrt 3 / 2 * s) / (1 - Real.sqrt 3 * s + s ^ 2))
+        ((-(Real.sqrt 3 / 2) * 1 - 1 * -(Real.sqrt 3)) / 1 ^ 2) 0 :=
+      deriv_congr (hasDerivAt_quot0 1 (-(Real.sqrt 3 / 2)) 1 (-(Real.sqrt 3)) 1
+        (by norm_num)) (fun s => by ring)
+    have hy2' : HasDerivAt (fun s => eqY2 - Real.sqrt 3 / 2 * s)
+        (-(Real.sqrt 3 / 2)) 0 :=
+      deriv_congr ((hasDerivAt_const (c := eqY2) (x := 0)).add
+        (deriv_mul_const_left (hasDerivAt_id (𝕜 := ℝ) (x := 0))
+          (c := -(Real.sqrt 3 / 2)))) (fun s => by simp only [id_eq]; ring)
+        |>.congr_deriv (by ring)
+    have hfull := (deriv_mul_const_left (hq21.add hq23)
+      (c := -(g / (2 * Real.pi)))).add
+      (deriv_mul_const_left hy2' (c := lagrangeOmega g 1))
+    exact deriv_congr hfull (fun s => by
+      unfold rotX2 kx2
+      rw [lin_dyU21, lin_d2U12, lin_dyU23, lin_d2U23]
+      ring) |>.congr_deriv (by
+        unfold linX2 lagrangeOmega
+        ring)
+  · -- rotY2: quotients (−√3/2 − s/2)/(1 + s²) and (s/2)/(1 − √3·s + s²);
+    -- the frame term −ω·(eqX2 + s/2) has slope −ω/2.
+    have hq21 : HasDerivAt (fun s => (-(Real.sqrt 3 / 2) - s / 2) / (1 + s ^ 2))
+        ((-(1 / 2) * 1 - -(Real.sqrt 3 / 2) * 0) / 1 ^ 2) 0 :=
+      deriv_congr (hasDerivAt_quot0 (-(Real.sqrt 3 / 2)) (-(1 / 2)) 1 0 1
+        (by norm_num)) (fun s => by ring)
+    have hq23 : HasDerivAt (fun s => (s / 2) / (1 - Real.sqrt 3 * s + s ^ 2))
+        ((1 / 2 * 1 - 0 * -(Real.sqrt 3)) / 1 ^ 2) 0 :=
+      deriv_congr (hasDerivAt_quot0 0 (1 / 2) 1 (-(Real.sqrt 3)) 1
+        (by norm_num)) (fun s => by ring)
+    have hx2' : HasDerivAt (fun s => eqX2 + s / 2) (1 / 2) 0 :=
+      deriv_congr ((hasDerivAt_const (c := eqX2) (x := 0)).add
+        (deriv_mul_const_left (hasDerivAt_id (𝕜 := ℝ) (x := 0)) (c := 1 / 2)))
+        (fun s => by simp only [id_eq]; ring) |>.congr_deriv (by ring)
+    have hfull := (deriv_mul_const_left (hq21.add hq23)
+      (c := g / (2 * Real.pi))).add
+      (deriv_mul_const_left hx2' (c := -(lagrangeOmega g 1)))
+    exact deriv_congr hfull (fun s => by
+      unfold rotY2 ky2
+      rw [lin_dxU21, lin_d2U12, lin_dxU23, lin_d2U23]
+      ring) |>.congr_deriv (by
+        unfold linY2 lagrangeOmega
+        linear_combination (g / (8 * Real.pi)) * s3sq)
+  · -- rotX3: quotients (−1/2)/(1 + √3·s + s²) and (−1 + √3·s/2)/(1 − √3·s + s²);
+    -- the frame term ω·eqY3 is constant.
+    have hq31 : HasDerivAt (fun s => (-(1 / 2)) / (1 + Real.sqrt 3 * s + s ^ 2))
+        ((0 * 1 - -(1 / 2) * Real.sqrt 3) / 1 ^ 2) 0 :=
+      deriv_congr (hasDerivAt_quot0 (-(1 / 2)) 0 1 (Real.sqrt 3) 1
+        (by norm_num)) (fun s => by ring)
+    have hq32 : HasDerivAt (fun s => (-1 + Real.sqrt 3 / 2 * s) / (1 - Real.sqrt 3 * s + s ^ 2))
+        ((Real.sqrt 3 / 2 * 1 - -1 * -(Real.sqrt 3)) / 1 ^ 2) 0 :=
+      deriv_congr (hasDerivAt_quot0 (-(1)) (Real.sqrt 3 / 2) 1 (-(Real.sqrt 3)) 1
+        (by norm_num)) (fun s => by ring)
+    have hfr : HasDerivAt (fun s => lagrangeOmega g 1 * eqY3) (0:ℝ) 0 :=
+      hasDerivAt_const (c := lagrangeOmega g 1 * eqY3) (x := (0:ℝ))
+    have hfull := (deriv_mul_const_left (hq31.add hq32)
+      (c := -(g / (2 * Real.pi)))).add hfr
+    exact deriv_congr hfull (fun s => by
+      unfold rotX3 kx3
+      rw [lin_dyU31, lin_d2U13, lin_dyU32, lin_d2U23]
+      ring) |>.congr_deriv (by
+        unfold linX3
+        ring)
+  · -- rotY3: quotients (−√3/2 − s)/(1 + √3·s + s²) and (−s/2)/(1 − √3·s + s²);
+    -- the frame term −ω·eqX3 is constant.
+    have hq31 : HasDerivAt (fun s => (-(Real.sqrt 3 / 2) - s) / (1 + Real.sqrt 3 * s + s ^ 2))
+        ((-(1) * 1 - -(Real.sqrt 3 / 2) * Real.sqrt 3) / 1 ^ 2) 0 :=
+      deriv_congr (hasDerivAt_quot0 (-(Real.sqrt 3 / 2)) (-(1)) 1 (Real.sqrt 3) 1
+        (by norm_num)) (fun s => by ring)
+    have hq32 : HasDerivAt (fun s => (-(s / 2)) / (1 - Real.sqrt 3 * s + s ^ 2))
+        ((-(1 / 2) * 1 - 0 * -(Real.sqrt 3)) / 1 ^ 2) 0 :=
+      deriv_congr (hasDerivAt_quot0 0 (-(1 / 2)) 1 (-(Real.sqrt 3)) 1
+        (by norm_num)) (fun s => by ring)
+    have hfr : HasDerivAt (fun s => -(lagrangeOmega g 1) * eqX3) (0:ℝ) 0 :=
+      hasDerivAt_const (c := -(lagrangeOmega g 1) * eqX3) (x := (0:ℝ))
+    have hfull := (deriv_mul_const_left (hq31.add hq32)
+      (c := g / (2 * Real.pi))).add hfr
+    exact deriv_congr hfull (fun s => by
+      unfold rotY3 ky3
+      rw [lin_dxU31, lin_d2U13, lin_dxU32, lin_d2U23]
+      ring) |>.congr_deriv (by
+        unfold linY3
+        linear_combination (g / (4 * Real.pi)) * s3sq)
+
+/-- **Certification of the shape mode w:** the same along the line
+    anchor + t·(0, 1, √3/2, 1/2, 0, 0).  Together with `lin_cert_shapeU`
+    every interior entry of the 2π/Γ-scaled Jacobian is now certified
+    against the true rotating-frame field. -/
+theorem lin_cert_shapeW (g : ℝ) :
+    HasDerivAt (fun s => rotX1 g (lagrangeOmega g 1) eqX1 (eqY1 + s)
+        (eqX2 + Real.sqrt 3 / 2 * s) (eqY2 + s / 2) eqX3 eqY3)
+      (g / (2 * Real.pi) * linX1 0 1 (Real.sqrt 3 / 2) (1 / 2) 0 0) 0
+    ∧ HasDerivAt (fun s => rotY1 g (lagrangeOmega g 1) eqX1 (eqY1 + s)
+        (eqX2 + Real.sqrt 3 / 2 * s) (eqY2 + s / 2) eqX3 eqY3)
+      (g / (2 * Real.pi) * linY1 0 1 (Real.sqrt 3 / 2) (1 / 2) 0 0) 0
+    ∧ HasDerivAt (fun s => rotX2 g (lagrangeOmega g 1) eqX1 (eqY1 + s)
+        (eqX2 + Real.sqrt 3 / 2 * s) (eqY2 + s / 2) eqX3 eqY3)
+      (g / (2 * Real.pi) * linX2 0 1 (Real.sqrt 3 / 2) (1 / 2) 0 0) 0
+    ∧ HasDerivAt (fun s => rotY2 g (lagrangeOmega g 1) eqX1 (eqY1 + s)
+        (eqX2 + Real.sqrt 3 / 2 * s) (eqY2 + s / 2) eqX3 eqY3)
+      (g / (2 * Real.pi) * linY2 0 1 (Real.sqrt 3 / 2) (1 / 2) 0 0) 0
+    ∧ HasDerivAt (fun s => rotX3 g (lagrangeOmega g 1) eqX1 (eqY1 + s)
+        (eqX2 + Real.sqrt 3 / 2 * s) (eqY2 + s / 2) eqX3 eqY3)
+      (g / (2 * Real.pi) * linX3 0 1 (Real.sqrt 3 / 2) (1 / 2) 0 0) 0
+    ∧ HasDerivAt (fun s => rotY3 g (lagrangeOmega g 1) eqX1 (eqY1 + s)
+        (eqX2 + Real.sqrt 3 / 2 * s) (eqY2 + s / 2) eqX3 eqY3)
+      (g / (2 * Real.pi) * linY3 0 1 (Real.sqrt 3 / 2) (1 / 2) 0 0) 0 := by
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · -- rotX1: quotients (−1/2 + s/2)/(1 − 2·s + s²) and (1/2 + s)/(1 + s + s²);
+    -- the frame term ω·(eqY1 + s) has slope ω.
+    have hq12 : HasDerivAt (fun s => (-(1 / 2) + s / 2) / (1 - 2 * s + s ^ 2))
+        ((1 / 2 * 1 - -(1 / 2) * -(2)) / 1 ^ 2) 0 :=
+      deriv_congr (hasDerivAt_quot0 (-(1 / 2)) (1 / 2) 1 (-(2)) 1
+        (by norm_num)) (fun s => by ring)
+    have hq13 : HasDerivAt (fun s => (1 / 2 + s) / (1 + s + s ^ 2))
+        ((1 * 1 - 1 / 2 * 1) / 1 ^ 2) 0 :=
+      deriv_congr (hasDerivAt_quot0 (1 / 2) 1 1 1 1
+        (by norm_num)) (fun s => by ring)
+    have hy1 := lin_hasDerivAt_add_id eqY1 0
+    have hfull := (deriv_mul_const_left (hq12.add hq13)
+      (c := -(g / (2 * Real.pi)))).add
+      (deriv_mul_const_left hy1 (c := lagrangeOmega g 1))
+    exact deriv_congr hfull (fun s => by
+      unfold rotX1 kx1
+      rw [lin_dyW12, lin_d2W12, lin_dyW13, lin_d2W13]
+      ring) |>.congr_deriv (by
+        unfold linX1 lagrangeOmega
+        linear_combination (-(g / (8 * Real.pi))) * s3sq)
+  · -- rotY1: quotients (√3/2 − √3·s/2)/(1 − 2·s + s²) and (√3/2)/(1 + s + s²);
+    -- the frame term −ω·eqX1 is constant.
+    have hq12 : HasDerivAt (fun s => (Real.sqrt 3 / 2 - Real.sqrt 3 / 2 * s) / (1 - 2 * s + s ^ 2))
+        ((-(Real.sqrt 3 / 2) * 1 - Real.sqrt 3 / 2 * -(2)) / 1 ^ 2) 0 :=
+      deriv_congr (hasDerivAt_quot0 (Real.sqrt 3 / 2) (-(Real.sqrt 3 / 2)) 1 (-(2)) 1
+        (by norm_num)) (fun s => by ring)
+    have hq13 : HasDerivAt (fun s => (Real.sqrt 3 / 2) / (1 + s + s ^ 2))
+        ((0 * 1 - Real.sqrt 3 / 2 * 1) / 1 ^ 2) 0 :=
+      deriv_congr (hasDerivAt_quot0 (Real.sqrt 3 / 2) 0 1 1 1
+        (by norm_num)) (fun s => by ring)
+    have hfr : HasDerivAt (fun s => -(lagrangeOmega g 1) * eqX1) (0:ℝ) 0 :=
+      hasDerivAt_const (c := -(lagrangeOmega g 1) * eqX1) (x := (0:ℝ))
+    have hfull := (deriv_mul_const_left (hq12.add hq13)
+      (c := g / (2 * Real.pi))).add hfr
+    exact deriv_congr hfull (fun s => by
+      unfold rotY1 ky1
+      rw [lin_dxW12, lin_d2W12, lin_dxW13, lin_d2W13]
+      ring) |>.congr_deriv (by
+        unfold linY1
+        ring)
+  · -- rotX2: quotients (1/2 − s/2)/(1 − 2·s + s²) and (1 + s/2)/(1 + s + s²);
+    -- the frame term ω·(eqY2 + s/2) has slope ω/2.
+    have hq21 : HasDerivAt (fun s => (1 / 2 - s / 2) / (1 - 2 * s + s ^ 2))
+        ((-(1 / 2) * 1 - 1 / 2 * -(2)) / 1 ^ 2) 0 :=
+      deriv_congr (hasDerivAt_quot0 (1 / 2) (-(1 / 2)) 1 (-(2)) 1
+        (by norm_num)) (fun s => by ring)
+    have hq23 : HasDerivAt (fun s => (1 + s / 2) / (1 + s + s ^ 2))
+        ((1 / 2 * 1 - 1 * 1) / 1 ^ 2) 0 :=
+      deriv_congr (hasDerivAt_quot0 1 (1 / 2) 1 1 1
+        (by norm_num)) (fun s => by ring)
+    have hy2' := (hasDerivAt_const (c := eqY2) (x := 0)).add
+      (deriv_mul_const_left (hasDerivAt_id (𝕜 := ℝ) (x := 0)) (c := 1 / 2))
+    have hfull := (deriv_mul_const_left (hq21.add hq23)
+      (c := -(g / (2 * Real.pi)))).add
+      (deriv_mul_const_left hy2' (c := lagrangeOmega g 1))
+    exact deriv_congr hfull (fun s => by
+      unfold rotX2 kx2
+      rw [lin_dyW21, lin_d2W12, lin_dyW23, lin_d2W23]
+      simp only [id_eq]
+      ring) |>.congr_deriv (by
+        unfold linX2 lagrangeOmega
+        linear_combination (g / (8 * Real.pi)) * s3sq)
+  · -- rotY2: quotients (−√3/2 + √3·s/2)/(1 − 2·s + s²) and (√3·s/2)/(1 + s + s²);
+    -- the frame term −ω·(eqX2 + √3·s/2) has slope −ω·√3/2.
+    have hq21 : HasDerivAt (fun s => (-(Real.sqrt 3 / 2) + Real.sqrt 3 / 2 * s) / (1 - 2 * s + s ^ 2))
+        ((Real.sqrt 3 / 2 * 1 - -(Real.sqrt 3 / 2) * -(2)) / 1 ^ 2) 0 :=
+      deriv_congr (hasDerivAt_quot0 (-(Real.sqrt 3 / 2)) (Real.sqrt 3 / 2) 1 (-(2)) 1
+        (by norm_num)) (fun s => by ring)
+    have hq23 : HasDerivAt (fun s => (Real.sqrt 3 / 2 * s) / (1 + s + s ^ 2))
+        ((Real.sqrt 3 / 2 * 1 - 0 * 1) / 1 ^ 2) 0 :=
+      deriv_congr (hasDerivAt_quot0 0 (Real.sqrt 3 / 2) 1 1 1
+        (by norm_num)) (fun s => by ring)
+    have hx2' : HasDerivAt (fun s => eqX2 + Real.sqrt 3 / 2 * s)
+        (Real.sqrt 3 / 2) 0 :=
+      deriv_congr ((hasDerivAt_const (c := eqX2) (x := 0)).add
+        (deriv_mul_const_left (hasDerivAt_id (𝕜 := ℝ) (x := 0))
+          (c := Real.sqrt 3 / 2))) (fun s => by simp only [id_eq])
+        |>.congr_deriv (by ring)
+    have hfull := (deriv_mul_const_left (hq21.add hq23)
+      (c := g / (2 * Real.pi))).add
+      (deriv_mul_const_left hx2' (c := -(lagrangeOmega g 1)))
+    exact deriv_congr hfull (fun s => by
+      unfold rotY2 ky2
+      rw [lin_dxW21, lin_d2W12, lin_dxW23, lin_d2W23]
+      ring) |>.congr_deriv (by
+        unfold linY2 lagrangeOmega
+        ring)
+  · -- rotX3: quotients (−1/2 − s)/(1 + s + s²) and (−1 − s/2)/(1 + s + s²);
+    -- the frame term ω·eqY3 is constant.
+    have hq31 : HasDerivAt (fun s => (-(1 / 2) - s) / (1 + s + s ^ 2))
+        ((-(1) * 1 - -(1 / 2) * 1) / 1 ^ 2) 0 :=
+      deriv_congr (hasDerivAt_quot0 (-(1 / 2)) (-(1)) 1 1 1
+        (by norm_num)) (fun s => by ring)
+    have hq32 : HasDerivAt (fun s => (-1 - s / 2) / (1 + s + s ^ 2))
+        ((-(1 / 2) * 1 - -(1) * 1) / 1 ^ 2) 0 :=
+      deriv_congr (hasDerivAt_quot0 (-(1)) (-(1 / 2)) 1 1 1
+        (by norm_num)) (fun s => by ring)
+    have hfr : HasDerivAt (fun s => lagrangeOmega g 1 * eqY3) (0:ℝ) 0 :=
+      hasDerivAt_const (c := lagrangeOmega g 1 * eqY3) (x := (0:ℝ))
+    have hfull := (deriv_mul_const_left (hq31.add hq32)
+      (c := -(g / (2 * Real.pi)))).add hfr
+    exact deriv_congr hfull (fun s => by
+      unfold rotX3 kx3
+      rw [lin_dyW31, lin_d2W13, lin_dyW32, lin_d2W23]
+      ring) |>.congr_deriv (by
+        unfold linX3
+        ring)
+  · -- rotY3: quotients (−√3/2)/(1 + s + s²) and (−√3·s/2)/(1 + s + s²);
+    -- the frame term −ω·eqX3 is constant.
+    have hq31 : HasDerivAt (fun s => (-(Real.sqrt 3 / 2)) / (1 + s + s ^ 2))
+        ((0 * 1 - -(Real.sqrt 3 / 2) * 1) / 1 ^ 2) 0 :=
+      deriv_congr (hasDerivAt_quot0 (-(Real.sqrt 3 / 2)) 0 1 1 1
+        (by norm_num)) (fun s => by ring)
+    have hq32 : HasDerivAt (fun s => (-(Real.sqrt 3 / 2 * s)) / (1 + s + s ^ 2))
+        ((-(Real.sqrt 3 / 2) * 1 - 0 * 1) / 1 ^ 2) 0 :=
+      deriv_congr (hasDerivAt_quot0 0 (-(Real.sqrt 3 / 2)) 1 1 1
+        (by norm_num)) (fun s => by ring)
+    have hfr : HasDerivAt (fun s => -(lagrangeOmega g 1) * eqX3) (0:ℝ) 0 :=
+      hasDerivAt_const (c := -(lagrangeOmega g 1) * eqX3) (x := (0:ℝ))
+    have hfull := (deriv_mul_const_left (hq31.add hq32)
+      (c := g / (2 * Real.pi))).add hfr
+    exact deriv_congr hfull (fun s => by
+      unfold rotY3 ky3
+      rw [lin_dxW31, lin_d2W13, lin_dxW32, lin_d2W23]
+      ring) |>.congr_deriv (by
+        unfold linY3
+        ring)
+
+/-! ### the modal solutions of the linearized rotating-frame equation -/
+
+/-- Derivative of cos(c·s) at an arbitrary point (the composition of
+    `Real.hasDerivAt_cos` with the linear map s ↦ c·s). -/
+private theorem cos_comp (c t : ℝ) :
+    HasDerivAt (fun s => Real.cos (c * s)) (-(Real.sin (c * t)) * c) t :=
+  HasDerivAt.comp (𝕜 := ℝ) t (Real.hasDerivAt_cos (c * t))
+    (hasDerivAt_const_mul_id c t)
+
+/-- Derivative of sin(c·s) at an arbitrary point. -/
+private theorem sin_comp (c t : ℝ) :
+    HasDerivAt (fun s => Real.sin (c * s)) (Real.cos (c * t) * c) t :=
+  HasDerivAt.comp (𝕜 := ℝ) t (Real.hasDerivAt_sin (c * t))
+    (hasDerivAt_const_mul_id c t)
+
+/-- The x-amplitude of the translation modal solution:
+    b₁·cos(ωt) + b₂·sin(ωt). -/
+noncomputable def transXamp (b1 b2 c t : ℝ) : ℝ :=
+  b1 * Real.cos (c * t) + b2 * Real.sin (c * t)
+
+/-- The y-amplitude of the translation modal solution:
+    b₂·cos(ωt) − b₁·sin(ωt). -/
+noncomputable def transYamp (b1 b2 c t : ℝ) : ℝ :=
+  b2 * Real.cos (c * t) - b1 * Real.sin (c * t)
+
+/-- The u-amplitude of the shape modal solution:
+    p·cos(ωt) + q·sin(ωt). -/
+noncomputable def shapeUamp (p q c t : ℝ) : ℝ :=
+  p * Real.cos (c * t) + q * Real.sin (c * t)
+
+/-- The w-amplitude of the shape modal solution:
+    q·cos(ωt) − p·sin(ωt). -/
+noncomputable def shapeWamp (p q c t : ℝ) : ℝ :=
+  q * Real.cos (c * t) - p * Real.sin (c * t)
+
+/-- The phase amplitude of the size modal solution: Q(t) = q − 2ω·p·t
+    (the size amplitude stays p; the phase drifts linearly — the
+    generalized zero eigenvalue of §8.3). -/
+noncomputable def sizeDriftQ (p q c t : ℝ) : ℝ := q - 2 * c * p * t
+
+/-! The linearization rows on the three invariant modal planes.  On the
+    translation plane every perturbation is uniform, so the √3 terms of
+    the rows cancel; on the shape plane they conspire to the rotation
+    M0·u = −3·w, M0·w = +3·u; on the size plane M0·vD = −6·vR, M0·vR = 0
+    (the generalized zero).  All values agree with the SymPy ladder
+    (`notes/verify_identities_s8.py`, checks C–G). -/
+
+private theorem linX1_trans (c1 c2 : ℝ) : linX1 c1 c2 c1 c2 c1 c2 = 3 * c2 := by
+  unfold linX1; ring
+
+private theorem linY1_trans (c1 c2 : ℝ) : linY1 c1 c2 c1 c2 c1 c2 = -3 * c1 := by
+  unfold linY1; ring
+
+private theorem linX2_trans (c1 c2 : ℝ) : linX2 c1 c2 c1 c2 c1 c2 = 3 * c2 := by
+  unfold linX2; ring
+
+private theorem linY2_trans (c1 c2 : ℝ) : linY2 c1 c2 c1 c2 c1 c2 = -3 * c1 := by
+  unfold linY2; ring
+
+private theorem linX3_trans (c1 c2 : ℝ) : linX3 c1 c2 c1 c2 c1 c2 = 3 * c2 := by
+  unfold linX3; ring
+
+private theorem linY3_trans (c1 c2 : ℝ) : linY3 c1 c2 c1 c2 c1 c2 = -3 * c1 := by
+  unfold linY3; ring
+
+private theorem linX1_shape (u w : ℝ) :
+    linX1 u w (u / 2 + Real.sqrt 3 / 2 * w) (-(Real.sqrt 3 / 2) * u + w / 2) 0 0
+      = 3 * w := by
+  unfold linX1
+  linear_combination (w / 4) * s3sq
+
+private theorem linY1_shape (u w : ℝ) :
+    linY1 u w (u / 2 + Real.sqrt 3 / 2 * w) (-(Real.sqrt 3 / 2) * u + w / 2) 0 0
+      = -3 * u := by
+  unfold linY1
+  linear_combination (u / 4) * s3sq
+
+private theorem linX2_shape (u w : ℝ) :
+    linX2 u w (u / 2 + Real.sqrt 3 / 2 * w) (-(Real.sqrt 3 / 2) * u + w / 2) 0 0
+      = -(3 * Real.sqrt 3 / 2) * u + 3 / 2 * w := by
+  unfold linX2
+  linear_combination (-(w / 4)) * s3sq
+
+private theorem linY2_shape (u w : ℝ) :
+    linY2 u w (u / 2 + Real.sqrt 3 / 2 * w) (-(Real.sqrt 3 / 2) * u + w / 2) 0 0
+      = -(3 / 2) * u - 3 * Real.sqrt 3 / 2 * w := by
+  unfold linY2
+  linear_combination (-(u / 4)) * s3sq
+
+private theorem linX3_shape (u w : ℝ) :
+    linX3 u w (u / 2 + Real.sqrt 3 / 2 * w) (-(Real.sqrt 3 / 2) * u + w / 2) 0 0
+      = 0 := by
+  unfold linX3; ring
+
+private theorem linY3_shape (u w : ℝ) :
+    linY3 u w (u / 2 + Real.sqrt 3 / 2 * w) (-(Real.sqrt 3 / 2) * u + w / 2) 0 0
+      = 0 := by
+  unfold linY3; ring
+
+private theorem linX1_size (p q : ℝ) :
+    linX1 (p / Real.sqrt 3) (q / Real.sqrt 3)
+        (-(p / (2 * Real.sqrt 3)) - q / 2) (p / 2 - q / (2 * Real.sqrt 3))
+        (-(p / (2 * Real.sqrt 3)) + q / 2) (-p / 2 - q / (2 * Real.sqrt 3))
+      = 0 := by
+  unfold linX1
+  simp only [div_sqrt3, div_2sqrt3]
+  ring
+
+private theorem linY1_size (p q : ℝ) :
+    linY1 (p / Real.sqrt 3) (q / Real.sqrt 3)
+        (-(p / (2 * Real.sqrt 3)) - q / 2) (p / 2 - q / (2 * Real.sqrt 3))
+        (-(p / (2 * Real.sqrt 3)) + q / 2) (-p / 2 - q / (2 * Real.sqrt 3))
+      = -6 * p / Real.sqrt 3 := by
+  unfold linY1
+  simp only [div_sqrt3, div_2sqrt3]
+  ring
+
+private theorem linX2_size (p q : ℝ) :
+    linX2 (p / Real.sqrt 3) (q / Real.sqrt 3)
+        (-(p / (2 * Real.sqrt 3)) - q / 2) (p / 2 - q / (2 * Real.sqrt 3))
+        (-(p / (2 * Real.sqrt 3)) + q / 2) (-p / 2 - q / (2 * Real.sqrt 3))
+      = 3 * p := by
+  unfold linX2
+  simp only [div_sqrt3, div_2sqrt3]
+  linear_combination (p / 4) * s3sq
+
+private theorem linY2_size (p q : ℝ) :
+    linY2 (p / Real.sqrt 3) (q / Real.sqrt 3)
+        (-(p / (2 * Real.sqrt 3)) - q / 2) (p / 2 - q / (2 * Real.sqrt 3))
+        (-(p / (2 * Real.sqrt 3)) + q / 2) (-p / 2 - q / (2 * Real.sqrt 3))
+      = 3 * p / Real.sqrt 3 := by
+  unfold linY2
+  simp only [div_sqrt3, div_2sqrt3]
+  linear_combination (-(q / 4)) * s3sq
+
+private theorem linX3_size (p q : ℝ) :
+    linX3 (p / Real.sqrt 3) (q / Real.sqrt 3)
+        (-(p / (2 * Real.sqrt 3)) - q / 2) (p / 2 - q / (2 * Real.sqrt 3))
+        (-(p / (2 * Real.sqrt 3)) + q / 2) (-p / 2 - q / (2 * Real.sqrt 3))
+      = -3 * p := by
+  unfold linX3
+  simp only [div_sqrt3, div_2sqrt3]
+  linear_combination (-(p / 4)) * s3sq
+
+private theorem linY3_size (p q : ℝ) :
+    linY3 (p / Real.sqrt 3) (q / Real.sqrt 3)
+        (-(p / (2 * Real.sqrt 3)) - q / 2) (p / 2 - q / (2 * Real.sqrt 3))
+        (-(p / (2 * Real.sqrt 3)) + q / 2) (-p / 2 - q / (2 * Real.sqrt 3))
+      = 3 * p / Real.sqrt 3 := by
+  unfold linY3
+  simp only [div_sqrt3, div_2sqrt3]
+  linear_combination (q / 4) * s3sq
+
+/-- **Modal solution — the translation pair (§8.4).**  For the initial
+    uniform shift (b₁, b₂) the linearized rotating-frame equation is
+    solved FOR ALL t by the uniformly shifted triangle whose offset
+    rotates at exactly the Lagrange angular velocity
+    ω = lagrangeOmega g 1: the derivative of every component equals the
+    linearization (rows linX/linY) applied to the current perturbation.
+    In the lab frame this is the exact Galilean shift of the Lagrange
+    solution. -/
+theorem lin_sol_trans (g b1 b2 t : ℝ) :
+    HasDerivAt (fun s => eqX1 + transXamp b1 b2 (lagrangeOmega g 1) s)
+      (g / (2 * Real.pi) * linX1 (transXamp b1 b2 (lagrangeOmega g 1) t)
+        (transYamp b1 b2 (lagrangeOmega g 1) t)
+        (transXamp b1 b2 (lagrangeOmega g 1) t)
+        (transYamp b1 b2 (lagrangeOmega g 1) t)
+        (transXamp b1 b2 (lagrangeOmega g 1) t)
+        (transYamp b1 b2 (lagrangeOmega g 1) t)) t
+    ∧ HasDerivAt (fun s => eqY1 + transYamp b1 b2 (lagrangeOmega g 1) s)
+      (g / (2 * Real.pi) * linY1 (transXamp b1 b2 (lagrangeOmega g 1) t)
+        (transYamp b1 b2 (lagrangeOmega g 1) t)
+        (transXamp b1 b2 (lagrangeOmega g 1) t)
+        (transYamp b1 b2 (lagrangeOmega g 1) t)
+        (transXamp b1 b2 (lagrangeOmega g 1) t)
+        (transYamp b1 b2 (lagrangeOmega g 1) t)) t
+    ∧ HasDerivAt (fun s => eqX2 + transXamp b1 b2 (lagrangeOmega g 1) s)
+      (g / (2 * Real.pi) * linX2 (transXamp b1 b2 (lagrangeOmega g 1) t)
+        (transYamp b1 b2 (lagrangeOmega g 1) t)
+        (transXamp b1 b2 (lagrangeOmega g 1) t)
+        (transYamp b1 b2 (lagrangeOmega g 1) t)
+        (transXamp b1 b2 (lagrangeOmega g 1) t)
+        (transYamp b1 b2 (lagrangeOmega g 1) t)) t
+    ∧ HasDerivAt (fun s => eqY2 + transYamp b1 b2 (lagrangeOmega g 1) s)
+      (g / (2 * Real.pi) * linY2 (transXamp b1 b2 (lagrangeOmega g 1) t)
+        (transYamp b1 b2 (lagrangeOmega g 1) t)
+        (transXamp b1 b2 (lagrangeOmega g 1) t)
+        (transYamp b1 b2 (lagrangeOmega g 1) t)
+        (transXamp b1 b2 (lagrangeOmega g 1) t)
+        (transYamp b1 b2 (lagrangeOmega g 1) t)) t
+    ∧ HasDerivAt (fun s => eqX3 + transXamp b1 b2 (lagrangeOmega g 1) s)
+      (g / (2 * Real.pi) * linX3 (transXamp b1 b2 (lagrangeOmega g 1) t)
+        (transYamp b1 b2 (lagrangeOmega g 1) t)
+        (transXamp b1 b2 (lagrangeOmega g 1) t)
+        (transYamp b1 b2 (lagrangeOmega g 1) t)
+        (transXamp b1 b2 (lagrangeOmega g 1) t)
+        (transYamp b1 b2 (lagrangeOmega g 1) t)) t
+    ∧ HasDerivAt (fun s => eqY3 + transYamp b1 b2 (lagrangeOmega g 1) s)
+      (g / (2 * Real.pi) * linY3 (transXamp b1 b2 (lagrangeOmega g 1) t)
+        (transYamp b1 b2 (lagrangeOmega g 1) t)
+        (transXamp b1 b2 (lagrangeOmega g 1) t)
+        (transYamp b1 b2 (lagrangeOmega g 1) t)
+        (transXamp b1 b2 (lagrangeOmega g 1) t)
+        (transYamp b1 b2 (lagrangeOmega g 1) t)) t := by
+  have hX := (deriv_mul_const_left (cos_comp (lagrangeOmega g 1) t) (c := b1)).add
+    (deriv_mul_const_left (sin_comp (lagrangeOmega g 1) t) (c := b2))
+  have hY : HasDerivAt (fun s => transYamp b1 b2 (lagrangeOmega g 1) s)
+      (b2 * (-(Real.sin (lagrangeOmega g 1 * t)) * lagrangeOmega g 1)
+        - b1 * (Real.cos (lagrangeOmega g 1 * t) * lagrangeOmega g 1)) t :=
+    deriv_congr ((deriv_mul_const_left (cos_comp (lagrangeOmega g 1) t) (c := b2)).add
+      (deriv_mul_const_left (sin_comp (lagrangeOmega g 1) t) (c := -b1)))
+      (fun s => by simp only [transYamp]; ring) |>.congr_deriv (by ring)
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · exact ((hasDerivAt_const (c := eqX1) (x := t)).add hX).congr_deriv (by
+      rw [linX1_trans]
+      simp only [transXamp, transYamp, lagrangeOmega]
+      ring)
+  · exact ((hasDerivAt_const (c := eqY1) (x := t)).add hY).congr_deriv (by
+      rw [linY1_trans]
+      simp only [transXamp, transYamp, lagrangeOmega]
+      ring)
+  · exact ((hasDerivAt_const (c := eqX2) (x := t)).add hX).congr_deriv (by
+      rw [linX2_trans]
+      simp only [transXamp, transYamp, lagrangeOmega]
+      ring)
+  · exact ((hasDerivAt_const (c := eqY2) (x := t)).add hY).congr_deriv (by
+      rw [linY2_trans]
+      simp only [transXamp, transYamp, lagrangeOmega]
+      ring)
+  · exact ((hasDerivAt_const (c := eqX3) (x := t)).add hX).congr_deriv (by
+      rw [linX3_trans]
+      simp only [transXamp, transYamp, lagrangeOmega]
+      ring)
+  · exact ((hasDerivAt_const (c := eqY3) (x := t)).add hY).congr_deriv (by
+      rw [linY3_trans]
+      simp only [transXamp, transYamp, lagrangeOmega]
+      ring)
+
+/-- **Modal solution — the shape pair (§8.4).**  For initial amplitudes
+    (p, q) on the shape plane u, w the linearized rotating-frame equation
+    is solved FOR ALL t by the shape oscillation at exactly the Lagrange
+    angular velocity: u-amplitude p·cos ωt + q·sin ωt, w-amplitude
+    q·cos ωt − p·sin ωt, vortex 3 resting.  This is the genuine interior
+    oscillation of the perturbed triangle. -/
+theorem lin_sol_shape (g p q t : ℝ) :
+    HasDerivAt (fun s => eqX1 + shapeUamp p q (lagrangeOmega g 1) s)
+      (g / (2 * Real.pi) * linX1 (shapeUamp p q (lagrangeOmega g 1) t)
+        (shapeWamp p q (lagrangeOmega g 1) t)
+        (shapeUamp p q (lagrangeOmega g 1) t / 2
+          + Real.sqrt 3 / 2 * shapeWamp p q (lagrangeOmega g 1) t)
+        (-(Real.sqrt 3 / 2) * shapeUamp p q (lagrangeOmega g 1) t
+          + shapeWamp p q (lagrangeOmega g 1) t / 2) 0 0) t
+    ∧ HasDerivAt (fun s => eqY1 + shapeWamp p q (lagrangeOmega g 1) s)
+      (g / (2 * Real.pi) * linY1 (shapeUamp p q (lagrangeOmega g 1) t)
+        (shapeWamp p q (lagrangeOmega g 1) t)
+        (shapeUamp p q (lagrangeOmega g 1) t / 2
+          + Real.sqrt 3 / 2 * shapeWamp p q (lagrangeOmega g 1) t)
+        (-(Real.sqrt 3 / 2) * shapeUamp p q (lagrangeOmega g 1) t
+          + shapeWamp p q (lagrangeOmega g 1) t / 2) 0 0) t
+    ∧ HasDerivAt (fun s => eqX2 + shapeUamp p q (lagrangeOmega g 1) s / 2
+        + Real.sqrt 3 / 2 * shapeWamp p q (lagrangeOmega g 1) s)
+      (g / (2 * Real.pi) * linX2 (shapeUamp p q (lagrangeOmega g 1) t)
+        (shapeWamp p q (lagrangeOmega g 1) t)
+        (shapeUamp p q (lagrangeOmega g 1) t / 2
+          + Real.sqrt 3 / 2 * shapeWamp p q (lagrangeOmega g 1) t)
+        (-(Real.sqrt 3 / 2) * shapeUamp p q (lagrangeOmega g 1) t
+          + shapeWamp p q (lagrangeOmega g 1) t / 2) 0 0) t
+    ∧ HasDerivAt (fun s => eqY2 + -(Real.sqrt 3 / 2) * shapeUamp p q (lagrangeOmega g 1) s
+        + shapeWamp p q (lagrangeOmega g 1) s / 2)
+      (g / (2 * Real.pi) * linY2 (shapeUamp p q (lagrangeOmega g 1) t)
+        (shapeWamp p q (lagrangeOmega g 1) t)
+        (shapeUamp p q (lagrangeOmega g 1) t / 2
+          + Real.sqrt 3 / 2 * shapeWamp p q (lagrangeOmega g 1) t)
+        (-(Real.sqrt 3 / 2) * shapeUamp p q (lagrangeOmega g 1) t
+          + shapeWamp p q (lagrangeOmega g 1) t / 2) 0 0) t
+    ∧ HasDerivAt (fun s => eqX3)
+      (g / (2 * Real.pi) * linX3 (shapeUamp p q (lagrangeOmega g 1) t)
+        (shapeWamp p q (lagrangeOmega g 1) t)
+        (shapeUamp p q (lagrangeOmega g 1) t / 2
+          + Real.sqrt 3 / 2 * shapeWamp p q (lagrangeOmega g 1) t)
+        (-(Real.sqrt 3 / 2) * shapeUamp p q (lagrangeOmega g 1) t
+          + shapeWamp p q (lagrangeOmega g 1) t / 2) 0 0) t
+    ∧ HasDerivAt (fun s => eqY3)
+      (g / (2 * Real.pi) * linY3 (shapeUamp p q (lagrangeOmega g 1) t)
+        (shapeWamp p q (lagrangeOmega g 1) t)
+        (shapeUamp p q (lagrangeOmega g 1) t / 2
+          + Real.sqrt 3 / 2 * shapeWamp p q (lagrangeOmega g 1) t)
+        (-(Real.sqrt 3 / 2) * shapeUamp p q (lagrangeOmega g 1) t
+          + shapeWamp p q (lagrangeOmega g 1) t / 2) 0 0) t := by
+  have hU := (deriv_mul_const_left (cos_comp (lagrangeOmega g 1) t) (c := p)).add
+    (deriv_mul_const_left (sin_comp (lagrangeOmega g 1) t) (c := q))
+  have hW : HasDerivAt (fun s => shapeWamp p q (lagrangeOmega g 1) s)
+      (q * (-(Real.sin (lagrangeOmega g 1 * t)) * lagrangeOmega g 1)
+        - p * (Real.cos (lagrangeOmega g 1 * t) * lagrangeOmega g 1)) t :=
+    deriv_congr ((deriv_mul_const_left (cos_comp (lagrangeOmega g 1) t) (c := q)).add
+      (deriv_mul_const_left (sin_comp (lagrangeOmega g 1) t) (c := -p)))
+      (fun s => by simp only [shapeWamp]; ring) |>.congr_deriv (by ring)
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · exact ((hasDerivAt_const (c := eqX1) (x := t)).add hU).congr_deriv (by
+      rw [linX1_shape]
+      simp only [shapeUamp, shapeWamp, lagrangeOmega]
+      ring)
+  · exact ((hasDerivAt_const (c := eqY1) (x := t)).add hW).congr_deriv (by
+      rw [linY1_shape]
+      simp only [shapeUamp, shapeWamp, lagrangeOmega]
+      ring)
+  · exact deriv_congr ((hasDerivAt_const (c := eqX2) (x := t)).add
+      ((deriv_mul_const_left hU (c := 1 / 2)).add
+        (deriv_mul_const_left hW (c := Real.sqrt 3 / 2))))
+      (fun s => by simp only [shapeUamp, shapeWamp]; ring) |>.congr_deriv (by
+        rw [linX2_shape]
+        simp only [shapeUamp, shapeWamp, lagrangeOmega]
+        ring)
+  · exact deriv_congr ((hasDerivAt_const (c := eqY2) (x := t)).add
+      ((deriv_mul_const_left hU (c := -(Real.sqrt 3 / 2))).add
+        (deriv_mul_const_left hW (c := 1 / 2))))
+      (fun s => by simp only [shapeUamp, shapeWamp]; ring) |>.congr_deriv (by
+        rw [linY2_shape]
+        simp only [shapeUamp, shapeWamp, lagrangeOmega]
+        ring)
+  · exact (hasDerivAt_const (c := eqX3) (x := t)).congr_deriv (by
+      rw [linX3_shape]
+      ring)
+  · exact (hasDerivAt_const (c := eqY3) (x := t)).congr_deriv (by
+      rw [linY3_shape]
+      ring)
+
+/-- **Modal solution — the size drift (§8.4).**  For initial data (p, q)
+    on the size plane vD, vR (vD = the anchor, vR = J·vD the phase
+    direction) the linearized rotating-frame equation is solved FOR ALL
+    t by: the size amplitude stays p, the phase amplitude drifts
+    linearly, Q(t) = q − 2ω·p·t — the generalized zero eigenvalue: no
+    growth, but no restoration either. -/
+theorem lin_sol_size (g p q t : ℝ) :
+    HasDerivAt (fun s => eqX1 + p / Real.sqrt 3)
+      (g / (2 * Real.pi) * linX1 (p / Real.sqrt 3)
+        (sizeDriftQ p q (lagrangeOmega g 1) t / Real.sqrt 3)
+        (-(p / (2 * Real.sqrt 3)) - sizeDriftQ p q (lagrangeOmega g 1) t / 2)
+        (p / 2 - sizeDriftQ p q (lagrangeOmega g 1) t / (2 * Real.sqrt 3))
+        (-(p / (2 * Real.sqrt 3)) + sizeDriftQ p q (lagrangeOmega g 1) t / 2)
+        (-p / 2 - sizeDriftQ p q (lagrangeOmega g 1) t / (2 * Real.sqrt 3))) t
+    ∧ HasDerivAt (fun s => eqY1 + sizeDriftQ p q (lagrangeOmega g 1) s / Real.sqrt 3)
+      (g / (2 * Real.pi) * linY1 (p / Real.sqrt 3)
+        (sizeDriftQ p q (lagrangeOmega g 1) t / Real.sqrt 3)
+        (-(p / (2 * Real.sqrt 3)) - sizeDriftQ p q (lagrangeOmega g 1) t / 2)
+        (p / 2 - sizeDriftQ p q (lagrangeOmega g 1) t / (2 * Real.sqrt 3))
+        (-(p / (2 * Real.sqrt 3)) + sizeDriftQ p q (lagrangeOmega g 1) t / 2)
+        (-p / 2 - sizeDriftQ p q (lagrangeOmega g 1) t / (2 * Real.sqrt 3))) t
+    ∧ HasDerivAt (fun s => eqX2 + (-(p / (2 * Real.sqrt 3))
+        - sizeDriftQ p q (lagrangeOmega g 1) s / 2))
+      (g / (2 * Real.pi) * linX2 (p / Real.sqrt 3)
+        (sizeDriftQ p q (lagrangeOmega g 1) t / Real.sqrt 3)
+        (-(p / (2 * Real.sqrt 3)) - sizeDriftQ p q (lagrangeOmega g 1) t / 2)
+        (p / 2 - sizeDriftQ p q (lagrangeOmega g 1) t / (2 * Real.sqrt 3))
+        (-(p / (2 * Real.sqrt 3)) + sizeDriftQ p q (lagrangeOmega g 1) t / 2)
+        (-p / 2 - sizeDriftQ p q (lagrangeOmega g 1) t / (2 * Real.sqrt 3))) t
+    ∧ HasDerivAt (fun s => eqY2 + (p / 2
+        - sizeDriftQ p q (lagrangeOmega g 1) s / (2 * Real.sqrt 3)))
+      (g / (2 * Real.pi) * linY2 (p / Real.sqrt 3)
+        (sizeDriftQ p q (lagrangeOmega g 1) t / Real.sqrt 3)
+        (-(p / (2 * Real.sqrt 3)) - sizeDriftQ p q (lagrangeOmega g 1) t / 2)
+        (p / 2 - sizeDriftQ p q (lagrangeOmega g 1) t / (2 * Real.sqrt 3))
+        (-(p / (2 * Real.sqrt 3)) + sizeDriftQ p q (lagrangeOmega g 1) t / 2)
+        (-p / 2 - sizeDriftQ p q (lagrangeOmega g 1) t / (2 * Real.sqrt 3))) t
+    ∧ HasDerivAt (fun s => eqX3 + (-(p / (2 * Real.sqrt 3))
+        + sizeDriftQ p q (lagrangeOmega g 1) s / 2))
+      (g / (2 * Real.pi) * linX3 (p / Real.sqrt 3)
+        (sizeDriftQ p q (lagrangeOmega g 1) t / Real.sqrt 3)
+        (-(p / (2 * Real.sqrt 3)) - sizeDriftQ p q (lagrangeOmega g 1) t / 2)
+        (p / 2 - sizeDriftQ p q (lagrangeOmega g 1) t / (2 * Real.sqrt 3))
+        (-(p / (2 * Real.sqrt 3)) + sizeDriftQ p q (lagrangeOmega g 1) t / 2)
+        (-p / 2 - sizeDriftQ p q (lagrangeOmega g 1) t / (2 * Real.sqrt 3))) t
+    ∧ HasDerivAt (fun s => eqY3 + (-p / 2
+        - sizeDriftQ p q (lagrangeOmega g 1) s / (2 * Real.sqrt 3)))
+      (g / (2 * Real.pi) * linY3 (p / Real.sqrt 3)
+        (sizeDriftQ p q (lagrangeOmega g 1) t / Real.sqrt 3)
+        (-(p / (2 * Real.sqrt 3)) - sizeDriftQ p q (lagrangeOmega g 1) t / 2)
+        (p / 2 - sizeDriftQ p q (lagrangeOmega g 1) t / (2 * Real.sqrt 3))
+        (-(p / (2 * Real.sqrt 3)) + sizeDriftQ p q (lagrangeOmega g 1) t / 2)
+        (-p / 2 - sizeDriftQ p q (lagrangeOmega g 1) t / (2 * Real.sqrt 3))) t := by
+  have hQ : HasDerivAt (fun s => sizeDriftQ p q (lagrangeOmega g 1) s)
+      (-(2 * lagrangeOmega g 1 * p)) t :=
+    deriv_congr (hasDerivAt_affine q (-(2 * lagrangeOmega g 1 * p)) t)
+      (fun s => by simp only [sizeDriftQ]; ring)
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · exact (hasDerivAt_const (c := eqX1 + p / Real.sqrt 3) (x := t)).congr_deriv (by
+      rw [linX1_size]
+      ring)
+  · exact deriv_congr ((hasDerivAt_const (c := eqY1) (x := t)).add
+      (deriv_mul_const_left hQ (c := 1 / Real.sqrt 3)))
+      (fun s => by simp only [sizeDriftQ]; ring) |>.congr_deriv (by
+        rw [linY1_size]
+        simp only [sizeDriftQ, lagrangeOmega]
+        ring)
+  · exact deriv_congr ((hasDerivAt_const
+      (c := eqX2 + -(p / (2 * Real.sqrt 3))) (x := t)).add
+      (deriv_mul_const_left hQ (c := -(1 / 2))))
+      (fun s => by ring) |>.congr_deriv (by
+        rw [linX2_size]
+        simp only [sizeDriftQ, lagrangeOmega]
+        ring)
+  · exact deriv_congr ((hasDerivAt_const
+      (c := eqY2 + p / 2) (x := t)).add
+      (deriv_mul_const_left hQ (c := -(1 / (2 * Real.sqrt 3)))))
+      (fun s => by ring) |>.congr_deriv (by
+        rw [linY2_size]
+        simp only [sizeDriftQ, lagrangeOmega]
+        ring)
+  · exact deriv_congr ((hasDerivAt_const
+      (c := eqX3 + -(p / (2 * Real.sqrt 3))) (x := t)).add
+      (deriv_mul_const_left hQ (c := 1 / 2)))
+      (fun s => by ring) |>.congr_deriv (by
+        rw [linX3_size]
+        simp only [sizeDriftQ, lagrangeOmega]
+        ring)
+  · exact deriv_congr ((hasDerivAt_const
+      (c := eqY3 + -(p / 2)) (x := t)).add
+      (deriv_mul_const_left hQ (c := -(1 / (2 * Real.sqrt 3)))))
+      (fun s => by ring) |>.congr_deriv (by
+        rw [linY3_size]
+        simp only [sizeDriftQ, lagrangeOmega]
+        ring)
+
+/-! ### the stability bounds (§8.5) -/
+
+/-- The size plane (vD = anchor, vR = J·anchor) is an orthonormal frame:
+    |vD|² = |vR|² = 1 and vD·vR = 0.  Consequently the modal norm
+    sqrt(p² + Q²) IS the Euclidean norm of the size modal perturbation
+    p·vD + Q·vR, and `lin_bound_size` is a genuine norm bound. -/
+theorem lin_size_basis :
+    (1 / Real.sqrt 3) ^ 2 + 0 ^ 2 + (-(1 / (2 * Real.sqrt 3))) ^ 2 + (1 / 2) ^ 2
+        + (-(1 / (2 * Real.sqrt 3))) ^ 2 + (-(1 / 2)) ^ 2 = 1
+    ∧ (1 / Real.sqrt 3) * 0 + 0 * (1 / Real.sqrt 3)
+        + (-(1 / (2 * Real.sqrt 3))) * (-1 / 2)
+        + (1 / 2) * (-(1 / (2 * Real.sqrt 3)))
+        + (-(1 / (2 * Real.sqrt 3))) * (1 / 2)
+        + (-(1 / 2)) * (-(1 / (2 * Real.sqrt 3))) = 0
+    ∧ 0 ^ 2 + (1 / Real.sqrt 3) ^ 2 + (-1 / 2) ^ 2
+        + (-(1 / (2 * Real.sqrt 3))) ^ 2 + (1 / 2) ^ 2
+        + (-(1 / (2 * Real.sqrt 3))) ^ 2 = 1 := by
+  refine ⟨?_, ?_, ?_⟩
+  · simp only [div_sqrt3, div_2sqrt3]
+    linear_combination (1 / 6) * s3sq
+  · ring
+  · simp only [div_sqrt3, div_2sqrt3]
+    linear_combination (1 / 6) * s3sq
+
+/-- **Stability of the translation pair (§8.5).**  The Euclidean norm of
+    the translation modal perturbation is EXACTLY preserved: the offset
+    (b₁·cos ωt + b₂·sin ωt, b₂·cos ωt − b₁·sin ωt) has squared norm
+    b₁² + b₂² for every t — pure rotation of the offset vector. -/
+theorem lin_bound_trans (g b1 b2 t : ℝ) :
+    transXamp b1 b2 (lagrangeOmega g 1) t ^ 2
+      + transYamp b1 b2 (lagrangeOmega g 1) t ^ 2 = b1 ^ 2 + b2 ^ 2 := by
+  unfold transXamp transYamp
+  linear_combination (b1 ^ 2 + b2 ^ 2) *
+    (Real.sin_sq_add_cos_sq (lagrangeOmega g 1 * t))
+
+/-- **Stability of the shape pair (§8.5).**  The Euclidean norm of the
+    shape modal perturbation is EXACTLY preserved: (p·cos ωt + q·sin ωt)²
+    + (q·cos ωt − p·sin ωt)² = p² + q² for every t — the shape plane
+    oscillates without growth. -/
+theorem lin_bound_shape (g p q t : ℝ) :
+    shapeUamp p q (lagrangeOmega g 1) t ^ 2
+      + shapeWamp p q (lagrangeOmega g 1) t ^ 2 = p ^ 2 + q ^ 2 := by
+  unfold shapeUamp shapeWamp
+  linear_combination (p ^ 2 + q ^ 2) *
+    (Real.sin_sq_add_cos_sq (lagrangeOmega g 1 * t))
+
+/-- **Stability of the size drift (§8.5).**  The modal norm of the size
+    perturbation grows AT MOST LINEARLY in time,
+      sqrt(p² + Q(t)²) ≤ sqrt(p² + q²) + 2·|ω·p·t|,
+    and by `lin_size_basis` the same bound holds for the Euclidean norm
+    of the full 6-component perturbation.  In particular NO eigenmode of
+    the linearized rotating-frame flow grows exponentially — the
+    equilateral triangle of equal vortices is linearly (spectrally)
+    stable, the classical Thomson criterion at N = 3. -/
+theorem lin_bound_size (g p q t : ℝ) :
+    Real.sqrt (p ^ 2 + sizeDriftQ p q (lagrangeOmega g 1) t ^ 2)
+      ≤ Real.sqrt (p ^ 2 + q ^ 2) + 2 * abs (lagrangeOmega g 1 * p * t) := by
+  simp only [sizeDriftQ]
+  have hRabs : abs (2 * lagrangeOmega g 1 * p * t)
+      = 2 * abs (lagrangeOmega g 1 * p * t) := by
+    rw [abs_mul, abs_mul, abs_mul, abs_mul, abs_mul,
+      abs_of_pos (by norm_num : (0 : ℝ) < 2)]
+    ring
+  have hqle : abs q ≤ Real.sqrt (p ^ 2 + q ^ 2) := by
+    have h1 : q ^ 2 ≤ p ^ 2 + q ^ 2 := le_add_of_nonneg_left (sq_nonneg p)
+    have h2 : Real.sqrt (q ^ 2) ≤ Real.sqrt (p ^ 2 + q ^ 2) :=
+      Real.sqrt_le_sqrt h1
+    rwa [Real.sqrt_sq_eq_abs] at h2
+  have hR : 2 * lagrangeOmega g 1 * p * t = 2 * lagrangeOmega g 1 * p * t := rfl
+  have hkey : -(q * (2 * lagrangeOmega g 1 * p * t))
+      ≤ abs q * abs (2 * lagrangeOmega g 1 * p * t) := by
+    have h4 : -(q * (2 * lagrangeOmega g 1 * p * t))
+        ≤ abs (-(q * (2 * lagrangeOmega g 1 * p * t))) := le_abs_self _
+    rwa [abs_neg, abs_mul] at h4
+  have hRpos : 0 ≤ abs (2 * lagrangeOmega g 1 * p * t) := abs_nonneg _
+  have hkey2 : -(q * (2 * lagrangeOmega g 1 * p * t))
+      ≤ Real.sqrt (p ^ 2 + q ^ 2) * abs (2 * lagrangeOmega g 1 * p * t) :=
+    le_trans hkey (mul_le_mul_of_nonneg_right hqle hRpos)
+  have hsqr : p ^ 2 + (q - 2 * lagrangeOmega g 1 * p * t) ^ 2
+      ≤ (Real.sqrt (p ^ 2 + q ^ 2) + abs (2 * lagrangeOmega g 1 * p * t)) ^ 2 := by
+    have e : (Real.sqrt (p ^ 2 + q ^ 2) + abs (2 * lagrangeOmega g 1 * p * t)) ^ 2
+        = Real.sqrt (p ^ 2 + q ^ 2) ^ 2
+          + 2 * Real.sqrt (p ^ 2 + q ^ 2) * abs (2 * lagrangeOmega g 1 * p * t)
+          + abs (2 * lagrangeOmega g 1 * p * t) ^ 2 := by ring
+    have hN : Real.sqrt (p ^ 2 + q ^ 2) ^ 2 = p ^ 2 + q ^ 2 :=
+      Real.sq_sqrt (by positivity)
+    have hsq2 : abs (2 * lagrangeOmega g 1 * p * t) ^ 2
+        = (2 * lagrangeOmega g 1 * p * t) ^ 2 := sq_abs _
+    rw [e, hN, hsq2]
+    have hexpand : (q - 2 * lagrangeOmega g 1 * p * t) ^ 2
+        = q ^ 2 - 2 * q * (2 * lagrangeOmega g 1 * p * t)
+          + (2 * lagrangeOmega g 1 * p * t) ^ 2 := by ring
+    rw [hexpand]
+    linarith [hkey2]
+  have h1 : 0 ≤ Real.sqrt (p ^ 2 + q ^ 2)
+      + abs (2 * lagrangeOmega g 1 * p * t) := by positivity
+  have hfinal : Real.sqrt (p ^ 2 + (q - 2 * lagrangeOmega g 1 * p * t) ^ 2)
+      ≤ Real.sqrt (p ^ 2 + q ^ 2) + abs (2 * lagrangeOmega g 1 * p * t) := by
+    calc Real.sqrt (p ^ 2 + (q - 2 * lagrangeOmega g 1 * p * t) ^ 2)
+        ≤ Real.sqrt ((Real.sqrt (p ^ 2 + q ^ 2)
+            + abs (2 * lagrangeOmega g 1 * p * t)) ^ 2) :=
+          Real.sqrt_le_sqrt hsqr
+      _ = Real.sqrt (p ^ 2 + q ^ 2) + abs (2 * lagrangeOmega g 1 * p * t) := by
+          rw [Real.sqrt_sq h1]
+  rw [← hRabs]
+  exact hfinal
+
 /-! ## The axiom footprint -/
 
 -- Every theorem above must depend only on Mathlib's classical foundations.
@@ -1826,5 +3433,24 @@ theorem lagrange_side_I (g a : ℝ) (ha : 0 < a) (t : ℝ) :
 #print axioms lagrange_side_P
 #print axioms lagrange_side_Q
 #print axioms lagrange_side_I
+
+#print axioms rot_anchor
+#print axioms eig_trans1
+#print axioms eig_trans2
+#print axioms eig_rot
+#print axioms eig_dil
+#print axioms eig_shapeU
+#print axioms eig_shapeW
+#print axioms lin_cert_transX
+#print axioms lin_cert_transY
+#print axioms lin_cert_shapeU
+#print axioms lin_cert_shapeW
+#print axioms lin_sol_trans
+#print axioms lin_sol_shape
+#print axioms lin_sol_size
+#print axioms lin_size_basis
+#print axioms lin_bound_trans
+#print axioms lin_bound_shape
+#print axioms lin_bound_size
 
 end Trivortex

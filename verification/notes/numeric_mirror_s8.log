@@ -1,0 +1,23 @@
+G = 1.0, omega = 0.477464829275686 (3G/2pi = 0.477464829275686)
+
+[1] rot_anchor: max|F(anchor)| = 5.551e-17            PASS
+[2] rows vs true Jacobian: max abs diff = 1.675e-10  PASS
+[3] eig_trans: max|M0 vT - image| = 0.000e+00         PASS
+[4] eig_rot:   max|M0 vR| = 1.943e-16                 PASS
+[5] eig_dil:   max|M0 vD + 6 vR| = 4.441e-16          PASS
+[6] eig_shape: max|M0 u + 3 w, M0 w - 3 u| = 4.441e-16  PASS
+[7] spectrum = {0,0,+-3i,+-3i}: max err = 1.720e-08  PASS
+    det(xI - M0) coeffs vs x^2(x^2+9)^2: max err = 4.453e-14 PASS
+[8a lin_cert_transX] d/dt true field vs (g/2pi) M0 v: max err = 3.697e-11  PASS
+[8b lin_cert_transY] d/dt true field vs (g/2pi) M0 v: max err = 4.662e-12  PASS
+[9a lin_cert_shapeU] d/dt true field vs (g/2pi) M0 v: max err = 4.163e-11  PASS
+[9b lin_cert_shapeW] d/dt true field vs (g/2pi) M0 v: max err = 1.388e-11  PASS
+[10] lin_sol_trans ODE residual  = 2.220e-16            PASS
+[11] lin_sol_shape ODE residual  = 1.110e-16            PASS
+[12] lin_sol_size  ODE residual  = 1.110e-16            PASS
+[13] lin_bound_trans  |norm^2 - b^2| = 8.882e-16        PASS
+[14] lin_bound_shape  |norm^2 - p^2| = 6.661e-16        PASS
+[15] lin_bound_size margin (>=0)     = 0.000e+00         PASS
+[16] lin_size_basis |vD|^2,|vR|^2, vD.vR deviations = 2.220e-16 PASS
+
+all Section-8 numeric mirrors done.

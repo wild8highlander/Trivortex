@@ -5,13 +5,13 @@
 > Lagrange-type rotating solution), the Chaplygin-type vortex integrals,
 > their conservation laws, and the Lagrange equilateral solution.
 >
-> **Status: landed — v3.0 (milestones M1 + M4/M5/M6 depth tracks).** The
-> artifact, the CI-callable check and the bilingual documentation live
-> in this directory; the acceptance criteria below are checked. The
-> v3.0 release was **built and verified green** against the pinned
-> toolchain (Lean 4 v4.6.0 + Mathlib4 tag v4.6.0): 88 theorems,
-> zero `sorry`/`axiom`, `#print axioms` closed on every theorem
-> (only `propext`, `Classical.choice`, `Quot.sound`).
+> **Status: landed — v4.0 (milestones M1 + M4/M5/M6/M7 depth tracks).**
+> The artifact, the CI-callable check and the bilingual documentation
+> live in this directory; the acceptance criteria below are checked.
+> The v4.0 release was **built and verified green** against the pinned
+> toolchain (Lean 4 v4.6.0 + Mathlib4 tag v4.6.0): 106 theorems with a
+> closed axiom footprint, zero `sorry`/`axiom`, `#print axioms` closed
+> on every theorem (only `propext`, `Classical.choice`, `Quot.sound`).
 
 ---
 
@@ -78,6 +78,24 @@ results stay comparable:
    check V2), and the exact anchors for a triangle of arbitrary side
    `a` (`lagrange_side_H/P/Q/I`: H = −(3Γ²/2π)·ln a, P = Q = 0,
    I = Γa²).
+6. **Linear stability of the Lagrange triangle (new in v4.0, Section 8
+   of the artifact).** The frame co-rotating at ω = 3Γ/(2πa²)
+   (`rot_anchor`: the anchor is its exact fixed point), the
+   2π/Γ-scaled linearization `linX1…linY3` with every entry proved to
+   lie in ℚ(√3), all six eigenmodes (`eig_trans1/2` ±iω,
+   `eig_rot` eigenvalue 0, `eig_dil` the generalized zero mapped to
+   −6·phase, `eig_shapeU/W` the shape oscillation ±iω),
+   certification of the linearization against the TRUE rotating-frame
+   field along every modal line (`lin_cert_transX/Y`,
+   `lin_cert_shapeU/W` — 24 HasDerivAt components), explicit modal
+   solutions of the linearized equation for all t (`lin_sol_trans`,
+   `lin_sol_shape`, `lin_sol_size` — the size drift Q(t) = q − 2ωpt),
+   the orthonormal size basis (`lin_size_basis`) and the stability
+   bounds (`lin_bound_trans/shape`: the norm is preserved exactly;
+   `lin_bound_size`: at most linear growth) — no eigenmode grows
+   exponentially: the classical Thomson criterion at N = 3, now
+   machine-checked. The characteristic polynomial is λ²(λ²+9)², so
+   the spectrum is {0, 0, ±iω, ±iω} in physical units.
 
 ## Acceptance criteria
 
@@ -102,6 +120,12 @@ results stay comparable:
 - [x] (v3.0) The complete Lagrange-triangle theory (Section 7) is
       proven with `#print axioms` closed — 88 theorems in total, zero
       `sorry`/`axiom`.
+- [x] (v4.0) Linear stability (Section 8) is proven with `#print
+      axioms` closed — 106 theorems in total, zero `sorry`/`axiom`.
+      The numeric mirror `verification/notes/numeric_mirror_s8.py`
+      (18 checks, all PASS) and the SymPy ladder
+      `verification/notes/verify_identities_s8.py` (checks A–K) pin
+      the same statements in ℚ(√3) exactly.
 
 ## Build recipe
 
@@ -123,8 +147,8 @@ lake exe cache get && lake build
 | Toolchain | Lean 4 **v4.6.0** (upgraded from v4.4.0; see note) |
 | Mathlib | tag **v4.6.0** (pinned in `lakefile.lean`; was unpinned `@ master`) |
 | Docker pin | [`docker/lean4/Dockerfile`](../docker/lean4/Dockerfile) |
-| Artifact | `verification/lean4/Trivortex.lean` (88 theorems/defs) |
-| Milestone | M1 + the M4/M5/M6 depth tracks (conservation + Lagrange + complete theory) |
+| Artifact | `verification/lean4/Trivortex.lean` (106 axioms-closed theorems) |
+| Milestone | M1 + the M4–M7 depth tracks (conservation + Lagrange + complete theory + linear stability) |
 | CI status | non-blocking job in `verification-ports.yml` |
 
 > **Toolchain note.** v1.1 pinned Lean v4.4.0 with Mathlib `@ "master"`,
@@ -158,7 +182,15 @@ lake exe cache get && lake build
   laws of the four integrals, the orbit radius, the distance
   certificates and the general-side anchors — 44 new theorems,
   88 total, all `#print axioms`-closed.
+- **v4.0 (M7 — linear stability):** Section 8 of the artifact — the
+  co-rotating frame and its fixed point, the 2π/Γ-scaled Jacobian
+  rows in ℚ(√3), the six eigenmodes, the certification of the
+  linearization against the true rotating-frame field, the modal
+  solutions (translation rotation, shape oscillation, size drift),
+  the orthonormal size basis and the Thomson stability bounds —
+  18 new theorems, 106 total, all `#print axioms`-closed; mirrored
+  numerically by `verification/notes/numeric_mirror_s8.py`.
 
-The artifact header lists the axiom footprint (88 theorems, all
+The artifact header lists the axiom footprint (106 theorems, all
 `#print axioms`-closed over Mathlib's classical foundations). The
 bilingual overview lives in [README_RU.md](README_RU.md).
