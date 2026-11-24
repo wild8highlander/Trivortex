@@ -4,7 +4,7 @@ SPDX-License-Identifier: LicenseRef-Proprietary-Wild8Highlander-1.0
 -/
 /-
 ==========================================================================
-TRIVORTEX — LEAN 4 FORMALIZATION: THE FULL STATEMENT LAYER (v4.0)
+TRIVORTEX — LEAN 4 FORMALIZATION: THE FULL STATEMENT LAYER (v5.0)
 ==========================================================================
 Milestone M4/M5 artifact: `verification/lean4/Trivortex.lean`.
 
@@ -58,6 +58,35 @@ release still left to the numerical ladders only:
      their norm exactly, the size drift grows at most linearly — no
      eigenmode grows exponentially (the classical Thomson stability at
      N = 3).
+
+  5'. Section 9 (v5.0): NONLINEAR CONTINUATION OF THE MODES and
+     BIFURCATION ANALYSIS AT UNEQUAL CIRCULATIONS.
+       • 9.1 the Lagrange branch continues for ARBITRARY circulations
+         (g1, g2, g3) with G = g1+g2+g3 =/= 0: the equilateral triangle
+         translated so that its circulation-weighted centroid sits at
+         the origin and rotating rigidly at omega = G/(2*pi*a^2) is an
+         EXACT Kirchhoff solution (s9_rel_eq) — the rotation rate is
+         regular in the side parameter (s9_omega_scale);
+       • 9.2 the mode families persist EXACTLY in the full nonlinear
+         system: the translation orbit (the Kirchhoff field is
+         translation-invariant, s9_sol_shift), the phase orbit
+         (re-timed solutions, s9_sol_time) and the constant norm of the
+         rotating-frame translation deviation (s9_trans_dev);
+       • 9.3 the 2*pi-scaled rotating-frame linearization genLinX1…
+         genLinY3 for arbitrary circulations, tied to the §8 certified
+         matrix on the diagonal (s9_lin_diag); its characteristic
+         polynomial is lambda^2*(lambda^2 + G^2)*(lambda^2 + 3*P) with
+         P = G1G2+G2G3+G3G1 (s9_lin_trans, s9_lin_kernel, s9_lin_chain,
+         s9_shape_gen — all SymPy-verified). THE BIFURCATION: P > 0 the
+         shape pair oscillates (+-i*sqrt(3P); instance (1,1,4) with the
+         bounded modal solution s9_lin_sol_shape4); P = 0 the pair
+         collides at zero (instance (1,1,-1/2): kernel + Jordan chain,
+         s9_collision_a/b); P < 0 a REAL eigenvalue pair ±sqrt(-3P)
+         appears (instance (1,1,-1): s9_eig_unst) with the exponentially
+         growing modal solution m(t) = e^(sqrt(3)*t)*v and
+         |m(t)|^2 = 12*e^(2*sqrt(3)*t) (s9_lin_sol_unst, s9_growth_norm)
+         — linear instability across the hypersurface
+         G1G2+G2G3+G3G1 = 0.
 
 AXIOM FOOTPRINT: no `axiom`/`sorry` anywhere — `#print axioms` at the
 bottom demonstrates that every theorem depends only on Mathlib's standard
@@ -3452,5 +3481,1435 @@ theorem lin_bound_size (g p q t : ℝ) :
 #print axioms lin_bound_trans
 #print axioms lin_bound_shape
 #print axioms lin_bound_size
+
+
+
+
+
+
+
+
+
+
+
+/-! ## Section 9 — Nonlinear continuation of the modes; bifurcation
+     analysis at unequal circulations -/
+
+/-! ### 9.1 The general-circulation Lagrange family
+
+For ARBITRARY circulations (g1, g2, g3) with nonzero total G = g1+g2+g3
+the equilateral triangle persists as an exact relative equilibrium: the
+configuration w_k(t) = R(ωt)·(a·q_k + τ) with the circulation-weighted
+centroid at the origin (τ = −a·ΣΓ_j q_j / G) rotates rigidly at
+
+    ω = G / (2πa²),
+
+the direct generalization of the §7 frequency ω = 3Γ/(2πa²) at Γ1=Γ2=Γ3.
+This is the nonlinear continuation of the Lagrange branch through the
+whole circulation simplex — including mixed-sign circulations, where the
+bifurcation analysis of §9.3 shows the spectral transition. -/
+
+/-- The general-circulation angular frequency: ω = G/(2πa²) with
+    G = Γ1+Γ2+Γ3 (the Kirchhoff generalization of `lagrangeOmega`). -/
+noncomputable def genOmega (g1 g2 g3 a : ℝ) : ℝ :=
+  (g1 + g2 + g3) / (2 * Real.pi * a ^ 2)
+
+/-- The x-translation placing the circulation-weighted centroid of the
+    side-a equilateral triangle at the origin. -/
+noncomputable def tauX (g1 g2 g3 a : ℝ) : ℝ :=
+  -a * (g1 * eqX1 + g2 * eqX2 + g3 * eqX3) / (g1 + g2 + g3)
+
+/-- The y-translation placing the circulation-weighted centroid of the
+    side-a equilateral triangle at the origin. -/
+noncomputable def tauY (g1 g2 g3 a : ℝ) : ℝ :=
+  -a * (g1 * eqY1 + g2 * eqY2 + g3 * eqY3) / (g1 + g2 + g3)
+
+/-- The x-coordinate of vortex k of the general-circulation relative
+    equilibrium: the §7 rotated triangle translated by the rotating
+    centroid-offset (τx(t), τy(t)) = R(ωt)·(τx, τy). -/
+noncomputable def genX (g1 g2 g3 a t : ℝ) (k : ℕ) : ℝ :=
+  lagX a (genOmega g1 g2 g3 a) t k
+    + Real.cos (genOmega g1 g2 g3 a * t) * tauX g1 g2 g3 a
+    - Real.sin (genOmega g1 g2 g3 a * t) * tauY g1 g2 g3 a
+
+/-- The y-coordinate twin of `genX`. -/
+noncomputable def genY (g1 g2 g3 a t : ℝ) (k : ℕ) : ℝ :=
+  lagY a (genOmega g1 g2 g3 a) t k
+    + Real.sin (genOmega g1 g2 g3 a * t) * tauX g1 g2 g3 a
+    + Real.cos (genOmega g1 g2 g3 a * t) * tauY g1 g2 g3 a
+
+/-- **Rigid rotation of the general-circulation triangle (x).**  Whatever
+    the circulations, the continued family rotates rigidly:
+    d/dt x_k = −ω·y_k with ω = G/(2πa²). -/
+theorem s9_gen_deriv_x (g1 g2 g3 a t : ℝ) (k : ℕ) :
+    HasDerivAt (fun s => genX g1 g2 g3 a s k)
+      (-(genOmega g1 g2 g3 a) * genY g1 g2 g3 a t k) t := by
+  have h1 : HasDerivAt (fun s => lagX a (genOmega g1 g2 g3 a) s k)
+      (-(genOmega g1 g2 g3 a) * lagY a (genOmega g1 g2 g3 a) t k) t :=
+    lag_deriv_field_x a (genOmega g1 g2 g3 a) t k
+  have hc := cos_comp (genOmega g1 g2 g3 a) t
+  have hs := sin_comp (genOmega g1 g2 g3 a) t
+  have h2 := (hc.const_mul (tauX g1 g2 g3 a)).sub (hs.const_mul (tauY g1 g2 g3 a))
+  have h := h1.add h2
+  refine (deriv_congr h (by intro s; unfold genX; ring)).congr_deriv ?_
+  unfold genY
+  ring
+
+/-- **Rigid rotation of the general-circulation triangle (y).** -/
+theorem s9_gen_deriv_y (g1 g2 g3 a t : ℝ) (k : ℕ) :
+    HasDerivAt (fun s => genY g1 g2 g3 a s k)
+      (genOmega g1 g2 g3 a * genX g1 g2 g3 a t k) t := by
+  have h1 : HasDerivAt (fun s => lagY a (genOmega g1 g2 g3 a) s k)
+      (genOmega g1 g2 g3 a * lagX a (genOmega g1 g2 g3 a) t k) t :=
+    lag_deriv_field_y a (genOmega g1 g2 g3 a) t k
+  have hc := cos_comp (genOmega g1 g2 g3 a) t
+  have hs := sin_comp (genOmega g1 g2 g3 a) t
+  have h2 := (hs.const_mul (tauX g1 g2 g3 a)).add (hc.const_mul (tauY g1 g2 g3 a))
+  have h := h1.add h2
+  refine (deriv_congr h (by intro s; unfold genY; ring)).congr_deriv ?_
+  unfold genX
+  ring
+
+/-- The continued triangle has the same pairwise distances as the §7
+    triangle: the translation cancels in every difference (pair 1,2). -/
+theorem s9_gen_dist01 (g1 g2 g3 a t : ℝ) :
+    d2 (genX g1 g2 g3 a t 0) (genY g1 g2 g3 a t 0)
+      (genX g1 g2 g3 a t 1) (genY g1 g2 g3 a t 1) = a ^ 2 := by
+  have hxx : genX g1 g2 g3 a t 0 - genX g1 g2 g3 a t 1
+      = lagX a (genOmega g1 g2 g3 a) t 0 - lagX a (genOmega g1 g2 g3 a) t 1 := by
+    unfold genX; ring
+  have hyy : genY g1 g2 g3 a t 0 - genY g1 g2 g3 a t 1
+      = lagY a (genOmega g1 g2 g3 a) t 0 - lagY a (genOmega g1 g2 g3 a) t 1 := by
+    unfold genY; ring
+  have hc : d2 (genX g1 g2 g3 a t 0) (genY g1 g2 g3 a t 0)
+      (genX g1 g2 g3 a t 1) (genY g1 g2 g3 a t 1)
+      = d2 (lagX a (genOmega g1 g2 g3 a) t 0) (lagY a (genOmega g1 g2 g3 a) t 0)
+        (lagX a (genOmega g1 g2 g3 a) t 1) (lagY a (genOmega g1 g2 g3 a) t 1) := by
+    unfold d2; rw [hxx, hyy]
+  rw [hc]
+  exact d2_lag01 a (genOmega g1 g2 g3 a) t
+
+/-- Pair 1,3. -/
+theorem s9_gen_dist02 (g1 g2 g3 a t : ℝ) :
+    d2 (genX g1 g2 g3 a t 0) (genY g1 g2 g3 a t 0)
+      (genX g1 g2 g3 a t 2) (genY g1 g2 g3 a t 2) = a ^ 2 := by
+  have hxx : genX g1 g2 g3 a t 0 - genX g1 g2 g3 a t 2
+      = lagX a (genOmega g1 g2 g3 a) t 0 - lagX a (genOmega g1 g2 g3 a) t 2 := by
+    unfold genX; ring
+  have hyy : genY g1 g2 g3 a t 0 - genY g1 g2 g3 a t 2
+      = lagY a (genOmega g1 g2 g3 a) t 0 - lagY a (genOmega g1 g2 g3 a) t 2 := by
+    unfold genY; ring
+  have hc : d2 (genX g1 g2 g3 a t 0) (genY g1 g2 g3 a t 0)
+      (genX g1 g2 g3 a t 2) (genY g1 g2 g3 a t 2)
+      = d2 (lagX a (genOmega g1 g2 g3 a) t 0) (lagY a (genOmega g1 g2 g3 a) t 0)
+        (lagX a (genOmega g1 g2 g3 a) t 2) (lagY a (genOmega g1 g2 g3 a) t 2) := by
+    unfold d2; rw [hxx, hyy]
+  rw [hc]
+  exact d2_lag02 a (genOmega g1 g2 g3 a) t
+
+/-- Pair 2,3. -/
+theorem s9_gen_dist12 (g1 g2 g3 a t : ℝ) :
+    d2 (genX g1 g2 g3 a t 1) (genY g1 g2 g3 a t 1)
+      (genX g1 g2 g3 a t 2) (genY g1 g2 g3 a t 2) = a ^ 2 := by
+  have hxx : genX g1 g2 g3 a t 1 - genX g1 g2 g3 a t 2
+      = lagX a (genOmega g1 g2 g3 a) t 1 - lagX a (genOmega g1 g2 g3 a) t 2 := by
+    unfold genX; ring
+  have hyy : genY g1 g2 g3 a t 1 - genY g1 g2 g3 a t 2
+      = lagY a (genOmega g1 g2 g3 a) t 1 - lagY a (genOmega g1 g2 g3 a) t 2 := by
+    unfold genY; ring
+  have hc : d2 (genX g1 g2 g3 a t 1) (genY g1 g2 g3 a t 1)
+      (genX g1 g2 g3 a t 2) (genY g1 g2 g3 a t 2)
+      = d2 (lagX a (genOmega g1 g2 g3 a) t 1) (lagY a (genOmega g1 g2 g3 a) t 1)
+        (lagX a (genOmega g1 g2 g3 a) t 2) (lagY a (genOmega g1 g2 g3 a) t 2) := by
+    unfold d2; rw [hxx, hyy]
+  rw [hc]
+  exact d2_lag12 a (genOmega g1 g2 g3 a) t
+
+/-- **The circulation-weighted centroid stays at the origin (x).**
+    Σ Γ_k x_k(t) = 0 along the whole continued trajectory — the identity
+    that makes the rigid rotation an exact solution. -/
+theorem s9_gen_centroid_x (g1 g2 g3 a t : ℝ) (hG : g1 + g2 + g3 ≠ 0) :
+    g1 * genX g1 g2 g3 a t 0 + g2 * genX g1 g2 g3 a t 1
+      + g3 * genX g1 g2 g3 a t 2 = 0 := by
+  have hr0 : lagX a (genOmega g1 g2 g3 a) t 0
+      = Real.cos (genOmega g1 g2 g3 a * t) * lagX a (genOmega g1 g2 g3 a) 0 0
+        - Real.sin (genOmega g1 g2 g3 a * t) * lagY a (genOmega g1 g2 g3 a) 0 0 := by
+    have h := lag_rotation_x a (genOmega g1 g2 g3 a) t 0 0
+    rw [zero_add] at h; exact h
+  have hr1 : lagX a (genOmega g1 g2 g3 a) t 1
+      = Real.cos (genOmega g1 g2 g3 a * t) * lagX a (genOmega g1 g2 g3 a) 0 1
+        - Real.sin (genOmega g1 g2 g3 a * t) * lagY a (genOmega g1 g2 g3 a) 0 1 := by
+    have h := lag_rotation_x a (genOmega g1 g2 g3 a) t 0 1
+    rw [zero_add] at h; exact h
+  have hr2 : lagX a (genOmega g1 g2 g3 a) t 2
+      = Real.cos (genOmega g1 g2 g3 a * t) * lagX a (genOmega g1 g2 g3 a) 0 2
+        - Real.sin (genOmega g1 g2 g3 a * t) * lagY a (genOmega g1 g2 g3 a) 0 2 := by
+    have h := lag_rotation_x a (genOmega g1 g2 g3 a) t 0 2
+    rw [zero_add] at h; exact h
+  have hA : g1 * lagX a (genOmega g1 g2 g3 a) t 0
+      + g2 * lagX a (genOmega g1 g2 g3 a) t 1
+      + g3 * lagX a (genOmega g1 g2 g3 a) t 2
+      = Real.cos (genOmega g1 g2 g3 a * t)
+        * (g1 * lagX a (genOmega g1 g2 g3 a) 0 0
+          + g2 * lagX a (genOmega g1 g2 g3 a) 0 1
+          + g3 * lagX a (genOmega g1 g2 g3 a) 0 2)
+        - Real.sin (genOmega g1 g2 g3 a * t)
+        * (g1 * lagY a (genOmega g1 g2 g3 a) 0 0
+          + g2 * lagY a (genOmega g1 g2 g3 a) 0 1
+          + g3 * lagY a (genOmega g1 g2 g3 a) 0 2) := by
+    linear_combination g1 * hr0 + g2 * hr1 + g3 * hr2
+  have hX0 : g1 * lagX a (genOmega g1 g2 g3 a) 0 0
+      + g2 * lagX a (genOmega g1 g2 g3 a) 0 1
+      + g3 * lagX a (genOmega g1 g2 g3 a) 0 2
+      = a * (g1 * eqX1 + g2 * eqX2 + g3 * eqX3) := by
+    rw [lagX_zero a (genOmega g1 g2 g3 a) 0, lagX_zero a (genOmega g1 g2 g3 a) 1,
+      lagX_zero a (genOmega g1 g2 g3 a) 2, lagX0_eq1, lagX0_eq2, lagX0_eq3]
+    ring
+  have hY0 : g1 * lagY a (genOmega g1 g2 g3 a) 0 0
+      + g2 * lagY a (genOmega g1 g2 g3 a) 0 1
+      + g3 * lagY a (genOmega g1 g2 g3 a) 0 2
+      = a * (g1 * eqY1 + g2 * eqY2 + g3 * eqY3) := by
+    rw [lagY_zero a (genOmega g1 g2 g3 a) 0, lagY_zero a (genOmega g1 g2 g3 a) 1,
+      lagY_zero a (genOmega g1 g2 g3 a) 2, lagY0_eq1, lagY0_eq2, lagY0_eq3]
+    ring
+  have htx : a * (g1 * eqX1 + g2 * eqX2 + g3 * eqX3)
+      + (g1 + g2 + g3) * tauX g1 g2 g3 a = 0 := by
+    unfold tauX
+    rw [show (g1 + g2 + g3) * (-a * (g1 * eqX1 + g2 * eqX2 + g3 * eqX3)
+        / (g1 + g2 + g3))
+      = -(a * (g1 * eqX1 + g2 * eqX2 + g3 * eqX3))
+        * ((g1 + g2 + g3) / (g1 + g2 + g3)) from by ring,
+      div_self hG, mul_one]
+    ring
+  have hty : a * (g1 * eqY1 + g2 * eqY2 + g3 * eqY3)
+      + (g1 + g2 + g3) * tauY g1 g2 g3 a = 0 := by
+    unfold tauY
+    rw [show (g1 + g2 + g3) * (-a * (g1 * eqY1 + g2 * eqY2 + g3 * eqY3)
+        / (g1 + g2 + g3))
+      = -(a * (g1 * eqY1 + g2 * eqY2 + g3 * eqY3))
+        * ((g1 + g2 + g3) / (g1 + g2 + g3)) from by ring,
+      div_self hG, mul_one]
+    ring
+  unfold genX
+  linear_combination hA + Real.cos (genOmega g1 g2 g3 a * t) * hX0
+    - Real.sin (genOmega g1 g2 g3 a * t) * hY0
+    + Real.cos (genOmega g1 g2 g3 a * t) * htx
+    - Real.sin (genOmega g1 g2 g3 a * t) * hty
+
+/-- The circulation-weighted centroid stays at the origin (y). -/
+theorem s9_gen_centroid_y (g1 g2 g3 a t : ℝ) (hG : g1 + g2 + g3 ≠ 0) :
+    g1 * genY g1 g2 g3 a t 0 + g2 * genY g1 g2 g3 a t 1
+      + g3 * genY g1 g2 g3 a t 2 = 0 := by
+  have hs0 : lagY a (genOmega g1 g2 g3 a) t 0
+      = Real.sin (genOmega g1 g2 g3 a * t) * lagX a (genOmega g1 g2 g3 a) 0 0
+        + Real.cos (genOmega g1 g2 g3 a * t) * lagY a (genOmega g1 g2 g3 a) 0 0 := by
+    have h := lag_rotation_y a (genOmega g1 g2 g3 a) t 0 0
+    rw [zero_add] at h; exact h
+  have hs1 : lagY a (genOmega g1 g2 g3 a) t 1
+      = Real.sin (genOmega g1 g2 g3 a * t) * lagX a (genOmega g1 g2 g3 a) 0 1
+        + Real.cos (genOmega g1 g2 g3 a * t) * lagY a (genOmega g1 g2 g3 a) 0 1 := by
+    have h := lag_rotation_y a (genOmega g1 g2 g3 a) t 0 1
+    rw [zero_add] at h; exact h
+  have hs2 : lagY a (genOmega g1 g2 g3 a) t 2
+      = Real.sin (genOmega g1 g2 g3 a * t) * lagX a (genOmega g1 g2 g3 a) 0 2
+        + Real.cos (genOmega g1 g2 g3 a * t) * lagY a (genOmega g1 g2 g3 a) 0 2 := by
+    have h := lag_rotation_y a (genOmega g1 g2 g3 a) t 0 2
+    rw [zero_add] at h; exact h
+  have hB : g1 * lagY a (genOmega g1 g2 g3 a) t 0
+      + g2 * lagY a (genOmega g1 g2 g3 a) t 1
+      + g3 * lagY a (genOmega g1 g2 g3 a) t 2
+      = Real.sin (genOmega g1 g2 g3 a * t)
+        * (g1 * lagX a (genOmega g1 g2 g3 a) 0 0
+          + g2 * lagX a (genOmega g1 g2 g3 a) 0 1
+          + g3 * lagX a (genOmega g1 g2 g3 a) 0 2)
+        + Real.cos (genOmega g1 g2 g3 a * t)
+        * (g1 * lagY a (genOmega g1 g2 g3 a) 0 0
+          + g2 * lagY a (genOmega g1 g2 g3 a) 0 1
+          + g3 * lagY a (genOmega g1 g2 g3 a) 0 2) := by
+    linear_combination g1 * hs0 + g2 * hs1 + g3 * hs2
+  have hX0 : g1 * lagX a (genOmega g1 g2 g3 a) 0 0
+      + g2 * lagX a (genOmega g1 g2 g3 a) 0 1
+      + g3 * lagX a (genOmega g1 g2 g3 a) 0 2
+      = a * (g1 * eqX1 + g2 * eqX2 + g3 * eqX3) := by
+    rw [lagX_zero a (genOmega g1 g2 g3 a) 0, lagX_zero a (genOmega g1 g2 g3 a) 1,
+      lagX_zero a (genOmega g1 g2 g3 a) 2, lagX0_eq1, lagX0_eq2, lagX0_eq3]
+    ring
+  have hY0 : g1 * lagY a (genOmega g1 g2 g3 a) 0 0
+      + g2 * lagY a (genOmega g1 g2 g3 a) 0 1
+      + g3 * lagY a (genOmega g1 g2 g3 a) 0 2
+      = a * (g1 * eqY1 + g2 * eqY2 + g3 * eqY3) := by
+    rw [lagY_zero a (genOmega g1 g2 g3 a) 0, lagY_zero a (genOmega g1 g2 g3 a) 1,
+      lagY_zero a (genOmega g1 g2 g3 a) 2, lagY0_eq1, lagY0_eq2, lagY0_eq3]
+    ring
+  have htx : a * (g1 * eqX1 + g2 * eqX2 + g3 * eqX3)
+      + (g1 + g2 + g3) * tauX g1 g2 g3 a = 0 := by
+    unfold tauX
+    rw [show (g1 + g2 + g3) * (-a * (g1 * eqX1 + g2 * eqX2 + g3 * eqX3)
+        / (g1 + g2 + g3))
+      = -(a * (g1 * eqX1 + g2 * eqX2 + g3 * eqX3))
+        * ((g1 + g2 + g3) / (g1 + g2 + g3)) from by ring,
+      div_self hG, mul_one]
+    ring
+  have hty : a * (g1 * eqY1 + g2 * eqY2 + g3 * eqY3)
+      + (g1 + g2 + g3) * tauY g1 g2 g3 a = 0 := by
+    unfold tauY
+    rw [show (g1 + g2 + g3) * (-a * (g1 * eqY1 + g2 * eqY2 + g3 * eqY3)
+        / (g1 + g2 + g3))
+      = -(a * (g1 * eqY1 + g2 * eqY2 + g3 * eqY3))
+        * ((g1 + g2 + g3) / (g1 + g2 + g3)) from by ring,
+      div_self hG, mul_one]
+    ring
+  unfold genY
+  linear_combination hB + Real.sin (genOmega g1 g2 g3 a * t) * hX0
+    + Real.cos (genOmega g1 g2 g3 a * t) * hY0
+    + Real.sin (genOmega g1 g2 g3 a * t) * htx
+    + Real.cos (genOmega g1 g2 g3 a * t) * hty
+
+/-- **The Kirchhoff field along the continued triangle (vortex 1, x).**
+    The weighted-centroid identity collapses the partner sums:
+    V_x(w_1) = −ω·y_1 exactly, for arbitrary circulations. -/
+theorem s9_gen_field_x1 (g1 g2 g3 a t : ℝ) (hG : g1 + g2 + g3 ≠ 0) :
+    kx1 g1 g2 g3 (genX g1 g2 g3 a t 0) (genY g1 g2 g3 a t 0)
+      (genX g1 g2 g3 a t 1) (genY g1 g2 g3 a t 1)
+      (genX g1 g2 g3 a t 2) (genY g1 g2 g3 a t 2)
+      = -(genOmega g1 g2 g3 a) * genY g1 g2 g3 a t 0 := by
+  have hd1 := s9_gen_dist01 g1 g2 g3 a t
+  have hd2 := s9_gen_dist02 g1 g2 g3 a t
+  have hc := s9_gen_centroid_y g1 g2 g3 a t hG
+  have hsum : g2 * (genY g1 g2 g3 a t 0 - genY g1 g2 g3 a t 1)
+      + g3 * (genY g1 g2 g3 a t 0 - genY g1 g2 g3 a t 2)
+      = (g1 + g2 + g3) * genY g1 g2 g3 a t 0 := by
+    have hr : g2 * (genY g1 g2 g3 a t 0 - genY g1 g2 g3 a t 1)
+        + g3 * (genY g1 g2 g3 a t 0 - genY g1 g2 g3 a t 2)
+        = (g1 + g2 + g3) * genY g1 g2 g3 a t 0
+          - (g1 * genY g1 g2 g3 a t 0 + g2 * genY g1 g2 g3 a t 1
+            + g3 * genY g1 g2 g3 a t 2) := by
+      ring
+    rw [hr, hc]; ring
+  have hω : genOmega g1 g2 g3 a = (g1 + g2 + g3) / (2 * Real.pi * a ^ 2) := rfl
+  unfold kx1
+  rw [hd1, hd2]
+  linear_combination (-(1 / (2 * Real.pi * a ^ 2))) * hsum
+    + genY g1 g2 g3 a t 0 * hω
+
+/-- Vortex 1, y-component. -/
+theorem s9_gen_field_y1 (g1 g2 g3 a t : ℝ) (hG : g1 + g2 + g3 ≠ 0) :
+    ky1 g1 g2 g3 (genX g1 g2 g3 a t 0) (genY g1 g2 g3 a t 0)
+      (genX g1 g2 g3 a t 1) (genY g1 g2 g3 a t 1)
+      (genX g1 g2 g3 a t 2) (genY g1 g2 g3 a t 2)
+      = genOmega g1 g2 g3 a * genX g1 g2 g3 a t 0 := by
+  have hd1 := s9_gen_dist01 g1 g2 g3 a t
+  have hd2 := s9_gen_dist02 g1 g2 g3 a t
+  have hc := s9_gen_centroid_x g1 g2 g3 a t hG
+  have hsum : g2 * (genX g1 g2 g3 a t 0 - genX g1 g2 g3 a t 1)
+      + g3 * (genX g1 g2 g3 a t 0 - genX g1 g2 g3 a t 2)
+      = (g1 + g2 + g3) * genX g1 g2 g3 a t 0 := by
+    have hr : g2 * (genX g1 g2 g3 a t 0 - genX g1 g2 g3 a t 1)
+        + g3 * (genX g1 g2 g3 a t 0 - genX g1 g2 g3 a t 2)
+        = (g1 + g2 + g3) * genX g1 g2 g3 a t 0
+          - (g1 * genX g1 g2 g3 a t 0 + g2 * genX g1 g2 g3 a t 1
+            + g3 * genX g1 g2 g3 a t 2) := by
+      ring
+    rw [hr, hc]; ring
+  have hω : genOmega g1 g2 g3 a = (g1 + g2 + g3) / (2 * Real.pi * a ^ 2) := rfl
+  unfold ky1
+  rw [hd1, hd2]
+  linear_combination (1 / (2 * Real.pi * a ^ 2)) * hsum
+    - genX g1 g2 g3 a t 0 * hω
+
+/-- Vortex 2, x-component. -/
+theorem s9_gen_field_x2 (g1 g2 g3 a t : ℝ) (hG : g1 + g2 + g3 ≠ 0) :
+    kx2 g1 g2 g3 (genX g1 g2 g3 a t 0) (genY g1 g2 g3 a t 0)
+      (genX g1 g2 g3 a t 1) (genY g1 g2 g3 a t 1)
+      (genX g1 g2 g3 a t 2) (genY g1 g2 g3 a t 2)
+      = -(genOmega g1 g2 g3 a) * genY g1 g2 g3 a t 1 := by
+  have hd1 := s9_gen_dist01 g1 g2 g3 a t
+  have hd2 := s9_gen_dist12 g1 g2 g3 a t
+  have hc := s9_gen_centroid_y g1 g2 g3 a t hG
+  have hsum : g1 * (genY g1 g2 g3 a t 1 - genY g1 g2 g3 a t 0)
+      + g3 * (genY g1 g2 g3 a t 1 - genY g1 g2 g3 a t 2)
+      = (g1 + g2 + g3) * genY g1 g2 g3 a t 1 := by
+    have hr : g1 * (genY g1 g2 g3 a t 1 - genY g1 g2 g3 a t 0)
+        + g3 * (genY g1 g2 g3 a t 1 - genY g1 g2 g3 a t 2)
+        = (g1 + g2 + g3) * genY g1 g2 g3 a t 1
+          - (g1 * genY g1 g2 g3 a t 0 + g2 * genY g1 g2 g3 a t 1
+            + g3 * genY g1 g2 g3 a t 2) := by
+      ring
+    rw [hr, hc]; ring
+  have hω : genOmega g1 g2 g3 a = (g1 + g2 + g3) / (2 * Real.pi * a ^ 2) := rfl
+  unfold kx2
+  rw [hd1, hd2]
+  linear_combination (-(1 / (2 * Real.pi * a ^ 2))) * hsum
+    + genY g1 g2 g3 a t 1 * hω
+
+/-- Vortex 2, y-component. -/
+theorem s9_gen_field_y2 (g1 g2 g3 a t : ℝ) (hG : g1 + g2 + g3 ≠ 0) :
+    ky2 g1 g2 g3 (genX g1 g2 g3 a t 0) (genY g1 g2 g3 a t 0)
+      (genX g1 g2 g3 a t 1) (genY g1 g2 g3 a t 1)
+      (genX g1 g2 g3 a t 2) (genY g1 g2 g3 a t 2)
+      = genOmega g1 g2 g3 a * genX g1 g2 g3 a t 1 := by
+  have hd1 := s9_gen_dist01 g1 g2 g3 a t
+  have hd2 := s9_gen_dist12 g1 g2 g3 a t
+  have hc := s9_gen_centroid_x g1 g2 g3 a t hG
+  have hsum : g1 * (genX g1 g2 g3 a t 1 - genX g1 g2 g3 a t 0)
+      + g3 * (genX g1 g2 g3 a t 1 - genX g1 g2 g3 a t 2)
+      = (g1 + g2 + g3) * genX g1 g2 g3 a t 1 := by
+    have hr : g1 * (genX g1 g2 g3 a t 1 - genX g1 g2 g3 a t 0)
+        + g3 * (genX g1 g2 g3 a t 1 - genX g1 g2 g3 a t 2)
+        = (g1 + g2 + g3) * genX g1 g2 g3 a t 1
+          - (g1 * genX g1 g2 g3 a t 0 + g2 * genX g1 g2 g3 a t 1
+            + g3 * genX g1 g2 g3 a t 2) := by
+      ring
+    rw [hr, hc]; ring
+  have hω : genOmega g1 g2 g3 a = (g1 + g2 + g3) / (2 * Real.pi * a ^ 2) := rfl
+  unfold ky2
+  rw [hd1, hd2]
+  linear_combination (1 / (2 * Real.pi * a ^ 2)) * hsum
+    - genX g1 g2 g3 a t 1 * hω
+
+/-- Vortex 3, x-component. -/
+theorem s9_gen_field_x3 (g1 g2 g3 a t : ℝ) (hG : g1 + g2 + g3 ≠ 0) :
+    kx3 g1 g2 g3 (genX g1 g2 g3 a t 0) (genY g1 g2 g3 a t 0)
+      (genX g1 g2 g3 a t 1) (genY g1 g2 g3 a t 1)
+      (genX g1 g2 g3 a t 2) (genY g1 g2 g3 a t 2)
+      = -(genOmega g1 g2 g3 a) * genY g1 g2 g3 a t 2 := by
+  have hd1 := s9_gen_dist02 g1 g2 g3 a t
+  have hd2 := s9_gen_dist12 g1 g2 g3 a t
+  have hc := s9_gen_centroid_y g1 g2 g3 a t hG
+  have hsum : g1 * (genY g1 g2 g3 a t 2 - genY g1 g2 g3 a t 0)
+      + g2 * (genY g1 g2 g3 a t 2 - genY g1 g2 g3 a t 1)
+      = (g1 + g2 + g3) * genY g1 g2 g3 a t 2 := by
+    have hr : g1 * (genY g1 g2 g3 a t 2 - genY g1 g2 g3 a t 0)
+        + g2 * (genY g1 g2 g3 a t 2 - genY g1 g2 g3 a t 1)
+        = (g1 + g2 + g3) * genY g1 g2 g3 a t 2
+          - (g1 * genY g1 g2 g3 a t 0 + g2 * genY g1 g2 g3 a t 1
+            + g3 * genY g1 g2 g3 a t 2) := by
+      ring
+    rw [hr, hc]; ring
+  have hω : genOmega g1 g2 g3 a = (g1 + g2 + g3) / (2 * Real.pi * a ^ 2) := rfl
+  unfold kx3
+  rw [hd1, hd2]
+  linear_combination (-(1 / (2 * Real.pi * a ^ 2))) * hsum
+    + genY g1 g2 g3 a t 2 * hω
+
+/-- Vortex 3, y-component. -/
+theorem s9_gen_field_y3 (g1 g2 g3 a t : ℝ) (hG : g1 + g2 + g3 ≠ 0) :
+    ky3 g1 g2 g3 (genX g1 g2 g3 a t 0) (genY g1 g2 g3 a t 0)
+      (genX g1 g2 g3 a t 1) (genY g1 g2 g3 a t 1)
+      (genX g1 g2 g3 a t 2) (genY g1 g2 g3 a t 2)
+      = genOmega g1 g2 g3 a * genX g1 g2 g3 a t 2 := by
+  have hd1 := s9_gen_dist02 g1 g2 g3 a t
+  have hd2 := s9_gen_dist12 g1 g2 g3 a t
+  have hc := s9_gen_centroid_x g1 g2 g3 a t hG
+  have hsum : g1 * (genX g1 g2 g3 a t 2 - genX g1 g2 g3 a t 0)
+      + g2 * (genX g1 g2 g3 a t 2 - genX g1 g2 g3 a t 1)
+      = (g1 + g2 + g3) * genX g1 g2 g3 a t 2 := by
+    have hr : g1 * (genX g1 g2 g3 a t 2 - genX g1 g2 g3 a t 0)
+        + g2 * (genX g1 g2 g3 a t 2 - genX g1 g2 g3 a t 1)
+        = (g1 + g2 + g3) * genX g1 g2 g3 a t 2
+          - (g1 * genX g1 g2 g3 a t 0 + g2 * genX g1 g2 g3 a t 1
+            + g3 * genX g1 g2 g3 a t 2) := by
+      ring
+    rw [hr, hc]; ring
+  have hω : genOmega g1 g2 g3 a = (g1 + g2 + g3) / (2 * Real.pi * a ^ 2) := rfl
+  unfold ky3
+  rw [hd1, hd2]
+  linear_combination (1 / (2 * Real.pi * a ^ 2)) * hsum
+    - genX g1 g2 g3 a t 2 * hω
+
+/-- **THE NONLINEAR CONTINUATION THEOREM (§9.1).**  For ARBITRARY
+    circulations g1, g2, g3 with nonzero total G = g1+g2+g3 and any side
+    a ≠ 0, the equilateral triangle translated so that its
+    circulation-weighted centroid sits at the origin and rotating rigidly
+    at ω = G/(2πa²) is an EXACT Kirchhoff solution.  The §7 Lagrange
+    family (g1 = g2 = g3 = Γ) therefore extends to a full
+    three-parameter branch through circulation space — the nonlinear
+    continuation of the relative equilibrium. -/
+theorem s9_rel_eq (g1 g2 g3 a : ℝ) (ha : a ≠ 0) (hG : g1 + g2 + g3 ≠ 0) :
+    KirchhoffSol g1 g2 g3 where
+  x1 := fun t => genX g1 g2 g3 a t 0
+  y1 := fun t => genY g1 g2 g3 a t 0
+  x2 := fun t => genX g1 g2 g3 a t 1
+  y2 := fun t => genY g1 g2 g3 a t 1
+  x3 := fun t => genX g1 g2 g3 a t 2
+  y3 := fun t => genY g1 g2 g3 a t 2
+  hx1 := fun t => by
+    show HasDerivAt (fun t => genX g1 g2 g3 a t 0)
+      (kx1 g1 g2 g3 (genX g1 g2 g3 a t 0) (genY g1 g2 g3 a t 0)
+        (genX g1 g2 g3 a t 1) (genY g1 g2 g3 a t 1)
+        (genX g1 g2 g3 a t 2) (genY g1 g2 g3 a t 2)) t
+    exact (deriv_congr (s9_gen_deriv_x g1 g2 g3 a t 0)
+      (fun s => rfl)).congr_deriv (s9_gen_field_x1 g1 g2 g3 a t hG).symm
+  hy1 := fun t => by
+    show HasDerivAt (fun t => genY g1 g2 g3 a t 0)
+      (ky1 g1 g2 g3 (genX g1 g2 g3 a t 0) (genY g1 g2 g3 a t 0)
+        (genX g1 g2 g3 a t 1) (genY g1 g2 g3 a t 1)
+        (genX g1 g2 g3 a t 2) (genY g1 g2 g3 a t 2)) t
+    exact (deriv_congr (s9_gen_deriv_y g1 g2 g3 a t 0)
+      (fun s => rfl)).congr_deriv (s9_gen_field_y1 g1 g2 g3 a t hG).symm
+  hx2 := fun t => by
+    show HasDerivAt (fun t => genX g1 g2 g3 a t 1)
+      (kx2 g1 g2 g3 (genX g1 g2 g3 a t 0) (genY g1 g2 g3 a t 0)
+        (genX g1 g2 g3 a t 1) (genY g1 g2 g3 a t 1)
+        (genX g1 g2 g3 a t 2) (genY g1 g2 g3 a t 2)) t
+    exact (deriv_congr (s9_gen_deriv_x g1 g2 g3 a t 1)
+      (fun s => rfl)).congr_deriv (s9_gen_field_x2 g1 g2 g3 a t hG).symm
+  hy2 := fun t => by
+    show HasDerivAt (fun t => genY g1 g2 g3 a t 1)
+      (ky2 g1 g2 g3 (genX g1 g2 g3 a t 0) (genY g1 g2 g3 a t 0)
+        (genX g1 g2 g3 a t 1) (genY g1 g2 g3 a t 1)
+        (genX g1 g2 g3 a t 2) (genY g1 g2 g3 a t 2)) t
+    exact (deriv_congr (s9_gen_deriv_y g1 g2 g3 a t 1)
+      (fun s => rfl)).congr_deriv (s9_gen_field_y2 g1 g2 g3 a t hG).symm
+  hx3 := fun t => by
+    show HasDerivAt (fun t => genX g1 g2 g3 a t 2)
+      (kx3 g1 g2 g3 (genX g1 g2 g3 a t 0) (genY g1 g2 g3 a t 0)
+        (genX g1 g2 g3 a t 1) (genY g1 g2 g3 a t 1)
+        (genX g1 g2 g3 a t 2) (genY g1 g2 g3 a t 2)) t
+    exact (deriv_congr (s9_gen_deriv_x g1 g2 g3 a t 2)
+      (fun s => rfl)).congr_deriv (s9_gen_field_x3 g1 g2 g3 a t hG).symm
+  hy3 := fun t => by
+    show HasDerivAt (fun t => genY g1 g2 g3 a t 2)
+      (ky3 g1 g2 g3 (genX g1 g2 g3 a t 0) (genY g1 g2 g3 a t 0)
+        (genX g1 g2 g3 a t 1) (genY g1 g2 g3 a t 1)
+        (genX g1 g2 g3 a t 2) (genY g1 g2 g3 a t 2)) t
+    exact (deriv_congr (s9_gen_deriv_y g1 g2 g3 a t 2)
+      (fun s => rfl)).congr_deriv (s9_gen_field_y3 g1 g2 g3 a t hG).symm
+  hd12 := fun t => by
+    show d2 (genX g1 g2 g3 a t 0) (genY g1 g2 g3 a t 0)
+      (genX g1 g2 g3 a t 1) (genY g1 g2 g3 a t 1) ≠ 0
+    rw [s9_gen_dist01 g1 g2 g3 a t]
+    exact pow_ne_zero 2 ha
+  hd13 := fun t => by
+    show d2 (genX g1 g2 g3 a t 0) (genY g1 g2 g3 a t 0)
+      (genX g1 g2 g3 a t 2) (genY g1 g2 g3 a t 2) ≠ 0
+    rw [s9_gen_dist02 g1 g2 g3 a t]
+    exact pow_ne_zero 2 ha
+  hd23 := fun t => by
+    show d2 (genX g1 g2 g3 a t 1) (genY g1 g2 g3 a t 1)
+      (genX g1 g2 g3 a t 2) (genY g1 g2 g3 a t 2) ≠ 0
+    rw [s9_gen_dist12 g1 g2 g3 a t]
+    exact pow_ne_zero 2 ha
+
+/-- **The rotation rate of the continued branch is regular in the side
+    parameter**: ω(c·a) = ω(a)/c² — the §7 scaling law persists for
+    arbitrary circulations; dω/da ≠ 0, so the branch continues through
+    every scale with no bifurcation of the rotation rate. -/
+theorem s9_omega_scale (g1 g2 g3 a c : ℝ) (hc : c ≠ 0) :
+    genOmega g1 g2 g3 (c * a) = genOmega g1 g2 g3 a / c ^ 2 := by
+  unfold genOmega
+  rw [show (c * a) ^ 2 = c ^ 2 * a ^ 2 from by ring]
+  ring
+
+/-! ### 9.2 Exact nonlinear continuation of the modes
+
+§8 proved that the ±iω translation pair, the phase mode and the size
+drift are eigenmodes of the LINEARIZED rotating-frame flow.  §9.2 shows
+that the corresponding mode families persist EXACTLY in the full
+nonlinear system, for arbitrary circulations:
+
+  • translations: the Kirchhoff field is translation-invariant, so
+    shifting a solution by any constant vector δ = (b1, b2) yields
+    another exact solution — the 2-parameter translation orbit.  In the
+    co-rotating frame the deviation R(−ωt)·δ has the CONSTANT norm
+    |δ|: the nonlinear realization of the ±iω eigenpair.
+  • phase: re-timing a solution (t ↦ t + s) yields another exact
+    solution — the rotation orbit, the nonlinear realization of the
+    zero eigenvalue (phase mode). -/
+
+/-- Translation invariance of the Kirchhoff field (vortex 1, x). -/
+theorem s9_kx_shift (g1 g2 g3 b1 b2 x1 y1 x2 y2 x3 y3 : ℝ) :
+    kx1 g1 g2 g3 (x1 + b1) (y1 + b2) (x2 + b1) (y2 + b2) (x3 + b1) (y3 + b2)
+      = kx1 g1 g2 g3 x1 y1 x2 y2 x3 y3 := by
+  unfold kx1
+  rw [show d2 (x1 + b1) (y1 + b2) (x2 + b1) (y2 + b2)
+      = d2 x1 y1 x2 y2 from by unfold d2; ring,
+    show d2 (x1 + b1) (y1 + b2) (x3 + b1) (y3 + b2)
+      = d2 x1 y1 x3 y3 from by unfold d2; ring]
+  ring
+
+/-- Translation invariance (vortex 1, y). -/
+theorem s9_ky_shift (g1 g2 g3 b1 b2 x1 y1 x2 y2 x3 y3 : ℝ) :
+    ky1 g1 g2 g3 (x1 + b1) (y1 + b2) (x2 + b1) (y2 + b2) (x3 + b1) (y3 + b2)
+      = ky1 g1 g2 g3 x1 y1 x2 y2 x3 y3 := by
+  unfold ky1
+  rw [show d2 (x1 + b1) (y1 + b2) (x2 + b1) (y2 + b2)
+      = d2 x1 y1 x2 y2 from by unfold d2; ring,
+    show d2 (x1 + b1) (y1 + b2) (x3 + b1) (y3 + b2)
+      = d2 x1 y1 x3 y3 from by unfold d2; ring]
+  ring
+
+/-- Translation invariance (vortex 2, x). -/
+theorem s9_kx2_shift (g1 g2 g3 b1 b2 x1 y1 x2 y2 x3 y3 : ℝ) :
+    kx2 g1 g2 g3 (x1 + b1) (y1 + b2) (x2 + b1) (y2 + b2) (x3 + b1) (y3 + b2)
+      = kx2 g1 g2 g3 x1 y1 x2 y2 x3 y3 := by
+  unfold kx2
+  rw [show d2 (x1 + b1) (y1 + b2) (x2 + b1) (y2 + b2)
+      = d2 x1 y1 x2 y2 from by unfold d2; ring,
+    show d2 (x2 + b1) (y2 + b2) (x3 + b1) (y3 + b2)
+      = d2 x2 y2 x3 y3 from by unfold d2; ring]
+  ring
+
+/-- Translation invariance (vortex 2, y). -/
+theorem s9_ky2_shift (g1 g2 g3 b1 b2 x1 y1 x2 y2 x3 y3 : ℝ) :
+    ky2 g1 g2 g3 (x1 + b1) (y1 + b2) (x2 + b1) (y2 + b2) (x3 + b1) (y3 + b2)
+      = ky2 g1 g2 g3 x1 y1 x2 y2 x3 y3 := by
+  unfold ky2
+  rw [show d2 (x1 + b1) (y1 + b2) (x2 + b1) (y2 + b2)
+      = d2 x1 y1 x2 y2 from by unfold d2; ring,
+    show d2 (x2 + b1) (y2 + b2) (x3 + b1) (y3 + b2)
+      = d2 x2 y2 x3 y3 from by unfold d2; ring]
+  ring
+
+/-- Translation invariance (vortex 3, x). -/
+theorem s9_kx3_shift (g1 g2 g3 b1 b2 x1 y1 x2 y2 x3 y3 : ℝ) :
+    kx3 g1 g2 g3 (x1 + b1) (y1 + b2) (x2 + b1) (y2 + b2) (x3 + b1) (y3 + b2)
+      = kx3 g1 g2 g3 x1 y1 x2 y2 x3 y3 := by
+  unfold kx3
+  rw [show d2 (x1 + b1) (y1 + b2) (x3 + b1) (y3 + b2)
+      = d2 x1 y1 x3 y3 from by unfold d2; ring,
+    show d2 (x2 + b1) (y2 + b2) (x3 + b1) (y3 + b2)
+      = d2 x2 y2 x3 y3 from by unfold d2; ring]
+  ring
+
+/-- Translation invariance (vortex 3, y). -/
+theorem s9_ky3_shift (g1 g2 g3 b1 b2 x1 y1 x2 y2 x3 y3 : ℝ) :
+    ky3 g1 g2 g3 (x1 + b1) (y1 + b2) (x2 + b1) (y2 + b2) (x3 + b1) (y3 + b2)
+      = ky3 g1 g2 g3 x1 y1 x2 y2 x3 y3 := by
+  unfold ky3
+  rw [show d2 (x1 + b1) (y1 + b2) (x3 + b1) (y3 + b2)
+      = d2 x1 y1 x3 y3 from by unfold d2; ring,
+    show d2 (x2 + b1) (y2 + b2) (x3 + b1) (y3 + b2)
+      = d2 x2 y2 x3 y3 from by unfold d2; ring]
+  ring
+
+/-- **The 2-parameter translation orbit (§9.2).**  Shifting ANY Kirchhoff
+    solution by a constant vector δ = (b1, b2) produces another exact
+    Kirchhoff solution — for arbitrary circulations the translation
+    symmetry survives intact, and the deviation of the shifted solution
+    from the base one is the constant vector δ itself. -/
+theorem s9_sol_shift (g1 g2 g3 a b1 b2 : ℝ) (ha : a ≠ 0) (hG : g1 + g2 + g3 ≠ 0) :
+    KirchhoffSol g1 g2 g3 := by
+  have sol : KirchhoffSol g1 g2 g3 := s9_rel_eq g1 g2 g3 a ha hG
+  exact {
+    x1 := fun t => sol.x1 t + b1
+    y1 := fun t => sol.y1 t + b2
+    x2 := fun t => sol.x2 t + b1
+    y2 := fun t => sol.y2 t + b2
+    x3 := fun t => sol.x3 t + b1
+    y3 := fun t => sol.y3 t + b2
+    hx1 := fun t => by
+      have h := (sol.hx1 t).add (hasDerivAt_const (c := b1) (x := t))
+        |>.congr_deriv (by ring)
+      show HasDerivAt (fun t => sol.x1 t + b1)
+        (kx1 g1 g2 g3 (sol.x1 t + b1) (sol.y1 t + b2)
+          (sol.x2 t + b1) (sol.y2 t + b2)
+          (sol.x3 t + b1) (sol.y3 t + b2)) t
+      exact h.congr_deriv (by rw [s9_kx_shift])
+    hy1 := fun t => by
+      have h := (sol.hy1 t).add (hasDerivAt_const (c := b2) (x := t))
+        |>.congr_deriv (by ring)
+      show HasDerivAt (fun t => sol.y1 t + b2)
+        (ky1 g1 g2 g3 (sol.x1 t + b1) (sol.y1 t + b2)
+          (sol.x2 t + b1) (sol.y2 t + b2)
+          (sol.x3 t + b1) (sol.y3 t + b2)) t
+      exact h.congr_deriv (by rw [s9_ky_shift])
+    hx2 := fun t => by
+      have h := (sol.hx2 t).add (hasDerivAt_const (c := b1) (x := t))
+        |>.congr_deriv (by ring)
+      show HasDerivAt (fun t => sol.x2 t + b1)
+        (kx2 g1 g2 g3 (sol.x1 t + b1) (sol.y1 t + b2)
+          (sol.x2 t + b1) (sol.y2 t + b2)
+          (sol.x3 t + b1) (sol.y3 t + b2)) t
+      exact h.congr_deriv (by rw [s9_kx2_shift])
+    hy2 := fun t => by
+      have h := (sol.hy2 t).add (hasDerivAt_const (c := b2) (x := t))
+        |>.congr_deriv (by ring)
+      show HasDerivAt (fun t => sol.y2 t + b2)
+        (ky2 g1 g2 g3 (sol.x1 t + b1) (sol.y1 t + b2)
+          (sol.x2 t + b1) (sol.y2 t + b2)
+          (sol.x3 t + b1) (sol.y3 t + b2)) t
+      exact h.congr_deriv (by rw [s9_ky2_shift])
+    hx3 := fun t => by
+      have h := (sol.hx3 t).add (hasDerivAt_const (c := b1) (x := t))
+        |>.congr_deriv (by ring)
+      show HasDerivAt (fun t => sol.x3 t + b1)
+        (kx3 g1 g2 g3 (sol.x1 t + b1) (sol.y1 t + b2)
+          (sol.x2 t + b1) (sol.y2 t + b2)
+          (sol.x3 t + b1) (sol.y3 t + b2)) t
+      exact h.congr_deriv (by rw [s9_kx3_shift])
+    hy3 := fun t => by
+      have h := (sol.hy3 t).add (hasDerivAt_const (c := b2) (x := t))
+        |>.congr_deriv (by ring)
+      show HasDerivAt (fun t => sol.y3 t + b2)
+        (ky3 g1 g2 g3 (sol.x1 t + b1) (sol.y1 t + b2)
+          (sol.x2 t + b1) (sol.y2 t + b2)
+          (sol.x3 t + b1) (sol.y3 t + b2)) t
+      exact h.congr_deriv (by rw [s9_ky3_shift])
+    hd12 := fun t => by
+      show d2 (sol.x1 t + b1) (sol.y1 t + b2) (sol.x2 t + b1) (sol.y2 t + b2) ≠ 0
+      rw [show d2 (sol.x1 t + b1) (sol.y1 t + b2) (sol.x2 t + b1) (sol.y2 t + b2)
+        = d2 (sol.x1 t) (sol.y1 t) (sol.x2 t) (sol.y2 t) from by unfold d2; ring]
+      exact sol.hd12 t
+    hd13 := fun t => by
+      show d2 (sol.x1 t + b1) (sol.y1 t + b2) (sol.x3 t + b1) (sol.y3 t + b2) ≠ 0
+      rw [show d2 (sol.x1 t + b1) (sol.y1 t + b2) (sol.x3 t + b1) (sol.y3 t + b2)
+        = d2 (sol.x1 t) (sol.y1 t) (sol.x3 t) (sol.y3 t) from by unfold d2; ring]
+      exact sol.hd13 t
+    hd23 := fun t => by
+      show d2 (sol.x2 t + b1) (sol.y2 t + b2) (sol.x3 t + b1) (sol.y3 t + b2) ≠ 0
+      rw [show d2 (sol.x2 t + b1) (sol.y2 t + b2) (sol.x3 t + b1) (sol.y3 t + b2)
+        = d2 (sol.x2 t) (sol.y2 t) (sol.x3 t) (sol.y3 t) from by unfold d2; ring]
+      exact sol.hd23 t
+  }
+
+/-- **The phase orbit (§9.2).**  Re-timing ANY Kirchhoff solution by a
+    constant shift (t ↦ t + s) produces another exact solution — the
+    one-parameter rotation orbit of the relative equilibrium, the
+    nonlinear realization of the zero eigenvalue (the phase mode). -/
+theorem s9_sol_time (g1 g2 g3 a s : ℝ) (ha : a ≠ 0) (hG : g1 + g2 + g3 ≠ 0) :
+    KirchhoffSol g1 g2 g3 := by
+  have sol : KirchhoffSol g1 g2 g3 := s9_rel_eq g1 g2 g3 a ha hG
+  exact {
+    x1 := fun t => sol.x1 (t + s)
+    y1 := fun t => sol.y1 (t + s)
+    x2 := fun t => sol.x2 (t + s)
+    y2 := fun t => sol.y2 (t + s)
+    x3 := fun t => sol.x3 (t + s)
+    y3 := fun t => sol.y3 (t + s)
+    hx1 := fun t => by
+      have hf : HasDerivAt (fun u : ℝ => u + s) 1 t :=
+        ((hasDerivAt_id (𝕜 := ℝ) (x := t)).add
+          (hasDerivAt_const (c := s) (x := t))).congr_deriv (by ring)
+      have h := (sol.hx1 (t + s)).comp t hf
+      show HasDerivAt (fun t => sol.x1 (t + s))
+        (kx1 g1 g2 g3 (sol.x1 (t + s)) (sol.y1 (t + s))
+          (sol.x2 (t + s)) (sol.y2 (t + s))
+          (sol.x3 (t + s)) (sol.y3 (t + s))) t
+      exact h.congr_deriv (by ring)
+    hy1 := fun t => by
+      have hf : HasDerivAt (fun u : ℝ => u + s) 1 t :=
+        ((hasDerivAt_id (𝕜 := ℝ) (x := t)).add
+          (hasDerivAt_const (c := s) (x := t))).congr_deriv (by ring)
+      have h := (sol.hy1 (t + s)).comp t hf
+      show HasDerivAt (fun t => sol.y1 (t + s))
+        (ky1 g1 g2 g3 (sol.x1 (t + s)) (sol.y1 (t + s))
+          (sol.x2 (t + s)) (sol.y2 (t + s))
+          (sol.x3 (t + s)) (sol.y3 (t + s))) t
+      exact h.congr_deriv (by ring)
+    hx2 := fun t => by
+      have hf : HasDerivAt (fun u : ℝ => u + s) 1 t :=
+        ((hasDerivAt_id (𝕜 := ℝ) (x := t)).add
+          (hasDerivAt_const (c := s) (x := t))).congr_deriv (by ring)
+      have h := (sol.hx2 (t + s)).comp t hf
+      show HasDerivAt (fun t => sol.x2 (t + s))
+        (kx2 g1 g2 g3 (sol.x1 (t + s)) (sol.y1 (t + s))
+          (sol.x2 (t + s)) (sol.y2 (t + s))
+          (sol.x3 (t + s)) (sol.y3 (t + s))) t
+      exact h.congr_deriv (by ring)
+    hy2 := fun t => by
+      have hf : HasDerivAt (fun u : ℝ => u + s) 1 t :=
+        ((hasDerivAt_id (𝕜 := ℝ) (x := t)).add
+          (hasDerivAt_const (c := s) (x := t))).congr_deriv (by ring)
+      have h := (sol.hy2 (t + s)).comp t hf
+      show HasDerivAt (fun t => sol.y2 (t + s))
+        (ky2 g1 g2 g3 (sol.x1 (t + s)) (sol.y1 (t + s))
+          (sol.x2 (t + s)) (sol.y2 (t + s))
+          (sol.x3 (t + s)) (sol.y3 (t + s))) t
+      exact h.congr_deriv (by ring)
+    hx3 := fun t => by
+      have hf : HasDerivAt (fun u : ℝ => u + s) 1 t :=
+        ((hasDerivAt_id (𝕜 := ℝ) (x := t)).add
+          (hasDerivAt_const (c := s) (x := t))).congr_deriv (by ring)
+      have h := (sol.hx3 (t + s)).comp t hf
+      show HasDerivAt (fun t => sol.x3 (t + s))
+        (kx3 g1 g2 g3 (sol.x1 (t + s)) (sol.y1 (t + s))
+          (sol.x2 (t + s)) (sol.y2 (t + s))
+          (sol.x3 (t + s)) (sol.y3 (t + s))) t
+      exact h.congr_deriv (by ring)
+    hy3 := fun t => by
+      have hf : HasDerivAt (fun u : ℝ => u + s) 1 t :=
+        ((hasDerivAt_id (𝕜 := ℝ) (x := t)).add
+          (hasDerivAt_const (c := s) (x := t))).congr_deriv (by ring)
+      have h := (sol.hy3 (t + s)).comp t hf
+      show HasDerivAt (fun t => sol.y3 (t + s))
+        (ky3 g1 g2 g3 (sol.x1 (t + s)) (sol.y1 (t + s))
+          (sol.x2 (t + s)) (sol.y2 (t + s))
+          (sol.x3 (t + s)) (sol.y3 (t + s))) t
+      exact h.congr_deriv (by ring)
+    hd12 := fun t => by
+      show d2 (sol.x1 (t + s)) (sol.y1 (t + s))
+        (sol.x2 (t + s)) (sol.y2 (t + s)) ≠ 0
+      exact sol.hd12 (t + s)
+    hd13 := fun t => by
+      show d2 (sol.x1 (t + s)) (sol.y1 (t + s))
+        (sol.x3 (t + s)) (sol.y3 (t + s)) ≠ 0
+      exact sol.hd13 (t + s)
+    hd23 := fun t => by
+      show d2 (sol.x2 (t + s)) (sol.y2 (t + s))
+        (sol.x3 (t + s)) (sol.y3 (t + s)) ≠ 0
+      exact sol.hd23 (t + s)
+  }
+
+/-- **The nonlinear ±iω translation mode (§9.2).**  In the frame
+    co-rotating with ω = G/(2πa²), the deviation of the δ-shifted
+    solution from the base trajectory is R(−ωt)·δ — a vector rotating at
+    rate −ω — and its norm is EXACTLY |δ| for every t:
+      (cos ωt·b1 + sin ωt·b2)² + (−sin ωt·b1 + cos ωt·b2)² = b1² + b2².
+    The linear §8 prediction (translation modes preserve their norm
+    exactly) is realized identically in the full nonlinear system, for
+    arbitrary circulations. -/
+theorem s9_trans_dev (g1 g2 g3 a b1 b2 t : ℝ) :
+    (Real.cos (genOmega g1 g2 g3 a * t) * b1
+        + Real.sin (genOmega g1 g2 g3 a * t) * b2) ^ 2
+      + (-Real.sin (genOmega g1 g2 g3 a * t) * b1
+        + Real.cos (genOmega g1 g2 g3 a * t) * b2) ^ 2
+      = b1 ^ 2 + b2 ^ 2 := by
+  linear_combination (b1 ^ 2 + b2 ^ 2)
+    * Real.sin_sq_add_cos_sq (genOmega g1 g2 g3 a * t)
+
+/-- Row 1 (rotX₁) of the 2π-scaled rotating-frame linearization at
+    the equilateral anchor, for ARBITRARY circulations.  At
+    g1 = g2 = g3 = g it equals g·linX1 (the §8 certified matrix). -/
+noncomputable def genLinX1 (g1 g2 g3 dx1 dy1 dx2 dy2 dx3 dy3 : ℝ) : ℝ :=
+g1 * dy1 - (1 / 2) * (Real.sqrt 3 * g2 * dx1) + (1 / 2) * (Real.sqrt 3 * g2 * dx2) + (1
+    / 2) * (g2 * dy1) + (1 / 2) * (g2 * dy2) + (1 / 2) * (Real.sqrt 3 * g3 * dx1) - (1 /
+    2) * (Real.sqrt 3 * g3 * dx3) + (1 / 2) * (g3 * dy1) + (1 / 2) * (g3 * dy3)
+
+/-- Row 2 (rotY₁). -/
+noncomputable def genLinY1 (g1 g2 g3 dx1 dy1 dx2 dy2 dx3 dy3 : ℝ) : ℝ :=
+-g1 * dx1 + (1 / 2) * (Real.sqrt 3 * g2 * dy1) - (1 / 2) * (Real.sqrt 3 * g2 * dy2) - (3
+    / 2) * (g2 * dx1) + (1 / 2) * (g2 * dx2) - (1 / 2) * (Real.sqrt 3 * g3 * dy1) + (1 /
+    2) * (Real.sqrt 3 * g3 * dy3) - (3 / 2) * (g3 * dx1) + (1 / 2) * (g3 * dx3)
+
+/-- Row 3 (rotX₂). -/
+noncomputable def genLinX2 (g1 g2 g3 dx1 dy1 dx2 dy2 dx3 dy3 : ℝ) : ℝ :=
+(1 / 2) * (Real.sqrt 3 * g1 * dx1) - (1 / 2) * (Real.sqrt 3 * g1 * dx2) + (1 / 2) * (g1
+    * dy1) + (1 / 2) * (g1 * dy2) + g2 * dy2 + 2 * (g3 * dy2) - g3 * dy3
+
+/-- Row 4 (rotY₂). -/
+noncomputable def genLinY2 (g1 g2 g3 dx1 dy1 dx2 dy2 dx3 dy3 : ℝ) : ℝ :=
+-(1 / 2) * (Real.sqrt 3 * g1 * dy1) + (1 / 2) * (Real.sqrt 3 * g1 * dy2) + (1 / 2) * (g1
+    * dx1) - (3 / 2) * (g1 * dx2) - g2 * dx2 - g3 * dx3
+
+/-- Row 5 (rotX₃). -/
+noncomputable def genLinX3 (g1 g2 g3 dx1 dy1 dx2 dy2 dx3 dy3 : ℝ) : ℝ :=
+-(1 / 2) * (Real.sqrt 3 * g1 * dx1) + (1 / 2) * (Real.sqrt 3 * g1 * dx3) + (1 / 2) * (g1
+    * dy1) + (1 / 2) * (g1 * dy3) - g2 * dy2 + 2 * (g2 * dy3) + g3 * dy3
+
+/-- Row 6 (rotY₃). -/
+noncomputable def genLinY3 (g1 g2 g3 dx1 dy1 dx2 dy2 dx3 dy3 : ℝ) : ℝ :=
+(1 / 2) * (Real.sqrt 3 * g1 * dy1) - (1 / 2) * (Real.sqrt 3 * g1 * dy3) + (1 / 2) * (g1
+    * dx1) - (3 / 2) * (g1 * dx3) - g2 * dx2 - g3 * dx3
+
+private theorem s9_s3cu : (Real.sqrt 3) ^ 3 = 3 * Real.sqrt 3 := by
+  linear_combination (Real.sqrt 3) * s3sq
+
+/-- **The translation eigenpair persists for ARBITRARY circulations**: the
+    2π-scaled rotating-frame linearization maps the uniform translation
+    (c₁,c₂,c₁,c₂,c₁,c₂) to (Gc₂,−Gc₁,…) with G = ΣΓ; eigenvalues ±iG.
+    The translation pair never bifurcates on the branch. -/
+theorem s9_lin_trans (g1 g2 g3 c1 c2 : ℝ) :
+    genLinX1 g1 g2 g3 (c1) (c2) (c1) (c2) (c1) (c2) = g1 * c2 + g2 * c2 + g3 * c2
+      ∧ genLinY1 g1 g2 g3 (c1) (c2) (c1) (c2) (c1) (c2) = -g1 * c1 - g2 * c1 - g3 * c1
+      ∧ genLinX2 g1 g2 g3 (c1) (c2) (c1) (c2) (c1) (c2) = g1 * c2 + g2 * c2 + g3 * c2
+      ∧ genLinY2 g1 g2 g3 (c1) (c2) (c1) (c2) (c1) (c2) = -g1 * c1 - g2 * c1 - g3 * c1
+      ∧ genLinX3 g1 g2 g3 (c1) (c2) (c1) (c2) (c1) (c2) = g1 * c2 + g2 * c2 + g3 * c2
+      ∧ genLinY3 g1 g2 g3 (c1) (c2) (c1) (c2) (c1) (c2) = -g1 * c1 - g2 * c1 - g3 * c1 := by
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · unfold genLinX1
+    ring
+  · unfold genLinY1
+    ring
+  · unfold genLinX2
+    ring
+  · unfold genLinY2
+    ring
+  · unfold genLinX3
+    ring
+  · unfold genLinY3
+    ring
+
+/-- **Congruence with the §8 linearization**: at equal circulations
+    g1 = g2 = g3 = g the general matrix is exactly g·(linX1…linY3),
+    the matrix certified against the true rotating-frame field in §8.4
+    (lin_cert_transX/Y, lin_cert_shapeU/W).  The certification therefore
+    transfers to genLin on the diagonal family. -/
+theorem s9_lin_diag (g dx1 dy1 dx2 dy2 dx3 dy3 : ℝ) :
+    genLinX1 g g g (dx1) (dy1) (dx2) (dy2) (dx3) (dy3) = g * linX1 (dx1) (dy1) (dx2) (dy2) (dx3) (dy3)
+      ∧ genLinY1 g g g (dx1) (dy1) (dx2) (dy2) (dx3) (dy3) = g * linY1 (dx1) (dy1) (dx2) (dy2) (dx3) (dy3)
+      ∧ genLinX2 g g g (dx1) (dy1) (dx2) (dy2) (dx3) (dy3) = g * linX2 (dx1) (dy1) (dx2) (dy2) (dx3) (dy3)
+      ∧ genLinY2 g g g (dx1) (dy1) (dx2) (dy2) (dx3) (dy3) = g * linY2 (dx1) (dy1) (dx2) (dy2) (dx3) (dy3)
+      ∧ genLinX3 g g g (dx1) (dy1) (dx2) (dy2) (dx3) (dy3) = g * linX3 (dx1) (dy1) (dx2) (dy2) (dx3) (dy3)
+      ∧ genLinY3 g g g (dx1) (dy1) (dx2) (dy2) (dx3) (dy3) = g * linY3 (dx1) (dy1) (dx2) (dy2) (dx3) (dy3) := by
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · unfold genLinX1 linX1
+    ring
+  · unfold genLinY1 linY1
+    ring
+  · unfold genLinX2 linX2
+    ring
+  · unfold genLinY2 linY2
+    ring
+  · unfold genLinX3 linX3
+    ring
+  · unfold genLinY3 linY3
+    ring
+
+/-- **The phase mode lies in the kernel for ARBITRARY circulations.**
+    KV = (2√3G/(3g1))·J(anchor) spans ker(genLin): the phase family of
+    §9.2 (re-timed solutions) makes the rotating-frame deviation
+    R(φ)(anchor) − anchor constant, so the linearized flow kills its
+    direction J(anchor) — the zero eigenvalue of §8 persists globally. -/
+theorem s9_lin_kernel (g1 g2 g3 : ℝ) :
+    genLinX1 g1 g2 g3 (-Real.sqrt 3 * g2 + Real.sqrt 3 * g3) (-3 * g2 - 3 * g3) (Real.sqrt 3 * g1 + 2 * (Real.sqrt 3 * g3)) (3 * g1) (-Real.sqrt 3 * g1 - 2 * (Real.sqrt 3 * g2)) (3 * g1) = 0
+      ∧ genLinY1 g1 g2 g3 (-Real.sqrt 3 * g2 + Real.sqrt 3 * g3) (-3 * g2 - 3 * g3) (Real.sqrt 3 * g1 + 2 * (Real.sqrt 3 * g3)) (3 * g1) (-Real.sqrt 3 * g1 - 2 * (Real.sqrt 3 * g2)) (3 * g1) = 0
+      ∧ genLinX2 g1 g2 g3 (-Real.sqrt 3 * g2 + Real.sqrt 3 * g3) (-3 * g2 - 3 * g3) (Real.sqrt 3 * g1 + 2 * (Real.sqrt 3 * g3)) (3 * g1) (-Real.sqrt 3 * g1 - 2 * (Real.sqrt 3 * g2)) (3 * g1) = 0
+      ∧ genLinY2 g1 g2 g3 (-Real.sqrt 3 * g2 + Real.sqrt 3 * g3) (-3 * g2 - 3 * g3) (Real.sqrt 3 * g1 + 2 * (Real.sqrt 3 * g3)) (3 * g1) (-Real.sqrt 3 * g1 - 2 * (Real.sqrt 3 * g2)) (3 * g1) = 0
+      ∧ genLinX3 g1 g2 g3 (-Real.sqrt 3 * g2 + Real.sqrt 3 * g3) (-3 * g2 - 3 * g3) (Real.sqrt 3 * g1 + 2 * (Real.sqrt 3 * g3)) (3 * g1) (-Real.sqrt 3 * g1 - 2 * (Real.sqrt 3 * g2)) (3 * g1) = 0
+      ∧ genLinY3 g1 g2 g3 (-Real.sqrt 3 * g2 + Real.sqrt 3 * g3) (-3 * g2 - 3 * g3) (Real.sqrt 3 * g1 + 2 * (Real.sqrt 3 * g3)) (3 * g1) (-Real.sqrt 3 * g1 - 2 * (Real.sqrt 3 * g2)) (3 * g1) = 0 := by
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · simp only [genLinX1]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+  · simp only [genLinY1]
+    ring
+  · simp only [genLinX2]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+  · simp only [genLinY2]
+    ring
+  · simp only [genLinX3]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+  · simp only [genLinY3]
+    ring
+
+/-- **The size-drift Jordan chain for ARBITRARY circulations.**  ANCH =
+    G·(anchor) is the rotating-frame fixed point; the dilation family
+    (scaled triangles are again relative equilibria, §9.1) gives
+    genLin(ANCH) = −2G·J(ANCH): the generalized zero mode of §8.5
+    persists on the whole branch.  Combined with s9_lin_kernel:
+    genLin²(ANCH) = 4G²·ANCH − … — the Jordan block at 0. -/
+theorem s9_lin_chain (g1 g2 g3 : ℝ) :
+    genLinX1 g1 g2 g3 ((1 / 2) * (Real.sqrt 3 * g2) + (1 / 2) * (Real.sqrt 3 * g3)) (-(1 / 2) * g2 + (1 / 2) * g3) (-(1 / 2) * (Real.sqrt 3 * g1)) ((1 / 2) * g1 + g3) (-(1 / 2) * (Real.sqrt 3 * g1)) (-(1 / 2) * g1 - g2) = -g1 * g2 + g1 * g3 - g2 ^ 2 + g3 ^ 2
+      ∧ genLinY1 g1 g2 g3 ((1 / 2) * (Real.sqrt 3 * g2) + (1 / 2) * (Real.sqrt 3 * g3)) (-(1 / 2) * g2 + (1 / 2) * g3) (-(1 / 2) * (Real.sqrt 3 * g1)) ((1 / 2) * g1 + g3) (-(1 / 2) * (Real.sqrt 3 * g1)) (-(1 / 2) * g1 - g2) = -Real.sqrt 3 * g1 * g2 - Real.sqrt 3 * g1 * g3 - Real.sqrt 3 * g2 ^ 2 - 2 * (Real.sqrt 3 * g2 * g3) - Real.sqrt 3 * g3 ^ 2
+      ∧ genLinX2 g1 g2 g3 ((1 / 2) * (Real.sqrt 3 * g2) + (1 / 2) * (Real.sqrt 3 * g3)) (-(1 / 2) * g2 + (1 / 2) * g3) (-(1 / 2) * (Real.sqrt 3 * g1)) ((1 / 2) * g1 + g3) (-(1 / 2) * (Real.sqrt 3 * g1)) (-(1 / 2) * g1 - g2) = g1 ^ 2 + g1 * g2 + 3 * (g1 * g3) + 2 * (g2 * g3) + 2 * g3 ^ 2
+      ∧ genLinY2 g1 g2 g3 ((1 / 2) * (Real.sqrt 3 * g2) + (1 / 2) * (Real.sqrt 3 * g3)) (-(1 / 2) * g2 + (1 / 2) * g3) (-(1 / 2) * (Real.sqrt 3 * g1)) ((1 / 2) * g1 + g3) (-(1 / 2) * (Real.sqrt 3 * g1)) (-(1 / 2) * g1 - g2) = Real.sqrt 3 * g1 ^ 2 + Real.sqrt 3 * g1 * g2 + Real.sqrt 3 * g1 * g3
+      ∧ genLinX3 g1 g2 g3 ((1 / 2) * (Real.sqrt 3 * g2) + (1 / 2) * (Real.sqrt 3 * g3)) (-(1 / 2) * g2 + (1 / 2) * g3) (-(1 / 2) * (Real.sqrt 3 * g1)) ((1 / 2) * g1 + g3) (-(1 / 2) * (Real.sqrt 3 * g1)) (-(1 / 2) * g1 - g2) = -g1 ^ 2 - 3 * (g1 * g2) - g1 * g3 - 2 * g2 ^ 2 - 2 * (g2 * g3)
+      ∧ genLinY3 g1 g2 g3 ((1 / 2) * (Real.sqrt 3 * g2) + (1 / 2) * (Real.sqrt 3 * g3)) (-(1 / 2) * g2 + (1 / 2) * g3) (-(1 / 2) * (Real.sqrt 3 * g1)) ((1 / 2) * g1 + g3) (-(1 / 2) * (Real.sqrt 3 * g1)) (-(1 / 2) * g1 - g2) = Real.sqrt 3 * g1 ^ 2 + Real.sqrt 3 * g1 * g2 + Real.sqrt 3 * g1 * g3 := by
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · simp only [genLinX1]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+  · simp only [genLinY1]
+    ring
+  · simp only [genLinX2]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+  · simp only [genLinY2]
+    ring
+  · simp only [genLinX3]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+  · simp only [genLinY3]
+    ring
+
+/-- **The shape-mode characteristic pair for ARBITRARY circulations
+    (second-order form).**  genLin²(U) = −3P·U with P = Γ1Γ2+Γ2Γ3+Γ3Γ1
+    and U = (−Γ2Ι3, −√3Γ2Ι3, −Γ1Ι3, √3Γ1Ι3, 2Γ1Γ2, 0).  The characteristic
+    polynomial of genLin (SymPy-verified) is therefore
+        λ·(λ² + G²)·(λ² + 3P)
+    with the translation factor ±iG (s9_lin_trans), the kernel/chain at 0
+    (s9_lin_kernel, s9_lin_chain) and THE SHAPE FACTOR λ² + 3P:
+    P > 0 ⇒ shape oscillates (±i√(3P));  P < 0 ⇒ λ² = −3P > 0 — a REAL
+    eigenvalue pair ±√(−3P), linear instability;  P = 0 ⇒ the pair
+    collides at the origin — the bifurcation hypersurface Γ1Γ2+Γ2Ι3+Γ3Γ1 = 0. -/
+theorem s9_shape_gen (g1 g2 g3 : ℝ) :
+    genLinX1 g1 g2 g3 (genLinX1 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) (genLinY1 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) (genLinX2 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) (genLinY2 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) (genLinX3 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) (genLinY3 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) = 3 * (g1 * g2 ^ 2 * g3) + 3 * (g1 * g2 * g3 ^ 2) + 3 * (g2 ^ 2 * g3 ^ 2)
+      ∧ genLinY1 g1 g2 g3 (genLinX1 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) (genLinY1 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) (genLinX2 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) (genLinY2 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) (genLinX3 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) (genLinY3 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) = 3 * (Real.sqrt 3 * g1 * g2 ^ 2 * g3) + 3 * (Real.sqrt 3 * g1 * g2 * g3 ^ 2) + 3 * (Real.sqrt 3 * g2 ^ 2 * g3 ^ 2)
+      ∧ genLinX2 g1 g2 g3 (genLinX1 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) (genLinY1 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) (genLinX2 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) (genLinY2 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) (genLinX3 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) (genLinY3 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) = 3 * (g1 ^ 2 * g2 * g3) + 3 * (g1 ^ 2 * g3 ^ 2) + 3 * (g1 * g2 * g3 ^ 2)
+      ∧ genLinY2 g1 g2 g3 (genLinX1 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) (genLinY1 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) (genLinX2 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) (genLinY2 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) (genLinX3 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) (genLinY3 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) = -3 * (Real.sqrt 3 * g1 ^ 2 * g2 * g3) - 3 * (Real.sqrt 3 * g1 ^ 2 * g3 ^ 2) - 3 * (Real.sqrt 3 * g1 * g2 * g3 ^ 2)
+      ∧ genLinX3 g1 g2 g3 (genLinX1 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) (genLinY1 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) (genLinX2 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) (genLinY2 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) (genLinX3 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) (genLinY3 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) = -6 * (g1 ^ 2 * g2 ^ 2) - 6 * (g1 ^ 2 * g2 * g3) - 6 * (g1 * g2 ^ 2 * g3)
+      ∧ genLinY3 g1 g2 g3 (genLinX1 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) (genLinY1 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) (genLinX2 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) (genLinY2 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) (genLinX3 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) (genLinY3 g1 g2 g3 (-g2 * g3) (-Real.sqrt 3 * g2 * g3) (-g1 * g3) (Real.sqrt 3 * g1 * g3) (2 * (g1 * g2)) (0)) = 0 := by
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · simp only [genLinX1, genLinY1, genLinX2, genLinY2, genLinX3, genLinY3]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+  · simp only [genLinX1, genLinY1, genLinX2, genLinY2, genLinX3, genLinY3]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+  · simp only [genLinX1, genLinY1, genLinX2, genLinY2, genLinX3, genLinY3]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+  · simp only [genLinX1, genLinY1, genLinX2, genLinY2, genLinX3, genLinY3]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+  · simp only [genLinX1, genLinY1, genLinX2, genLinY2, genLinX3, genLinY3]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+  · simp only [genLinX1, genLinY1, genLinX2, genLinY2, genLinX3, genLinY3]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+
+/-- **Unequal same-sign circulations (Γ = (1,1,4), P = 9 > 0): the shape
+    pair oscillates.**  First-order form: genLin(1,1,4)·u4 = −27·utilde4.
+    Together with s9_shape4_b this is the complex-structure pair
+    J̃² = −27·id on the shape plane: eigenvalues ±i√27 = ±3i√3 — purely
+    imaginary (compare ±3i at Γ = (1,1,1) in §8).  The oscillation
+    frequency 3√3 replaces 3 as the circulation ratio moves — no growth. -/
+theorem s9_shape4_a :
+    genLinX1 1 1 4 (-36) (-36 * Real.sqrt 3) (-36) (36 * Real.sqrt 3) (18) (0) = -27 * (8 * Real.sqrt 3)
+      ∧ genLinY1 1 1 4 (-36) (-36 * Real.sqrt 3) (-36) (36 * Real.sqrt 3) (18) (0) = -27 * (-16)
+      ∧ genLinX2 1 1 4 (-36) (-36 * Real.sqrt 3) (-36) (36 * Real.sqrt 3) (18) (0) = -27 * (-12 * Real.sqrt 3)
+      ∧ genLinY2 1 1 4 (-36) (-36 * Real.sqrt 3) (-36) (36 * Real.sqrt 3) (18) (0) = -27 * (-4)
+      ∧ genLinX3 1 1 4 (-36) (-36 * Real.sqrt 3) (-36) (36 * Real.sqrt 3) (18) (0) = -27 * (Real.sqrt 3)
+      ∧ genLinY3 1 1 4 (-36) (-36 * Real.sqrt 3) (-36) (36 * Real.sqrt 3) (18) (0) = -27 * (5) := by
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · simp only [genLinX1]
+    ring
+  · simp only [genLinY1]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+  · simp only [genLinX2]
+    ring
+  · simp only [genLinY2]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+  · simp only [genLinX3]
+    ring
+  · simp only [genLinY3]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+
+/-- **The twin relation**: genLin(1,1,4)·utilde4 = u4 — closes the
+    ±3i√3 shape pair at Γ = (1,1,4). -/
+theorem s9_shape4_b :
+    genLinX1 1 1 4 (8 * Real.sqrt 3) (-16) (-12 * Real.sqrt 3) (-4) (Real.sqrt 3) (5) = -36
+      ∧ genLinY1 1 1 4 (8 * Real.sqrt 3) (-16) (-12 * Real.sqrt 3) (-4) (Real.sqrt 3) (5) = -36 * Real.sqrt 3
+      ∧ genLinX2 1 1 4 (8 * Real.sqrt 3) (-16) (-12 * Real.sqrt 3) (-4) (Real.sqrt 3) (5) = -36
+      ∧ genLinY2 1 1 4 (8 * Real.sqrt 3) (-16) (-12 * Real.sqrt 3) (-4) (Real.sqrt 3) (5) = 36 * Real.sqrt 3
+      ∧ genLinX3 1 1 4 (8 * Real.sqrt 3) (-16) (-12 * Real.sqrt 3) (-4) (Real.sqrt 3) (5) = 18
+      ∧ genLinY3 1 1 4 (8 * Real.sqrt 3) (-16) (-12 * Real.sqrt 3) (-4) (Real.sqrt 3) (5) = 0 := by
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · simp only [genLinX1]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+  · simp only [genLinY1]
+    ring
+  · simp only [genLinX2]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+  · simp only [genLinY2]
+    ring
+  · simp only [genLinX3]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+  · simp only [genLinY3]
+    ring
+
+/-- **The shape oscillation is a modal solution at Γ = (1,1,4).**  The
+    curve x(t) = 3√3·cos(3√3·t)·u4 + sin(3√3·t)·(−27·utilde4) solves the
+    LINEARIZED rotating-frame equation ẋ = genLin(1,1,4)·x exactly for
+    every t (all six components).  Rescaling by 1/18 (the theorem's
+    vectors are the 18-fold of the primitive u4, utilde4), the primitive
+    modal solution has the bounded-oscillation norm
+      |x̃(t)|² = 33cos²(3√3t) + 77sin²(3√3t) − 33cos(3√3t)sin(3√3t)
+               = 165/2 − (11/2)(3cos + sin)² ≤ 165/2
+    (SymPy-checked) — no growth, confirming neutral stability at
+    unequal same-sign circulations. -/
+theorem s9_lin_sol_shape4 (t : ℝ) :
+    HasDerivAt (fun t => ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36) + Real.sin ((3 * Real.sqrt 3) * t) * (-216 * Real.sqrt 3)))
+      (genLinX1 1 1 4 ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36) + Real.sin ((3 * Real.sqrt 3) * t) * (-216 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36 * Real.sqrt 3) + Real.sin ((3 * Real.sqrt 3) * t) * (432)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36) + Real.sin ((3 * Real.sqrt 3) * t) * (324 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (36 * Real.sqrt 3) + Real.sin ((3 * Real.sqrt 3) * t) * (108)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (18) + Real.sin ((3 * Real.sqrt 3) * t) * (-27 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (0) + Real.sin ((3 * Real.sqrt 3) * t) * (-135))) t
+      ∧ HasDerivAt (fun t => ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36 * Real.sqrt 3) + Real.sin ((3 * Real.sqrt 3) * t) * (432)))
+      (genLinY1 1 1 4 ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36) + Real.sin ((3 * Real.sqrt 3) * t) * (-216 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36 * Real.sqrt 3) + Real.sin ((3 * Real.sqrt 3) * t) * (432)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36) + Real.sin ((3 * Real.sqrt 3) * t) * (324 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (36 * Real.sqrt 3) + Real.sin ((3 * Real.sqrt 3) * t) * (108)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (18) + Real.sin ((3 * Real.sqrt 3) * t) * (-27 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (0) + Real.sin ((3 * Real.sqrt 3) * t) * (-135))) t
+      ∧ HasDerivAt (fun t => ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36) + Real.sin ((3 * Real.sqrt 3) * t) * (324 * Real.sqrt 3)))
+      (genLinX2 1 1 4 ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36) + Real.sin ((3 * Real.sqrt 3) * t) * (-216 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36 * Real.sqrt 3) + Real.sin ((3 * Real.sqrt 3) * t) * (432)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36) + Real.sin ((3 * Real.sqrt 3) * t) * (324 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (36 * Real.sqrt 3) + Real.sin ((3 * Real.sqrt 3) * t) * (108)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (18) + Real.sin ((3 * Real.sqrt 3) * t) * (-27 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (0) + Real.sin ((3 * Real.sqrt 3) * t) * (-135))) t
+      ∧ HasDerivAt (fun t => ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (36 * Real.sqrt 3) + Real.sin ((3 * Real.sqrt 3) * t) * (108)))
+      (genLinY2 1 1 4 ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36) + Real.sin ((3 * Real.sqrt 3) * t) * (-216 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36 * Real.sqrt 3) + Real.sin ((3 * Real.sqrt 3) * t) * (432)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36) + Real.sin ((3 * Real.sqrt 3) * t) * (324 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (36 * Real.sqrt 3) + Real.sin ((3 * Real.sqrt 3) * t) * (108)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (18) + Real.sin ((3 * Real.sqrt 3) * t) * (-27 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (0) + Real.sin ((3 * Real.sqrt 3) * t) * (-135))) t
+      ∧ HasDerivAt (fun t => ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (18) + Real.sin ((3 * Real.sqrt 3) * t) * (-27 * Real.sqrt 3)))
+      (genLinX3 1 1 4 ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36) + Real.sin ((3 * Real.sqrt 3) * t) * (-216 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36 * Real.sqrt 3) + Real.sin ((3 * Real.sqrt 3) * t) * (432)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36) + Real.sin ((3 * Real.sqrt 3) * t) * (324 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (36 * Real.sqrt 3) + Real.sin ((3 * Real.sqrt 3) * t) * (108)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (18) + Real.sin ((3 * Real.sqrt 3) * t) * (-27 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (0) + Real.sin ((3 * Real.sqrt 3) * t) * (-135))) t
+      ∧ HasDerivAt (fun t => ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (0) + Real.sin ((3 * Real.sqrt 3) * t) * (-135)))
+      (genLinY3 1 1 4 ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36) + Real.sin ((3 * Real.sqrt 3) * t) * (-216 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36 * Real.sqrt 3) + Real.sin ((3 * Real.sqrt 3) * t) * (432)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36) + Real.sin ((3 * Real.sqrt 3) * t) * (324 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (36 * Real.sqrt 3) + Real.sin ((3 * Real.sqrt 3) * t) * (108)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (18) + Real.sin ((3 * Real.sqrt 3) * t) * (-27 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (0) + Real.sin ((3 * Real.sqrt 3) * t) * (-135))) t := by
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · have h1 : HasDerivAt (fun t => (3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36))
+      (-(27) * Real.sin ((3 * Real.sqrt 3) * t) * (-36)) t :=
+      HasDerivAt.congr_deriv
+      (deriv_congr ((cos_comp (3 * Real.sqrt 3) t).const_mul ((3 * Real.sqrt 3) * (-36)))
+      (fun s => by ring))
+      (by ring_nf; simp only [s3sq, s9_s3cu]; ring)
+    have h2 : HasDerivAt (fun t => Real.sin ((3 * Real.sqrt 3) * t) * (-216 * Real.sqrt 3))
+      (Real.cos ((3 * Real.sqrt 3) * t) * ((3 * Real.sqrt 3) * (-216 * Real.sqrt 3))) t :=
+      HasDerivAt.congr_deriv
+      (deriv_congr ((sin_comp (3 * Real.sqrt 3) t).const_mul (-216 * Real.sqrt 3))
+      (fun s => by ring))
+      (by ring)
+    show HasDerivAt (fun t => ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36) + Real.sin ((3 * Real.sqrt 3) * t) * (-216 * Real.sqrt 3)))
+      (genLinX1 1 1 4 ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36) + Real.sin ((3 * Real.sqrt 3) * t) * (-216 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36 * Real.sqrt 3) + Real.sin ((3 * Real.sqrt 3) * t) * (432)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36) + Real.sin ((3 * Real.sqrt 3) * t) * (324 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (36 * Real.sqrt 3) + Real.sin ((3 * Real.sqrt 3) * t) * (108)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (18) + Real.sin ((3 * Real.sqrt 3) * t) * (-27 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (0) + Real.sin ((3 * Real.sqrt 3) * t) * (-135))) t
+    refine (deriv_congr (h1.add h2) (fun s => rfl)).congr_deriv ?_
+    simp only [genLinX1]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+  · have h1 : HasDerivAt (fun t => (3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36 * Real.sqrt 3))
+      (-(27) * Real.sin ((3 * Real.sqrt 3) * t) * (-36 * Real.sqrt 3)) t :=
+      HasDerivAt.congr_deriv
+      (deriv_congr ((cos_comp (3 * Real.sqrt 3) t).const_mul ((3 * Real.sqrt 3) * (-36 * Real.sqrt 3)))
+      (fun s => by ring))
+      (by ring_nf; simp only [s3sq, s9_s3cu]; ring)
+    have h2 : HasDerivAt (fun t => Real.sin ((3 * Real.sqrt 3) * t) * (432))
+      (Real.cos ((3 * Real.sqrt 3) * t) * ((3 * Real.sqrt 3) * (432))) t :=
+      HasDerivAt.congr_deriv
+      (deriv_congr ((sin_comp (3 * Real.sqrt 3) t).const_mul (432))
+      (fun s => by ring))
+      (by ring)
+    show HasDerivAt (fun t => ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36 * Real.sqrt 3) + Real.sin ((3 * Real.sqrt 3) * t) * (432)))
+      (genLinY1 1 1 4 ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36) + Real.sin ((3 * Real.sqrt 3) * t) * (-216 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36 * Real.sqrt 3) + Real.sin ((3 * Real.sqrt 3) * t) * (432)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36) + Real.sin ((3 * Real.sqrt 3) * t) * (324 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (36 * Real.sqrt 3) + Real.sin ((3 * Real.sqrt 3) * t) * (108)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (18) + Real.sin ((3 * Real.sqrt 3) * t) * (-27 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (0) + Real.sin ((3 * Real.sqrt 3) * t) * (-135))) t
+    refine (deriv_congr (h1.add h2) (fun s => rfl)).congr_deriv ?_
+    simp only [genLinY1]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+  · have h1 : HasDerivAt (fun t => (3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36))
+      (-(27) * Real.sin ((3 * Real.sqrt 3) * t) * (-36)) t :=
+      HasDerivAt.congr_deriv
+      (deriv_congr ((cos_comp (3 * Real.sqrt 3) t).const_mul ((3 * Real.sqrt 3) * (-36)))
+      (fun s => by ring))
+      (by ring_nf; simp only [s3sq, s9_s3cu]; ring)
+    have h2 : HasDerivAt (fun t => Real.sin ((3 * Real.sqrt 3) * t) * (324 * Real.sqrt 3))
+      (Real.cos ((3 * Real.sqrt 3) * t) * ((3 * Real.sqrt 3) * (324 * Real.sqrt 3))) t :=
+      HasDerivAt.congr_deriv
+      (deriv_congr ((sin_comp (3 * Real.sqrt 3) t).const_mul (324 * Real.sqrt 3))
+      (fun s => by ring))
+      (by ring)
+    show HasDerivAt (fun t => ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36) + Real.sin ((3 * Real.sqrt 3) * t) * (324 * Real.sqrt 3)))
+      (genLinX2 1 1 4 ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36) + Real.sin ((3 * Real.sqrt 3) * t) * (-216 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36 * Real.sqrt 3) + Real.sin ((3 * Real.sqrt 3) * t) * (432)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36) + Real.sin ((3 * Real.sqrt 3) * t) * (324 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (36 * Real.sqrt 3) + Real.sin ((3 * Real.sqrt 3) * t) * (108)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (18) + Real.sin ((3 * Real.sqrt 3) * t) * (-27 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (0) + Real.sin ((3 * Real.sqrt 3) * t) * (-135))) t
+    refine (deriv_congr (h1.add h2) (fun s => rfl)).congr_deriv ?_
+    simp only [genLinX2]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+  · have h1 : HasDerivAt (fun t => (3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (36 * Real.sqrt 3))
+      (-(27) * Real.sin ((3 * Real.sqrt 3) * t) * (36 * Real.sqrt 3)) t :=
+      HasDerivAt.congr_deriv
+      (deriv_congr ((cos_comp (3 * Real.sqrt 3) t).const_mul ((3 * Real.sqrt 3) * (36 * Real.sqrt 3)))
+      (fun s => by ring))
+      (by ring_nf; simp only [s3sq, s9_s3cu]; ring)
+    have h2 : HasDerivAt (fun t => Real.sin ((3 * Real.sqrt 3) * t) * (108))
+      (Real.cos ((3 * Real.sqrt 3) * t) * ((3 * Real.sqrt 3) * (108))) t :=
+      HasDerivAt.congr_deriv
+      (deriv_congr ((sin_comp (3 * Real.sqrt 3) t).const_mul (108))
+      (fun s => by ring))
+      (by ring)
+    show HasDerivAt (fun t => ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (36 * Real.sqrt 3) + Real.sin ((3 * Real.sqrt 3) * t) * (108)))
+      (genLinY2 1 1 4 ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36) + Real.sin ((3 * Real.sqrt 3) * t) * (-216 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36 * Real.sqrt 3) + Real.sin ((3 * Real.sqrt 3) * t) * (432)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36) + Real.sin ((3 * Real.sqrt 3) * t) * (324 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (36 * Real.sqrt 3) + Real.sin ((3 * Real.sqrt 3) * t) * (108)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (18) + Real.sin ((3 * Real.sqrt 3) * t) * (-27 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (0) + Real.sin ((3 * Real.sqrt 3) * t) * (-135))) t
+    refine (deriv_congr (h1.add h2) (fun s => rfl)).congr_deriv ?_
+    simp only [genLinY2]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+  · have h1 : HasDerivAt (fun t => (3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (18))
+      (-(27) * Real.sin ((3 * Real.sqrt 3) * t) * (18)) t :=
+      HasDerivAt.congr_deriv
+      (deriv_congr ((cos_comp (3 * Real.sqrt 3) t).const_mul ((3 * Real.sqrt 3) * (18)))
+      (fun s => by ring))
+      (by ring_nf; simp only [s3sq, s9_s3cu]; ring)
+    have h2 : HasDerivAt (fun t => Real.sin ((3 * Real.sqrt 3) * t) * (-27 * Real.sqrt 3))
+      (Real.cos ((3 * Real.sqrt 3) * t) * ((3 * Real.sqrt 3) * (-27 * Real.sqrt 3))) t :=
+      HasDerivAt.congr_deriv
+      (deriv_congr ((sin_comp (3 * Real.sqrt 3) t).const_mul (-27 * Real.sqrt 3))
+      (fun s => by ring))
+      (by ring)
+    show HasDerivAt (fun t => ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (18) + Real.sin ((3 * Real.sqrt 3) * t) * (-27 * Real.sqrt 3)))
+      (genLinX3 1 1 4 ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36) + Real.sin ((3 * Real.sqrt 3) * t) * (-216 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36 * Real.sqrt 3) + Real.sin ((3 * Real.sqrt 3) * t) * (432)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36) + Real.sin ((3 * Real.sqrt 3) * t) * (324 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (36 * Real.sqrt 3) + Real.sin ((3 * Real.sqrt 3) * t) * (108)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (18) + Real.sin ((3 * Real.sqrt 3) * t) * (-27 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (0) + Real.sin ((3 * Real.sqrt 3) * t) * (-135))) t
+    refine (deriv_congr (h1.add h2) (fun s => rfl)).congr_deriv ?_
+    simp only [genLinX3]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+  · have h1 : HasDerivAt (fun t => (3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (0))
+      (-(27) * Real.sin ((3 * Real.sqrt 3) * t) * (0)) t :=
+      HasDerivAt.congr_deriv
+      (deriv_congr ((cos_comp (3 * Real.sqrt 3) t).const_mul ((3 * Real.sqrt 3) * (0)))
+      (fun s => by ring))
+      (by ring)
+    have h2 : HasDerivAt (fun t => Real.sin ((3 * Real.sqrt 3) * t) * (-135))
+      (Real.cos ((3 * Real.sqrt 3) * t) * ((3 * Real.sqrt 3) * (-135))) t :=
+      HasDerivAt.congr_deriv
+      (deriv_congr ((sin_comp (3 * Real.sqrt 3) t).const_mul (-135))
+      (fun s => by ring))
+      (by ring)
+    show HasDerivAt (fun t => ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (0) + Real.sin ((3 * Real.sqrt 3) * t) * (-135)))
+      (genLinY3 1 1 4 ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36) + Real.sin ((3 * Real.sqrt 3) * t) * (-216 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36 * Real.sqrt 3) + Real.sin ((3 * Real.sqrt 3) * t) * (432)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (-36) + Real.sin ((3 * Real.sqrt 3) * t) * (324 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (36 * Real.sqrt 3) + Real.sin ((3 * Real.sqrt 3) * t) * (108)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (18) + Real.sin ((3 * Real.sqrt 3) * t) * (-27 * Real.sqrt 3)) ((3 * Real.sqrt 3) * Real.cos ((3 * Real.sqrt 3) * t) * (0) + Real.sin ((3 * Real.sqrt 3) * t) * (-135))) t
+    refine (deriv_congr (h1.add h2) (fun s => rfl)).congr_deriv ?_
+    simp only [genLinY3]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+
+/-- **The bifurcation point Γ = (1,1,−1/2): the shape pair collides at 0.**
+    Here P = 1+2Γ = 0, and the kernel of genLin(1,1,−1/2) gains the shape
+    direction Uh (kernel rank jumps 1 → 2): the eigenvalue 0 of the
+    characteristic factor λ²+3P reaches algebraic multiplicity 4. -/
+theorem s9_collision_a :
+    genLinX1 1 1 (-1/2) (-3 * Real.sqrt 3) (-3) (0) (6) (-6 * Real.sqrt 3) (6) = 0
+      ∧ genLinY1 1 1 (-1/2) (-3 * Real.sqrt 3) (-3) (0) (6) (-6 * Real.sqrt 3) (6) = 0
+      ∧ genLinX2 1 1 (-1/2) (-3 * Real.sqrt 3) (-3) (0) (6) (-6 * Real.sqrt 3) (6) = 0
+      ∧ genLinY2 1 1 (-1/2) (-3 * Real.sqrt 3) (-3) (0) (6) (-6 * Real.sqrt 3) (6) = 0
+      ∧ genLinX3 1 1 (-1/2) (-3 * Real.sqrt 3) (-3) (0) (6) (-6 * Real.sqrt 3) (6) = 0
+      ∧ genLinY3 1 1 (-1/2) (-3 * Real.sqrt 3) (-3) (0) (6) (-6 * Real.sqrt 3) (6) = 0 := by
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · simp only [genLinX1]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+  · simp only [genLinY1]
+    ring
+  · simp only [genLinX2]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+  · simp only [genLinY2]
+    ring
+  · simp only [genLinX3]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+  · simp only [genLinY3]
+    ring
+
+/-- **The Jordan chain at the collision**: genLin(1,1,−1/2)·Utilde2 = Uh.
+    The shape plane carries a nontrivial Jordan block at the eigenvalue 0
+    — the steady-state (Krein) collision: crossing Γ = −1/2 the purely
+    imaginary pair ±i√(3P)→±√(−3P) passes through zero and re-emerges
+    on the real axis (linear instability for Γ < −1/2). -/
+theorem s9_collision_b :
+    genLinX1 1 1 (-1/2) (-2) (-2 * Real.sqrt 3) (-2) (2 * Real.sqrt 3) (-8) (0) = -3 * Real.sqrt 3
+      ∧ genLinY1 1 1 (-1/2) (-2) (-2 * Real.sqrt 3) (-2) (2 * Real.sqrt 3) (-8) (0) = -3
+      ∧ genLinX2 1 1 (-1/2) (-2) (-2 * Real.sqrt 3) (-2) (2 * Real.sqrt 3) (-8) (0) = 0
+      ∧ genLinY2 1 1 (-1/2) (-2) (-2 * Real.sqrt 3) (-2) (2 * Real.sqrt 3) (-8) (0) = 6
+      ∧ genLinX3 1 1 (-1/2) (-2) (-2 * Real.sqrt 3) (-2) (2 * Real.sqrt 3) (-8) (0) = -6 * Real.sqrt 3
+      ∧ genLinY3 1 1 (-1/2) (-2) (-2 * Real.sqrt 3) (-2) (2 * Real.sqrt 3) (-8) (0) = 6 := by
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · simp only [genLinX1]
+    ring
+  · simp only [genLinY1]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+  · simp only [genLinX2]
+    ring
+  · simp only [genLinY2]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+  · simp only [genLinX3]
+    ring
+  · simp only [genLinY3]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+
+/-- **Mixed-sign circulations Γ = (1,1,−1): LINEAR INSTABILITY.**  Here
+    P = 1−1−1 = −1 < 0 and the shape factor λ²+3P = λ²−3 contributes the
+    REAL eigenvalue pair ±√3: genLin(1,1,−1)·v = √3·v with the exact
+    eigenvector v = (1, √3, 1, −√3, 2, 0).  A real positive eigenvalue of
+    the rotating-frame linearization means exponential growth of shape
+    perturbations — the equilateral Lagrange configuration is linearly
+    UNSTABLE on this side of the bifurcation hypersurface. -/
+theorem s9_eig_unst :
+    genLinX1 1 1 (-1) (1) (Real.sqrt 3) (1) (-Real.sqrt 3) (2) (0) = Real.sqrt 3 * (1)
+      ∧ genLinY1 1 1 (-1) (1) (Real.sqrt 3) (1) (-Real.sqrt 3) (2) (0) = Real.sqrt 3 * (Real.sqrt 3)
+      ∧ genLinX2 1 1 (-1) (1) (Real.sqrt 3) (1) (-Real.sqrt 3) (2) (0) = Real.sqrt 3 * (1)
+      ∧ genLinY2 1 1 (-1) (1) (Real.sqrt 3) (1) (-Real.sqrt 3) (2) (0) = Real.sqrt 3 * (-Real.sqrt 3)
+      ∧ genLinX3 1 1 (-1) (1) (Real.sqrt 3) (1) (-Real.sqrt 3) (2) (0) = Real.sqrt 3 * (2)
+      ∧ genLinY3 1 1 (-1) (1) (Real.sqrt 3) (1) (-Real.sqrt 3) (2) (0) = Real.sqrt 3 * (0) := by
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · simp only [genLinX1]
+    ring
+  · simp only [genLinY1]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+  · simp only [genLinX2]
+    ring
+  · simp only [genLinY2]
+    ring
+  · simp only [genLinX3]
+    ring
+  · simp only [genLinY3]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+
+private theorem s9_exp_comp (t : ℝ) :
+    HasDerivAt (fun s => Real.exp (Real.sqrt 3 * s))
+      (Real.exp (Real.sqrt 3 * t) * Real.sqrt 3) t :=
+  (Real.hasDerivAt_exp (Real.sqrt 3 * t)).comp t
+    (hasDerivAt_const_mul_id (Real.sqrt 3) t)
+
+/-- **The growing modal solution at Γ = (1,1,−1).**  m(t) = e^(√3·t)·v
+    solves the linearized rotating-frame equation ẋ = genLin(1,1,−1)·m
+    exactly (all six components).  Its norm grows like e^(√3·t):
+    |m(t)|² = 12·e^(2√3·t) (s9_growth_norm) — the modal perturbation
+    amplifies by a factor e^√3 every unit time: exponential instability. -/
+theorem s9_lin_sol_unst (t : ℝ) :
+    HasDerivAt (fun t => Real.exp (Real.sqrt 3 * t) * (1))
+      (genLinX1 1 1 (-1) (Real.exp (Real.sqrt 3 * t) * (1)) (Real.exp (Real.sqrt 3 * t) * (Real.sqrt 3)) (Real.exp (Real.sqrt 3 * t) * (1)) (Real.exp (Real.sqrt 3 * t) * (-Real.sqrt 3)) (Real.exp (Real.sqrt 3 * t) * (2)) (Real.exp (Real.sqrt 3 * t) * (0))) t
+      ∧ HasDerivAt (fun t => Real.exp (Real.sqrt 3 * t) * (Real.sqrt 3))
+      (genLinY1 1 1 (-1) (Real.exp (Real.sqrt 3 * t) * (1)) (Real.exp (Real.sqrt 3 * t) * (Real.sqrt 3)) (Real.exp (Real.sqrt 3 * t) * (1)) (Real.exp (Real.sqrt 3 * t) * (-Real.sqrt 3)) (Real.exp (Real.sqrt 3 * t) * (2)) (Real.exp (Real.sqrt 3 * t) * (0))) t
+      ∧ HasDerivAt (fun t => Real.exp (Real.sqrt 3 * t) * (1))
+      (genLinX2 1 1 (-1) (Real.exp (Real.sqrt 3 * t) * (1)) (Real.exp (Real.sqrt 3 * t) * (Real.sqrt 3)) (Real.exp (Real.sqrt 3 * t) * (1)) (Real.exp (Real.sqrt 3 * t) * (-Real.sqrt 3)) (Real.exp (Real.sqrt 3 * t) * (2)) (Real.exp (Real.sqrt 3 * t) * (0))) t
+      ∧ HasDerivAt (fun t => Real.exp (Real.sqrt 3 * t) * (-Real.sqrt 3))
+      (genLinY2 1 1 (-1) (Real.exp (Real.sqrt 3 * t) * (1)) (Real.exp (Real.sqrt 3 * t) * (Real.sqrt 3)) (Real.exp (Real.sqrt 3 * t) * (1)) (Real.exp (Real.sqrt 3 * t) * (-Real.sqrt 3)) (Real.exp (Real.sqrt 3 * t) * (2)) (Real.exp (Real.sqrt 3 * t) * (0))) t
+      ∧ HasDerivAt (fun t => Real.exp (Real.sqrt 3 * t) * (2))
+      (genLinX3 1 1 (-1) (Real.exp (Real.sqrt 3 * t) * (1)) (Real.exp (Real.sqrt 3 * t) * (Real.sqrt 3)) (Real.exp (Real.sqrt 3 * t) * (1)) (Real.exp (Real.sqrt 3 * t) * (-Real.sqrt 3)) (Real.exp (Real.sqrt 3 * t) * (2)) (Real.exp (Real.sqrt 3 * t) * (0))) t
+      ∧ HasDerivAt (fun t => Real.exp (Real.sqrt 3 * t) * (0))
+      (genLinY3 1 1 (-1) (Real.exp (Real.sqrt 3 * t) * (1)) (Real.exp (Real.sqrt 3 * t) * (Real.sqrt 3)) (Real.exp (Real.sqrt 3 * t) * (1)) (Real.exp (Real.sqrt 3 * t) * (-Real.sqrt 3)) (Real.exp (Real.sqrt 3 * t) * (2)) (Real.exp (Real.sqrt 3 * t) * (0))) t := by
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · have h1 : HasDerivAt (fun t => Real.exp (Real.sqrt 3 * t) * (1))
+      (Real.sqrt 3 * Real.exp (Real.sqrt 3 * t) * (1)) t :=
+      HasDerivAt.congr_deriv
+      (deriv_congr ((s9_exp_comp t).const_mul (1))
+      (fun s => by ring))
+      (by ring)
+    show HasDerivAt (fun t => Real.exp (Real.sqrt 3 * t) * (1))
+      (genLinX1 1 1 (-1) (Real.exp (Real.sqrt 3 * t) * (1)) (Real.exp (Real.sqrt 3 * t) * (Real.sqrt 3)) (Real.exp (Real.sqrt 3 * t) * (1)) (Real.exp (Real.sqrt 3 * t) * (-Real.sqrt 3)) (Real.exp (Real.sqrt 3 * t) * (2)) (Real.exp (Real.sqrt 3 * t) * (0))) t
+    refine (deriv_congr h1 (fun s => rfl)).congr_deriv ?_
+    simp only [genLinX1]
+    ring
+  · have h1 : HasDerivAt (fun t => Real.exp (Real.sqrt 3 * t) * (Real.sqrt 3))
+      (Real.sqrt 3 * Real.exp (Real.sqrt 3 * t) * (Real.sqrt 3)) t :=
+      HasDerivAt.congr_deriv
+      (deriv_congr ((s9_exp_comp t).const_mul (Real.sqrt 3))
+      (fun s => by ring))
+      (by ring)
+    show HasDerivAt (fun t => Real.exp (Real.sqrt 3 * t) * (Real.sqrt 3))
+      (genLinY1 1 1 (-1) (Real.exp (Real.sqrt 3 * t) * (1)) (Real.exp (Real.sqrt 3 * t) * (Real.sqrt 3)) (Real.exp (Real.sqrt 3 * t) * (1)) (Real.exp (Real.sqrt 3 * t) * (-Real.sqrt 3)) (Real.exp (Real.sqrt 3 * t) * (2)) (Real.exp (Real.sqrt 3 * t) * (0))) t
+    refine (deriv_congr h1 (fun s => rfl)).congr_deriv ?_
+    simp only [genLinY1]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+  · have h1 : HasDerivAt (fun t => Real.exp (Real.sqrt 3 * t) * (1))
+      (Real.sqrt 3 * Real.exp (Real.sqrt 3 * t) * (1)) t :=
+      HasDerivAt.congr_deriv
+      (deriv_congr ((s9_exp_comp t).const_mul (1))
+      (fun s => by ring))
+      (by ring)
+    show HasDerivAt (fun t => Real.exp (Real.sqrt 3 * t) * (1))
+      (genLinX2 1 1 (-1) (Real.exp (Real.sqrt 3 * t) * (1)) (Real.exp (Real.sqrt 3 * t) * (Real.sqrt 3)) (Real.exp (Real.sqrt 3 * t) * (1)) (Real.exp (Real.sqrt 3 * t) * (-Real.sqrt 3)) (Real.exp (Real.sqrt 3 * t) * (2)) (Real.exp (Real.sqrt 3 * t) * (0))) t
+    refine (deriv_congr h1 (fun s => rfl)).congr_deriv ?_
+    simp only [genLinX2]
+    ring
+  · have h1 : HasDerivAt (fun t => Real.exp (Real.sqrt 3 * t) * (-Real.sqrt 3))
+      (Real.sqrt 3 * Real.exp (Real.sqrt 3 * t) * (-Real.sqrt 3)) t :=
+      HasDerivAt.congr_deriv
+      (deriv_congr ((s9_exp_comp t).const_mul (-Real.sqrt 3))
+      (fun s => by ring))
+      (by ring)
+    show HasDerivAt (fun t => Real.exp (Real.sqrt 3 * t) * (-Real.sqrt 3))
+      (genLinY2 1 1 (-1) (Real.exp (Real.sqrt 3 * t) * (1)) (Real.exp (Real.sqrt 3 * t) * (Real.sqrt 3)) (Real.exp (Real.sqrt 3 * t) * (1)) (Real.exp (Real.sqrt 3 * t) * (-Real.sqrt 3)) (Real.exp (Real.sqrt 3 * t) * (2)) (Real.exp (Real.sqrt 3 * t) * (0))) t
+    refine (deriv_congr h1 (fun s => rfl)).congr_deriv ?_
+    simp only [genLinY2]
+    ring
+  · have h1 : HasDerivAt (fun t => Real.exp (Real.sqrt 3 * t) * (2))
+      (Real.sqrt 3 * Real.exp (Real.sqrt 3 * t) * (2)) t :=
+      HasDerivAt.congr_deriv
+      (deriv_congr ((s9_exp_comp t).const_mul (2))
+      (fun s => by ring))
+      (by ring)
+    show HasDerivAt (fun t => Real.exp (Real.sqrt 3 * t) * (2))
+      (genLinX3 1 1 (-1) (Real.exp (Real.sqrt 3 * t) * (1)) (Real.exp (Real.sqrt 3 * t) * (Real.sqrt 3)) (Real.exp (Real.sqrt 3 * t) * (1)) (Real.exp (Real.sqrt 3 * t) * (-Real.sqrt 3)) (Real.exp (Real.sqrt 3 * t) * (2)) (Real.exp (Real.sqrt 3 * t) * (0))) t
+    refine (deriv_congr h1 (fun s => rfl)).congr_deriv ?_
+    simp only [genLinX3]
+    ring
+  · have h1 : HasDerivAt (fun t => Real.exp (Real.sqrt 3 * t) * (0))
+      (Real.sqrt 3 * Real.exp (Real.sqrt 3 * t) * (0)) t :=
+      HasDerivAt.congr_deriv
+      (deriv_congr ((s9_exp_comp t).const_mul (0))
+      (fun s => by ring))
+      (by ring)
+    show HasDerivAt (fun t => Real.exp (Real.sqrt 3 * t) * (0))
+      (genLinY3 1 1 (-1) (Real.exp (Real.sqrt 3 * t) * (1)) (Real.exp (Real.sqrt 3 * t) * (Real.sqrt 3)) (Real.exp (Real.sqrt 3 * t) * (1)) (Real.exp (Real.sqrt 3 * t) * (-Real.sqrt 3)) (Real.exp (Real.sqrt 3 * t) * (2)) (Real.exp (Real.sqrt 3 * t) * (0))) t
+    refine (deriv_congr h1 (fun s => rfl)).congr_deriv ?_
+    simp only [genLinY3]
+    ring_nf
+    simp only [s3sq, s9_s3cu]
+    ring
+
+/-- **Exponential growth of the unstable mode (norm identity).**
+    |m(t)|² = 12·e^(2√3·t): the shape perturbation of the mixed-sign
+    triangle Γ = (1,1,−1) is unbounded — the nonlinear counterpart of the
+    §8 stability bounds, on the far side of the bifurcation. -/
+theorem s9_growth_norm (t : ℝ) :
+    (Real.exp (Real.sqrt 3 * t) * (1)) ^ 2
+      + (Real.exp (Real.sqrt 3 * t) * (Real.sqrt 3)) ^ 2
+      + (Real.exp (Real.sqrt 3 * t) * (1)) ^ 2
+      + (Real.exp (Real.sqrt 3 * t) * (-(Real.sqrt 3))) ^ 2
+      + (Real.exp (Real.sqrt 3 * t) * (2)) ^ 2
+      + (Real.exp (Real.sqrt 3 * t) * (0)) ^ 2
+      = 12 * Real.exp (Real.sqrt 3 * t) ^ 2 := by
+  ring_nf
+  linear_combination (2 * Real.exp (Real.sqrt 3 * t) ^ 2) * s3sq
+
+/-! ### Section 9 axiom footprint -/
+
+#print axioms s9_gen_deriv_x
+#print axioms s9_gen_deriv_y
+#print axioms s9_gen_dist01
+#print axioms s9_gen_dist02
+#print axioms s9_gen_dist12
+#print axioms s9_gen_centroid_x
+#print axioms s9_gen_centroid_y
+#print axioms s9_gen_field_x1
+#print axioms s9_gen_field_y1
+#print axioms s9_gen_field_x2
+#print axioms s9_gen_field_y2
+#print axioms s9_gen_field_x3
+#print axioms s9_gen_field_y3
+#print axioms s9_rel_eq
+#print axioms s9_omega_scale
+#print axioms s9_kx_shift
+#print axioms s9_ky_shift
+#print axioms s9_kx2_shift
+#print axioms s9_ky2_shift
+#print axioms s9_kx3_shift
+#print axioms s9_ky3_shift
+#print axioms s9_sol_shift
+#print axioms s9_sol_time
+#print axioms s9_trans_dev
+#print axioms s9_lin_trans
+#print axioms s9_lin_diag
+#print axioms s9_lin_kernel
+#print axioms s9_lin_chain
+#print axioms s9_shape_gen
+#print axioms s9_shape4_a
+#print axioms s9_shape4_b
+#print axioms s9_lin_sol_shape4
+#print axioms s9_collision_a
+#print axioms s9_collision_b
+#print axioms s9_eig_unst
+#print axioms s9_exp_comp
+#print axioms s9_lin_sol_unst
+#print axioms s9_growth_norm
 
 end Trivortex

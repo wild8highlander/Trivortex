@@ -1,0 +1,17 @@
+PASS  weighted centroid at t=0
+PASS  gen solution vs rigid rotation (He2, err<1e-5)
+PASS  centroid identity along trajectory
+PASS  omega value G/(2 pi a^2) = 2/pi for G=4
+PASS  eigenvalues match lambda^2(lam^2+G^2)(lam^2+3P), gamma=4
+PASS  eigenvalues match lambda^2(lam^2+G^2)(lam^2+3P), gamma=-1/2
+PASS  eigenvalues match lambda^2(lam^2+G^2)(lam^2+3P), gamma=-1
+PASS  (1,1,4): B u4 = -27 ut4
+PASS  (1,1,4): B ut4 = u4
+PASS  (1,1,-1/2): B Uh = 0
+PASS  (1,1,-1/2): B Ut2 = Uh
+PASS  (1,1,-1): B v = sqrt(3) v
+PASS  growing mode |m|^2 = 12 e^(2 sqrt3 t) (rel err < 1e-6)
+PASS  (1,1,4): |x~(t)|^2 = 33c^2+77s^2-33cs
+PASS  (1,1,4): = 165/2 - (11/2)(3c+s)^2 (bounded by 165/2)
+
+ALL 15/15 checks passed

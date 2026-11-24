@@ -1,0 +1,65 @@
+== characteristic polynomial ==
+PASS  charpoly(1,1,gamma) = lambda^2 (lambda^2+G^2) (lambda^2+3P)
+== general-circulation identities ==
+PASS  s9_lin_trans row 1
+PASS  s9_lin_trans row 2
+PASS  s9_lin_trans row 3
+PASS  s9_lin_trans row 4
+PASS  s9_lin_trans row 5
+PASS  s9_lin_trans row 6
+PASS  s9_lin_kernel row 1
+PASS  s9_lin_kernel row 2
+PASS  s9_lin_kernel row 3
+PASS  s9_lin_kernel row 4
+PASS  s9_lin_kernel row 5
+PASS  s9_lin_kernel row 6
+PASS  s9_lin_chain row 1
+PASS  s9_lin_chain row 2
+PASS  s9_lin_chain row 3
+PASS  s9_lin_chain row 4
+PASS  s9_lin_chain row 5
+PASS  s9_lin_chain row 6
+PASS  s9_shape_gen row 1
+PASS  s9_shape_gen row 2
+PASS  s9_shape_gen row 3
+PASS  s9_shape_gen row 4
+PASS  s9_shape_gen row 5
+PASS  s9_shape_gen row 6
+== instance (1,1,4): stable shape oscillation ==
+PASS  s9_shape4_a row 1
+PASS  s9_shape4_a row 2
+PASS  s9_shape4_a row 3
+PASS  s9_shape4_a row 4
+PASS  s9_shape4_a row 5
+PASS  s9_shape4_a row 6
+PASS  s9_shape4_b row 1
+PASS  s9_shape4_b row 2
+PASS  s9_shape4_b row 3
+PASS  s9_shape4_b row 4
+PASS  s9_shape4_b row 5
+PASS  s9_shape4_b row 6
+== instance (1,1,-1/2): the collision ==
+PASS  s9_collision_a row 1
+PASS  s9_collision_a row 2
+PASS  s9_collision_a row 3
+PASS  s9_collision_a row 4
+PASS  s9_collision_a row 5
+PASS  s9_collision_a row 6
+PASS  s9_collision_b row 1
+PASS  s9_collision_b row 2
+PASS  s9_collision_b row 3
+PASS  s9_collision_b row 4
+PASS  s9_collision_b row 5
+PASS  s9_collision_b row 6
+== instance (1,1,-1): linear instability ==
+PASS  s9_eig_unst row 1
+PASS  s9_eig_unst row 2
+PASS  s9_eig_unst row 3
+PASS  s9_eig_unst row 4
+PASS  s9_eig_unst row 5
+PASS  s9_eig_unst row 6
+== (1,1,4) oscillation norm ==
+PASS  |x~(t)|^2 = 33c^2+77s^2-33cs
+PASS  |x~(t)|^2 = 165/2 - (11/2)(3c+s)^2 <= 165/2
+
+ALL IDENTITIES VERIFIED — the §9 Lean chunk is backed by SymPy.

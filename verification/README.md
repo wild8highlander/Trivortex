@@ -219,7 +219,7 @@ criteria are checked in the same files now.
 | `tests/` | pytest guard of the ladder + program | **M0** | ✅ **done** (63 tests) |
 | `trivortex/python/lab.py` | interactive scientific laboratory, 600 dpi | **M0+** | ✅ **landed** (v1.1) |
 | `coq/` | `Trivortex.v` — statement layer + choreography | **M1** | ✅ **landed** (v1.1) — proven, zero axioms |
-| `lean4/` | `Trivortex.lean` — full statement layer v3.0 (Theorem 3.1, conservation laws, Lagrange solution + its complete theory) | **M1+M4/M5/M6** | ✅ **landed** (v3.0) — 88 theorems, `#print axioms` closed |
+| `lean4/` | `Trivortex.lean` — choreography + periodicity via Mathlib | **M1** | ✅ **landed** (v1.1) — proven, `#print axioms` closed |
 | `rust/` | crate — second floating-point implementation of V1–V4 | **M1** | ✅ **landed** (v1.1) — 14/14 tests, protocol committed |
 | `isabelle/` | `Trivortex.thy` — SMT-discharged invariant bounds | **M2** | ✅ **landed** (v1.1) — HOL proven; SMT session optional |
 | `agda/` | `Trivortex.agda` — constructive angle arithmetic | **M2** | ✅ **landed** (v1.1) — C3 lattice proven constructively |
