@@ -24,7 +24,7 @@ F(y0) = ||y(T) − y(0)|| методом конечных разностей (Н
 from __future__ import annotations
 
 import math
-from typing import  Sequence
+from typing import Sequence
 
 
 # ── правая часть гравитационной N-теловой задачи (плоскость, m=1, G=1) ──

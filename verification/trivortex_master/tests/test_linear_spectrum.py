@@ -14,6 +14,7 @@ V0-лестница: 6×6-матрица линеаризации (в 2π/Γ-м�
       Trivortex.lean — если утверждение изменится, тест упадёт на
       рассинхронизации раньше, чем даст неверный ответ.
 """
+
 import math
 
 import pytest
@@ -62,12 +63,12 @@ def apply_M(v):
 
 
 # ── модальные векторы из запечатанных утверждений eig_* ─────────────────────
-V_T1 = (1, 0, 1, 0, 1, 0)            # eig_trans1
-V_T2 = (0, 1, 0, 1, 0, 1)            # eig_trans2
+V_T1 = (1, 0, 1, 0, 1, 0)  # eig_trans1
+V_T2 = (0, 1, 0, 1, 0, 1)  # eig_trans2
 V_R = (0, 1 / _SQ3, -1 / 2, -1 / (2 * _SQ3), 1 / 2, -1 / (2 * _SQ3))  # eig_rot
 V_D = (1 / _SQ3, 0, -1 / (2 * _SQ3), 1 / 2, -1 / (2 * _SQ3), -1 / 2)  # eig_dil
 V_U = (1, 0, 1 / 2, -_SQ3 / 2, 0, 0)  # eig_shapeU
-V_W = (0, 1, _SQ3 / 2, 1 / 2, 0, 0)   # eig_shapeW
+V_W = (0, 1, _SQ3 / 2, 1 / 2, 0, 0)  # eig_shapeW
 
 
 def _sub(a, b):
@@ -127,8 +128,8 @@ def test_spectrum_is_purely_imaginary(bridge, testcfg):
     imags = sorted(abs(float(l.imag)) for l in lam)
     # порог отделяет настоящие моды (3) от числового шума жордановых нулей (~1e-8)
     nonzero = [v for v in imags if v > eig3 * 1e-3]
-    assert nonzero == pytest.approx([eig3] * 4, abs=1e-6), (
-        f"модули мнимых частей {nonzero} ≠ 4×{eig3}"
-    )
+    assert nonzero == pytest.approx(
+        [eig3] * 4, abs=1e-6
+    ), f"модули мнимых частей {nonzero} ≠ 4×{eig3}"
     # ровно две (почти) нулевые моды — фазовая и размерная (жорданова цепочка)
     assert sum(1 for v in imags if v <= eig3 * 1e-3) == 2

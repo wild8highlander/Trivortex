@@ -86,8 +86,12 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument("--workdir", default=root, help="каталог пакета (запуск lake env)")
     ap.add_argument("--lake", default="lake", help="исполняемый lake (PATH)")
     ap.add_argument("--log", default=None, help="куда сохранить журнал компиляции")
-    ap.add_argument("--from-log", default=None, dest="from_log",
-                    help="не компилировать заново: разобрать готовый журнал")
+    ap.add_argument(
+        "--from-log",
+        default=None,
+        dest="from_log",
+        help="не компилировать заново: разобрать готовый журнал",
+    )
     ap.add_argument("--timeout", type=int, default=900, help="таймаут компиляции, сек")
     ap.add_argument("--verbose", action="store_true")
     return ap.parse_args()
@@ -99,8 +103,12 @@ def compile_lean(args: argparse.Namespace) -> tuple[int, str]:
     env = dict(os.environ)
     env.setdefault("LEAN_ABORT_ON_OOM", "1")
     proc = subprocess.run(
-        cmd, cwd=args.workdir, env=env,
-        capture_output=True, text=True, timeout=args.timeout,
+        cmd,
+        cwd=args.workdir,
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=args.timeout,
     )
     log = proc.stdout + ("\n" + proc.stderr if proc.stderr else "")
     if args.log:
@@ -193,10 +201,12 @@ def main() -> int:
     # сводка
     n_clean = sum(1 for ax in printed.values() if not ax)
     n_std = sum(1 for ax in printed.values() if ax and set(ax) <= ALLOWED_AXIOMS)
-    print(f"AXIOMS GATE: {len(printed)} отпечатков "
-          f"({n_clean} без аксиом, {n_std} на стандартном наборе "
-          f"[propext, Classical.choice, Quot.sound]); "
-          f"исходных директив: {n_src}")
+    print(
+        f"AXIOMS GATE: {len(printed)} отпечатков "
+        f"({n_clean} без аксиом, {n_std} на стандартном наборе "
+        f"[propext, Classical.choice, Quot.sound]); "
+        f"исходных директив: {n_src}"
+    )
 
     if violations:
         print("AXIOMS GATE [FAIL]:")

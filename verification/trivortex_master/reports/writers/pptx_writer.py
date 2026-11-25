@@ -320,7 +320,7 @@ class PptxBuilder:
         """Do PptxBuilder. slide rels for s and return the result."""
         rels = [
             '<Relationship Id="rIdLayout" Type="http://schemas.'
-            'openxmlformats.org/officeDocument/2006/relationships/'
+            "openxmlformats.org/officeDocument/2006/relationships/"
             'slideLayout" Target="../slideLayouts/slideLayout1.xml"/>'
         ]
         for rid, name, _data in s.image_parts:

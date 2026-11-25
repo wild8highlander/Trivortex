@@ -90,6 +90,7 @@ exactly `propext · Classical.choice · Quot.sound`.
 18. [Contributing](#18-contributing)
 19. [Acknowledgments & credits](#19-acknowledgments--credits)
 20. [Citation, DOI & license](#20-citation-doi--license)
+
 - [Appendix A — full declaration census](#appendix-a--full-declaration-census)
 
 ---
@@ -467,7 +468,7 @@ The v6.0–v7.0 depth tracks, in three moves:
    `t ∈ ℝ` — continuous-induction annulus propagation plus the exact
    conservation of `H, I, P, Q` (`s10_lyapunov_dist` is the distance form).
 
-![Lyapunov stability: the perturbed triangle under the true Kirchhoff flow, the certified bound held for all t](assets/lyapunov_stability.gif)
+   ![Lyapunov stability: the perturbed triangle under the true Kirchhoff flow, the certified bound held for all t](assets/lyapunov_stability.gif)
 
 2. **10.2 — collinear central configurations and their bifurcations.** The
    general collinear rotating relative equilibrium (`s10_col_sol_gen`), the

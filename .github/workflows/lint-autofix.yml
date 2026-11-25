@@ -1,0 +1,130 @@
+---
+# TrivortexBot, organ 4 of 4: the lint healer (self-healing lint loop).
+#
+# Dependabot (organ 1) keeps dependencies fresh; the auto-merge workflow
+# (organ 2) lands the safe updates; the repo doctor (organ 3) repairs the
+# repository skeleton; the lint healer closes the loop on the Lint gate
+# itself: whenever a push to main or a weekly round leaves lint debt that
+# the mechanical fixers can heal, it heals the tree (ruff --fix, black,
+# the doctor's LF/YML markdown-and-hygiene classes), re-runs the gates and
+# pushes only a green tree. Findings that need a human decision — ordered
+# list renumbering, fence languages, broken tables, dead anchors — are
+# never guessed: they are escalated to the TrivortexBot issue with the
+# doctor's report verbatim.
+#
+# Commit policy: the healer never pushes a tree whose ruff/black/yamllint
+# gates are red. If those three stay red after the heal pass, nothing is
+# committed and the whole report is escalated instead.
+name: TrivortexBot — lint autofix (self-healing lint)
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '45 3 * * 1'  # weekly, Monday 03:45 UTC — 45 min before the doctor's round
+  workflow_dispatch:
+
+permissions:
+  contents: write  # auto-repair commits on main
+  issues: write  # escalate the unfixable findings
+
+concurrency:
+  group: trivortex-lint-autofix
+  cancel-in-progress: false
+
+jobs:
+  heal:
+    name: Heal the lint violations (on main)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install the pinned lint stack
+        # Same pins as the Lint gate — the healer must fix with exactly the
+        # tools that judge, or gate drift turns the loop into a fight.
+        run: pip install ruff==0.17.6 black==26.10.1 yamllint==1.38.0
+
+      - name: Heal the tree in place
+        run: |
+          ruff check . --fix --output-format=concise || true
+          black . || true
+          python3 .github/scripts/repo_doctor.py --fix || true
+
+      - name: Re-run the style gates (ruff, black, yamllint)
+        id: style
+        run: |
+          ok=1
+          ruff check . --output-format=concise || ok=0
+          black --check . || ok=0
+          yamllint -c .yamllint.yml .github/workflows/ \
+            .pre-commit-config.yaml environment.yml CITATION.cff || ok=0
+          echo "style_ok=$ok" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Re-run the markdown and doctor gates (report)
+        id: report
+        if: always()
+        run: |
+          md_ok=1
+          echo "## markdownlint" > /tmp/report.md
+          npx --yes markdownlint-cli2 \
+            "**/*.md" "!CHANGELOG.md" "!verification/trivortex_master/data/literature.md" \
+            "#node_modules" >> /tmp/report.md 2>&1 || md_ok=0
+          echo "" >> /tmp/report.md
+          echo "## repo doctor" >> /tmp/report.md
+          python3 .github/scripts/repo_doctor.py --check --report /tmp/escalation.md \
+            >> /tmp/report.md 2>&1 || md_ok=0
+          echo "report_ok=$md_ok" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Commit and push the healed tree
+        if: steps.style.outputs.style_ok == '1'
+        run: |
+          git config user.name "TrivortexBot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git add -A
+            git commit -m "style(TrivortexBot): auto-heal lint violations" \
+              -m "ruff --fix + black + repo doctor (LF/YML hygiene classes).
+            ruff, black and yamllint re-ran green before this commit.
+            Anything that needs a human decision is in the TrivortexBot issue."
+            git push
+          else
+            echo "nothing to heal — the tree is already clean"
+          fi
+
+      - name: Escalate what the healer could not fix
+        if: steps.style.outputs.style_ok == '0' || steps.report.outputs.report_ok == '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create repo-doctor --color D9760A --description "TrivortexBot escalations" \
+            2>/dev/null || true
+          {
+            echo "## Lint gate status after the heal pass"
+            echo ""
+            if [[ -n "$(git status --porcelain)" ]]; then
+              echo "The style gates (ruff/black/yamllint) are still red after ruff --fix,"
+              echo "black and the doctor's pass — **nothing was committed**."
+            else
+              echo "The style gates are green; the mechanical heal landed. The report below"
+              echo "lists the findings that need a human decision (markdownlint classes the"
+              echo "doctor mirrors only partially, report-only doctor codes)."
+            fi
+            echo ""
+            cat /tmp/report.md
+          } > /tmp/body.md
+          existing="$(gh issue list --label repo-doctor --state open --json number --jq 'length')"
+          if [[ "$existing" == "0" ]]; then
+            gh issue create --label repo-doctor \
+              --title "[TrivortexBot] lint gate: findings need a human" \
+              --body-file /tmp/body.md
+          else
+            number="$(gh issue list --label repo-doctor --state open --json number --jq '.[0].number')"
+            gh issue comment "$number" --body-file /tmp/body.md
+          fi

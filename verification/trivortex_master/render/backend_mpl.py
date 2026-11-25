@@ -13,7 +13,7 @@ scientific (светлый, для публикаций), minimal (ч/б).
 from __future__ import annotations
 
 import math
-from typing import  Sequence
+from typing import Sequence
 
 try:
     import matplotlib

@@ -19,6 +19,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 @dataclass
 class ModuleInfo:
     """Handle ModuleInfo."""
+
     path: str
     lines: int = 0
     functions: int = 0

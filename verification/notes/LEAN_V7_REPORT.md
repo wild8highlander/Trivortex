@@ -43,7 +43,7 @@ carried the second asymmetric solution and the pitchfork factorization —
 formalized here. The new script re-derives everything independently and adds
 the degenerate-circulation counts:
 
-```
+```text
 [PASS] N(s,-5/4) = -(9/64) s^3 (s-1)          [PASS] centering x2 = -9/5
 [PASS] N(s,-1) = -s (s-1)^2                   [PASS] momentum P = sum g_k x_k = 0
 [PASS] N(s,-2) = -3 s (s-1)^3                 [PASS] w = 25/(168 pi)

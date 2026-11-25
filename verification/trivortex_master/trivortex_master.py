@@ -33,8 +33,10 @@ if ROOT not in sys.path:
 # инъекция адаптеров REBOUND/Dedalus/Custom в диспетчер движков
 
 import importlib
+
 importlib.import_module("modes_extra")  # noqa: F401 - side effect: registers 34 extra menu modes
 import realism as _realism_pkg
+
 _realism_pkg._inject_engines()  # register rebound/dedalus adapters
 from core.registry import REGISTRY, register_mode
 from core.config import MasterConfig, UnphysicalConfiguration, from_profile, resolve_paths, PROFILES

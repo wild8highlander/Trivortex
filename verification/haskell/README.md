@@ -14,7 +14,7 @@
 </div>
 
 > **Navigation:** [`verification`](../README.md) › **`haskell`**
-
+>
 > The lazy, purely functional port of the **TRIVORTEX** document
 > (`code/trivortex_core*.py`): the same four checks V1–V4 run twice —
 > once in `Double` for the floating-point envelope, once in exact

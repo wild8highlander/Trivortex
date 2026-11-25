@@ -37,9 +37,15 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 
-RE_THEOREM = re.compile(r"(?m)^(?:private\s+|protected\s+|noncomputable\s+)*(theorem|lemma)\s+([A-Za-z0-9_']+)")
-RE_DEF = re.compile(r"(?m)^(?:private\s+|protected\s+|noncomputable\s+)*(?:abbrev\s+|@\[[^\]]*\]\s*)*def\s+([A-Za-z0-9_']+)")
-RE_STRUCT = re.compile(r"(?m)^(?:private\s+|protected\s+)*(structure|class|abbrev)\s+([A-Za-z0-9_']+)")
+RE_THEOREM = re.compile(
+    r"(?m)^(?:private\s+|protected\s+|noncomputable\s+)*(theorem|lemma)\s+([A-Za-z0-9_']+)"
+)
+RE_DEF = re.compile(
+    r"(?m)^(?:private\s+|protected\s+|noncomputable\s+)*(?:abbrev\s+|@\[[^\]]*\]\s*)*def\s+([A-Za-z0-9_']+)"
+)
+RE_STRUCT = re.compile(
+    r"(?m)^(?:private\s+|protected\s+)*(structure|class|abbrev)\s+([A-Za-z0-9_']+)"
+)
 RE_PRINT_AX = re.compile(r"(?m)^#print\s+axioms\s+([A-Za-z0-9_'.]+)")
 RE_SECTION = re.compile(r"(?m)^\s*(?:/-!\s*)?#+\s*Section\s*(\d+)")
 
@@ -188,7 +194,9 @@ def main() -> int:
         c = (d["covered"] / d["total"]) if d["total"] else 1.0
         print(f"  Section {sec:>2}: {d['covered']:>3}/{d['total']:<3} = {c:5.1%}")
     if tabs or trail or long_lines:
-        print(f"LINT (сводка гигиены): табов {tabs}, хвостовых пробелов {trail}, строк >120: {len(long_lines)}")
+        print(
+            f"LINT (сводка гигиены): табов {tabs}, хвостовых пробелов {trail}, строк >120: {len(long_lines)}"
+        )
 
     if violations:
         print(f"LINT [FAIL]: {len(violations)} нарушений:")

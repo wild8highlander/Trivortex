@@ -41,9 +41,9 @@ def main() -> int:
 
     # 1. ровно один корневой lean-модуль (lakefile.lean — конфиг Lake, не модуль)
     lean_files = [
-        f for f in os.listdir(ROOT)
-        if f.endswith(".lean") and f != "lakefile.lean"
-        and os.path.isfile(os.path.join(ROOT, f))
+        f
+        for f in os.listdir(ROOT)
+        if f.endswith(".lean") and f != "lakefile.lean" and os.path.isfile(os.path.join(ROOT, f))
     ]
     if lean_files != [EXPECTED_ROOT]:
         problems.append(f"ожидался единственный {EXPECTED_ROOT}, найдено: {lean_files}")
@@ -58,7 +58,9 @@ def main() -> int:
     if not m:
         problems.append("lakefile.lean: Mathlib не затребован точным пином")
     elif m.group(1) != EXPECTED_MATHLIB_TAG:
-        problems.append(f"lakefile.lean: Mathlib пин {m.group(1)} ≠ {EXPECTED_MATHLIB_TAG} (воспроизводимость)")
+        problems.append(
+            f"lakefile.lean: Mathlib пин {m.group(1)} ≠ {EXPECTED_MATHLIB_TAG} (воспроизводимость)"
+        )
 
     # 3. самособлюдение импортов
     src = open(os.path.join(ROOT, EXPECTED_ROOT), encoding="utf-8").read()
@@ -72,8 +74,10 @@ def main() -> int:
     if toolchain != EXPECTED_TOOLCHAIN:
         problems.append(f"lean-toolchain = {toolchain!r} ≠ {EXPECTED_TOOLCHAIN!r}")
 
-    print(f"IMPORTS: root {EXPECTED_ROOT}; imports: {len(imports)} (все внешние); "
-          f"toolchain {toolchain}; mathlib pin {'OK' if m else '—'}")
+    print(
+        f"IMPORTS: root {EXPECTED_ROOT}; imports: {len(imports)} (все внешние); "
+        f"toolchain {toolchain}; mathlib pin {'OK' if m else '—'}"
+    )
     if problems:
         print("IMPORTS [FAIL]:")
         for p in problems:

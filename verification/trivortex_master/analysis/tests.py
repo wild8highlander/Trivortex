@@ -32,6 +32,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 class TestResult:
     """One structural test's outcome: id, title, details, metrics."""
+
     def __init__(self, test_id: str, name: str):
         """Do TestResult.  init for test_id, name and return the result."""
         self.id = test_id

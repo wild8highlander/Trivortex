@@ -6,6 +6,7 @@ first line of each docstring and the axiom-footprint counters.
 House convention: the index is REGENERATED, never hand-edited:
     python3 ../notes/make_statement_index.py
 """
+
 import re, os, datetime
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -18,7 +19,7 @@ lines = src.split("\n")
 
 # ---------------------------------------------------------------- sections
 # headers may span several lines: `/-! ## Title ... -/`
-sections = []            # list of dicts {title, subs: [{title, thms: []}], thms}
+sections = []  # list of dicts {title, subs: [{title, thms: []}], thms}
 cur_sec = None
 cur_sub = None
 
@@ -83,17 +84,18 @@ while i < len(lines):
 n_prints = len(re.findall(r"^#print axioms ", src, re.M))
 n_sorry = len(re.findall(r"^\s*sorry\s*$", src, re.M))  # proof terminators only
 n_axiom = len(re.findall(r"^axiom ", src, re.M))
-n_thm = sum(len(s["thms"]) + sum(len(sub["thms"]) for sub in s["subs"])
-            for s in sections)
+n_thm = sum(len(s["thms"]) + sum(len(sub["thms"]) for sub in s["subs"]) for s in sections)
 
 os.makedirs(OUT_DIR, exist_ok=True)
 today = datetime.date.today().isoformat()
 out = []
 out.append("# STATEMENT INDEX — `Trivortex.lean`")
 out.append("")
-out.append(f"*Auto-generated from `Trivortex.lean` on {today} by "
-           "`verification/notes/make_statement_index.py` — do not hand-edit; "
-           "regenerate after every change to the Lean file.*")
+out.append(
+    f"*Auto-generated from `Trivortex.lean` on {today} by "
+    "`verification/notes/make_statement_index.py` — do not hand-edit; "
+    "regenerate after every change to the Lean file.*"
+)
 out.append("")
 out.append("| Metric | Value |")
 out.append("|---|---|")
@@ -103,9 +105,11 @@ out.append(f"| `sorry` occurrences | **{n_sorry}** (must stay 0) |")
 out.append(f"| `axiom` declarations | **{n_axiom}** (must stay 0) |")
 out.append(f"| Top-level sections | {len(sections)} |")
 out.append("")
-out.append("**Axiom footprint:** every theorem resolves to "
-           "`[propext, Classical.choice, Quot.sound]` — Mathlib's classical "
-           "foundations only.")
+out.append(
+    "**Axiom footprint:** every theorem resolves to "
+    "`[propext, Classical.choice, Quot.sound]` — Mathlib's classical "
+    "foundations only."
+)
 out.append("")
 out.append("## Contents")
 out.append("")

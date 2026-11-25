@@ -27,7 +27,7 @@
   "MD030": { "ul_single": 1, "ul_multi": 1, "ol_single": 1, "ol_multi": 1 },
   "MD031": { "list_items": true },
   "MD032": true,
-  "MD033": { "allowed_elements": ["details", "summary", "img", "br", "sup", "sub", "div", "table", "tr", "td", "th", "a", "span"] },
+  "MD033": { "allowed_elements": ["details", "summary", "img", "br", "sup", "sub", "div", "table", "tr", "td", "th", "a", "span", "p", "b", "i"] },
   "MD034": true,
   "MD035": { "style": "---" },
   "MD036": false,

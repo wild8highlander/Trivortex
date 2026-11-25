@@ -70,7 +70,7 @@ interactive laboratory, Coq, Lean 4, Rust, Isabelle, Agda, C++ and Haskell.
 3. [The vortex approach and the Chaplygin integral](#3-the-vortex-approach-and-the-chaplygin-integral)
 4. [Theorem 3.1 — the closed form](#4-theorem-31--the-closed-form)
 5. [Verification ladder V1–V4](#5-verification-ladder-v1v4)
-6. [The pytest guard — 206 tests](#6-the-pytest-guard--206-tests)
+6. [The pytest guard — 220 tests](#6-the-pytest-guard--220-tests)
 7. [Inside the document — 22 sections](#7-inside-the-document--22-sections)
 8. [The interactive menu — 15 modes](#8-the-interactive-menu--15-modes)
 9. [The report engine — seven formats](#9-the-report-engine--seven-formats)

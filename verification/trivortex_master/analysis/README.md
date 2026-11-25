@@ -93,7 +93,7 @@ flowchart TD
 ## The real selftest log
 
 <p>
-<img src="https://img.shields.io/badge/exit-0-34D399?style=flat-square"/> <img src="https://img.shields.io/badge/cross-marks%20in%20log-0-34D399?style=flat-square"/>
+<img src="https://img.shields.io/badge/exit-0-34D399?style=flat-square" alt="quality gate exit code 0"/> <img src="https://img.shields.io/badge/cross-marks%20in%20log-0-34D399?style=flat-square" alt="zero cross-marks in the gate log"/>
 </p>
 
 ```text

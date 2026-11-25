@@ -110,6 +110,7 @@ LIGHT = (0.93, 0.95, 0.96)
 
 class _Page:
     """Handle Page."""
+
     def __init__(self):
         """Handle Page.  init."""
         self.ops: list[str] = []
@@ -268,6 +269,7 @@ class _Page:
 # ═══════════════════════════════════════════════════════════════════════════
 class PDFBuilder:
     """Handle PDFBuilder."""
+
     def __init__(self, title: str = "TRIVORTEX MASTER Report"):
         """Do PDFBuilder.  init for title and return the result."""
         self.title = title
@@ -333,7 +335,7 @@ class PDFBuilder:
             page_ids.append(pid)
         # каталог
         kids = " ".join(f"{p} 0 R" for p in page_ids)
-        objs[0] = ("<< /Type /Catalog /Pages 2 0 R >>").encode()
+        objs[0] = b"<< /Type /Catalog /Pages 2 0 R >>"
         objs[1] = (f"<< /Type /Pages /Count {len(page_ids)} " f"/Kids [{kids}] >>").encode()
 
         # файл

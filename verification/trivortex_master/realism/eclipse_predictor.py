@@ -22,7 +22,6 @@ TRIVORTEX MASTER — затмения: геометрия, циклы, пред�
 
 from __future__ import annotations
 
-
 SYNODIC_D = 29.530588  # синодический месяц (сут)
 DRACONIC_D = 27.212221  # драконический месяц (сут)
 TROPICAL_YEAR_D = 365.2422

@@ -20,8 +20,8 @@ docstring, was 66.4%).
   registration behavior;
 - single-file edition: 110 module blocks re-synced from the package
   (the "linker-glue" contract of the original generator is preserved:
-  verbatim bodies, `if _MODULE_MAIN` extinguishing, ROOT -> _PKG_ROOT,
-  canonical global names PhysicsEngine_engine_base / self_check_* and
+  verbatim bodies, `if _MODULE_MAIN` extinguishing, ROOT -> `_PKG_ROOT`,
+  canonical global names PhysicsEngine_engine_base / `self_check_*` and
   82 others verified against the original link table);
 - the remaining 186 pyflakes notes in the single file are the
   architectural `redefinition of unused` marks of the glue itself

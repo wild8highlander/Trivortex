@@ -199,8 +199,23 @@ def load_lab():
     path = os.path.join(VERIFY, "trivortex", "python", "lab.py")
     spec = importlib.util.spec_from_file_location("trivortex_lab", path)
     mod = importlib.util.module_from_spec(spec)
+    # lab.py inserts its own directory at sys.path[0] (so that `from verify
+    # import ...` resolves) and drags its import graph into sys.modules.
+    # Left in place, that mutation shadows the MASTER package `lab/` with
+    # this lab.py module — `from lab.scene import Scene` then dies with
+    # "'lab' is not a package" and the whole MASTER regression suite fails
+    # whenever it runs after this test file. Isolate both mutations: the
+    # path and the freshly-imported modules are rolled back after the exec.
+    saved_path = list(sys.path)
+    saved_modules = set(sys.modules)
     sys.modules["trivortex_lab"] = mod
-    spec.loader.exec_module(mod)
+    try:
+        spec.loader.exec_module(mod)
+    finally:
+        sys.path[:] = saved_path
+        for name in list(sys.modules):
+            if name not in saved_modules:
+                del sys.modules[name]
     return mod
 
 

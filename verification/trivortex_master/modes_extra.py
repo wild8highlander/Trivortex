@@ -19,7 +19,7 @@ import json
 import os
 
 from core.registry import register_mode
-from render.hud import kv, colorize, cyn,   verdict_icon
+from render.hud import kv, colorize, cyn, verdict_icon
 
 
 def bind_ascii_sky() -> bool:

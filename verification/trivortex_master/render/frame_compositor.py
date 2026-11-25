@@ -21,7 +21,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
-from typing import  Sequence
+from typing import Sequence
 
 from render.png_codec import write_png
 

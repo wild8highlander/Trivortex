@@ -122,7 +122,7 @@ def bench_integrators() -> Bench:
 def bench_barnes_hut() -> Bench:
     """B2: дерево на 400 телах."""
     b = Bench("B2 Barnes-Hut", threshold_s=25.0)
-    from lab.nbody_tree import   benchmark
+    from lab.nbody_tree import benchmark
 
     with b:
         res = benchmark(n_bodies=400, seed=1)

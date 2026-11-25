@@ -14,7 +14,7 @@
 </div>
 
 > **Navigation:** [`verification`](../README.md) › **`coq`**
-
+>
 > The formalization of the **TRIVORTEX** statement layer
 > (`code/trivortex_core*.py`): Theorem 3.1 (the Lagrange-type rotating
 > solution) and the conservation of the Chaplygin-type vortex integrals,

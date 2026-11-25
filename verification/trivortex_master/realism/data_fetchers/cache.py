@@ -18,6 +18,7 @@ from typing import Any
 
 class TTLCache:
     """Handle TTLCache."""
+
     def __init__(self, cache_dir: str, ttl: int = 86400):
         """Do TTLCache.  init for cache_dir, ttl and return the result."""
         self.dir = cache_dir

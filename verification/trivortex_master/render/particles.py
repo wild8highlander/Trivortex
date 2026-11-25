@@ -31,6 +31,7 @@ from render.png_codec import write_png
 @dataclass
 class Particle:
     """Handle Particle."""
+
     x: float
     y: float
     z: float = 0.0

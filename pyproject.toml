@@ -55,6 +55,8 @@ ignore = [
     "F401",   # re-exported mirrors
     "F841",   # loop bookkeeping variables
     "N802", "N803", "N806",           # physics symbols in names/arguments/variables
+    "N816",                            # mixedCase mirrors (vT1, vR, vD) are the
+                                       # velocity eigenvector notation of §8
     "N818",                            # documented exception names (UnphysicalConfiguration,
                                        # EngineUnavailable) are the package's public API
     "N807",                            # dunder-style method names in model classes
@@ -70,6 +72,17 @@ ignore = [
     "I001",                            # import order mirrors the section map
     "SIM", "B",                        # not enabled anyway; future-proofing
 ]
+
+[tool.ruff.lint.per-file-ignores]
+# The single-file editions are generated glue artifacts: 110 package modules
+# are concatenated verbatim and duplicate names are canonicalized, so each
+# glued block keeps its own import preamble (ruff flags the shadowed earlier
+# import as F811) and module-qualified class names (PhysicsEngine_engine_base,
+# App_trivortex_master — N801) are the canonical glue names, referenced by
+# the registry and the menu map. Renaming either side desyncs the artifact
+# from its linker; these rules are disabled for the artifacts only.
+"verification/trivortex_master/trivortex_master_single.py" = ["F811", "N801"]
+"verification/trivortex_master/trivortex_master_single_EN.py" = ["F811", "N801"]
 
 [tool.black]
 line-length = 100

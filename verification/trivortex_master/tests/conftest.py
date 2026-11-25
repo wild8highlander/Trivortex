@@ -10,6 +10,7 @@
 Импорты пакета: ROOT этой директории кладётся в sys.path (как в
 trivortex_master.py), модули — `lab.*`, `core.*`.
 """
+
 import json
 import os
 import sys
@@ -42,9 +43,9 @@ def bridge_linked(bridge) -> dict:
     """Мост, ПРОСОХРАНЁННЫЙ с Lean-исходником: каждый statement_sha256
     пересчитывается из Trivortex.lean и сверяется. Расхождение = сбой
     синхронизации формального и числового уровней (сигнал №6)."""
-    sys.path.insert(
-        0, os.path.join(LEAN4_ROOT, "tools"))
+    sys.path.insert(0, os.path.join(LEAN4_ROOT, "tools"))
     import export_verified_params as evp  # noqa: E402
+
     src = open(os.path.join(LEAN4_ROOT, "Trivortex.lean"), encoding="utf-8").read()
     thm, df = evp.collect(src)
     for entry in bridge.values():
@@ -96,15 +97,16 @@ def make_vortex_scene(positions, circulations):
 def lagrange_positions(a=1.0):
     """Равносторонний треугольник стороны a с центроидом в нуле."""
     import math
+
     R = a / math.sqrt(3)
     return [
-        (R * math.cos(2 * math.pi * k / 3), R * math.sin(2 * math.pi * k / 3))
-        for k in range(3)
+        (R * math.cos(2 * math.pi * k / 3), R * math.sin(2 * math.pi * k / 3)) for k in range(3)
     ]
 
 
 def pairwise_distances(scene_or_bodies):
     import math
+
     bodies = scene_or_bodies.bodies
     out = []
     for i in range(len(bodies)):

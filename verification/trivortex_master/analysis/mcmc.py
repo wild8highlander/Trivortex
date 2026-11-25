@@ -69,6 +69,7 @@ def gaussian_loglike(
 @dataclass
 class ChainResult:
     """Handle ChainResult."""
+
     samples: list[Vector]  # после burn-in
     acceptance: float
     log_posterior: list[float]

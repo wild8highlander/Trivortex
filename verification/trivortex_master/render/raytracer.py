@@ -71,6 +71,7 @@ def v_reflect(d: Vec3, n: Vec3) -> Vec3:
 @dataclass
 class Sphere:
     """Handle Sphere."""
+
     center: Vec3
     radius: float
     color: Vec3  # альбедо 0..1
@@ -93,6 +94,7 @@ class Plane:
 @dataclass
 class Light:
     """Handle Light."""
+
     position: Vec3
     intensity: float = 1.0
     color: Vec3 = (1.0, 1.0, 1.0)
@@ -101,6 +103,7 @@ class Light:
 @dataclass
 class Camera:
     """Handle Camera."""
+
     eye: Vec3 = (0.0, 1.2, 4.0)
     look_at: Vec3 = (0.0, 0.3, 0.0)
     up: Vec3 = (0.0, 1.0, 0.0)
@@ -111,6 +114,7 @@ class Camera:
 @dataclass
 class RaytraceScene:
     """Handle RaytraceScene."""
+
     spheres: list[Sphere] = field(default_factory=list)
     planes: list[Plane] = field(default_factory=list)
     lights: list[Light] = field(default_factory=list)
@@ -153,6 +157,7 @@ def hit_plane(origin: Vec3, direction: Vec3, p: Plane) -> float | None:
 @dataclass
 class Hit:
     """Handle Hit."""
+
     t: float
     point: Vec3
     normal: Vec3

@@ -14,7 +14,7 @@
 </div>
 
 > **Navigation:** [`verification`](../README.md) › **`isabelle`**
-
+>
 > The HOL mirror of the **TRIVORTEX** statement layer
 > (`code/trivortex_core*.py`): one `Trivortex.thy` session over
 > `Complex_Main` that mirrors the [Coq artifact](../coq/README.md)

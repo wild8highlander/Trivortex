@@ -1,6 +1,6 @@
 # TRIVORTEX — Top-level Makefile
 
-.PHONY: help install run run-ru run-en verify verify-quick verify-full lean-gate master-regression test doctor doctor-fix mini-test mini-ladders mini-figures cycloring-ladder cycloring-test polyvortex-ladder polyvortex-test planetvortex-ladder planetvortex-hardcore planetvortex-vregister planetvortex-crosslang planetvortex-test docs docs-serve lint clean
+.PHONY: help install run run-ru run-en verify verify-quick verify-full lean-gate master-regression test doctor doctor-fix doctor-test mini-test mini-ladders mini-figures cycloring-ladder cycloring-test polyvortex-ladder polyvortex-test planetvortex-ladder planetvortex-hardcore planetvortex-vregister planetvortex-crosslang planetvortex-test docs docs-serve lint clean
 
 .DEFAULT_GOAL := help
 
@@ -95,6 +95,9 @@ doctor: ## TrivortexBot repo doctor: diagnose the repository skeleton
 
 doctor-fix: ## TrivortexBot repo doctor: apply the safe repairs in place
 	$(PYTHON) .github/scripts/repo_doctor.py --fix
+
+doctor-test: ## TrivortexBot repo doctor: the scratch-repository integration test
+	$(PYTHON) .github/scripts/test_repo_doctor.py
 
 lint: ## Ruff over the Python sources
 	$(PYTHON) -m ruff check code/ verification/ --ignore=E501,E402,F401,F841

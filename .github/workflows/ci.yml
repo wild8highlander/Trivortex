@@ -138,7 +138,9 @@ jobs:
         run: pip install numpy scipy mpmath pytest
       - name: The verification suite
         run: python -m pytest verification/tests/ -v --tb=short
-      - name: The MASTER regression suite (14 tests — Lagrange anchors, the §8 spectrum and the §10 bifurcations, all against the Lean-exported bridge)
+      - name: >-
+          The MASTER regression suite (14 tests — Lagrange anchors, the §8
+          spectrum and the §10 bifurcations, all against the Lean-exported bridge)
         run: python -m pytest verification/trivortex_master/tests/ -v --tb=short
       - name: The cycloring guard (37 tests)
         run: python -m pytest cycloring/tests/ -v --tb=short

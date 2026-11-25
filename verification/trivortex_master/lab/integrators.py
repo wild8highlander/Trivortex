@@ -175,6 +175,7 @@ _B4 = [25.0 / 216.0, 0.0, 1408.0 / 2565.0, 2197.0 / 4104.0, -1.0 / 5.0, 0.0]
 @dataclass
 class AdaptiveStats:
     """Statistics of an adaptive integration run."""
+
     accepted: int = 0
     rejected: int = 0
     dt_min: float = float("inf")

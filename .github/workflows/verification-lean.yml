@@ -52,7 +52,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: verification/lean4/.lake
-          key: lean4-mathlib-v4.6.0-${{ hashFiles('verification/lean4/lakefile.lean', 'verification/lean4/lean-toolchain') }}
+          key: >-
+            lean4-mathlib-v4.6.0-${{ hashFiles('verification/lean4/lakefile.lean',
+            'verification/lean4/lean-toolchain') }}
           restore-keys: lean4-mathlib-v4.6.0-
 
       - name: Fetch Mathlib oleans (pinned tag v4.6.0)

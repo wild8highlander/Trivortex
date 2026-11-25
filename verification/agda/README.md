@@ -14,7 +14,7 @@
 </div>
 
 > **Navigation:** [`verification`](../README.md) › **`agda`**
-
+>
 > The constructive port of the **TRIVORTEX** statement layer
 > (`code/trivortex_core*.py`): the angle bookkeeping of the equilateral
 > choreography is discretized onto the rotation lattice it actually lives

@@ -42,6 +42,7 @@ class SplitHamiltonian:
 
     def __init__(self, deriv_q: Callable, deriv_p: Callable, dim: int):
         """Do SplitHamiltonian.  init for deriv_q, deriv_p, dim and return the result."""
+
         def wrap(fn: Callable) -> Callable:
             out = fn
             if dim == 1:

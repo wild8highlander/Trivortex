@@ -31,7 +31,7 @@ Coq, Lean 4, Rust (M1), Isabelle, Agda (M2), C++, Haskell (M3).
 </div>
 
 > **Navigation:** [`Trivortex`](../README.md) › **`verification`**
-
+>
 > The checks live in **independent code** (`trivortex/python/verify.py`
 > shares no imports with the core document), run in a CI job on every
 > push, emit JSON protocols with full parameter snapshots, and are mapped

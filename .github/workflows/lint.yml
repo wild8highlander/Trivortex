@@ -1,6 +1,6 @@
 ---
 # Lint — Code and documentation quality checks
-# markdownlint, yamllint, ruff, black, mypy
+# markdownlint, yamllint, ruff, black, mypy, TrivortexBot repo doctor
 name: Lint
 
 on:
@@ -75,3 +75,19 @@ jobs:
       - uses: actions/checkout@v7
       - name: Validate CITATION.cff
         uses: dieghernan/cff-validator@v5
+
+  repo-doctor:
+    name: TrivortexBot doctor (hygiene gate)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Run the doctor in check mode (stdlib-only, no install step)
+        # The doctor mirrors the mechanical subset of the gates above
+        # (whitespace, final newlines, markdown rot, workflow schema, cron
+        # shapes, packaging drift). A red doctor here means a PR is
+        # introducing a decay class; on main the lint-autofix workflow
+        # heals it automatically.
+        run: python3 .github/scripts/repo_doctor.py --check

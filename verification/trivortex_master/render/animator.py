@@ -15,7 +15,7 @@ import os
 import shutil
 import struct
 import subprocess
-from typing import  Sequence
+from typing import Sequence
 from render.hud import ProgressBar
 
 

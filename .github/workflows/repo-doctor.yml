@@ -1,18 +1,21 @@
 ---
 name: TrivortexBot — repo doctor (self-healing CI)
 
-# TrivortexBot, organ 3 of 3: the repo doctor. Dependabot (organ 1,
+# TrivortexBot, organ 3 of 4: the repo doctor. Dependabot (organ 1,
 # .github/dependabot.yml) keeps the dependencies fresh; the auto-merge
 # workflow (organ 2) lands the safe updates once CI is green; the doctor
-# keeps the repository skeleton itself healthy. It diagnoses the decay
-# classes GitHub Actions silently tolerates — broken branch-trigger
+# keeps the repository skeleton itself healthy (broken branch-trigger
 # syntax, an invalid dependabot.yml, stale analytic pins of §11, nested
-# self-duplicate packaging, hygiene drift — repairs what is safe to
-# repair, commits the repair, and files an issue for the rest.
+# self-duplicate packaging, hygiene drift); the lint healer (organ 4,
+# lint-autofix.yml) closes the loop on the Lint gate itself. The doctor
+# diagnoses the decay classes GitHub Actions silently tolerates, repairs
+# what is safe to repair, commits the repair, and files an issue for the
+# rest.
 #
 # Modes:
 #   * pull_request  -> diagnose only, blocking (a PR must not introduce
-#     any of the known decay classes);
+#     any of the known decay classes); the same gate runs as the
+#     `repo-doctor` job of the Lint workflow on every PR;
 #   * push / schedule / manual -> diagnose, heal, commit, and escalate.
 on:
   push:

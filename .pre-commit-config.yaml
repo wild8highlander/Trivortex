@@ -101,3 +101,13 @@ repos:
     hooks:
       - id: nbqa-black
       - id: nbqa-ruff
+
+  # ─── TrivortexBot: the repo doctor (the CI hygiene gate, locally) ───
+  - repo: local
+    hooks:
+      - id: trivortex-repo-doctor
+        name: TrivortexBot repo doctor (--check)
+        entry: python3 .github/scripts/repo_doctor.py --check --repo .
+        language: system
+        pass_filenames: false
+        always_run: true

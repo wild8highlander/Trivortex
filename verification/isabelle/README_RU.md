@@ -14,7 +14,7 @@
 </div>
 
 > **Навигация:** [`verification`](../README.md) › **`isabelle`**
-
+>
 > HOL-зеркало слоя формулировок **TRIVORTEX** (`code/trivortex_core*.py`):
 > одна сессия `Trivortex.thy` над `Complex_Main`, зеркалящая артефакт
 > [Coq](../coq/README_RU.md) утверждение в утверждение — чтобы два

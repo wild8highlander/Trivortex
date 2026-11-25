@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import os
 import zipfile
-from typing import  Sequence
+from typing import Sequence
 from xml.sax.saxutils import escape
 
 W_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"

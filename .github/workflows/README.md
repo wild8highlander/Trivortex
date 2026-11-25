@@ -6,8 +6,8 @@
 ![CI](https://img.shields.io/github/actions/workflow/status/wild8highlander/Trivortex/ci.yml?branch=main&style=flat-square&label=CI)
 ![Docs](https://img.shields.io/github/actions/workflow/status/wild8highlander/Trivortex/deploy-docs.yml?branch=main&style=flat-square&label=Docs%20Deploy)
 
-The **GitHub Actions catalogue** of the TRIVORTEX repository (version 1.1.0) —
-14 YAML workflow definitions covering the verification, documentation, security,
+The **GitHub Actions catalogue** of the TRIVORTEX repository (version 1.2.0) —
+15 YAML workflow definitions covering the verification, documentation, security,
 release and self-healing lifecycle. Every workflow is idempotent, uses pinned
 action versions
 and requires no secrets beyond the built-in `GITHUB_TOKEN` (the Zenodo
@@ -18,7 +18,7 @@ publisher optionally accepts `ZENODO_TOKEN` for DOI automation).
 | Workflow | Triggers | Purpose |
 |---|---|---|
 | [`ci.yml`](ci.yml) | push / PR to `main` | ★ **TRIVORTEX CI** — syntax check of every Python file (3.10–3.12), the independent verification ladder V1–V4 (`verify.py --preset quick`) with the JSON protocol uploaded as an artifact, and the 28-test pytest guard |
-| [`lint.yml`](lint.yml) | push / PR to `main` | markdownlint + yamllint + ruff/black over the sources + CITATION.cff validation |
+| [`lint.yml`](lint.yml) | push / PR to `main` | markdownlint + yamllint + ruff/black over the sources + CITATION.cff validation + the TrivortexBot doctor hygiene gate |
 | [`codeql.yml`](codeql.yml) | push / PR / schedule | CodeQL static security analysis of the Python code |
 | [`deploy-docs.yml`](deploy-docs.yml) | push touching `docs/site/**`, releases, manual | publishes the static documentation site to GitHub Pages verbatim (no Jekyll; `.nojekyll` committed) |
 | [`docker.yml`](docker.yml) | push touching `verification/docker/**`, manual | builds the seven pinned verification toolchains |
@@ -29,7 +29,8 @@ publisher optionally accepts `ZENODO_TOKEN` for DOI automation).
 | [`labeler.yml`](labeler.yml) | pull_request | auto-labels PRs by changed paths (`.github/labeler.yml`) |
 | [`stale.yml`](stale.yml) | schedule | marks and closes inactive issues/PRs after a period of silence |
 | [`release-drafter.yml`](release-drafter.yml) | push / PR | drafts release notes and versions from merged PRs |
-| [`repo-doctor.yml`](repo-doctor.yml) | push / PR touching `.github/**`, `verification/README.md` or `Makefile` files, weekly, manual | ★ **TrivortexBot, organ 3 — the repo doctor**: diagnoses broken workflow branch triggers, invalid `dependabot.yml` schema, stale §11 analytic pins, space-indented Makefile recipes, nested self-duplicate packaging and hygiene drift; auto-commits the repairs on `main`, files an issue for what needs a human |
+| [`repo-doctor.yml`](repo-doctor.yml) | push / PR touching `.github/**`, `verification/README.md` or `Makefile` files, weekly, manual | ★ **TrivortexBot, organ 3 — the repo doctor**: diagnoses broken workflow branch triggers, invalid `dependabot.yml` schema, stale §11 analytic pins, space-indented Makefile recipes, nested self-duplicate packaging, hygiene drift and malformed cron schedules; auto-commits the repairs on `main`, files an issue for what needs a human |
+| [`lint-autofix.yml`](lint-autofix.yml) | push to `main`, weekly, manual | ★ **TrivortexBot, organ 4 — the lint healer (self-healing lint)**: whenever the Lint gate accumulates debt on `main`, heals the tree in place (ruff `--fix`, black, the doctor's LF/YML hygiene classes), re-runs the gates and pushes only a green tree; findings that need a human decision (list renumbering, fence languages, broken tables, dead anchors) are escalated to the TrivortexBot issue with the report verbatim |
 | [`dependabot-auto-merge.yml`](dependabot-auto-merge.yml) | PRs opened by `dependabot[bot]` | ★ **TrivortexBot, organ 2 — dependabot auto-merge**: enables squash auto-merge for grouped patch/minor dependency updates once the required CI checks pass; major and indirect updates are labelled `needs-human-review` |
 
 ## The CI job in detail
@@ -51,12 +52,19 @@ publisher optionally accepts `ZENODO_TOKEN` for DOI automation).
 
 ## Contract
 
-- **TrivortexBot keeps the skeleton healthy.** Organ 1 is Dependabot itself
-  (`.github/dependabot.yml`: grouped weekly github-actions/pip updates);
-  organ 2 lands the safe patch/minor PRs once required CI is green; organ 3
-  (`repo-doctor.yml` + `.github/scripts/repo_doctor.py`) repairs workflow
-  triggers, dependabot schema, §11 pins and Makefile recipe indentation on
-  every push to `main` and escalates the unfixable remainder to an issue.
+- **TrivortexBot keeps the skeleton healthy — and the lint gate green.**
+  Organ 1 is Dependabot itself (`.github/dependabot.yml`: grouped weekly
+  github-actions/pip updates); organ 2 lands the safe patch/minor PRs once
+  required CI is green; organ 3 (`repo-doctor.yml` +
+  `.github/scripts/repo_doctor.py`) repairs workflow triggers, dependabot
+  schema, §11 pins, cron shapes and Makefile recipe indentation on every push
+  to `main` and escalates the unfixable remainder to an issue; organ 4
+  (`lint-autofix.yml`) heals the lint-gate debt on `main` (ruff `--fix`,
+  black, the doctor's LF/YML mirror) and commits only trees that re-pass
+  ruff, black and yamllint — everything that needs a human decision lands in
+  the same TrivortexBot issue. The `repo-doctor` job of the Lint workflow
+  runs the doctor as a blocking gate on every PR, so a PR cannot introduce a
+  decay class for the bot to heal afterwards.
 - **The ladder must stay green.** `ci.yml` runs the V1–V4 checks on every
   push; a red ladder is a release blocker, not a warning.
 - **JSON or it did not happen.** The ladder job uploads the JSON protocol of

@@ -290,7 +290,8 @@ PRESETS = {
         {
             "id": "saturn_system",
             "name": "Система Сатурна (6 тел)",
-            "description": "N=6: Сатурн, Мимас, Титан, Япет, Феба и тестовая частица в кольцевой " "щели Кассини.",
+            "description": "N=6: Сатурн, Мимас, Титан, Япет, Феба и тестовая частица в кольцевой "
+            "щели Кассини.",
             "bodies": [
                 {"catalog": "saturn", "role": "central"},
                 {"catalog": "mimas"},
@@ -307,7 +308,8 @@ PRESETS = {
         {
             "id": "uranus_system",
             "name": "Система Урана (5 тел)",
-            "description": "N=5: Уран с наклонной осью и Miranda, Titania, Oberon; контроль " "наклонной орбитальной плоскости.",
+            "description": "N=5: Уран с наклонной осью и Miranda, Titania, Oberon; контроль "
+            "наклонной орбитальной плоскости.",
             "bodies": [
                 {"catalog": "uranus", "role": "central"},
                 {"catalog": "miranda"},
@@ -322,7 +324,8 @@ PRESETS = {
         {
             "id": "neptune_system",
             "name": "Система Нептуна (4 тела)",
-            "description": "N=4: Нептун, Тритон (ретроградная орбита!), Протей и Нереида — проверка " "обратных орбит.",
+            "description": "N=4: Нептун, Тритон (ретроградная орбита!), Протей и Нереида — проверка "
+            "обратных орбит.",
             "bodies": [
                 {"catalog": "neptune", "role": "central"},
                 {"catalog": "triton"},
@@ -337,7 +340,8 @@ PRESETS = {
         {
             "id": "mars_moons",
             "name": "Марс с Фобосом и Деймосом",
-            "description": "N=3: Марс и два спутника на пределе Роша и за синхронной орбитой — " "миграция приливов.",
+            "description": "N=3: Марс и два спутника на пределе Роша и за синхронной орбитой — "
+            "миграция приливов.",
             "bodies": [
                 {"catalog": "mars", "role": "central"},
                 {"catalog": "phobos"},
@@ -351,11 +355,17 @@ PRESETS = {
         {
             "id": "earth_moon_l4",
             "name": "Тройка Земля–Луна–L4",
-            "description": "N=3: Земля, Луна и тестовая частица в точке Лагранжа L4 (устойчивая " "либрация вокруг 60°).",
+            "description": "N=3: Земля, Луна и тестовая частица в точке Лагранжа L4 (устойчивая "
+            "либрация вокруг 60°).",
             "bodies": [
                 {"catalog": "earth", "role": "central"},
                 {"catalog": "moon"},
-                {"catalog": "test_particle_1", "orbit_km": 384400.0, "role": "satellite", "angle_deg": 60.0},
+                {
+                    "catalog": "test_particle_1",
+                    "orbit_km": 384400.0,
+                    "role": "satellite",
+                    "angle_deg": 60.0,
+                },
             ],
             "engine": "native_newton",
             "scale_mode": "macro",
@@ -365,7 +375,8 @@ PRESETS = {
         {
             "id": "pluto_charon",
             "name": "Плутон–Харон–Никта–Гидра",
-            "description": "N=4: двойная планета с близкими спутниками — динамика барицентрической " "системы.",
+            "description": "N=4: двойная планета с близкими спутниками — динамика барицентрической "
+            "системы.",
             "bodies": [
                 {"catalog": "pluto", "role": "central"},
                 {"catalog": "charon"},
@@ -380,7 +391,8 @@ PRESETS = {
         {
             "id": "proxima_system",
             "name": "Система Проксимы (4 тела)",
-            "description": "N=4: Проксима Центавра, планеты b и d и лёгкое межзвёздное тело на " "гиперболическом заходе.",
+            "description": "N=4: Проксима Центавра, планеты b и d и лёгкое межзвёздное тело на "
+            "гиперболическом заходе.",
             "bodies": [
                 {"catalog": "proxima_centauri", "role": "central"},
                 {"catalog": "exo_proxima_cen_b"},
@@ -395,7 +407,8 @@ PRESETS = {
         {
             "id": "vesta_trio",
             "name": "Хаотическое трио главного пояса",
-            "description": "N=3: Веста, Паллада и Юнона — взаимные возмущения трёх астероидов с " "периодами ≈ 2:2:1.4.",
+            "description": "N=3: Веста, Паллада и Юнона — взаимные возмущения трёх астероидов с "
+            "периодами ≈ 2:2:1.4.",
             "bodies": [
                 {"catalog": "vesta"},
                 {"catalog": "pallas"},
@@ -409,7 +422,8 @@ PRESETS = {
         {
             "id": "halley_earth",
             "name": "Галлея–Земля–Солнце",
-            "description": "N=3: Солнце, Земля и комета Галлея (e=0.967) — пролёт у Земли и выброс " "на ретроградный заход.",
+            "description": "N=3: Солнце, Земля и комета Галлея (e=0.967) — пролёт у Земли и выброс "
+            "на ретроградный заход.",
             "bodies": [
                 {"catalog": "sun", "role": "central"},
                 {"catalog": "earth"},
@@ -423,7 +437,8 @@ PRESETS = {
         {
             "id": "io_europa_ganymede",
             "name": "Лапласов резонанс",
-            "description": "N=4: Юпитер, Ио, Европа, Ганимед — цепочка 2:1-2:1 и либрация лапласовой " "фазы.",
+            "description": "N=4: Юпитер, Ио, Европа, Ганимед — цепочка 2:1-2:1 и либрация лапласовой "
+            "фазы.",
             "bodies": [
                 {"catalog": "jupiter", "role": "central"},
                 {"catalog": "io"},
@@ -434,7 +449,8 @@ PRESETS = {
             "scale_mode": "macro",
             "time_span_days": 60.0,
             "suggested_backend": "mpl",
-        },    ],
+        },
+    ],
 }
 
 # ═════════════════════════ trajectories.json ═════════════════════════

@@ -28,6 +28,7 @@ Checks (all must print True / exact):
      vT1, vT2, vR, vD equal (g/2pi)*M0*v (certification arithmetic);
   I. norm-preservation data for the shape block (u . u' = 0, |u| = |u'|).
 """
+
 import sympy as sp
 
 x1, y1, x2, y2, x3, y3 = sp.symbols("x1 y1 x2 y2 x3 y3", real=True)
@@ -50,14 +51,16 @@ ky3 = +(g / (2 * pi)) * ((x3 - x1) / D13 + (x3 - x2) / D23)
 omega = 3 * g / (2 * pi)  # lagrangeOmega g 1
 
 # rotating-frame field F = V - omega*J:  rotX_k = kx_k + omega*y_k ; rotY_k = ky_k - omega*x_k
-F = sp.Matrix([
-    kx1 + omega * y1,
-    ky1 - omega * x1,
-    kx2 + omega * y2,
-    ky2 - omega * x2,
-    kx3 + omega * y3,
-    ky3 - omega * x3,
-])
+F = sp.Matrix(
+    [
+        kx1 + omega * y1,
+        ky1 - omega * x1,
+        kx2 + omega * y2,
+        ky2 - omega * x2,
+        kx3 + omega * y3,
+        ky3 - omega * x3,
+    ]
+)
 vars6 = [x1, y1, x2, y2, x3, y3]
 
 anchor = sp.Matrix([1 / r3, 0, -1 / (2 * r3), sp.Rational(1, 2), -1 / (2 * r3), -sp.Rational(1, 2)])
@@ -81,9 +84,7 @@ print("M0 vT1 =", (M0 * vT1).T, "  == -3 vT2:", sp.simplify(M0 * vT1 + 3 * vT2) 
 print("M0 vT2 =", (M0 * vT2).T, "  == +3 vT1:", sp.simplify(M0 * vT2 - 3 * vT1) == sp.zeros(6, 1))
 
 print("=== D. rotation mode vR = J*anchor per vortex ===")
-vR = sp.Matrix([
-    -anchor[1], anchor[0], -anchor[3], anchor[2], -anchor[5], anchor[4]
-])
+vR = sp.Matrix([-anchor[1], anchor[0], -anchor[3], anchor[2], -anchor[5], anchor[4]])
 print("vR =", vR.T)
 print("M0 vR == 0:", sp.simplify(M0 * vR) == sp.zeros(6, 1))
 
@@ -118,7 +119,9 @@ for val, mult, vs in vec0:
         for v in cands:
             comp = sp.Matrix([sp.re(c) for c in v] + [0])  # dummy
             # independence test against vT1, vT2 (real span of the trans eigvec)
-            Mtest = sp.Matrix.hstack(vT1, vT2, sp.Matrix([sp.re(c) for c in v]), sp.Matrix([sp.im(c) for c in v]))
+            Mtest = sp.Matrix.hstack(
+                vT1, vT2, sp.Matrix([sp.re(c) for c in v]), sp.Matrix([sp.im(c) for c in v])
+            )
             if sp.simplify(Mtest.rank()) == 4:
                 target = v
                 break
@@ -142,22 +145,27 @@ print("|u|^2 =", sp.simplify(u.dot(u)), "   |w|^2 =", sp.simplify(w.dot(w)))
 
 print("=== G. charpoly ===")
 print("det(lam I - M0) =", sp.factor(sp.Poly((sp.Matrix.eye(6) * lam - M0).det(), lam).as_expr()))
-print("same as lam^2 (lam^2+9)^2 :",
-      sp.simplify((sp.Matrix.eye(6) * lam - M0).det() - lam ** 2 * (lam ** 2 + 9) ** 2) == 0)
+print(
+    "same as lam^2 (lam^2+9)^2 :",
+    sp.simplify((sp.Matrix.eye(6) * lam - M0).det() - lam**2 * (lam**2 + 9) ** 2) == 0,
+)
 
 print("=== H. certification: directional derivatives of the TRUE field ===")
 t = sp.Symbol("t", real=True)
+
+
 def cert(direction, name):
     subs = {v: anchor[i] + t * direction[i] for i, v in enumerate(vars6)}
     path = F.subs(subs)
     deriv = sp.diff(path, t).subs(t, 0)
-    target = (M0 * direction)  # * g/(2pi) restored below
+    target = M0 * direction  # * g/(2pi) restored below
     ok = sp.simplify(deriv - (g / (2 * pi)) * target) == sp.zeros(6, 1)
     print(f"H[{name}]: d/dt F(anchor + t*{name})(0) == (g/2pi) M0 {name} : {ok}")
     if not ok:
         print("  deriv  =", sp.simplify(deriv).T)
         print("  target=", sp.simplify((g / (2 * pi)) * target).T)
     return ok
+
 
 cert(vT1, "vT1")
 cert(vT2, "vT2")
@@ -178,7 +186,7 @@ print("dual covector rows d_i (V.inv()):")
 sp.pprint(sp.nsimplify(D, [r3]))
 print("V * D == I:", sp.simplify(V * D) == sp.Matrix.eye(6))
 print("orthogonality data:")
-for (nm, vec) in [("vT1", vT1), ("vT2", vT2), ("vR", vR), ("vD", vD), ("u", u_shape), ("w", w_shape)]:
+for nm, vec in [("vT1", vT1), ("vT2", vT2), ("vR", vR), ("vD", vD), ("u", u_shape), ("w", w_shape)]:
     print(f"  |{nm}|^2 =", sp.simplify(vec.dot(vec)))
 print("  vD . vR =", sp.simplify(vD.dot(vR)))
 print("  vD . vT1 =", sp.simplify(vD.dot(vT1)), "   vR . vT1 =", sp.simplify(vR.dot(vT1)))
@@ -187,6 +195,9 @@ print("  u . vR =", sp.simplify(u_shape.dot(vR)), "   u . vD =", sp.simplify(u_s
 
 print("=== K. numeric sanity of the raw Jacobian eigenvalues ===")
 Jnum = sp.N(Jsub.subs(g, 1.0))
-print("numeric eigenvalues:", sorted([complex(ev) for ev in Jnum.eigenvals().keys()], key=lambda z: (z.real, z.imag)))
+print(
+    "numeric eigenvalues:",
+    sorted([complex(ev) for ev in Jnum.eigenvals().keys()], key=lambda z: (z.real, z.imag)),
+)
 
 print("=== DONE ===")

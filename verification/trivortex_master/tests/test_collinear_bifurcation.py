@@ -16,6 +16,7 @@
       x = (1, −5/9, 16/9), ω = 27/(56π) (s10_col_asym): конфигурация
       вращается жёстко и замыкается за период 2π/ω.
 """
+
 import math
 
 import numpy as np
@@ -28,8 +29,7 @@ pytestmark = pytest.mark.usefixtures("bridge_linked")
 
 def col_M(s, gamma):
     """M̃(s, γ) — очищенный полином бифуркации (Trivortex.lean, s10ColM)."""
-    return (gamma + 1) ** 2 * (gamma - 1) * s * s \
-        + gamma * (4 * gamma + 5) * s + (4 * gamma + 5)
+    return (gamma + 1) ** 2 * (gamma - 1) * s * s + gamma * (4 * gamma + 5) * s + (4 * gamma + 5)
 
 
 def col_N(s, gamma):
@@ -127,8 +127,7 @@ def test_static_equilibrium(bridge, testcfg):
         eng.step(cfg["dt"])
     drift = 0.0
     for k, b in enumerate(scene.bodies):
-        drift = max(drift, math.hypot(b.position[0] - start[k][0],
-                                       b.position[1] - start[k][1]))
+        drift = max(drift, math.hypot(b.position[0] - start[k][0], b.position[1] - start[k][1]))
     assert drift < cfg["band_max_drift"], f"уход стационара = {drift:.3e}"
 
 
@@ -160,6 +159,5 @@ def test_asymmetric_relative_equilibrium(testcfg):
     # замыкание: каждый вихрь вернулся в стартовую точку
     clos = 0.0
     for k, b in enumerate(scene.bodies):
-        clos = max(clos, math.hypot(b.position[0] - start[k][0],
-                                    b.position[1] - start[k][1]))
+        clos = max(clos, math.hypot(b.position[0] - start[k][0], b.position[1] - start[k][1]))
     assert clos < cfg["band_closure"], f"незамыкание = {clos:.3e}"

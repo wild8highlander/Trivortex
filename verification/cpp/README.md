@@ -14,7 +14,7 @@
 </div>
 
 > **Navigation:** [`verification`](../README.md) › **`cpp`**
-
+>
 > The compiled, throughput-oriented port of the **TRIVORTEX** document
 > (`code/trivortex_core*.py`): a dependency-free C++17 numeric twin of the
 > V1–V4 ladder — the same four checks with `std::sin`/`std::cos` and a

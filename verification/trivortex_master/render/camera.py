@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, field
-from typing import  Sequence
+from typing import Sequence
 
 Vec3 = tuple[float, float, float]
 

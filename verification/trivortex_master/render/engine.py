@@ -247,6 +247,7 @@ class MplEngine(RenderEngine):
 # ═══════════════════════════════════════════════════════════════════════════
 class GLEngine(RenderEngine):
     """Handle GLEngine."""
+
     name = "gl"
 
     def __init__(self, config):

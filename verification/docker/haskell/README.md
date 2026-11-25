@@ -50,7 +50,7 @@ Dockerfile со средой GHC 9.4: база `haskell:9.4-slim`, `cabal update
 | Toolchain | Haskell (GHC) 9.4 |
 | Base image | `haskell:9.4-slim` |
 | Build-time check | `cabal update && cabal build all && cabal test trivortex-guard` |
-| Entrypoint | `echo 0 | cabal run trivortex-lab` |
+| Entrypoint | `echo 0 \| cabal run trivortex-lab` |
 | Pinned by | [`Dockerfile`](Dockerfile) |
 | Built by | [`docker.yml`](../../../.github/workflows/docker.yml) |
 | Status | **landed** — M3 (v1.1): the dual ladder runs — `Double` plus the exact ℚ(√3) run, where the equilateral anchor identities hold by computation — see the [Haskell roadmap](../../haskell/README.md) |

@@ -58,6 +58,7 @@ def adler32(data: bytes, a: int = 1, b: int = 0) -> int:
 # ═══════════════════════════════════════════════════════════════════════════
 class _BitWriter:
     """Handle BitWriter."""
+
     def __init__(self):
         """Handle BitWriter.  init."""
         self.buf = bytearray()

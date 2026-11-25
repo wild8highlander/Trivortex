@@ -9,6 +9,7 @@
       3Γ/(2πa²) (мост);
   [E] период T = 4π²a²/(3Γ) (мост): хореография замыкается за T.
 """
+
 import math
 
 import pytest
@@ -39,7 +40,7 @@ def test_conservation_and_rotation(bridge, testcfg):
     scene = make_vortex_scene(positions, [1.0, 1.0, 1.0])
     eng = scene.engine
 
-    T = bridge["lagrange_period"]["value"]     # 4π²/3
+    T = bridge["lagrange_period"]["value"]  # 4π²/3
     omega = bridge["lagrange_omega"]["value"]  # 3/(2π)
     assert T * omega == pytest.approx(2 * math.pi, rel=1e-12)
 
@@ -71,9 +72,7 @@ def test_conservation_and_rotation(bridge, testcfg):
     assert abs(ints_end["Q"] - ints0["Q"]) < band
 
     # [C] жёсткость формы
-    assert max_shape < cfg["band_shape_deviation"], (
-        f"отклонение формы = {max_shape:.3e}"
-    )
+    assert max_shape < cfg["band_shape_deviation"], f"отклонение формы = {max_shape:.3e}"
 
     # [D] частота: угловая фаза вихря 0 продвинулась на 2π·(2 периода)·ω/ω
     x0, y0 = positions[0]
@@ -81,9 +80,9 @@ def test_conservation_and_rotation(bridge, testcfg):
     theta_total = math.atan2(bx[1], bx[0]) - math.atan2(y0, x0)
     theta_total = (theta_total + 4 * math.pi) % (4 * math.pi)  # 2 оборота
     expected_phase = 4 * math.pi  # за 2T фаза = 2T·ω = 4π
-    assert abs(theta_total - expected_phase) < 0.05, (
-        f"фаза {theta_total:.6f} rad вместо {expected_phase}"
-    )
+    assert (
+        abs(theta_total - expected_phase) < 0.05
+    ), f"фаза {theta_total:.6f} rad вместо {expected_phase}"
 
     # [E] замыкание хореографии за один период T
     scene2 = make_vortex_scene(positions, [1.0, 1.0, 1.0])
@@ -98,9 +97,9 @@ def test_conservation_and_rotation(bridge, testcfg):
             worst_closure,
             math.hypot(body.position[0] - xk, body.position[1] - yk),
         )
-    assert worst_closure < cfg["band_period_closure"], (
-        f"незамыкание за период = {worst_closure:.3e}"
-    )
+    assert (
+        worst_closure < cfg["band_period_closure"]
+    ), f"незамыкание за период = {worst_closure:.3e}"
 
 
 def test_omega_recovery_precision(bridge, testcfg):
@@ -119,7 +118,7 @@ def test_omega_recovery_precision(bridge, testcfg):
     bx = scene.bodies[0].position
     theta = math.atan2(bx[1], bx[0])
     # за t = π/ω фаза продвигается ровно на π
-    dtheta = (theta - math.atan2(positions[0][1], positions[0][0]))
+    dtheta = theta - math.atan2(positions[0][1], positions[0][0])
     dtheta = (dtheta + math.pi) % (2 * math.pi) - math.pi
     omega_meas = dtheta / half_T
     rel = abs(omega_meas - omega) / omega

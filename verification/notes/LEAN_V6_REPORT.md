@@ -32,8 +32,8 @@ circulations become unequal?*
 
 | Statement | Content |
 |---|---|
-| `s10_sumsq`, `s10_sumsq_anchor` | the rigid identity Σᵢ<ⱼ r²ᵢⱼ = 3·Σ|w|² − |Σw|²; on the anchor level set {P = 0, Q = 0, I = Γ} the sum of the squared sides is EXACTLY 3 |
-| `s10_log_bound` | the one-dimensional Lyapunov logarithmic inequality ln(1+u) ≤ u − u²/3 on |u| ≤ 1/2 (both half-intervals fenced against u − u²/3 from the exact contact point u = 0) |
+| `s10_sumsq`, `s10_sumsq_anchor` | the rigid identity Σᵢ<ⱼ r²ᵢⱼ = 3·Σ\|w\|² − \|Σw\|²; on the anchor level set {P = 0, Q = 0, I = Γ} the sum of the squared sides is EXACTLY 3 |
+| `s10_log_bound` | the one-dimensional Lyapunov logarithmic inequality ln(1+u) ≤ u − u²/3 on \|u\| ≤ 1/2 (both half-intervals fenced against u − u²/3 from the exact contact point u = 0) |
 | `s10_H_nonneg` | H ≥ 0 on the whole level set (AM–GM on the three squared sides, pure algebra: 4xy ≤ (x+y)², s²(3−s) ≤ 4 via (2−s)²(s+1) ≥ 0) — the triangle is the GLOBAL energy minimum |
 | `s10_coercive` | **the coercive Lyapunov inequality**: on the level set with every squared side in the annulus [1/2, 3/2], H ≥ (Γ²/(12π))·Σᵢ<ⱼ (r²ᵢⱼ − 1)² — the certified constant Γ²/(12π) |
 | `s10_dist_bound` | the distance form Σ(rᵢⱼ − 1)² ≤ (12π/Γ²)·H |

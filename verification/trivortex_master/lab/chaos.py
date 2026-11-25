@@ -33,6 +33,7 @@ Deriv = Callable[[Sequence[float], float], list[float]]
 @dataclass
 class PoincarePoint:
     """One crossing of the Poincare section: time and section coordinates."""
+
     t: float
     coords: tuple[float, ...]  # координаты в сечении (без ведущей)
 

@@ -44,7 +44,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)  # verification/lean4/
 
 # (private|protected|noncomputable)? theorem|lemma NAME ... :=  (на верхнем уровне)
-RE_DECL = re.compile(r"(?m)^(?:private\s+|protected\s+|noncomputable\s+)*(theorem|lemma)\s+([A-Za-z0-9_']+)")
+RE_DECL = re.compile(
+    r"(?m)^(?:private\s+|protected\s+|noncomputable\s+)*(theorem|lemma)\s+([A-Za-z0-9_']+)"
+)
 
 PAIRS = {"(": ")", "[": "]", "{": "}", "«": "»"}
 
@@ -131,8 +133,12 @@ def main() -> int:
         with open(path, "w", encoding="utf-8") as fh:
             json.dump(man, fh, indent=1, ensure_ascii=False, sort_keys=False)
             fh.write("\n")
-        print(f"SEAL [UPDATED]: печать обновлена ЯВНО — {man['theorem_count']} утверждений в {path}")
-        print("SEAL: это видимое действие в ревью; «подкрутить» утверждение незаметно больше нельзя")
+        print(
+            f"SEAL [UPDATED]: печать обновлена ЯВНО — {man['theorem_count']} утверждений в {path}"
+        )
+        print(
+            "SEAL: это видимое действие в ревью; «подкрутить» утверждение незаметно больше нельзя"
+        )
         return 0
 
     # режим --check (основной для CI)
@@ -148,13 +154,17 @@ def main() -> int:
 
     print(f"SEAL: запечатано {len(sealed)}; в исходнике {len(stmts)} утверждений")
     if added or removed or changed:
-        print("SEAL [FAIL] — утверждениЯ изменились; пересмотр ДОЛЖЕН быть явным (seal_check.py --update):")
+        print(
+            "SEAL [FAIL] — утверждениЯ изменились; пересмотр ДОЛЖЕН быть явным (seal_check.py --update):"
+        )
         for n in added[:15]:
             print(f"  + новое утверждение: {n}")
         for n in removed[:15]:
             print(f"  − исчезло утверждение: {n}")
         for n in changed[:15]:
-            print(f"  ~ изменено утверждение: {n} (было {sealed[n][:12]}…, стало {digest(stmts[n])[:12]}…)")
+            print(
+                f"  ~ изменено утверждение: {n} (было {sealed[n][:12]}…, стало {digest(stmts[n])[:12]}…)"
+            )
         if len(added) + len(removed) + len(changed) > 15:
             print(f"  … всего {len(added) + len(removed) + len(changed)} расхождений")
         return 1

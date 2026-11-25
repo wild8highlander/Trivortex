@@ -14,7 +14,7 @@
 </div>
 
 > **Navigation:** [`verification`](../README.md) › **`rust`**
-
+>
 > The numerical port of the **TRIVORTEX** document
 > (`code/trivortex_core*.py`): a line-for-line f64 twin of the V1–V4
 > ladder in a small dependency-free crate — the floating-point path is
