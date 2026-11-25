@@ -145,16 +145,42 @@ jobs:
           python -V
           pip install numpy==2.5.5 scipy==1.18.1 mpmath==1.4.1 pytest==9.2.0
       - name: The verification suite
-        run: python -m pytest verification/tests/ -v --tb=short
+        run: |
+          python -m pytest verification/tests/ -v --tb=long -ra 2>&1 | tee /tmp/gate_verification.log
+          code=${PIPESTATUS[0]}
+          [ "$code" -eq 0 ] || bash .github/scripts/gate_dump.sh \
+            /tmp/gate_verification.log "The verification suite"
+          exit "$code"
       - name: >-
           The MASTER regression suite (14 tests — Lagrange anchors, the §8
           spectrum and the §10 bifurcations, all against the Lean-exported bridge)
-        # --tb=long -ra: if a reference assertion ever drifts, the log must
-        # localize it (value, band, file) without a second run.
-        run: python -m pytest verification/trivortex_master/tests/ -v --tb=long -ra
+        # --tb=long -ra plus gate_dump.sh: if a reference assertion ever
+        # drifts, the public job summary localizes it (value, band, file)
+        # without a second run — the raw log is behind a sign-in wall.
+        run: |
+          python -m pytest verification/trivortex_master/tests/ -v --tb=long -ra 2>&1 | tee /tmp/gate_master.log
+          code=${PIPESTATUS[0]}
+          [ "$code" -eq 0 ] || bash .github/scripts/gate_dump.sh \
+            /tmp/gate_master.log "The MASTER regression suite"
+          exit "$code"
       - name: The cycloring guard (37 tests)
-        run: python -m pytest cycloring/tests/ -v --tb=short
+        run: |
+          python -m pytest cycloring/tests/ -v --tb=long -ra 2>&1 | tee /tmp/gate_cycloring.log
+          code=${PIPESTATUS[0]}
+          [ "$code" -eq 0 ] || bash .github/scripts/gate_dump.sh \
+            /tmp/gate_cycloring.log "The cycloring guard"
+          exit "$code"
       - name: The polyvortex guard (26 tests)
-        run: python -m pytest polyvortex/tests/ -v --tb=short
+        run: |
+          python -m pytest polyvortex/tests/ -v --tb=long -ra 2>&1 | tee /tmp/gate_polyvortex.log
+          code=${PIPESTATUS[0]}
+          [ "$code" -eq 0 ] || bash .github/scripts/gate_dump.sh \
+            /tmp/gate_polyvortex.log "The polyvortex guard"
+          exit "$code"
       - name: The planetvortex guard (80 tests)
-        run: python -m pytest planetvortex/tests/ -v --tb=short
+        run: |
+          python -m pytest planetvortex/tests/ -v --tb=long -ra 2>&1 | tee /tmp/gate_planetvortex.log
+          code=${PIPESTATUS[0]}
+          [ "$code" -eq 0 ] || bash .github/scripts/gate_dump.sh \
+            /tmp/gate_planetvortex.log "The planetvortex guard"
+          exit "$code"
