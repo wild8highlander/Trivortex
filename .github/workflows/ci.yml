@@ -135,13 +135,23 @@ jobs:
           python-version: '3.12'
           cache: pip
       - name: Install test dependencies
-        run: pip install numpy scipy mpmath pytest
+        # Pinned: the reference-value gate must be reproducible — a floating
+        # numpy/scipy/pytest release must not move the anchors, the §8
+        # spectrum or the §10 bifurcation roots under the tolerance bands by
+        # surprise. Same policy as the lint gate's pinned ruff/black: bump
+        # deliberately, after `make test` is green on the new set locally.
+        # This exact set is verified green on all five suites (220 tests).
+        run: |
+          python -V
+          pip install numpy==2.5.5 scipy==1.18.1 mpmath==1.4.1 pytest==9.2.0
       - name: The verification suite
         run: python -m pytest verification/tests/ -v --tb=short
       - name: >-
           The MASTER regression suite (14 tests — Lagrange anchors, the §8
           spectrum and the §10 bifurcations, all against the Lean-exported bridge)
-        run: python -m pytest verification/trivortex_master/tests/ -v --tb=short
+        # --tb=long -ra: if a reference assertion ever drifts, the log must
+        # localize it (value, band, file) without a second run.
+        run: python -m pytest verification/trivortex_master/tests/ -v --tb=long -ra
       - name: The cycloring guard (37 tests)
         run: python -m pytest cycloring/tests/ -v --tb=short
       - name: The polyvortex guard (26 tests)
