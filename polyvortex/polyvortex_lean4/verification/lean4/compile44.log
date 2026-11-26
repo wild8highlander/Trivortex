@@ -1,0 +1,164 @@
+Polyvortex.lean:234:71: warning: unused variable `hkle` [linter.unusedVariables]
+Polyvortex.lean:334:28: warning: unused variable `hj` [linter.unusedVariables]
+Polyvortex.lean:355:34: warning: unused variable `hddef` [linter.unusedVariables]
+Polyvortex.lean:393:61: warning: unused variable `hx0` [linter.unusedVariables]
+Polyvortex.lean:395:7: warning: unused variable `hy0` [linter.unusedVariables]
+Polyvortex.lean:466:40: warning: unused variable `hj` [linter.unusedVariables]
+Polyvortex.lean:499:7: warning: unused variable `hw` [linter.unusedVariables]
+Polyvortex.lean:661:39: warning: unused variable `h` [linter.unusedVariables]
+Polyvortex.lean:843:7: warning: unused variable `hc` [linter.unusedVariables]
+Polyvortex.lean:849:9: warning: unused variable `hneg` [linter.unusedVariables]
+Polyvortex.lean:884:9: warning: unused variable `hc1` [linter.unusedVariables]
+Polyvortex.lean:971:13: warning: unused variable `hNc` [linter.unusedVariables]
+Polyvortex.lean:1047:4: error: `fun_prop` was unable to prove `Differentiable ℝ fun u => Real.sqrt C * (1 + eps C * Real.cos (ω * u + 2 * Real.pi * ↑0 / ↑N))`
+
+Try running with discharger `fun_prop (disch:=aesop)` or with a different discharger tactic like `assumption`, `linarith`, `omega`.
+Sometimes it is useful to run `fun_prop (disch:=trace_state; sorry)` which will print all the necessary subgoals for `fun_prop` to succeed.
+
+Potential issues to fix:
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos (ω * a + 2 * Real.pi * ↑0 / ↑N)
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos a
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos (ω * a + 2 * Real.pi * ↑0 / ↑N)
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos a
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos (ω * a + 2 * Real.pi * ↑0 / ↑N)
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos a
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos (ω * a + 2 * Real.pi * ↑0 / ↑N)
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos a
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos (ω * a + 2 * Real.pi * ↑0 / ↑N)
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos a
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos (ω * a + 2 * Real.pi * ↑0 / ↑N)
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos a
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos (ω * a + 2 * Real.pi * ↑0 / ↑N)
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos a
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos (ω * a + 2 * Real.pi * ↑0 / ↑N)
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos a
+
+For more detailed information use `set_option trace.Meta.Tactic.fun_prop true`
+Polyvortex.lean:1084:41: warning: unused variable `hR` [linter.unusedVariables]
+Polyvortex.lean:1084:62: warning: unused variable `hu` [linter.unusedVariables]
+Polyvortex.lean:1201:7: warning: unused variable `hb` [linter.unusedVariables]
+Polyvortex.lean:1205:7: warning: unused variable `hki` [linter.unusedVariables]
+Polyvortex.lean:1212:7: warning: unused variable `hs0` [linter.unusedVariables]
+Polyvortex.lean:1265:38: error: unsolved goals
+ε : ℝ
+hε : ε ^ 2 < 1
+φ : ℝ
+hφ : φ ∈ Set.Ioo (-Real.pi) Real.pi
+habs : |ε| < 1
+hpe : 0 < 1 + ε
+hme : 0 < 1 - ε
+hc : 0 < 1 - ε ^ 2
+hk0 : 0 < Real.sqrt ((1 - ε) / (1 + ε))
+hcos0 : Real.cos (φ / 2) ≠ 0
+hksq : Real.sqrt ((1 - ε) / (1 + ε)) * (1 + ε) = Real.sqrt (1 - ε ^ 2)
+hsq : 1 + Real.tan (φ / 2) ^ 2 = 1 / Real.cos (φ / 2) ^ 2
+hhalf : HasDerivAt (fun x => Real.tan (x / 2)) (1 / Real.cos (φ / 2) ^ 2 * (1 / 2)) φ
+hcomp :
+  HasDerivAt (fun x => Real.arctan (Real.sqrt ((1 - ε) / (1 + ε)) * Real.tan (x / 2)))
+    (2⁻¹ *
+      (Real.sqrt ((1 - ε) / (1 + ε)) *
+        ((1 + Real.tan (φ / 2) ^ 2) * (1 + Real.sqrt ((1 - ε) / (1 + ε)) ^ 2 * Real.tan (φ / 2) ^ 2)⁻¹)))
+    φ
+h1 :
+  HasDerivAt (fun y => 2 / Real.sqrt (1 - ε ^ 2) * Real.arctan (Real.sqrt ((1 - ε) / (1 + ε)) * Real.tan (y / 2)))
+    (2 / Real.sqrt (1 - ε ^ 2) *
+      (2⁻¹ *
+        (Real.sqrt ((1 - ε) / (1 + ε)) *
+          ((1 + Real.tan (φ / 2) ^ 2) * (1 + Real.sqrt ((1 - ε) / (1 + ε)) ^ 2 * Real.tan (φ / 2) ^ 2)⁻¹))))
+    φ
+⊢ 2 * Real.sqrt (1 + ε) * (Real.sqrt (1 - ε) * ((1 + Real.tan (φ / 2) ^ 2) * (1 + ε))) =
+    (1 + Real.tan (φ / 2) ^ 2) *
+        (Real.sqrt (1 - ε) * (1 + ε) * (2 * (Real.sqrt (1 + ε) * (1 + ε + (1 - ε) * Real.tan (φ / 2) ^ 2)))) /
+      (1 + Real.tan (φ / 2) ^ 2 + ε * (1 - Real.tan (φ / 2) ^ 2))
+Polyvortex.lean:1301:4: error: type mismatch
+  integral_add_adjacent_intervals (Continuous.intervalIntegrable (Polyvortex.poisson_cont hε) 0 (Real.pi / 2))
+    (Continuous.intervalIntegrable (Polyvortex.poisson_cont hε) (Real.pi / 2) Real.pi)
+has type
+  ∫ (x : ℝ) in 0 ..Real.pi / 2, 1 / (1 + ε * Real.cos x) ∂?m.464126 +
+      ∫ (x : ℝ) in Real.pi / 2 ..Real.pi, 1 / (1 + ε * Real.cos x) ∂?m.464126 =
+    ∫ (x : ℝ) in 0 ..Real.pi, 1 / (1 + ε * Real.cos x) ∂?m.464126 : Prop
+but is expected to have type
+  ∫ (φ : ℝ) in 0 ..Real.pi, 1 / (1 + ε * Real.cos φ) =
+    ∫ (φ : ℝ) in 0 ..Real.pi / 2,
+      1 / (1 + ε * Real.cos φ) + ∫ (φ : ℝ) in Real.pi / 2 ..Real.pi, 1 / (1 + ε * Real.cos φ) : Prop
+Polyvortex.lean:1305:2: error: no goals to be solved
+Polyvortex.lean:1378:10: error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  Real.cos (?x - ?y)
+ε : ℝ
+hε : ε ^ 2 < 1
+x : ℝ
+a✝ : x ∈ Set.uIcc Real.pi (2 * Real.pi)
+⊢ (fun x => 1 / (1 + ε * Real.cos x)) x = (fun x => (fun y => 1 / (1 - ε * Real.cos y)) (x - Real.pi)) x
+Polyvortex.lean:1380:6: error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  ∫ (x : ℝ) in ?m.466627..?m.466628, ?m.466924 (x - ?d)
+ε : ℝ
+hε : ε ^ 2 < 1
+⊢ ∫ (x : ℝ) in Real.pi..2 * Real.pi, (fun y => 1 / (1 - ε * Real.cos y)) (x - Real.pi) =
+    ∫ (φ : ℝ) in 0 ..Real.pi, 1 / (1 - ε * Real.cos φ)
+Polyvortex.lean:1384:4: error: type mismatch
+  integral_add_adjacent_intervals (Continuous.intervalIntegrable (Polyvortex.poisson_cont hε) ?m.468409 ?m.468468)
+    (Continuous.intervalIntegrable (Polyvortex.poisson_cont hε) ?m.468468 ?m.468469)
+has type
+  ∫ (x : ℝ) in ?m.468409..?m.468468, 1 / (1 + ε * Real.cos x) ∂?m.468442 +
+      ∫ (x : ℝ) in ?m.468468..?m.468469, 1 / (1 + ε * Real.cos x) ∂?m.468442 =
+    ∫ (x : ℝ) in ?m.468409..?m.468469, 1 / (1 + ε * Real.cos x) ∂?m.468442 : Prop
+but is expected to have type
+  ∫ (φ : ℝ) in 0 ..2 * Real.pi, 1 / (1 + ε * Real.cos φ) =
+    ∫ (φ : ℝ) in 0 ..Real.pi,
+      1 / (1 + ε * Real.cos φ) + ∫ (φ : ℝ) in Real.pi..2 * Real.pi, 1 / (1 + ε * Real.cos φ) : Prop
+Polyvortex.lean:1386:6: error: no goals to be solved
+Try this: ring_nf
+Polyvortex.lean:1399:64: error: unsolved goals
+ε : ℝ
+hε : ε ^ 2 < 1
+hc : 0 < 1 - ε ^ 2
+φ : ℝ
+⊢ 1 - ε ^ 2 =
+    -(ε * Real.cos φ) + (ε * Real.cos φ * (1 + ε * Real.cos φ)⁻¹ * 2 - ε ^ 2) +
+        ε ^ 2 * Real.cos φ ^ 2 * (1 + ε * Real.cos φ)⁻¹ +
+      (1 + ε * Real.cos φ)⁻¹
+Polyvortex.lean:1407:22: error: unknown identifier 'two'
+Polyvortex.lean:1444:2: error: no goals to be solved
+Polyvortex.lean:1482:6: error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  ringOrbit R ζ (ringOmega γ R N) t k
+γ✝ ω R✝ : ℝ
+N : ℕ
+γ R : ℝ
+ζ : ℂ
+hN : 2 ≤ N
+hR : R ≠ 0
+h1 : ζ ^ N = 1
+hprim : ∀ m ∈ Finset.Ico 1 N, ζ ^ m ≠ 1
+k : ℕ
+hk : k < N
+t : ℝ
+hconf : ringOrbit R ζ (ringOmega γ R N) t k = Complex.exp (Complex.I * (↑(ringOmega γ R N) * ↑t)) * ringPos R ζ k
+⊢ corotatingField γ (ringOmega γ R N) (ringOrbit R ζ (ringOmega γ R N) t) N k = 0
+Polyvortex.lean:1488:40: error: unexpected token 'λ'; expected '_' or identifier
+Polyvortex.lean:1494:3: error: unexpected token 'λ'; expected '(', '[', '_', '{', '⦃' or identifier
+'Polyvortex.ring_velocity' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Polyvortex.ringOrbit_sol' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Polyvortex.ringOmega_three_eq_lagrange' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Polyvortex.ring_rotation_rate_pos' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Polyvortex.rootExp_pow' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Polyvortex.rootExp_prim' depends on axioms: [propext, Quot.sound, Classical.choice]
+'Polyvortex.kirchhoff_smul' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Polyvortex.normSq_exp_I_mul' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Polyvortex.ringOrbit_deriv' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Polyvortex.eps_pos' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Polyvortex.eps_lt_one_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Polyvortex.eps_at_threshold' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Polyvortex.rClosed_min' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Polyvortex.rClosed_pos_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Polyvortex.rClosed_touches_zero_at_threshold' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Polyvortex.ring_radial_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Polyvortex.lemmaC_pulsation' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Polyvortex.lemmaC_radius_constant' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Polyvortex.lemmaC_H1_reduction' depends on axioms: [propext, Classical.choice, Quot.sound, sorryAx]
+'Polyvortex.lemmaD_omega_independent' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Polyvortex.lemmaD_bridge' depends on axioms: [propext, Classical.choice, Quot.sound, sorryAx]
+'Polyvortex.poisson_integral' depends on axioms: [propext, Classical.choice, Quot.sound, sorryAx]
+'Polyvortex.poisson_sq' depends on axioms: [propext, Classical.choice, Quot.sound, sorryAx]
+'Polyvortex.ringOmega_smul_radius' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Polyvortex.ring_fixed_point' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Polyvortex.ring_corotating_constant' depends on axioms: [propext, Classical.choice, Quot.sound, sorryAx]

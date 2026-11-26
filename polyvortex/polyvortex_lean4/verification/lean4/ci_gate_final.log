@@ -1,0 +1,23 @@
+
+──── 1/5 imports ────
+IMPORTS: root Polyvortex.lean; imports: 8 (все внешние); toolchain leanprover/lean4:v4.6.0; mathlib pin OK
+IMPORTS [PASS] — однофайловый контракт и пиннинги выдержаны
+
+──── 2/5 axioms gate (полная компиляция) ────
+AXIOMS GATE: 26 отпечатков (0 без аксиом, 26 на стандартном наборе [propext, Classical.choice, Quot.sound]); исходных директив: 26
+AXIOMS GATE [PASS] — все теоремы на заявленном наборе аксиом
+
+──── 3/5 seal ────
+SEAL: запечатано 62; в исходнике 62 утверждений
+SEAL [PASS] — все утверждения совпадают с печатью
+
+──── 4/5 conventions + docstring ratchet ────
+LINT: деклараций 79; секций: 0
+LINT: докстринги: 79/79 = 100.0%
+  Section 0-preamble:  79/79  = 100.0%
+LINT [PASS] — конвенции и ракет докстрингов выдержаны
+
+──── 5/5 bridge (verified params) ────
+BRIDGE [PASS] — мост синхронен с печатью
+
+════ CI GATE: PASS — Lean-уровень чист ════

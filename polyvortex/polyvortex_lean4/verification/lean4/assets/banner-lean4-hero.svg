@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="280" viewBox="0 0 1200 280" role="img" aria-label="LEAN 4 VERIFICATION — POLYVORTEX N-vortex formalization">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1530"/>
+      <stop offset="1" stop-color="#13234f"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#d4a531"/>
+      <stop offset="1" stop-color="#f2cf6b"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#f2cf6b" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#f2cf6b" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="280" fill="url(#bg)"/>
+  <circle cx="600" cy="150" r="132" fill="url(#glow)"/>
+
+  <!-- N-gon ring: heptagon vertices + circulation arms (the W4 boundary N=7) -->
+  <g transform="translate(600,150)" stroke="url(#gold)" fill="none" stroke-linecap="round">
+    <circle r="86" stroke-opacity="0.35" stroke-dasharray="3 7"/>
+    <polygon points="0,-86 67.4,-54.1 83.7,26.5 25.9,82.4 -25.9,82.4 -83.7,26.5 -67.4,-54.1"
+             stroke-opacity="0.85" stroke-width="2.4"/>
+    <g stroke="#7fd4ff" stroke-width="2.2">
+      <path d="M 0,-86 A 86,86 0 0 1 67.4,-54.1"/>
+      <path d="M 67.4,-54.1 A 86,86 0 0 1 83.7,26.5"/>
+      <path d="M 83.7,26.5 A 86,86 0 0 1 25.9,82.4"/>
+    </g>
+    <g fill="#f2cf6b" stroke="none">
+      <circle cx="0" cy="-86" r="5.2"/>
+      <circle cx="67.4" cy="-54.1" r="5.2"/>
+      <circle cx="83.7" cy="26.5" r="5.2"/>
+      <circle cx="25.9" cy="82.4" r="5.2"/>
+      <circle cx="-25.9" cy="82.4" r="5.2"/>
+      <circle cx="-83.7" cy="26.5" r="5.2"/>
+      <circle cx="-67.4" cy="-54.1" r="5.2"/>
+    </g>
+    <g fill="none" stroke="#ffffff" stroke-opacity="0.8">
+      <path d="M 46,-84 a 8,8 0 1 1 -1.5,7.5" stroke-width="1.6"/>
+    </g>
+  </g>
+
+  <text x="96" y="112" fill="#ffffff" font-family="Georgia, 'Times New Roman', serif"
+        font-size="46" letter-spacing="6" font-weight="bold">LEAN 4 VERIFICATION</text>
+  <text x="98" y="158" fill="url(#gold)" font-family="Georgia, 'Times New Roman', serif"
+        font-size="27" letter-spacing="3">POLYVORTEX · the N-vortex extension bench</text>
+  <text x="98" y="200" fill="#9fb4dd" font-family="'DejaVu Sans', Verdana, sans-serif"
+        font-size="16.5" letter-spacing="1">Theorem A forcing · Chaplygin threshold · pulsation obstruction ·
+    Poisson-averaged rate · W4 statement layer</text>
+  <rect x="98" y="222" width="238" height="26" rx="13" fill="none" stroke="#2EA043"/>
+  <text x="112" y="240" fill="#4ade80" font-family="Verdana, sans-serif" font-size="14">0 sorry · 0 axiom · 61 seals</text>
+  <rect x="348" y="222" width="252" height="26" rx="13" fill="none" stroke="#2EA043"/>
+  <text x="362" y="240" fill="#4ade80" font-family="Verdana, sans-serif" font-size="14">Lean 4.6.0 · Mathlib v4.6.0</text>
+  <text x="1104" y="246" fill="#6f83b8" font-family="Verdana, sans-serif" font-size="12"
+        text-anchor="end">v1.0 · TW1</text>
+</svg>

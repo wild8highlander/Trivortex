@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" viewBox="0 0 220 220" role="img" aria-label="Lean 4 Polyvortex mark: seven vortex arms over the regular polygon ring">
+  <defs>
+    <linearGradient id="mbg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1530"/>
+      <stop offset="1" stop-color="#13234f"/>
+    </linearGradient>
+    <linearGradient id="mgold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#d4a531"/>
+      <stop offset="1" stop-color="#f2cf6b"/>
+    </linearGradient>
+  </defs>
+  <rect width="220" height="220" rx="34" fill="url(#mbg)"/>
+  <g transform="translate(110,108)">
+    <circle r="62" fill="none" stroke="#37508f" stroke-dasharray="2.5 6"/>
+    <polygon points="0,-62 48.5,-38.9 60.2,19.1 18.7,59.5 -18.7,59.5 -60.2,19.1 -48.5,-38.9"
+             fill="none" stroke="url(#mgold)" stroke-width="2.6"/>
+    <g fill="none" stroke="#7fd4ff" stroke-width="2">
+      <path d="M 0,-62 A 62,62 0 0 1 48.5,-38.9"/>
+      <path d="M 48.5,-38.9 A 62,62 0 0 1 60.2,19.1"/>
+      <path d="M -48.5,-38.9 A 62,62 0 0 1 0,-62" stroke-opacity="0.45"/>
+    </g>
+    <g fill="#f2cf6b">
+      <circle cx="0" cy="-62" r="4.4"/>
+      <circle cx="48.5" cy="-38.9" r="4.4"/>
+      <circle cx="60.2" cy="19.1" r="4.4"/>
+      <circle cx="18.7" cy="59.5" r="4.4"/>
+      <circle cx="-18.7" cy="59.5" r="4.4"/>
+      <circle cx="-60.2" cy="19.1" r="4.4"/>
+      <circle cx="-48.5" cy="-38.9" r="4.4"/>
+    </g>
+    <text y="7" text-anchor="middle" fill="#ffffff" font-family="Georgia, serif"
+          font-size="26" font-weight="bold" font-style="italic">N</text>
+  </g>
+  <text x="110" y="205" text-anchor="middle" fill="#9fb4dd" font-family="Verdana, sans-serif"
+        font-size="12" letter-spacing="2">POLYVORTEX · LEAN 4</text>
+</svg>

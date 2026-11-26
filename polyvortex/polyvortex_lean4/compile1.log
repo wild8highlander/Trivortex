@@ -1,0 +1,898 @@
+Polyvortex.lean:105:4: error: expected token
+Polyvortex.lean:112:4: error: expected token
+Polyvortex.lean:126:4: error: expected token
+Polyvortex.lean:146:4: error: expected token
+Polyvortex.lean:164:4: error: expected token
+Polyvortex.lean:178:2: error: no applicable extensionality lemma found for
+  ℂ
+Polyvortex.lean:184:2: error: no applicable extensionality lemma found for
+  ℂ
+Polyvortex.lean:195:2: error: no applicable extensionality lemma found for
+  ℂ
+Polyvortex.lean:201:37: error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  star (?a * ?b)
+M : Type u_1
+inst✝ : CommRing M
+a b : ℂ
+⊢ (starRingEnd ℂ) (a * b) * (a * b) = (starRingEnd ℂ) a * a * ((starRingEnd ℂ) b * b)
+Polyvortex.lean:214:8: error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  (starRingEnd ℂ) ?m.4064 * ?m.4064
+M : Type u_1
+inst✝ : CommRing M
+z : ℂ
+h : z ≠ 0
+h0 : Complex.normSq z = 0
+⊢ star z * z = 0
+Polyvortex.lean:249:4: error: expected token
+Polyvortex.lean:260:4: error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  (?x + ?y * ?z) % ?y
+N j k : ℕ
+hj : j < N
+hk : k < N
+hkle : k ≤ N
+h : (j + (N - k)) % N = 0
+e1 : (j + N * 1) % (N * 1) = (0 + k) % (N * 1)
+⊢ j = k
+Polyvortex.lean:273:11: error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  k % N
+N k d : ℕ
+hk : k < N
+hd1 : 1 ≤ d
+hdN : d < N
+h : (k + d) % N = k
+⊢ k = (k + 0) % N
+Polyvortex.lean:274:54: error: application type mismatch
+  Nat.ModEq.add_right_cancel' hmeq
+argument
+  hmeq
+has type
+  k + d ≡ k + 0 [MOD N] : Prop
+but is expected to have type
+  ℕ : Type
+Polyvortex.lean:275:2: error: no goals to be solved
+Try this: ring_nf
+Polyvortex.lean:290:44: error: unsolved goals
+N d : ℕ
+hd1 : 1 ≤ d
+hdN : d < N
+⊢ d + d * (N - 1) = d * N
+Polyvortex.lean:290:53: error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  ?m * ?n % ?m
+N d : ℕ
+hd1 : 1 ≤ d
+hdN : d < N
+⊢ d * N % N = 0 % N
+Polyvortex.lean:296:38: error: application type mismatch
+  Nat.ModEq.add_right_cancel' d e12
+argument
+  e12
+has type
+  d + d * (N - 1) ≡ d + (N - d) [MOD N] : Prop
+but is expected to have type
+  d * (N - 1) + d ≡ N - d + d [MOD N] : Prop
+Polyvortex.lean:310:13: error: unsolved goals
+a : ℂ
+n : ℕ
+⊢ ↑(Complex.normSq a) * ↑(Complex.normSq (a ^ n)) = ↑(Complex.normSq a) * ↑(Complex.normSq a) ^ n
+Polyvortex.lean:316:30: error: unknown constant 'Real.pow_lt_one'
+Polyvortex.lean:317:4: error: type mismatch
+  hxeq
+has type
+  0 = x : Prop
+but is expected to have type
+  x = 1 : Prop
+Polyvortex.lean:323:50: error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  star ?a ^ ?n
+ζ : ℂ
+N : ℕ
+hN : N ≠ 0
+h1 : ζ ^ N = 1
+⊢ (starRingEnd ℂ) ζ ^ N * ζ ^ N = 1
+Polyvortex.lean:335:27: error: unsolved goals
+ζ : ℂ
+N : ℕ
+hN : N ≠ 0
+h1 : ζ ^ N = 1
+hc : ↑(Complex.normSq ζ) ^ N = 1
+hr : Complex.normSq ζ = 1
+⊢ ζ ^ (N - 1) * ζ = ζ * ζ ^ (N - 1 + 1 - 1)
+Polyvortex.lean:341:60: error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  1 * ?a
+ζ : ℂ
+N : ℕ
+h1 : ζ ^ N = 1
+m : ℕ
+⊢ ζ ^ ((m % N + N * (m / N)) % N) = ζ ^ (m % N) * 1
+Polyvortex.lean:347:59: error: unsolved goals
+R : ℝ
+ζ : ℂ
+N : ℕ
+h1 : ζ ^ N = 1
+k j : ℕ
+hk : k < N
+hj : j < N
+hmod : ζ ^ ((j + (N - k)) % N) = ζ ^ (j + (N - k))
+hexp : ζ ^ k * ζ ^ (j + (N - k)) = ζ ^ j
+⊢ ↑R * ζ ^ k - ↑R * (ζ ^ k * ζ ^ (j + (N - k))) = ↑R * ζ ^ k - ↑R * ζ ^ k * ζ ^ (j + (N - k))
+Polyvortex.lean:366:35: error: application type mismatch
+  Nat.mod_lt (j + (N - k)) hN0
+argument
+  hN0
+has type
+  N ≠ 0 : Prop
+but is expected to have type
+  N > 0 : Prop
+Polyvortex.lean:370:34: error: invalid constructor ⟨...⟩, expected type must be an inductive type with only one constructor 
+  List.Mem d (List.range' 1 (N - 1))
+Polyvortex.lean:371:50: error: application type mismatch
+  sub_ne_zero.mpr hx1
+argument
+  hx1
+has type
+  ζ ^ d ≠ 1 : Prop
+but is expected to have type
+  1 ≠ ζ ^ d : Prop
+Polyvortex.lean:373:35: error: invalid constructor ⟨...⟩, expected type must be an inductive type with only one constructor 
+  List.Mem (N - d) (List.range' 1 (N - 1))
+Polyvortex.lean:377:41: error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  star (?a ^ ?n)
+R : ℝ
+ζ : ℂ
+N : ℕ
+hN : N ≠ 0
+h1 : ζ ^ N = 1
+hprim : ∀ m ∈ Finset.Ico 1 N, ζ ^ m ≠ 1
+hR : R ≠ 0
+k j : ℕ
+hk : k < N
+hj : j < N
+hjk : j ≠ k
+hN0 : N ≠ 0
+d : ℕ := (j + (N - k)) % N
+hddef : d = (j + (N - k)) % N
+hdN : d < N
+hd1 : 1 ≤ d
+hx1 : ζ ^ d ≠ 1
+hzone : 1 - ζ ^ d ≠ 0
+hzone' : 1 - ζ ^ (N - d) ≠ 0
+hdiff : ringPos R ζ k - ringPos R ζ j = ↑R * ζ ^ k * (1 - ζ ^ d)
+⊢ (starRingEnd ℂ) (ζ ^ k) * ζ ^ k = 1
+Polyvortex.lean:380:8: error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  ζ ^ (?m % N)
+R : ℝ
+ζ : ℂ
+N : ℕ
+hN : N ≠ 0
+h1 : ζ ^ N = 1
+hprim : ∀ m ∈ Finset.Ico 1 N, ζ ^ m ≠ 1
+hR : R ≠ 0
+k j : ℕ
+hk : k < N
+hj : j < N
+hjk : j ≠ k
+hN0 : N ≠ 0
+d : ℕ := (j + (N - k)) % N
+hddef : d = (j + (N - k)) % N
+hdN : d < N
+hd1 : 1 ≤ d
+hx1 : ζ ^ d ≠ 1
+hzone : 1 - ζ ^ d ≠ 0
+hzone' : 1 - ζ ^ (N - d) ≠ 0
+hdiff : ringPos R ζ k - ringPos R ζ j = ↑R * ζ ^ k * (1 - ζ ^ d)
+hck : ↑(Complex.normSq (ζ ^ k)) = 1
+⊢ ζ ^ ((N - 1) * d) = ζ ^ (N - d)
+Polyvortex.lean:383:41: error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  star (?a - ?b)
+R : ℝ
+ζ : ℂ
+N : ℕ
+hN : N ≠ 0
+h1 : ζ ^ N = 1
+hprim : ∀ m ∈ Finset.Ico 1 N, ζ ^ m ≠ 1
+hR : R ≠ 0
+k j : ℕ
+hk : k < N
+hj : j < N
+hjk : j ≠ k
+hN0 : N ≠ 0
+d : ℕ := (j + (N - k)) % N
+hddef : d = (j + (N - k)) % N
+hdN : d < N
+hd1 : 1 ≤ d
+hx1 : ζ ^ d ≠ 1
+hzone : 1 - ζ ^ d ≠ 0
+hzone' : 1 - ζ ^ (N - d) ≠ 0
+hdiff : ringPos R ζ k - ringPos R ζ j = ↑R * ζ ^ k * (1 - ζ ^ d)
+hck : ↑(Complex.normSq (ζ ^ k)) = 1
+hexp2 : ζ ^ ((N - 1) * d) = ζ ^ (N - d)
+⊢ (starRingEnd ℂ) (1 - ζ ^ d) * (1 - ζ ^ d) = (1 - ζ ^ (N - d)) * (1 - ζ ^ d)
+Polyvortex.lean:387:13: error: unknown constant 'Complex.normSq_mul''
+Polyvortex.lean:387:13: error: tactic 'rewrite' failed, equality or iff proof expected
+  ?m.31698
+R : ℝ
+ζ : ℂ
+N : ℕ
+hN : N ≠ 0
+h1 : ζ ^ N = 1
+hprim : ∀ m ∈ Finset.Ico 1 N, ζ ^ m ≠ 1
+hR : R ≠ 0
+k j : ℕ
+hk : k < N
+hj : j < N
+hjk : j ≠ k
+hN0 : N ≠ 0
+d : ℕ := (j + (N - k)) % N
+hddef : d = (j + (N - k)) % N
+hdN : d < N
+hd1 : 1 ≤ d
+hx1 : ζ ^ d ≠ 1
+hzone : 1 - ζ ^ d ≠ 0
+hzone' : 1 - ζ ^ (N - d) ≠ 0
+hdiff : ringPos R ζ k - ringPos R ζ j = ↑R * ζ ^ k * (1 - ζ ^ d)
+hck : ↑(Complex.normSq (ζ ^ k)) = 1
+hexp2 : ζ ^ ((N - 1) * d) = ζ ^ (N - d)
+hcd : ↑(Complex.normSq (1 - ζ ^ d)) = (1 - ζ ^ (N - d)) * (1 - ζ ^ d)
+hRc : ↑R ≠ 0
+hR2 : ↑(R * R) ≠ 0
+⊢ Complex.I * (↑R * ζ ^ k * (1 - ζ ^ d)) / ↑(Complex.normSq (↑R * ζ ^ k * (1 - ζ ^ d))) =
+    Complex.I / ↑R * ζ ^ k * (1 - ζ ^ (N - d))⁻¹
+Polyvortex.lean:397:8: error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  1
+x y : ℂ
+hxy : x * y = 1
+hx0 : x ≠ 0
+hx1 : x ≠ 1
+hy : y = 0
+⊢ False
+Polyvortex.lean:403:2: error: simp made no progress
+Polyvortex.lean:411:4: error: expected token
+Polyvortex.lean:449:16: error: expected token
+Polyvortex.lean:447:67: error: unsolved goals
+case inner
+γ : ℝ
+N : ℕ
+hN : 2 ≤ N
+R : ℝ
+hR : R ≠ 0
+ζ : ℂ
+h1 : ζ ^ N = 1
+hprim : ∀ m ∈ Finset.Ico 1 N, ζ ^ m ≠ 1
+k : ℕ
+hk : k < N
+hN0 : N ≠ 0
+⊢ sorryAx (Sort ?u.36594) true
+
+γ : ℝ
+N : ℕ
+hN : 2 ≤ N
+R : ℝ
+hR : R ≠ 0
+ζ : ℂ
+h1 : ζ ^ N = 1
+hprim : ∀ m ∈ Finset.Ico 1 N, ζ ^ m ≠ 1
+k : ℕ
+hk : k < N
+hN0 : N ≠ 0
+inner : sorryAx (Sort ?u.36594) true
+⊢ kirchhoff γ (ringPos R ζ) N k = Complex.I * ↑(ringOmega γ R N) * ringPos R ζ k
+Polyvortex.lean:503:13: error: expected token
+Polyvortex.lean:502:66: error: unsolved goals
+case hs
+γ : ℝ
+N : ℕ
+z : ℕ → ℂ
+u : ℂ
+hu : Complex.normSq u = 1
+k : ℕ
+⊢ sorryAx (Sort ?u.36810) true
+
+γ : ℝ
+N : ℕ
+z : ℕ → ℂ
+u : ℂ
+hu : Complex.normSq u = 1
+k : ℕ
+hs : sorryAx (Sort ?u.36810) true
+⊢ kirchhoff γ (fun j => u * z j) N k = u * kirchhoff γ z N k
+Polyvortex.lean:519:45: error: unsolved goals
+θ : ℝ
+⊢ 0 * (↑θ).re - 1 * 0 = 0
+Polyvortex.lean:525:2: error: type mismatch
+  this
+has type
+  (Complex.exp (Complex.I * ↑θ)).re ^ 2 + (Complex.exp (Complex.I * ↑θ)).im ^ 2 = 1 : Prop
+but is expected to have type
+  Complex.normSq (Complex.exp (Complex.I * ↑θ)) = 1 : Prop
+Polyvortex.lean:527:6: error: no goals to be solved
+Polyvortex.lean:539:28: error: typeclass instance problem is stuck, it is often due to metavariables
+  NormedAlgebra ?m.40114 ℂ
+Polyvortex.lean:540:15: error: application type mismatch
+  HasDerivAt.comp ?m.42709 (Complex.hasDerivAt_exp (Complex.I * (↑ω * ↑t)))
+argument
+  Complex.hasDerivAt_exp (Complex.I * (↑ω * ↑t))
+has type
+  HasDerivAt Complex.exp (Complex.exp (Complex.I * (↑ω * ↑t))) (Complex.I * (↑ω * ↑t)) : Prop
+but is expected to have type
+  HasDerivAt Complex.exp (Complex.exp (Complex.I * (↑ω * ↑t))) (?m.42713 ?m.42709) : Prop
+Polyvortex.lean:551:4: error: type mismatch
+  normSq_exp_I_mul (ω * t)
+has type
+  Complex.normSq (Complex.exp (Complex.I * ↑(ω * t))) = 1 : Prop
+but is expected to have type
+  Complex.normSq (Complex.exp (Complex.I * (↑ω * ↑t))) = 1 : Prop
+Polyvortex.lean:552:2: error: no goals to be solved
+Polyvortex.lean:572:6: error: application type mismatch
+  kirchhoff_ringOrbit γ N hN R hR ζ h1 hprim ω 0 (Finset.mem_range.mpr ?m.52832)
+argument
+  Finset.mem_range.mpr ?m.52832
+has type
+  ?m.52829 ∈ Finset.range ?m.52828 : Prop
+but is expected to have type
+  ?m.52827 < N : Prop
+Polyvortex.lean:572:32: error: omega did not find a contradiction:
+[1] ∈ [2, ∞)
+Polyvortex.lean:576:21: error: application type mismatch
+  mul_ne_zero hR
+argument
+  hR
+has type
+  R ≠ 0 : Prop
+but is expected to have type
+  ↑R ≠ 0 : Prop
+Polyvortex.lean:579:29: error: application type mismatch
+  mul_right_cancel₀ hpos heq
+argument
+  heq
+has type
+  Complex.I * ↑(ringOmega γ R N) * ringOrbit R ζ ω 0 0 = Complex.I * ↑ω * ringOrbit R ζ ω 0 0 : Prop
+but is expected to have type
+  Complex.I * ↑ω * ringOrbit R ζ ω 0 0 = Complex.I * ↑(ringOmega γ R N) * ringOrbit R ζ ω 0 0 : Prop
+Polyvortex.lean:580:28: error: unsolved goals
+γ : ℝ
+N : ℕ
+hN : 2 ≤ N
+R : ℝ
+hR : R ≠ 0
+ζ : ℂ
+h1 : ζ ^ N = 1
+hprim : ∀ m ∈ Finset.Ico 1 N, ζ ^ m ≠ 1
+ω : ℝ
+hode : ∀ (t : ℝ) (k : ℕ), HasDerivAt (fun s => ringOrbit R ζ ω s k) (kirchhoff γ (fun j => ringOrbit R ζ ω t j) N k) t
+heq : Complex.I * ↑(ringOmega γ R N) * ringOrbit R ζ ω 0 0 = Complex.I * ↑ω * ringOrbit R ζ ω 0 0
+hpos : ringOrbit R ζ ω 0 0 ≠ 0
+hcanc : Complex.I * ↑ω = Complex.I * ↑(ringOmega γ R N)
+⊢ ¬?m.57049 = 0
+Polyvortex.lean:585:6: error: application type mismatch
+  kirchhoff_ringOrbit γ N hN R hR ζ h1 hprim (ringOmega γ R N) t (Finset.mem_range.mpr ?m.57915)
+argument
+  Finset.mem_range.mpr ?m.57915
+has type
+  ?m.57912 ∈ Finset.range ?m.57911 : Prop
+but is expected to have type
+  ?m.57910 < N : Prop
+Polyvortex.lean:585:32: error: omega did not find a contradiction:
+[1] ∈ [2, ∞)
+Polyvortex.lean:597:35: error: unsolved goals
+N : ℕ
+hN : N ≠ 0
+h : N > 0
+⊢ ↑N * (2 * ↑Real.pi * Complex.I) = 2 * ↑Real.pi * Complex.I * ↑N
+Polyvortex.lean:603:6: error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  Real.cos (2 * Real.pi)
+case inr.refine_1
+N : ℕ
+hN : N ≠ 0
+h : N > 0
+hc : ↑N * (2 * ↑Real.pi * Complex.I / ↑N) = 2 * ↑Real.pi * Complex.I
+⊢ 1 * Real.cos (2 * ↑Real.pi * Complex.I).im = 1.re
+Polyvortex.lean:605:57: error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  Real.exp 0
+case inr.refine_2
+N : ℕ
+hN : N ≠ 0
+h : N > 0
+hc : ↑N * (2 * ↑Real.pi * Complex.I / ↑N) = 2 * ↑Real.pi * Complex.I
+⊢ Real.exp (2 * ↑Real.pi * Complex.I).re * Real.sin (2 * Real.pi) = 1.im
+Polyvortex.lean:623:8: error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  1
+N : ℕ
+hN : 2 ≤ N
+m : ℕ
+hm : m ∈ Finset.Ico 1 N
+hc : Complex.exp (Complex.I * ↑(2 * Real.pi * ↑m / ↑N)) = 1
+hN0 : N ≠ 0
+hm1 : 1 ≤ m
+hmN : m < N
+hrew : ↑m * (2 * ↑Real.pi * Complex.I / ↑N) = Complex.I * ↑(2 * Real.pi * ↑m / ↑N)
+⊢ Real.cos (2 * Real.pi * ↑m / ↑N) = 1
+Polyvortex.lean:640:64: error: application type mismatch
+  div_pos (mul_pos ?m.77067 ?m.77068) hNr
+argument
+  hNr
+has type
+  ↑N ≠ 0 : Prop
+but is expected to have type
+  0 < ↑N : Prop
+Polyvortex.lean:641:54: error: linarith failed to find a contradiction
+case a
+N : ℕ
+hN : 2 ≤ N
+m : ℕ
+hm : m ∈ Finset.Ico 1 N
+hc : Complex.exp (Complex.I * ↑(2 * Real.pi * ↑m / ↑N)) = 1
+hN0 : N ≠ 0
+hm1 : 1 ≤ m
+hmN : m < N
+hrew : ↑m * (2 * ↑Real.pi * Complex.I / ↑N) = Complex.I * ↑(2 * Real.pi * ↑m / ↑N)
+hre : Real.cos (2 * Real.pi * ↑m / ↑N) = 1
+n : ℤ
+hn_orig : ↑n * (2 * Real.pi) = 2 * Real.pi * ↑m / ↑N
+h2pi : 2 * Real.pi ≠ 0
+hNr : ↑N ≠ 0
+hn : ↑n * (2 * Real.pi) * ↑N = 2 * Real.pi * ↑m
+hneg : ¬0 < n
+hle : n ≤ 0
+hler : ↑n ≤ 0
+hx0 : 0 < 2 * Real.pi * ↑m / ↑N
+a✝ : ↑n * (2 * Real.pi) > 0
+⊢ False
+failed
+Polyvortex.lean:647:8: error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  ↑(Int.toNat n)
+N : ℕ
+hN : 2 ≤ N
+m : ℕ
+hm : m ∈ Finset.Ico 1 N
+hc : Complex.exp (Complex.I * ↑(2 * Real.pi * ↑m / ↑N)) = 1
+hN0 : N ≠ 0
+hm1 : 1 ≤ m
+hmN : m < N
+hrew : ↑m * (2 * ↑Real.pi * Complex.I / ↑N) = Complex.I * ↑(2 * Real.pi * ↑m / ↑N)
+hre : Real.cos (2 * Real.pi * ↑m / ↑N) = 1
+n : ℤ
+hn_orig : ↑n * (2 * Real.pi) = 2 * Real.pi * ↑m / ↑N
+h2pi : 2 * Real.pi ≠ 0
+hNr : ↑N ≠ 0
+hn : ↑n * (2 * Real.pi) * ↑N = 2 * Real.pi * ↑m
+hn0 : 0 < n
+htnr : ↑(Int.toNat n) = ↑n
+⊢ m = Int.toNat n * N
+Polyvortex.lean:652:19: error: invalid field notation, type is not of the form (C ...) where C is a constant
+  1 ≤ n
+has type
+  Prop
+Polyvortex.lean:655:25: error: type mismatch
+  Nat.le_mul_of_pos_right N hp
+has type
+  N ≤ N * Int.toNat n : Prop
+but is expected to have type
+  N * 1 ≤ N * Int.toNat n : Prop
+Polyvortex.lean:677:13: error: application type mismatch
+  mul_pos Real.pi_pos
+argument
+  Real.pi_pos
+has type
+  0 < Real.pi : Prop
+but is expected to have type
+  0 < R : Prop
+Polyvortex.lean:676:43: error: unsolved goals
+γ R : ℝ
+hγ : 0 < γ
+N : ℕ
+hN : 2 ≤ N
+hR : 0 < R
+⊢ 0 < Real.pi
+Polyvortex.lean:725:16: error: unknown identifier 'inv_lt_one₀'
+Polyvortex.lean:733:10: error: tactic 'rewrite' failed, pattern is a metavariable
+  ?m.108992
+from equation
+  ?m.108992 = Real.exp (Real.log ?m.108992)
+N : ℕ
+ω C : ℝ
+hC : 0 < C
+hgt : 1 < Real.exp (C / Real.pi)
+hden : 0 < Real.exp (C / Real.pi) - 1
+h : Real.pi * Real.log 2 < C
+h4 : Real.log 2 < C / Real.pi
+⊢ 2 < Real.exp (C / Real.pi)
+Polyvortex.lean:735:11: error: unknown identifier 'inv_lt_one₀'
+Polyvortex.lean:739:67: error: unsolved goals
+N : ℕ
+ω : ℝ
+⊢ Real.pi * Real.log 2 = Real.log 2 * Real.pi
+Polyvortex.lean:748:2: error: type mismatch
+  mul_le_mul_of_nonneg_left ?m.111252 (Real.sqrt_nonneg C)
+has type
+  Real.sqrt C * ?m.111246 ≤ Real.sqrt C * ?m.111247 : Prop
+but is expected to have type
+  (1 - eps C) * Real.sqrt C ≤ Real.sqrt C * (1 + eps C * Real.cos (ω * t + 2 * Real.pi * ↑k / ↑N)) : Prop
+Polyvortex.lean:767:6: error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  ω * (Real.pi / ω) + 2 * Real.pi * 0 / ↑N
+case mp
+N : ℕ
+ω C : ℝ
+hC : 0 < C
+hω : ω ≠ 0
+h : ∀ (t : ℝ) (k : ℕ), 0 < rClosed C ω N t k
+hle : C ≤ Real.pi * Real.log 2
+hge : 1 ≤ eps C
+hzero : 0 < Real.sqrt C * (1 + eps C * Real.cos (ω * (Real.pi / ω) + 2 * Real.pi * ↑0 / ↑N))
+⊢ False
+Polyvortex.lean:767:72: error: unsolved goals
+N : ℕ
+ω C : ℝ
+hC : 0 < C
+hω : ω ≠ 0
+h : ∀ (t : ℝ) (k : ℕ), 0 < rClosed C ω N t k
+hle : C ≤ Real.pi * Real.log 2
+hge : 1 ≤ eps C
+hzero : 0 < Real.sqrt C * (1 + eps C * Real.cos (ω * (Real.pi / ω) + 2 * Real.pi * ↑0 / ↑N))
+⊢ ω * Real.pi = Real.pi * ω
+Polyvortex.lean:775:51: error: application type mismatch
+  (eps_lt_one_iff hC).mp h
+argument
+  h
+has type
+  Real.pi * Real.log 2 < C : Prop
+but is expected to have type
+  eps C < 1 : Prop
+Polyvortex.lean:776:4: error: no goals to be solved
+Polyvortex.lean:792:6: error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  ω * (Real.pi / ω) + 2 * Real.pi * 0 / ↑N
+case refine_1
+N : ℕ
+ω : ℝ
+hω : ω ≠ 0
+⊢ Real.sqrt (Real.pi * Real.log 2) *
+      (1 + eps (Real.pi * Real.log 2) * Real.cos (ω * (Real.pi / ω) + 2 * Real.pi * ↑0 / ↑N)) =
+    0
+Polyvortex.lean:792:72: error: unsolved goals
+N : ℕ
+ω : ℝ
+hω : ω ≠ 0
+⊢ ω * Real.pi = Real.pi * ω
+Polyvortex.lean:838:4: error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  ringPos R ζ k * star (ringPos R ζ k)
+γ✝ : ℝ
+N✝ : ℕ
+γ : ℝ
+N : ℕ
+hN : 2 ≤ N
+R : ℝ
+hR : R ≠ 0
+ζ : ℂ
+h1 : ζ ^ N = 1
+hprim : ∀ m ∈ Finset.Ico 1 N, ζ ^ m ≠ 1
+k : ℕ
+hk : k < N
+⊢ (Complex.I * ↑(ringOmega γ R N) * ringPos R ζ k * star (ringPos R ζ k)).re = 0
+Polyvortex.lean:863:12: error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  ↑(?r * ?s)
+γ✝ : ℝ
+N✝ : ℕ
+γ : ℝ
+N : ℕ
+hN : 2 ≤ N
+r θ : ℝ → ℝ
+hr : Differentiable ℝ r
+hθ : Differentiable ℝ θ
+hODE : ∀ (t : ℝ), HasDerivAt (fun s => pulsPos r θ N s 0) (kirchhoff γ (fun k => pulsPos r θ N t k) N 0) t
+t : ℝ
+hN0 : N ≠ 0
+hu : ∀ (u : ℝ), Complex.normSq (Complex.exp (Complex.I * ↑(θ u))) = 1
+u : ℝ
+k : ℕ
+⊢ ↑k * (2 * ↑Real.pi * Complex.I / ↑N) = Complex.I * (2 * ↑Real.pi * ↑↑k / ↑N)
+Polyvortex.lean:872:34: error: unknown constant 'Complex.mul_zero'
+Polyvortex.lean:875:86: error: invalid universe level, ?u.133133 is not greater than 0
+Polyvortex.lean:875:8: error: tactic 'rewrite' failed, equality or iff proof expected
+  ?m.133172
+case inr
+γ✝ : ℝ
+N✝ : ℕ
+γ : ℝ
+N : ℕ
+hN : 2 ≤ N
+r θ : ℝ → ℝ
+hr : Differentiable ℝ r
+hθ : Differentiable ℝ θ
+hODE : ∀ (t : ℝ), HasDerivAt (fun s => pulsPos r θ N s 0) (kirchhoff γ (fun k => pulsPos r θ N t k) N 0) t
+t : ℝ
+hN0 : N ≠ 0
+hu : ∀ (u : ℝ), Complex.normSq (Complex.exp (Complex.I * ↑(θ u))) = 1
+hconf :
+  ∀ (u : ℝ), (fun k => pulsPos r θ N u k) = fun k => Complex.exp (Complex.I * ↑(θ u)) * ringPos (r u) (rootExp N) k
+u : ℝ
+hz : r u ≠ 0
+⊢ Complex.exp (Complex.I * ↑(θ u)) * kirchhoff γ (fun k => ringPos (r u) (rootExp N) k) N 0 =
+    Complex.I * ↑(ringOmega γ (r u) N) * pulsPos r θ N u 0
+Polyvortex.lean:884:4: error: type mismatch
+  HasDerivAt.comp ?m.134233 ?m.134295
+has type
+  HasDerivAt ?m.134237 ?m.134239 ?m.134233 →
+    HasDerivAt (Complex.exp ∘ ?m.134237) (Complex.exp (Complex.I * ↑(θ t)) * ?m.134239) ?m.134233 : Prop
+but is expected to have type
+  HasDerivAt (fun s => Complex.exp (Complex.I * ↑(θ s))) (cE * (Complex.I * ↑(deriv θ t))) t : Prop
+Polyvortex.lean:884:4: error: application type mismatch
+  HasDerivAt.comp ?m.134233 (Complex.hasDerivAt_exp (Complex.I * ↑(θ t)))
+argument
+  Complex.hasDerivAt_exp (Complex.I * ↑(θ t))
+has type
+  HasDerivAt Complex.exp (Complex.exp (Complex.I * ↑(θ t))) (Complex.I * ↑(θ t)) : Prop
+but is expected to have type
+  HasDerivAt Complex.exp (Complex.exp (Complex.I * ↑(θ t))) (?m.134237 ?m.134233) : Prop
+Polyvortex.lean:928:4: error: `fun_prop` was unable to prove `Differentiable ℝ fun u => Real.sqrt C * (1 + eps C * Real.cos (ω * u + 2 * Real.pi * ↑0 / ↑N))`
+
+Try running with discharger `fun_prop (disch:=aesop)` or with a different discharger tactic like `assumption`, `linarith`, `omega`.
+Sometimes it is useful to run `fun_prop (disch:=trace_state; sorry)` which will print all the necessary subgoals for `fun_prop` to succeed.
+
+Potential issues to fix:
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos (ω * a + 2 * Real.pi * ↑0 / ↑N)
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos a
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos (ω * a + 2 * Real.pi * ↑0 / ↑N)
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos a
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos (ω * a + 2 * Real.pi * ↑0 / ↑N)
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos a
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos (ω * a + 2 * Real.pi * ↑0 / ↑N)
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos a
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos (ω * a + 2 * Real.pi * ↑0 / ↑N)
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos a
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos (ω * a + 2 * Real.pi * ↑0 / ↑N)
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos a
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos (ω * a + 2 * Real.pi * ↑0 / ↑N)
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos a
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos (ω * a + 2 * Real.pi * ↑0 / ↑N)
+  No theorems found for `Real.cos` in order to prove Differentiable ℝ fun a => Real.cos a
+
+For more detailed information use `set_option trace.Meta.Tactic.fun_prop true`
+Polyvortex.lean:931:37: error: omega did not find a contradiction:
+[1] ∈ [0, 1]
+Polyvortex.lean:934:86: error: unsolved goals
+γ : ℝ
+N : ℕ
+C ω : ℝ
+hC : 0 < C
+hω : ω ≠ 0
+hε : eps C ≠ 0
+hODE :
+  ∀ (t : ℝ),
+    HasDerivAt (fun s => pulsPos (fun u => rClosed C ω N u 0) (fun u => ω * u) N s 0)
+      (kirchhoff γ (fun k => pulsPos (fun u => rClosed C ω N u 0) (fun u => ω * u) N t k) N 0) t
+hrC : Differentiable ℝ fun u => rClosed C ω N u 0
+hθC : Differentiable ℝ fun u => ω * u
+hstat : ∀ (t : ℝ), deriv (fun u => rClosed C ω N u 0) t = 0
+hconst :
+  Real.sqrt C * (1 + eps C * Real.cos 0) =
+    Real.sqrt C * (1 + eps C * Real.cos (ω * (Real.pi / ω) + 2 * Real.pi * ↑0 / ↑N))
+⊢ ω * Real.pi = Real.pi * ω
+Polyvortex.lean:961:37: error: application type mismatch
+  ringOmega γ (pulsRadius R ε ω t) N
+argument
+  N
+has type
+  ℝ : Type
+but is expected to have type
+  ℕ : Type
+Try this: ring_nf
+Polyvortex.lean:965:55: error: unsolved goals
+γ R : ℝ
+hR : R ≠ 0
+u : ℝ
+hu : u ≠ 0
+N : ℕ
+⊢ True ∨ γ * ↑(N - 1) = 0
+Polyvortex.lean:986:49: error: application type mismatch
+  And.intro (Real.cos_le_one ?m.216138)
+argument
+  Real.cos_le_one ?m.216138
+has type
+  Real.cos ?m.216138 ≤ 1 : Prop
+but is expected to have type
+  -1 ≤ Real.cos φ : Prop
+Polyvortex.lean:1000:6: error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  ∫ (t : ℝ) in 0 ..2 * Real.pi / ω, ringOmega γ (pulsRadius R ε ω t) N
+γ R ε ω : ℝ
+hω : ω ≠ 0
+hR : R ≠ 0
+hε : ε ^ 2 < 1
+N : ℕ
+habs : |ε| < 1
+huni : ∀ (φ : ℝ), 1 + ε * Real.cos φ ≠ 0
+hsub :
+  ∫ (t : ℝ) in 0 ..2 * Real.pi / ω, ringOmega γ (pulsRadius R ε ω t) N =
+    ∫ (t : ℝ) in 0 ..2 * Real.pi / ω, (fun φ => ringOmega γ (R * (1 + ε * Real.cos φ)) N) (ω * t)
+⊢ ω / (2 * Real.pi) * ∫ (t : ℝ) in 0 ..2 * Real.pi / ω, ringOmega γ (pulsRadius R ε ω t) (sorryAx ℕ true) =
+    ringOmega γ R N * (1 / (2 * Real.pi) * ∫ (φ : ℝ) in 0 ..2 * Real.pi, ((1 + ε * Real.cos φ) ^ 2)⁻¹)
+Polyvortex.lean:1024:6: error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  0
+a : ℝ
+h : 0 < a
+h0 : 0 = Real.sqrt a
+h2 : Real.sqrt (Real.sqrt a) * Real.sqrt (Real.sqrt a) = Real.sqrt a
+⊢ False
+Polyvortex.lean:1036:47: error: function expected at
+  Ioo
+term has type
+  ?m.224183
+Polyvortex.lean:1046:4: error: no goals to be solved
+Polyvortex.lean:1049:65: error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  1 / (1 + Real.tan (φ / 2) ^ 2)
+x✝ : Sort u_1
+Ioo : x✝
+φ : ℝ
+hφ : φ ∈ sorryAx ?m.226013 true
+hφlo : -(Real.pi / 2) < φ / 2
+hφhi : φ / 2 < Real.pi / 2
+hcos0 : Real.cos (φ / 2) ≠ 0
+hsq : 1 + Real.tan (φ / 2) ^ 2 = 1 / Real.cos (φ / 2) ^ 2
+hinv : 1 / (1 + Real.tan (φ / 2) ^ 2) = Real.cos (φ / 2) ^ 2
+⊢ 2 * Real.cos (φ / 2) ^ 2 - 1 = (1 - Real.tan (2 * (φ / 2) / 2) ^ 2) / (1 + Real.tan (2 * (φ / 2) / 2) ^ 2)
+Polyvortex.lean:1058:47: error: application type mismatch
+  And.intro (Real.cos_le_one ?m.236673)
+argument
+  Real.cos_le_one ?m.236673
+has type
+  Real.cos ?m.236673 ≤ 1 : Prop
+but is expected to have type
+  -1 ≤ Real.cos φ : Prop
+Polyvortex.lean:1082:16: error: invalid field 'strictMono_iff', the environment does not contain 'StrictMono.strictMono_iff'
+  Real.arctan_strictMono
+has type
+  StrictMono Real.arctan
+Polyvortex.lean:1082:16: error: invalid field notation, type is not of the form (C ...) where C is a constant
+  Real.arctan_strictMono
+has type
+  ?m.242104 < ?m.242105 → Real.arctan ?m.242104 < Real.arctan ?m.242105
+Polyvortex.lean:1081:42: error: unsolved goals
+k : ℝ
+hk : 0 < k
+ha : Real.arctan k ∈ Set.Ioo (-(Real.pi / 2)) (Real.pi / 2)
+hb : Real.arctan k⁻¹ ∈ Set.Ioo (-(Real.pi / 2)) (Real.pi / 2)
+⊢ 0 < Real.arctan k
+Polyvortex.lean:1085:44: error: unknown identifier 'Ioo'
+Polyvortex.lean:1078:55: error: unsolved goals
+k : ℝ
+hk : 0 < k
+ha : Real.arctan k ∈ Set.Ioo (-(Real.pi / 2)) (Real.pi / 2)
+hb : Real.arctan k⁻¹ ∈ Set.Ioo (-(Real.pi / 2)) (Real.pi / 2)
+hapos : 0 < Real.arctan k
+hki : 0 < k⁻¹
+⊢ Real.arctan k + Real.arctan k⁻¹ = Real.pi / 2
+Polyvortex.lean:1108:14: error: function expected at
+  Ioo
+term has type
+  ?m.242717
+Polyvortex.lean:1118:11: error: unknown identifier 'sq_eq_sq'.mp'
+Polyvortex.lean:1119:8: error: no goals to be solved
+Polyvortex.lean:1126:4: error: no goals to be solved
+Polyvortex.lean:1130:6: error: application type mismatch
+  HasDerivAt.comp ?m.259277 (Real.hasDerivAt_tan hcos0)
+argument
+  Real.hasDerivAt_tan hcos0
+has type
+  HasDerivAt Real.tan (1 / Real.cos (φ / 2) ^ 2) (φ / 2) : Prop
+but is expected to have type
+  HasDerivAt Real.tan (1 / Real.cos (φ / 2) ^ 2) (?m.259281 ?m.259277) : Prop
+Polyvortex.lean:1137:6: error: application type mismatch
+  HasDerivAt.comp ?m.270265 (Real.hasDerivAt_arctan (Real.sqrt ((1 - ε) / (1 + ε)) * Real.tan (φ / 2)))
+argument
+  Real.hasDerivAt_arctan (Real.sqrt ((1 - ε) / (1 + ε)) * Real.tan (φ / 2))
+has type
+  HasDerivAt Real.arctan (1 / (1 + (Real.sqrt ((1 - ε) / (1 + ε)) * Real.tan (φ / 2)) ^ 2))
+    (Real.sqrt ((1 - ε) / (1 + ε)) * Real.tan (φ / 2)) : Prop
+but is expected to have type
+  HasDerivAt Real.arctan (1 / (1 + (Real.sqrt ((1 - ε) / (1 + ε)) * Real.tan (φ / 2)) ^ 2)) (?m.270269 ?m.270265) : Prop
+Polyvortex.lean:1141:2: error: type mismatch
+  HasDerivAt.mul_const hcomp (2 / Real.sqrt (1 - ε ^ 2))
+has type
+  HasDerivAt (fun y => Real.arctan (Real.sqrt ((1 - ε) / (1 + ε)) * Real.tan (y / 2)) * (2 / Real.sqrt (1 - ε ^ 2)))
+    (Real.sqrt ((1 - ε) / (1 + ε)) / (1 + Real.sqrt ((1 - ε) / (1 + ε)) ^ 2 * Real.tan (φ / 2) ^ 2) *
+        ((1 + Real.tan (φ / 2) ^ 2) / 2) *
+      (2 / Real.sqrt (1 - ε ^ 2)))
+    φ : Prop
+but is expected to have type
+  HasDerivAt (poissonG ε) (1 / (1 + ε * Real.cos φ)) φ : Prop
+Polyvortex.lean:1154:6: error: unknown identifier 'mem_uIcc'
+Polyvortex.lean:1154:6: error: tactic 'rewrite' failed, equality or iff proof expected
+  ?m.277275
+ε : ℝ
+hε : ε ^ 2 < 1
+b : ℝ
+hb : b < Real.pi
+hb0 : 0 ≤ b
+x : ℝ
+hx : x ∈ Set.uIcc 0 b
+⊢ HasDerivAt (poissonG ε) (1 / (1 + ε * Real.cos x)) x
+Polyvortex.lean:1169:4: error: type mismatch
+  integral_add_adjacent_intervals (Continuous.intervalIntegrable (Polyvortex.poisson_cont hε) ?m.281836 ?m.281895)
+    (Continuous.intervalIntegrable (Polyvortex.poisson_cont hε) ?m.281895 ?m.281896)
+has type
+  ∫ (x : ℝ) in ?m.281836..?m.281895, 1 / (1 + ε * Real.cos x) ∂?m.281869 +
+      ∫ (x : ℝ) in ?m.281895..?m.281896, 1 / (1 + ε * Real.cos x) ∂?m.281869 =
+    ∫ (x : ℝ) in ?m.281836..?m.281896, 1 / (1 + ε * Real.cos x) ∂?m.281869 : Prop
+but is expected to have type
+  ∫ (φ : ℝ) in 0 ..Real.pi, 1 / (1 + ε * Real.cos φ) =
+    ∫ (φ : ℝ) in 0 ..Real.pi / 2,
+      1 / (1 + ε * Real.cos φ) + ∫ (φ : ℝ) in Real.pi / 2 ..Real.pi, 1 / (1 + ε * Real.cos φ) : Prop
+Polyvortex.lean:1172:2: error: no goals to be solved
+Polyvortex.lean:1241:29: error: unknown identifier 'EqOn'
+Polyvortex.lean:1244:6: error: tactic 'introN' failed, insufficient number of binders
+ε : ℝ
+hε : ε ^ 2 < 1
+⊢ sorryAx (Sort ?u.283783) true
+Polyvortex.lean:1247:30: error: application type mismatch
+  integral_comp_sub_right Real.pi
+argument
+  Real.pi
+has type
+  ℝ : Type
+but is expected to have type
+  ℝ → ℝ : Type
+Polyvortex.lean:1251:4: error: type mismatch
+  integral_add_adjacent_intervals (Continuous.intervalIntegrable (Polyvortex.poisson_cont hε) ?m.288223 ?m.288281)
+    (Continuous.intervalIntegrable (Polyvortex.poisson_cont hε) ?m.288281 ?m.288282)
+has type
+  ∫ (x : ℝ) in ?m.288223..?m.288281, 1 / (1 + ε * Real.cos x) ∂?m.288255 +
+      ∫ (x : ℝ) in ?m.288281..?m.288282, 1 / (1 + ε * Real.cos x) ∂?m.288255 =
+    ∫ (x : ℝ) in ?m.288223..?m.288282, 1 / (1 + ε * Real.cos x) ∂?m.288255 : Prop
+but is expected to have type
+  ∫ (φ : ℝ) in 0 ..2 * Real.pi, 1 / (1 + ε * Real.cos φ) =
+    ∫ (φ : ℝ) in 0 ..Real.pi,
+      1 / (1 + ε * Real.cos φ) + ∫ (φ : ℝ) in Real.pi..2 * Real.pi, 1 / (1 + ε * Real.cos φ) : Prop
+Polyvortex.lean:1253:6: error: no goals to be solved
+Try this: ring_nf
+Polyvortex.lean:1266:64: error: unsolved goals
+ε : ℝ
+hε : ε ^ 2 < 1
+hc : 0 < 1 - ε ^ 2
+φ : ℝ
+⊢ 1 - ε ^ 2 =
+    -(ε * Real.cos φ) + (ε * Real.cos φ * (1 + ε * Real.cos φ)⁻¹ * 2 - ε ^ 2) +
+        ε ^ 2 * Real.cos φ ^ 2 * (1 + ε * Real.cos φ)⁻¹ +
+      (1 + ε * Real.cos φ)⁻¹
+Polyvortex.lean:1274:22: error: unknown identifier 'two'
+Polyvortex.lean:1311:2: error: no goals to be solved
+Polyvortex.lean:1349:6: error: tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  ringOrbit R ζ (ringOmega γ R N) t k
+γ✝ ω R✝ : ℝ
+N : ℕ
+γ R : ℝ
+ζ : ℂ
+hN : 2 ≤ N
+hR : R ≠ 0
+h1 : ζ ^ N = 1
+hprim : ∀ m ∈ Finset.Ico 1 N, ζ ^ m ≠ 1
+k : ℕ
+hk : k < N
+t : ℝ
+hconf : ringOrbit R ζ (ringOmega γ R N) t k = Complex.exp (Complex.I * (↑(ringOmega γ R N) * ↑t)) * ringPos R ζ k
+⊢ corotatingField γ (ringOmega γ R N) (ringOrbit R ζ (ringOmega γ R N) t) N k = 0
+Polyvortex.lean:1355:40: error: unexpected token 'λ'; expected '_' or identifier
+Polyvortex.lean:1361:3: error: unexpected token 'λ'; expected '(', '[', '_', '{', '⦃' or identifier
+'Polyvortex.ring_velocity' depends on axioms: [propext, Classical.choice, Quot.sound, sorryAx]
+'Polyvortex.ringOrbit_sol' depends on axioms: [propext, Classical.choice, Quot.sound, sorryAx]
+'Polyvortex.ringOmega_three_eq_lagrange' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Polyvortex.ring_rotation_rate_pos' depends on axioms: [propext, Classical.choice, Quot.sound, sorryAx]
+'Polyvortex.rootExp_pow' depends on axioms: [propext, Classical.choice, Quot.sound, sorryAx]
+'Polyvortex.rootExp_prim' depends on axioms: [propext, Quot.sound, Classical.choice, sorryAx]
+'Polyvortex.kirchhoff_smul' depends on axioms: [propext, Classical.choice, Quot.sound, sorryAx]
+'Polyvortex.normSq_exp_I_mul' depends on axioms: [propext, Classical.choice, Quot.sound, sorryAx]
+'Polyvortex.ringOrbit_deriv' depends on axioms: [propext, Classical.choice, Quot.sound, sorryAx]
+'Polyvortex.eps_pos' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Polyvortex.eps_lt_one_iff' depends on axioms: [propext, Classical.choice, Quot.sound, sorryAx]
+'Polyvortex.eps_at_threshold' depends on axioms: [propext, Classical.choice, Quot.sound, sorryAx]
+'Polyvortex.rClosed_min' depends on axioms: [propext, Classical.choice, Quot.sound, sorryAx]
+'Polyvortex.rClosed_pos_iff' depends on axioms: [propext, Classical.choice, Quot.sound, sorryAx]
+'Polyvortex.rClosed_touches_zero_at_threshold' depends on axioms: [propext, Classical.choice, Quot.sound, sorryAx]
+'Polyvortex.ring_radial_zero' depends on axioms: [propext, Classical.choice, Quot.sound, sorryAx]
+'Polyvortex.lemmaC_pulsation' depends on axioms: [propext, Classical.choice, Quot.sound, sorryAx]
+'Polyvortex.lemmaC_radius_constant' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Polyvortex.lemmaC_H1_reduction' depends on axioms: [propext, Classical.choice, Quot.sound, sorryAx]
+'Polyvortex.lemmaD_omega_independent' depends on axioms: [propext, Classical.choice, Quot.sound, sorryAx]
+'Polyvortex.lemmaD_bridge' depends on axioms: [propext, Classical.choice, Quot.sound, sorryAx]
+'Polyvortex.poisson_integral' depends on axioms: [propext, Classical.choice, Quot.sound, sorryAx]
+'Polyvortex.poisson_sq' depends on axioms: [propext, Classical.choice, Quot.sound, sorryAx]
+'Polyvortex.ringOmega_smul_radius' depends on axioms: [propext, Classical.choice, Quot.sound, sorryAx]
+'Polyvortex.ring_fixed_point' depends on axioms: [propext, Classical.choice, Quot.sound, sorryAx]
+'Polyvortex.ring_corotating_constant' depends on axioms: [propext, Classical.choice, Quot.sound, sorryAx]
+EXIT=1
