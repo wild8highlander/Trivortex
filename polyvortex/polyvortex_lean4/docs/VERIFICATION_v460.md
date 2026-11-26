@@ -186,7 +186,7 @@ SPDX-License-Identifier: LicenseRef-Proprietary-Wild8Highlander-1.0
 - строка 880: tactic 'rewrite' failed, equality or iff proof expected
 - строка 889: application type mismatch
 - строка 889: type mismatch
-- строка 933: `fun_prop` was unable to prove `Differentiable ℝ fun u => Real.sqrt C 
+- строка 933: `fun_prop` was unable to prove `Differentiable ℝ fun u => Real.sqrt C
 - строка 936: omega did not find a contradiction:
 - строка 939: unsolved goals
 
