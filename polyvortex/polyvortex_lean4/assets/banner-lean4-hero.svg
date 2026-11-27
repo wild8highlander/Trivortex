@@ -48,9 +48,9 @@
         font-size="16.5" letter-spacing="1">Theorem A forcing · Chaplygin threshold · pulsation obstruction ·
     Poisson-averaged rate · W4 statement layer</text>
   <rect x="98" y="222" width="238" height="26" rx="13" fill="none" stroke="#2EA043"/>
-  <text x="112" y="240" fill="#4ade80" font-family="Verdana, sans-serif" font-size="14">0 sorry · 0 axiom · 61 seals</text>
+  <text x="112" y="240" fill="#4ade80" font-family="Verdana, sans-serif" font-size="14">0 sorry · 0 axiom · 115 seals</text>
   <rect x="348" y="222" width="252" height="26" rx="13" fill="none" stroke="#2EA043"/>
   <text x="362" y="240" fill="#4ade80" font-family="Verdana, sans-serif" font-size="14">Lean 4.6.0 · Mathlib v4.6.0</text>
   <text x="1104" y="246" fill="#6f83b8" font-family="Verdana, sans-serif" font-size="12"
-        text-anchor="end">v1.0 · TW1</text>
+        text-anchor="end">TW1–TW5 · complete</text>
 </svg>

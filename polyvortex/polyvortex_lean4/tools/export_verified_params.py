@@ -54,6 +54,12 @@ def build_params(seal: dict) -> list[dict]:
     poisson_half_eps = 2.0 * pi / math.sqrt(1.0 - half**2)  # poisson_integral
     poisson_sq_eps = 2.0 * pi / ((1.0 - half**2) * math.sqrt(1.0 - half**2))
     shape = 1.0 / ((1.0 - half**2) * math.sqrt(1.0 - half**2))  # lemmaD_bridge
+    # Havelock witness growth rate at the threshold ring N=8, Γ=1, R=1:
+    #   witness mode n₀ = N−3 = 5, pair mode m = havSig n₀ = 5;
+    #   S_5 = (2−5)(8−5)/2 = −9/2 (havS_closed);
+    #   β = c0·S_5 with c0 = γ/(2πR²) = 1/(2π); Ω = γ(N−1)/(4πR²) = 7/(4π);
+    #   λ = √(β²−Ω²) = c0·√(81/4 − 49/4) = c0·√8 = √2/π (havelock_witness).
+    hav_n8 = math.sqrt(2.0) / pi
 
     return [
         {
@@ -120,6 +126,14 @@ def build_params(seal: dict) -> list[dict]:
             "source": "lemmaD_bridge",
             "statement_sha256": sha("lemmaD_bridge"),
         },
+        {
+            "id": "havelock_witness_N8",
+            "symbol": "λ(N=8)",
+            "value": hav_n8,
+            "formula": "√(β²−Ω²) = √2/π, Γ=1, R=1, witness pair n₀=5, m=5",
+            "source": "havelock_witness",
+            "statement_sha256": sha("havelock_witness"),
+        },
     ]
 
 
@@ -142,7 +156,7 @@ def main() -> int:
 
     doc = {
         "note": (
-            "сертифицированные константы Polyvortex.lean v1.0; нормировка "
+            "сертифицированные константы Polyvortex.lean; нормировка "
             "Γ=1, a=1; значения детерминированы формулами запечатанных "
             "утверждений; statement_sha256 связывает запись с печатью; "
             "файл бит-в-бит детерминирован — метки времени запрещены"

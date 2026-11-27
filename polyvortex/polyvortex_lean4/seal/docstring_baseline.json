@@ -1,13 +1,13 @@
 {
  "note": "ракет докстрингов: обновление — явное действие (видно в ревью)",
  "overall": {
-  "covered": 78,
-  "total": 78
+  "covered": 138,
+  "total": 138
  },
  "by_section": {
   "0-preamble": {
-   "covered": 78,
-   "total": 78
+   "covered": 138,
+   "total": 138
   }
  }
 }
