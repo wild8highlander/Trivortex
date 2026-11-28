@@ -21,13 +21,14 @@ roots-of-unity pairing identity `ker(1−u_m) + ker(1−u_{N−m}) = 1` and the 
 module in side-length form. **27 statements sealed by sha256, 27 `#print axioms` directives,
 33 declarations with 100% docstring coverage.**
 
-**Machine check:** the five-gate CI contract of the sibling Polyvortex package is in place —
-gates **1/3/4/5 PASS** (2026-11-28, sandbox run: imports, seal, conventions, numeric bridge)
-and the static part of gate 2 is clean; the full compile against real Mathlib v4.6.0 runs on
-the author machine (`bash tools/ci_gate.sh`). The independent numeric laboratory verifies
-**all 27 theorems to exact formulas — worst residual 8.0e-14**. Evidence log:
-[`docs/evidence/ci_gate_2026-11-28.log`](docs/evidence/ci_gate_2026-11-28.log). Reports:
-[completion](docs/NGON_COMPLETION.md) · [verification](docs/VERIFICATION_NGON.md).
+**Machine check:** the five-gate CI contract of the sibling Polyvortex package is in place and
+**ALL FIVE GATES PASS** (2026-11-28, full sandbox run — including the **full compile** of
+`NGon.lean` against real Mathlib v4.6.0 with `lake env lean`: 27 `#print axioms` prints, all
+exactly the classical trio, 0 warnings, 0 errors, exit 0). The independent numeric laboratory
+verifies **all 27 theorems to exact formulas — worst residual 8.0e-14**, and the laboratory is
+itself committed now (`tools/numeric_lab.py`) — reproducible by anyone with Python 3. Evidence
+log: [`docs/evidence/ci_gate_2026-11-28_full.log`](docs/evidence/ci_gate_2026-11-28_full.log).
+Reports: [completion](docs/NGON_COMPLETION.md) · [verification](docs/VERIFICATION_NGON.md).
 
 </div>
 
@@ -47,7 +48,7 @@ the author machine (`bash tools/ci_gate.sh`). The independent numeric laboratory
 [![Artifact](https://img.shields.io/badge/artifact-660%20lines-1284BA?style=for-the-badge)](NGon.lean)
 [![Declarations](https://img.shields.io/badge/declarations-33%20%2827%20thm%20%2B%206%20def%29-9558B2?style=for-the-badge)](#appendix-a--declaration-census)
 [![Docstrings](https://img.shields.io/badge/docstrings-100%25%20%2833%2F33%29-2EA043?style=for-the-badge)](seal/docstring_baseline.json)
-[![Gates](https://img.shields.io/badge/gates-1%2F3%2F4%2F5%20PASS%20%C2%B7%202%20author--clean-2EA043?style=for-the-badge)](#9-build-run-ci)
+[![Gates](https://img.shields.io/badge/gates-5%2F5%20PASS%20%C2%B7%20full%20compile%20v4.6.0-2EA043?style=for-the-badge)](#9-build-run-ci)
 [![REUSE](https://img.shields.io/badge/license-IPL--RP--1.0-red?style=for-the-badge)](https://github.com/wild8highlander/Trivortex/blob/main/LICENSE.md)
 
 <!-- identities -->
@@ -88,7 +89,7 @@ the author machine (`bash tools/ci_gate.sh`). The independent numeric laboratory
 
 ## 1. TL;DR — what lives in this folder
 
-`trivortex_n/trivortex_n_lean4/` of the **TRIVORTEX-N** program holds file **1/5** of the
+`verification/NGoen_lean4/` of the **TRIVORTEX-N** program holds file **1/5** of the
 Lean 4 formalization: a single self-contained artifact `NGon.lean` that proves the classical
 regular-`N`-gon theorem of point vortices — everything imported from Mathlib only, nothing
 from the root module. The certified layers:
@@ -102,14 +103,15 @@ from the root module. The certified layers:
 | **§3 corollaries** | `nGon_omega_ne_zero` (N ≥ 2), `nGon_omega_pos_iff` (counterclockwise ⟺ Γ > 0) | **proven, sealed** |
 | **§3 N = 3 bridge** | `nGon_side3_sq` (`a² = 3R²`) and `nGon_omega_three` (`ω_3 = 3Γ/(2πa²)`) reproduce the parent module's triangle | **proven, sealed** |
 
-**Machine-check status — read this first (2026-11-28).** The five-gate CI contract is green
-where it is checkable without the toolchain: gates 1/3/4/5 **PASS** and the static part of
-gate 2 is clean (0 `sorry`, 0 `axiom`, 0 `native_decide`, 0 `unsafe` markers; 27 `#print axioms`
-directives, all referring to sealed statements). The full compile against the pinned Mathlib
-v4.6.0 runs on the author machine — the same contract as the sibling Polyvortex package.
-The numeric laboratory independently verifies **all 27 theorems to exact formulas** on the
+**Machine-check status — read this first (2026-11-28, full run).** All five gates **PASS** in a
+single sandbox run: gate 1 (imports/pins), gate 2 (**full compile** — `lake env lean NGon.lean`
+against Mathlib v4.6.0 with the official olean cache; 27 `#print axioms` prints, all exactly
+`propext, Classical.choice, Quot.sound`; 0 `sorry`, 0 `axiom`, 0 `native_decide`, 0 `unsafe`),
+gate 3 (seal 27/27), gate 4 (conventions, 33/33 docstrings), gate 5 (bridge + numeric lab).
+The numeric laboratory verifies **all 27 theorems to exact formulas** on the
 grid `N ∈ [3,64] × R ∈ {0.5,1,2,3.7} × Γ ∈ {1,−1.5,2.3}` with worst residual **8.0e-14**
-([report](docs/VERIFICATION_NGON.md)).
+([report](docs/VERIFICATION_NGON.md)); the lab is committed and reproducible
+(`tools/numeric_lab.py`).
 
 ---
 
@@ -256,8 +258,8 @@ flowchart LR
   end
   G1 --> G2 --> G3 --> G4 --> G5
   G3 --> SEAL["seal/manifest.json\n27 statements sealed"]
-  G5 --> LAB["verification/trivortex_n/data/\nverified_params.json · ngon_numeric_check.json"]
-  G5 --> LOG["docs/evidence/\nci_gate_2026-11-28.log"]
+  G5 --> LAB["data/ (in-package)\nverified_params.json · ngon_numeric_check.json"]
+  G5 --> LOG["docs/evidence/\nci_gate_2026-11-28_full.log"]
 ```
 
 The object flow from Mathlib to the polygon theorem:
@@ -339,9 +341,9 @@ standard classical foundation of all of Mathlib:
 
 Structurally forbidden (the static half of gate 2 scans the source on every CI run):
 `axiom` declarations, `sorry`, `native_decide`, `unsafe`, `@[implemented_by]`.
-The full parse of the compile log (gate 2 on the author machine) cross-checks that each of
-the 27 prints reports exactly the allowed trio — see
-[`docs/evidence/`](docs/evidence) after the next CI run.
+The full parse of the compile log (gate 2) cross-checks that each of
+the 27 prints reports exactly the allowed trio — executed, see the full-run evidence log
+[`docs/evidence/ci_gate_2026-11-28_full.log`](docs/evidence/ci_gate_2026-11-28_full.log).
 
 ---
 
@@ -358,18 +360,20 @@ the 27 prints reports exactly the allowed trio — see
 | [`docs/DECLARATIONS.md`](docs/DECLARATIONS.md) | — | declaration reference: 33 rows, sections, docstring coverage, seal hashes |
 | [`docs/NGON_COMPLETION.md`](docs/NGON_COMPLETION.md) | — | completion report: the 9 release normalizations, gate table, roadmap 1/5…5/5 |
 | [`docs/VERIFICATION_NGON.md`](docs/VERIFICATION_NGON.md) | — | the numeric verification report: residual table, certified constants, cross-checks |
-| [`docs/evidence/ci_gate_2026-11-28.log`](docs/evidence/ci_gate_2026-11-28.log) | — | the committed CI log (gates 1/3/4/5 + static gate 2, sandbox run) |
+| [`docs/evidence/ci_gate_2026-11-28.log`](docs/evidence/ci_gate_2026-11-28.log) | — | the first committed CI log (gates 1/3/4/5 + static gate 2, sandbox run) |
+| [`docs/evidence/ci_gate_2026-11-28_full.log`](docs/evidence/ci_gate_2026-11-28_full.log) | — | **the full five-gate log** — incl. the complete `lake env lean NGon.lean` compile against Mathlib v4.6.0 (sandbox, exit 0) |
 | [`seal/manifest.json`](seal/manifest.json) | — | **the seal**: sha256 of all 27 normalized statements |
 | [`seal/docstring_baseline.json`](seal/docstring_baseline.json) | — | the docstring ratchet baseline (33/33) — coverage may only grow |
 | [`seal/naming_exceptions.json`](seal/naming_exceptions.json) | — | grandfather list of names outside conventions — empty here |
 | [`tools/check_imports.py`](tools/check_imports.py) | — | gate 1: single-file contract, `roots := #[NGon]`, reproducibility pins |
-| [`tools/axioms_gate.py`](tools/axioms_gate.py) | — | gate 2: compiles and parses `#print axioms` (author machine), forbids degradation markers |
+| [`tools/axioms_gate.py`](tools/axioms_gate.py) | — | gate 2: compiles and parses `#print axioms` (verified against Mathlib v4.6.0 in the sandbox), forbids degradation markers |
 | [`tools/seal_check.py`](tools/seal_check.py) | — | gate 3: statement seal `--check` / explicit `--update` |
 | [`tools/lint_conventions.py`](tools/lint_conventions.py) | — | gate 4: naming conventions, docstring ratchet, hygiene |
 | [`tools/export_verified_params.py`](tools/export_verified_params.py) | — | gate 5: exports the certified constants bound to seal hashes |
+| [`tools/numeric_lab.py`](tools/numeric_lab.py) | — | gate 5: the numeric laboratory itself — all 27 theorems to exact formulas in deterministic float64, coverage tied to the seal (now committed — reproducible by anyone) |
 | [`tools/ci_gate.sh`](tools/ci_gate.sh) | — | runs all five gates in order |
 | [`assets/charts/`](assets/charts) · [`assets/gif/`](assets/gif) · SVGs | — | 6 charts, 3 animations, banner + logo (house navy-and-gold) |
-| `../../verification/trivortex_n/data/*.json` | — | the laboratory's accepted parameters: `verified_params.json` + `ngon_numeric_check.json` |
+| `data/verified_params.json` · `data/ngon_numeric_check.json` | — | the laboratory's accepted parameters and the residual record, bound to seal hashes |
 
 ---
 
@@ -380,7 +384,7 @@ the 27 prints reports exactly the allowed trio — see
 curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
 
 # the five-gate contract (downloads Mathlib v4.6.0 cache first time)
-cd trivortex_n/trivortex_n_lean4
+cd verification/NGoen_lean4
 bash tools/ci_gate.sh
 
 # or step by step
@@ -389,16 +393,18 @@ python3 tools/axioms_gate.py          # 2/5 axioms (full compile + #print axioms
 python3 tools/seal_check.py --check   # 3/5 seal
 python3 tools/lint_conventions.py     # 4/5 conventions
 python3 tools/export_verified_params.py --check   # 5/5 bridge
+python3 tools/numeric_lab.py          # 5/5 numeric lab (27 theorems, exact formulas)
 ```
 
 | gate | checkable without toolchain | status 2026-11-28 |
 |---|:-:|---|
 | 1/5 imports | yes | **PASS** (sandbox run) |
-| 2/5 axioms | static half | **PASS** (static) · full compile on author machine |
+| 2/5 axioms | static half | **PASS** — full compile executed in sandbox: 27/27 prints = classical trio, 0 warnings, rc=0 |
 | 3/5 seal | yes | **PASS** (27/27) |
 | 4/5 conventions | yes | **PASS** (33/33 = 100%) |
-| 5/5 bridge | yes | **PASS** (27/27 theorems, worst residual 8.0e-14) |
+| 5/5 bridge + lab | yes | **PASS** (27/27 theorems, worst residual 8.0e-14) |
 
+All five gates — one run, exit 0: [`docs/evidence/ci_gate_2026-11-28_full.log`](docs/evidence/ci_gate_2026-11-28_full.log).
 The first real compile needs the Mathlib v4.6.0 olean cache
 (`lake exe cache get`, ≈2 GB) — everything else is a single-file build.
 
@@ -448,9 +454,9 @@ the proofs — statement revision is then a visible diff, never a silent edit.
 
 Three independent layers, all committed:
 
-1. **The Lean layer** (gate 2, author machine): the artifact compiles against Mathlib
-   v4.6.0; 27 `#print axioms` = the classical trio; 0 `sorry`. Same contract as the
-   Polyvortex package.
+1. **The Lean layer** (gate 2, any machine with the toolchain): the artifact compiles against Mathlib
+   v4.6.0; 27 `#print axioms` = the classical trio; 0 `sorry`. **Executed in the sandbox
+   2026-11-28** — see the full-run log. Same contract as the Polyvortex package.
 2. **The seal layer** (gate 3, any machine): the statement texts are frozen by sha256;
    the numeric bridge (gate 5) references those hashes — if a statement ever changes,
    the bridge fails until the laboratory consciously accepts the new constants.
@@ -475,7 +481,7 @@ Three independent layers, all committed:
 | **total** | **27** | — | **8.0e-14** |
 
 Certified constants (Γ = 1, R = 1) live in
-[`verification/trivortex_n/data/verified_params.json`](../../verification/trivortex_n/data/verified_params.json):
+[`data/verified_params.json`](data/verified_params.json):
 `ω₂ = 0.079577472`, `ω₃ = 1/(2π) = 0.159154943`, `ω₅ = 1/π = 0.318309886`,
 `ω₇ = 3/(2π) = 0.477464829`, `ω₈ = 7/(4π) = 0.557042301` (the Havelock edge of the parent
 project), `Σ_{N=8} = 3.5`, `a² = 3R² = 3`, `ω₃(a=1) = 3/(2π) = 0.477464829`.
@@ -524,9 +530,11 @@ rewrite inside `Complex` real arithmetic and matches the root module's `(x, y)`-
 via `ker_re_I`/`ker_im_I`.
 
 **Q: Does the compile really run?**
-A: The gate-2 compile runs on the author machine against Mathlib v4.6.0 — the same
-contract as the sibling Polyvortex release; the sandbox-side gates (1/3/4/5 + static 2)
-are all reproducible from `tools/` with nothing but Python 3.
+A: Yes — the full gate-2 compile (`lake env lean NGon.lean` against Mathlib v4.6.0 with the
+official olean cache) was executed in the sandbox on 2026-11-28: 27/27 axiom prints = the
+classical trio, 0 warnings, exit 0 (evidence: `docs/evidence/ci_gate_2026-11-28_full.log`).
+The sandbox-side gates (1/3/4/5) are reproducible from `tools/` with nothing but Python 3,
+and the numeric laboratory is committed too (`tools/numeric_lab.py`).
 
 **Q: How does this relate to Aref 1979?**
 A: That paper is the classical reference for vortex-ring motions of the polygon family;
@@ -539,7 +547,7 @@ this artifact is its regular-ring statement in forced-rotation (Kirchhoff) form,
 | symptom | cause | fix |
 |---|---|---|
 | `lake: unknown command` / wrong toolchain | elan not on PATH or another default toolchain | `elan default leanprover/lean4:v4.6.0` inside the package dir |
-| `error: no toolchain associated` | running `lake` outside the package | `cd trivortex_n/trivortex_n_lean4` first |
+| `error: no toolchain associated` | running `lake` outside the package | `cd verification/NGoen_lean4` first |
 | seal check fails after editing a statement | intentional — the seal froze the statement | if the change is deliberate: `python3 tools/seal_check.py --update` (visible in review) |
 | docstring ratchet fails | coverage dropped below 33/33 | restore the docstring, or raise the baseline explicitly (`--update-baseline`) |
 | bridge fails with *«расходится с печатью»* | a sealed statement changed | re-run `export_verified_params.py` without `--check` after consciously accepting the new statement |
@@ -574,7 +582,7 @@ new theorem must join the `#print axioms` census. Keep imports Mathlib-only.
   title  = {TRIVORTEX-N, file 1/5: the regular N-gon of point vortices
             with the forced rotation rate — a Lean 4 formalization},
   year   = {2026},
-  url    = {https://github.com/wild8highlander/Trivortex/tree/main/trivortex_n/trivortex_n_lean4}
+  url    = {https://github.com/wild8highlander/Trivortex/tree/main/verification/NGoen_lean4}
 }
 ```
 
