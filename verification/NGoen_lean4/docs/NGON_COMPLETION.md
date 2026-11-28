@@ -50,41 +50,48 @@ theorem sum_ker_unity {N : ℕ} (hN : 0 < N) :
 | гейт | содержание | статус 2026-11-28 |
 |---|---|---|
 | 1/5 imports | однофайловый контракт, пиннинги toolchain/Mathlib, `autoImplicit false` | **PASS** (песочница) |
-| 2/5 axioms | полная компиляция + `#print axioms` по всем теоремам | статическая часть **PASS** (0 маркеров деградации, 27 директив, все запечатаны); компиляция — на машине автора |
+| 2/5 axioms | полная компиляция + `#print axioms` по всем теоремам | **PASS — полная компиляция исполнена в песочнице** против Mathlib v4.6.0 (olean-кэш leantar; 27 принтов = классическая тройка, 0 warning/error, rc=0) |
 | 3/5 seal | печать утверждений против `seal/manifest.json` | **PASS** (27/27) |
 | 4/5 conventions | именование, ракет докстрингов, гигиена | **PASS** (33/33 = 100%) |
 | 5/5 bridge | verified params + числовая лаборатория | **PASS** (27/27 теорем, худшая невязка 8.0e-14) |
 
-Единый лог — `docs/evidence/ci_gate_2026-11-28.log` (единственное место, куда
-коммитится лог). Команда полного прогона на машине автора:
+Итог полного прогона: **5/5 гейтов PASS, exit 0** — лог
+`docs/evidence/ci_gate_2026-11-28_full.log` (первый статический лог
+`ci_gate_2026-11-28.log` сохранён рядом; в `docs/evidence/` — один лог на веху).
+Команда полного прогона (воспроизводима где угодно с тулчейном):
 
 ```bash
-bash tools/ci_gate.sh          # гейт 2 скомпилирует NGon.lean против Mathlib v4.6.0
+bash tools/ci_gate.sh          # гейт 2 компилирует NGon.lean против Mathlib v4.6.0
 ```
 
-## Числовая лаборатория (независимый мост)
+## Числовая лаборатория (независимый мост, теперь коммитится)
 
 Каждая из 27 теорем проверена на точную формулу в float64 на сетках
 `N ∈ [3,64]`, `R ∈ {0.5,1,2,3.7}`, `Γ ∈ {1,−1.5,2.3}` — худшая невязка **8.0e-14**
-при допуске 1e-9. Подробности и таблица невязок: [VERIFICATION_NGON.md](VERIFICATION_NGON.md).
+при допуске 1e-9. Лаборатория теперь воспроизводима кем угодно: в пакете
+коммитится её скрипт `tools/numeric_lab.py` (покрытие привязано к печати:
+объединение имён теорем обязано совпасть с `seal/manifest.json`); принятая запись
+`data/ngon_numeric_check.json` остаётся ракетом и переписывается только явно
+(`--update`). Повторный прогон в песочнице подтвердил записи: четыре группы
+воспроизведены бит-в-бит, остальные — в допуске, худшая невязка совпадает (8.001e-14).
+Подробности и таблица невязок: [VERIFICATION_NGON.md](VERIFICATION_NGON.md).
 
 ## Что в пакете
 
 ```
-trivortex_n/
-├── trivortex_n_lean4/
-│   ├── NGon.lean                 — артефакт: файл 1/5 (660 строк, 33 декларации)
-│   ├── lakefile.lean             — autoImplicit := false, Mathlib @ v4.6.0
-│   ├── lean-toolchain            — leanprover/lean4:v4.6.0
-│   ├── lake-manifest.json        — точные ревизии mathlib и зависимостей
-│   ├── README.md / README_RU.md  — EN/RU, mermaid, таблицы, галерея
-│   ├── assets/                   — 6 PNG-графиков, 3 GIF, banner + logo SVG
-│   ├── docs/                     — STATEMENTS, DECLARATIONS, этот отчёт, VERIFICATION
-│   ├── docs/evidence/            — ci_gate_2026-11-28.log
-│   ├── seal/                     — manifest.json (27 sha256), docstring_baseline.json
-│   └── tools/                    — 5 гейтов + ci_gate.sh
 verification/
-└── trivortex_n/data/             — verified_params.json + ngon_numeric_check.json (у корня репо)
+└── NGoen_lean4/
+    ├── NGon.lean                 — артефакт: файл 1/5 (660 строк, 33 декларации)
+    ├── lakefile.lean             — autoImplicit := false, Mathlib @ v4.6.0
+    ├── lean-toolchain            — leanprover/lean4:v4.6.0
+    ├── lake-manifest.json        — точные ревизии mathlib и зависимостей
+    ├── README.md / README_RU.md  — EN/RU, mermaid, таблицы, галерея
+    ├── assets/                   — 6 PNG-графиков, 3 GIF, banner + logo SVG
+    ├── data/                     — verified_params.json + ngon_numeric_check.json (в пакете)
+    ├── docs/                     — STATEMENTS, DECLARATIONS, этот отчёт, VERIFICATION
+    ├── docs/evidence/            — ci_gate_2026-11-28.log + ci_gate_2026-11-28_full.log
+    ├── seal/                     — manifest.json (27 sha256), docstring_baseline.json
+    └── tools/                    — 5 гейтов + numeric_lab.py + ci_gate.sh
 ```
 
 ## Дорожная карта TRIVORTEX-N (файлы 1/5 … 5/5)
