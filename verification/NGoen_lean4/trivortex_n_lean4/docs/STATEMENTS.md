@@ -1,7 +1,7 @@
 # The statement layer — all 27 sealed theorems of `NGon.lean`
 
 > Machine-checkable source of truth: [`seal/manifest.json`](../seal/manifest.json) (sha256 of every normalized statement). This page is *generated* from the source — nothing here is hand-written prose about the statements.
-
+>
 > The five statements that carry the mathematical payload are marked ★.
 
 
