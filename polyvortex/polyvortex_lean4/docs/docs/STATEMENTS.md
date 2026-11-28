@@ -137,7 +137,7 @@ New public statements sealed in v1.1.0 (all on the standard axiom set
 - `havelock_witness` — for `N ≥ 8` the explicit growing mode
   `u k = ((Ω−β)/λ + i)·(ζ^{(N−3)k} + ζ^{5k})`, `v = 0`,
   `λ = √(β² − Ω²) > 0`: `corotLin u = λ·u`, `0 < λ`.
-- Supporting: `corotLin_orbit_kernel` (TW3), `corotLin_proj` + 
+- Supporting: `corotLin_orbit_kernel` (TW3), `corotLin_proj` +
   `corotLin_pair_system` (TW4), `havS_closed` / `havS_sym` / `havS_real_sq`
   (the `N ≤ 7` threshold), `fmode_inversion`, `rootExp_unit`.
 

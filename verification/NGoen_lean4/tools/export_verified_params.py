@@ -32,7 +32,9 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)  # trivortex_n_lean4/
-REPO = os.path.dirname(os.path.dirname(ROOT))  # корень репо (сосед polyvortex_lean4 → verification/)
+REPO = os.path.dirname(
+    os.path.dirname(ROOT)
+)  # корень репо (сосед polyvortex_lean4 → verification/)
 DEFAULT_OUT = os.path.join(REPO, "verification", "trivortex_n", "data", "verified_params.json")
 SEAL = os.path.join(ROOT, "seal", "manifest.json")
 
