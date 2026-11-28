@@ -22,12 +22,14 @@
 **27 утверждений запечатаны sha256, 27 директив `#print axioms`, 33 декларации со 100%
 покрытием докстрингами.**
 
-**Машинная проверка:** пятигейт-конвейер соседнего пакета Polyvortex на месте — гейты
-**1/3/4/5 PASS** (2026-11-28, прогон в песочнице: imports, seal, conventions, числовой
-мост), статическая часть гейта 2 чиста; полная компиляция против Mathlib v4.6.0 — на машине
-автора (`bash tools/ci_gate.sh`). Независимая числовая лаборатория проверяет **все 27 теорем
-по точным формулам — худшая невязка 8.0e-14**. Лог:
-[`docs/evidence/ci_gate_2026-11-28.log`](docs/evidence/ci_gate_2026-11-28.log). Отчёты:
+**Машинная проверка:** пятигейт-конвейер соседнего пакета Polyvortex на месте и **ВСЕ ПЯТЬ
+ГАЙТОВ PASS** (2026-11-28, полный прогон в песочнице — включая **полную компиляцию**
+`NGon.lean` против настоящего Mathlib v4.6.0 через `lake env lean`: 27 отпечатков
+`#print axioms`, все — ровно классическая тройка, 0 предупреждений, 0 ошибок, exit 0).
+Независимая числовая лаборатория проверяет **все 27 теорем по точным формулам — худшая
+невязка 8.0e-14**, и сама лаборатория теперь закоммичена (`tools/numeric_lab.py`) —
+воспроизводима кем угодно на Python 3. Лог:
+[`docs/evidence/ci_gate_2026-11-28_full.log`](docs/evidence/ci_gate_2026-11-28_full.log). Отчёты:
 [завершение](docs/NGON_COMPLETION.md) · [верификация](docs/VERIFICATION_NGON.md).
 
 </div>
@@ -48,7 +50,7 @@
 [![Artifact](https://img.shields.io/badge/artifact-660%20lines-1284BA?style=for-the-badge)](NGon.lean)
 [![Declarations](https://img.shields.io/badge/declarations-33%20%2827%20thm%20%2B%206%20def%29-9558B2?style=for-the-badge)](#приложение-a--реестр-деклараций)
 [![Docstrings](https://img.shields.io/badge/docstrings-100%25%20%2833%2F33%29-2EA043?style=for-the-badge)](seal/docstring_baseline.json)
-[![Gates](https://img.shields.io/badge/gates-1%2F3%2F4%2F5%20PASS%20%C2%B7%202%20author--clean-2EA043?style=for-the-badge)](#9-сборка-запуск-ci)
+[![Gates](https://img.shields.io/badge/gates-5%2F5%20PASS%20%C2%B7%20full%20compile%20v4.6.0-2EA043?style=for-the-badge)](#9-сборка-запуск-ci)
 [![REUSE](https://img.shields.io/badge/license-IPL--RP--1.0-red?style=for-the-badge)](https://github.com/wild8highlander/Trivortex/blob/main/LICENSE.md)
 
 <!-- identities -->
@@ -89,7 +91,7 @@
 
 ## 1. TL;DR — что живёт в этой папке
 
-`trivortex_n/trivortex_n_lean4/` программы **TRIVORTEX-N** держит файл **1/5** Lean 4
+`verification/NGoen_lean4/` программы **TRIVORTEX-N** держит файл **1/5** Lean 4
 формализации: один самодостаточный артефакт `NGon.lean` — импортируется только Mathlib,
 ничего из корневого модуля. Сертифицированные слои:
 
@@ -102,14 +104,16 @@
 | **§3 следствия** | `nGon_omega_ne_zero` (N ≥ 2), `nGon_omega_pos_iff` (против часовой ⟺ Γ > 0) | **доказано, запечатано** |
 | **§3 мост N = 3** | `nGon_side3_sq` (`a² = 3R²`) и `nGon_omega_three` (`ω_3 = 3Γ/(2πa²)`) — треугольник родительского модуля | **доказано, запечатано** |
 
-**Статус машинной проверки — прочтите это первым (2026-11-28).** Пятигейт-конвейер зелёный
-всё, что проверяется без тулчейна: гейты 1/3/4/5 **PASS** и статическая часть гейта 2 чиста
-(0 `sorry`, 0 `axiom`, 0 `native_decide`, 0 `unsafe`-маркеров; 27 директив `#print axioms`,
-все ссылаются на запечатанные утверждения). Полная компиляция против пиннованного Mathlib
-v4.6.0 — на машине автора, тот же контракт, что и у соседнего пакета Polyvortex. Числовая
-лаборатория независимо проверяет **все 27 теорем по точным формулам** на сетке
+**Статус машинной проверки — прочтите это первым (2026-11-28, полный прогон).** Все пять
+гейтов **PASS** одним прогоном: гейт 1 (imports/пиннинги), гейт 2 (**полная компиляция** —
+`lake env lean NGon.lean` против Mathlib v4.6.0 с официальным olean-кэшем; 27 отпечатков
+`#print axioms`, все ровно `propext, Classical.choice, Quot.sound`; 0 `sorry`, 0 `axiom`,
+0 `native_decide`, 0 `unsafe`), гейт 3 (печать 27/27), гейт 4 (конвенции, 33/33 докстрингов),
+гейт 5 (мост + числовая лаборатория). Числовая лаборатория проверяет **все 27 теорем по
+точным формулам** на сетке
 `N ∈ [3,64] × R ∈ {0.5,1,2,3.7} × Γ ∈ {1,−1.5,2.3}` с худшей невязкой **8.0e-14**
-([отчёт](docs/VERIFICATION_NGON.md)).
+([отчёт](docs/VERIFICATION_NGON.md)); лаборатория закоммичена и воспроизводима
+(`tools/numeric_lab.py`).
 
 ---
 
@@ -256,8 +260,8 @@ flowchart LR
   end
   G1 --> G2 --> G3 --> G4 --> G5
   G3 --> SEAL["seal/manifest.json\n27 утверждений запечатаны"]
-  G5 --> LAB["verification/trivortex_n/data/\nverified_params.json · ngon_numeric_check.json"]
-  G5 --> LOG["docs/evidence/\nci_gate_2026-11-28.log"]
+  G5 --> LAB["data/ (в пакете)\nverified_params.json · ngon_numeric_check.json"]
+  G5 --> LOG["docs/evidence/\nci_gate_2026-11-28_full.log"]
 ```
 
 Поток объектов от Mathlib к теореме о многоугольнике:
@@ -339,9 +343,9 @@ flowchart LR
 
 Структурно запрещено (статическая половина гейта 2 сканирует исходник на каждом прогоне
 CI): объявления `axiom`, `sorry`, `native_decide`, `unsafe`, `@[implemented_by]`.
-Полный разбор лога компиляции (гейт 2 на машине автора) перепроверяет, что каждый из 27
-принтов даёт точно разрешённую тройку — см. [`docs/evidence/`](docs/evidence) после
-следующего прогона CI.
+Полный разбор лога компиляции (гейт 2) перепроверяет, что каждый из 27
+принтов даёт точно разрешённую тройку — исполнено, см. лог полного прогона
+[`docs/evidence/ci_gate_2026-11-28_full.log`](docs/evidence/ci_gate_2026-11-28_full.log).
 
 ---
 
@@ -358,18 +362,20 @@ CI): объявления `axiom`, `sorry`, `native_decide`, `unsafe`, `@[implem
 | [`docs/DECLARATIONS.md`](docs/DECLARATIONS.md) | — | реестр деклараций: 33 строки, секции, покрытие докстрингами, хеши печати |
 | [`docs/NGON_COMPLETION.md`](docs/NGON_COMPLETION.md) | — | отчёт о завершении: 9 нормализаций релиза, таблица гейтов, дорожная карта 1/5…5/5 |
 | [`docs/VERIFICATION_NGON.md`](docs/VERIFICATION_NGON.md) | — | отчёт о числовой верификации: таблица невязок, сертифицированные константы, кросс-проверки |
-| [`docs/evidence/ci_gate_2026-11-28.log`](docs/evidence/ci_gate_2026-11-28.log) | — | коммитимый лог CI (гейты 1/3/4/5 + статический гейт 2, прогон в песочнице) |
+| [`docs/evidence/ci_gate_2026-11-28.log`](docs/evidence/ci_gate_2026-11-28.log) | — | первый коммитимый лог CI (гейты 1/3/4/5 + статический гейт 2, прогон в песочнице) |
+| [`docs/evidence/ci_gate_2026-11-28_full.log`](docs/evidence/ci_gate_2026-11-28_full.log) | — | **лог полного пятигейтового прогона** — включая полную компиляцию `lake env lean NGon.lean` против Mathlib v4.6.0 (песочница, exit 0) |
 | [`seal/manifest.json`](seal/manifest.json) | — | **печать**: sha256 всех 27 нормализованных утверждений |
 | [`seal/docstring_baseline.json`](seal/docstring_baseline.json) | — | база ракета докстрингов (33/33) — покрытие может только расти |
 | [`seal/naming_exceptions.json`](seal/naming_exceptions.json) | — | grandfather-список имён вне конвенций — здесь пуст |
 | [`tools/check_imports.py`](tools/check_imports.py) | — | гейт 1: однофайловый контракт, `roots := #[NGon]`, пиннинги воспроизводимости |
-| [`tools/axioms_gate.py`](tools/axioms_gate.py) | — | гейт 2: компилирует и парсит `#print axioms` (машина автора), запрещает маркеры деградации |
+| [`tools/axioms_gate.py`](tools/axioms_gate.py) | — | гейт 2: компилирует и парсит `#print axioms` (проверено против Mathlib v4.6.0 в песочнице), запрещает маркеры деградации |
 | [`tools/seal_check.py`](tools/seal_check.py) | — | гейт 3: печать утверждений `--check` / явный `--update` |
 | [`tools/lint_conventions.py`](tools/lint_conventions.py) | — | гейт 4: конвенции именования, ракет докстрингов, гигиена |
 | [`tools/export_verified_params.py`](tools/export_verified_params.py) | — | гейт 5: выгрузка сертифицированных констант, привязанных к хешам печати |
+| [`tools/numeric_lab.py`](tools/numeric_lab.py) | — | гейт 5: сама числовая лаборатория — все 27 теорем по точным формулам в детерминированном float64, покрытие привязано к печати (теперь закоммичена — воспроизводима кем угодно) |
 | [`tools/ci_gate.sh`](tools/ci_gate.sh) | — | прогоняет все пять гейтов по порядку |
 | [`assets/charts/`](assets/charts) · [`assets/gif/`](assets/gif) · SVG | — | 6 графиков, 3 анимации, banner + logo (фирменный сине-золотой) |
-| `../../verification/trivortex_n/data/*.json` | — | принятые лабораторией параметры: `verified_params.json` + `ngon_numeric_check.json` |
+| `data/verified_params.json` · `data/ngon_numeric_check.json` | — | принятые лабораторией параметры и запись невязок, привязаны к хешам печати |
 
 ---
 
@@ -380,7 +386,7 @@ CI): объявления `axiom`, `sorry`, `native_decide`, `unsafe`, `@[implem
 curl https://elan.lean-lang.org/elan-init.sh -sSf | sh -s -- -y
 
 # пятигейт-контракт (при первом прогоне скачает кэш Mathlib v4.6.0)
-cd trivortex_n/trivortex_n_lean4
+cd verification/NGoen_lean4
 bash tools/ci_gate.sh
 
 # или пошагово
@@ -389,16 +395,18 @@ python3 tools/axioms_gate.py          # 2/5 axioms (полная компиля�
 python3 tools/seal_check.py --check   # 3/5 seal
 python3 tools/lint_conventions.py     # 4/5 conventions
 python3 tools/export_verified_params.py --check   # 5/5 bridge
+python3 tools/numeric_lab.py          # 5/5 числовая лаборатория (27 теорем, точные формулы)
 ```
 
 | гейт | проверяется без тулчейна | статус 2026-11-28 |
 |---|:-:|---|
 | 1/5 imports | да | **PASS** (прогон в песочнице) |
-| 2/5 axioms | статическая половина | **PASS** (статическая) · полная компиляция у автора |
+| 2/5 axioms | статическая половина | **PASS** — полная компиляция исполнена в песочнице: 27/27 принтов = классическая тройка, 0 предупреждений, rc=0 |
 | 3/5 seal | да | **PASS** (27/27) |
 | 4/5 conventions | да | **PASS** (33/33 = 100%) |
-| 5/5 bridge | да | **PASS** (27/27 теорем, худшая невязка 8.0e-14) |
+| 5/5 bridge + лаборатория | да | **PASS** (27/27 теорем, худшая невязка 8.0e-14) |
 
+Все пять гейтов — один прогон, exit 0: [`docs/evidence/ci_gate_2026-11-28_full.log`](docs/evidence/ci_gate_2026-11-28_full.log).
 Первая настоящая компиляция требует olean-кэш Mathlib v4.6.0
 (`lake exe cache get`, ≈2 ГБ) — всё прочее это сборка одного файла.
 
@@ -448,8 +456,9 @@ gantt
 
 Три независимых слоя, все закоммичены:
 
-1. **Слой Lean** (гейт 2, машина автора): артефакт компилируется против Mathlib v4.6.0;
-   27 `#print axioms` = классическая тройка; 0 `sorry`. Тот же контракт, что у Polyvortex.
+1. **Слой Lean** (гейт 2, любая машина с тулчейном): артефакт компилируется против Mathlib v4.6.0;
+   27 `#print axioms` = классическая тройка; 0 `sorry`. **Исполнено в песочнице 2026-11-28** —
+   см. лог полного прогона. Тот же контракт, что у Polyvortex.
 2. **Слой печати** (гейт 3, любая машина): тексты утверждений заморожены sha256; числовой
    мост (гейт 5) ссылается на эти хеши — изменится утверждение, мост сломается, пока
    лаборатория осознанно не примет новые константы.
@@ -474,7 +483,7 @@ gantt
 | **итого** | **27** | — | **8.0e-14** |
 
 Сертифицированные константы (Γ = 1, R = 1) лежат в
-[`verification/trivortex_n/data/verified_params.json`](../../verification/trivortex_n/data/verified_params.json):
+[`data/verified_params.json`](data/verified_params.json):
 `ω₂ = 0.079577472`, `ω₃ = 1/(2π) = 0.159154943`, `ω₅ = 1/π = 0.318309886`,
 `ω₇ = 3/(2π) = 0.477464829`, `ω₈ = 7/(4π) = 0.557042301` (хавелоковский край родительского
 проекта), `Σ_{N=8} = 3.5`, `a² = 3R² = 3`, `ω₃(a=1) = 3/(2π) = 0.477464829`.
@@ -524,9 +533,11 @@ CI — один лог на веху, названный датой.
 `(x, y)`-конвенции корневого модуля.
 
 **В: Компиляция реально проходит?**
-О: Компиляция гейта 2 идёт на машине автора против Mathlib v4.6.0 — тот же контракт, что
-у релиза Polyvortex; песочничные гейты (1/3/4/5 + статический 2) воспроизводимы из
-`tools/` одним Python 3.
+О: Да — полная компиляция гейта 2 (`lake env lean NGon.lean` против Mathlib v4.6.0 с
+официальным olean-кэшем) исполнена в песочнице 2026-11-28: 27/27 аксиомных принтов =
+классическая тройка, 0 предупреждений, exit 0 (доказательство: `docs/evidence/ci_gate_2026-11-28_full.log`).
+Песочничные гейты (1/3/4/5) воспроизводимы из `tools/` одним Python 3, числовая
+лаборатория тоже закоммичена (`tools/numeric_lab.py`).
 
 **В: Как это связано с Aref 1979?**
 О: Та работа — классическая ссылка по вихревым кольцам семейства многоугольников; этот
@@ -540,7 +551,7 @@ CI — один лог на веху, названный датой.
 | симптом | причина | лечение |
 |---|---|---|
 | `lake: unknown command` / чужой тулчейн | elan не в PATH или другой default | `elan default leanprover/lean4:v4.6.0` внутри каталога пакета |
-| `error: no toolchain associated` | запуск `lake` вне пакета | сначала `cd trivortex_n/trivortex_n_lean4` |
+| `error: no toolchain associated` | запуск `lake` вне пакета | сначала `cd verification/NGoen_lean4` |
 | seal падает после правки утверждения | намеренно — печать заморозила утверждение | если правка осознанная: `python3 tools/seal_check.py --update` (видно в ревью) |
 | ракет докстрингов падает | покрытие упало ниже 33/33 | вернуть докстринг или явно поднять базу (`--update-baseline`) |
 | bridge падает с «расходится с печатью» | запечатанное утверждение изменилось | перезапустить `export_verified_params.py` без `--check` после осознанного принятия нового утверждения |
@@ -575,7 +586,7 @@ CI — один лог на веху, названный датой.
   title  = {TRIVORTEX-N, файл 1/5: правильный N-угольник точечных вихрей
             с вынужденной частотой вращения — формализация в Lean 4},
   year   = {2026},
-  url    = {https://github.com/wild8highlander/Trivortex/tree/main/trivortex_n/trivortex_n_lean4}
+  url    = {https://github.com/wild8highlander/Trivortex/tree/main/verification/NGoen_lean4}
 }
 ```
 
