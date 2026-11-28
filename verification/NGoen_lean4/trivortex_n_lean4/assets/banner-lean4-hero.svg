@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="280" viewBox="0 0 1200 280" role="img" aria-label="LEAN 4 VERIFICATION — TRIVORTEX-N NGON formalization">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1530"/>
+      <stop offset="1" stop-color="#13234f"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#d4a531"/>
+      <stop offset="1" stop-color="#f2cf6b"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#f2cf6b" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#f2cf6b" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="280" fill="url(#bg)"/>
+  <circle cx="600" cy="150" r="132" fill="url(#glow)"/>
+  <g transform="translate(600,150)" stroke="url(#gold)" fill="none" stroke-linecap="round">
+    <circle r="86" stroke-opacity="0.35" stroke-dasharray="3 7"/>
+    <polygon points="0.0,-86.0 67.2,-53.6 83.8,19.1 37.3,77.5 -37.3,77.5 -83.8,19.1 -67.2,-53.6" stroke-opacity="0.85" stroke-width="2.4"/>
+    <g stroke="#7fd4ff" stroke-width="2.2"><path d="M 0.0,-86.0 A 86,86 0 0 1 67.2,-53.6"/> <path d="M 67.2,-53.6 A 86,86 0 0 1 83.8,19.1"/> <path d="M 83.8,19.1 A 86,86 0 0 1 37.3,77.5"/></g>
+    <g fill="#f2cf6b" stroke="none"><circle cx="0.0" cy="-86.0" r="5.2"/> <circle cx="67.2" cy="-53.6" r="5.2"/> <circle cx="83.8" cy="19.1" r="5.2"/> <circle cx="37.3" cy="77.5" r="5.2"/> <circle cx="-37.3" cy="77.5" r="5.2"/> <circle cx="-83.8" cy="19.1" r="5.2"/> <circle cx="-67.2" cy="-53.6" r="5.2"/></g>
+    <g fill="none" stroke="#ffffff" stroke-opacity="0.8">
+      <path d="M 46,-84 a 8,8 0 1 1 -1.5,7.5" stroke-width="1.6"/>
+    </g>
+  </g>
+  <text x="96" y="112" fill="#ffffff" font-family="Georgia, 'Times New Roman', serif"
+        font-size="46" letter-spacing="6" font-weight="bold">LEAN 4 VERIFICATION</text>
+  <text x="98" y="158" fill="url(#gold)" font-family="Georgia, 'Times New Roman', serif"
+        font-size="27" letter-spacing="3">TRIVORTEX-N · file 1/5 — the regular N-gon of point vortices</text>
+  <text x="98" y="200" fill="#9fb4dd" font-family="'DejaVu Sans', Verdana, sans-serif"
+        font-size="16.5" letter-spacing="1">forced rate ω = Γ(N−1)/(4πR²) · roots-of-unity pairing · uniqueness of ν · N=3 bridge</text>
+  <rect x="98" y="222" width="238" height="26" rx="13" fill="none" stroke="#2EA043"/>
+  <text x="112" y="240" fill="#4ade80" font-family="Verdana, sans-serif" font-size="14">0 sorry · 0 axiom · 27 seals</text>
+  <rect x="348" y="222" width="252" height="26" rx="13" fill="none" stroke="#2EA043"/>
+  <text x="362" y="240" fill="#4ade80" font-family="Verdana, sans-serif" font-size="14">Lean 4.6.0 · Mathlib v4.6.0</text>
+  <text x="1104" y="246" fill="#6f83b8" font-family="Verdana, sans-serif" font-size="12"
+        text-anchor="end">TRIVORTEX-N · 1/5</text>
+</svg>

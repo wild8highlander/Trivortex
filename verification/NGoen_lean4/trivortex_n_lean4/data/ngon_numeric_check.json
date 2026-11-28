@@ -1,0 +1,118 @@
+{
+ "note": "числовая лаборатория NGon.lean: каждая запечатанная теорема проверена на точную формулу в float64; max_abs_err — максимальная |lhs−rhs| по всей сетке; файл детерминирован — метки времени запрещены",
+ "tolerance": 1e-09,
+ "all_pass": true,
+ "checks": [
+  {
+   "id": "roots_of_unity",
+   "covers": [
+    "exp_two_pi_I",
+    "normSq_unity",
+    "unity_mod",
+    "unity_congr",
+    "unity_inv",
+    "unity_ne_one"
+   ],
+   "grid": "N∈[3,64], m∈[0,N)",
+   "max_abs_err": 2.266215559059192e-15
+  },
+  {
+   "id": "pairing_identity",
+   "covers": [
+    "ker_pair"
+   ],
+   "grid": "N∈[3,64], m∈[1,N−1]",
+   "max_abs_err": 6.92868121833372e-14
+  },
+  {
+   "id": "shape_factor_sum",
+   "covers": [
+    "sum_ker_unity"
+   ],
+   "grid": "N∈[3,64]",
+   "max_abs_err": 8.001496801707623e-14
+  },
+  {
+   "id": "kernel_polygon_reduction",
+   "covers": [
+    "ker_nGon_sum"
+   ],
+   "grid": "N∈[3,20] × R∈{0.5,1,2,3.7} × k∈[0,N)",
+   "max_abs_err": 5.0305723172905546e-14
+  },
+  {
+   "id": "kernel_algebra",
+   "covers": [
+    "ker_mul",
+    "ker_re_I",
+    "ker_im_I"
+   ],
+   "grid": "9 пар a,b ∈ ℂ\\{0}",
+   "max_abs_err": 1.1188630228279524e-16
+  },
+  {
+   "id": "polygon_geometry",
+   "covers": [
+    "normSq_nGon",
+    "nGon_ne_zero",
+    "nGonAngle_add",
+    "unity_shift"
+   ],
+   "grid": "R∈{0.5,1,2,3.7}, N∈[3,20]",
+   "max_abs_err": 7.746143079195815e-15
+  },
+  {
+   "id": "main_theorem_rigid_rotation",
+   "covers": [
+    "nGon_field_eq"
+   ],
+   "grid": "N∈[3,20] × R∈{0.5,1,2,3.7} × g∈{1,−1.5,2.3}",
+   "max_abs_err": 1.8223897527643367e-14
+  },
+  {
+   "id": "xy_bridge",
+   "covers": [
+    "field_re",
+    "field_im"
+   ],
+   "grid": "N∈[3,20] × R∈{0.5,1,2,3.7} × g∈{1,−1.5,2.3}",
+   "max_abs_err": 2.220446049250313e-15
+  },
+  {
+   "id": "omega_forced_uniqueness",
+   "covers": [
+    "nGon_omega_forced"
+   ],
+   "grid": "N∈[3,20] × R∈{0.5,1,2,3.7} × g∈{1,−1.5,2.3}",
+   "max_abs_err": 7.802960818523827e-15
+  },
+  {
+   "id": "omega_sign_nonzero",
+   "covers": [
+    "nGon_omega_ne_zero",
+    "nGon_omega_pos_iff"
+   ],
+   "grid": "N∈[2,20] × g∈{1,−1.5,2.3}",
+   "max_abs_err": 0.0
+  },
+  {
+   "id": "triangle_side_bridge",
+   "covers": [
+    "nGon_side3_sq",
+    "nGon_omega_three"
+   ],
+   "grid": "R∈{0.5,1,2,3.7} × g∈{1,−1.5,2.3}",
+   "max_abs_err": 2.1316282072803006e-14
+  },
+  {
+   "id": "reindex_bijection",
+   "covers": [
+    "mod_shift_left",
+    "mod_shift_right",
+    "mod_shift_ne_zero"
+   ],
+   "grid": "N∈[3,64]",
+   "max_abs_err": 0.0
+  }
+ ]
+}

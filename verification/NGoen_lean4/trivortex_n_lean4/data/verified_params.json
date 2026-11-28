@@ -1,0 +1,69 @@
+{
+ "note": "сертифицированные константы NGon.lean (TRIVORTEX-N, file 1/5); нормировка Γ=1, R=1; значения детерминированы формулами запечатанных утверждений; statement_sha256 связывает запись с печатью; файл бит-в-бит детерминирован — метки времени запрещены",
+ "params": [
+  {
+   "id": "ngon_rate_N3",
+   "symbol": "ω_3(R=1)",
+   "value": 0.15915494309189535,
+   "formula": "Γ(N−1)/(4πR²), N=3, Γ=1, R=1 = 1/(2π)",
+   "source": "nGonOmega",
+   "statement_sha256": "3d4a9ac34e4c16137efd320f69a0c562dfc565b6ed908e86954fdf6563c2d629"
+  },
+  {
+   "id": "ngon_rate_N5",
+   "symbol": "ω_5(R=1)",
+   "value": 0.3183098861837907,
+   "formula": "Γ(N−1)/(4πR²), N=5, Γ=1, R=1 = 1/π",
+   "source": "nGonOmega",
+   "statement_sha256": "126dfc90ed150fe3c17d3742d76a18c809ccbe3dbc28589a218ead67148f960e"
+  },
+  {
+   "id": "ngon_rate_N7",
+   "symbol": "ω_7(R=1)",
+   "value": 0.477464829275686,
+   "formula": "Γ(N−1)/(4πR²), N=7, Γ=1, R=1 = 3/(2π)",
+   "source": "nGonOmega",
+   "statement_sha256": "126dfc90ed150fe3c17d3742d76a18c809ccbe3dbc28589a218ead67148f960e"
+  },
+  {
+   "id": "ngon_rate_N8_havelock_edge",
+   "symbol": "ω_8(R=1)",
+   "value": 0.5570423008216338,
+   "formula": "Γ(N−1)/(4πR²), N=8, Γ=1, R=1 = 7/(4π) — порог Хэвелока",
+   "source": "nGonOmega",
+   "statement_sha256": "126dfc90ed150fe3c17d3742d76a18c809ccbe3dbc28589a218ead67148f960e"
+  },
+  {
+   "id": "shape_factor_sum_N8",
+   "symbol": "Σ_{m≠0} 1/(1−u_m), N=8",
+   "value": 3.5,
+   "formula": "(N−1)/2 = 7/2 (sum_ker_unity)",
+   "source": "sum_ker_unity",
+   "statement_sha256": "68ea86673ca0a7e949e46bee0eceb99f1639f5684527ef2c6e6ea8a4f5d1332e"
+  },
+  {
+   "id": "side3_sq_unit",
+   "symbol": "|z_1−z_0|², N=3, R=1",
+   "value": 3.0,
+   "formula": "3·R² (nGon_side3_sq), R=1",
+   "source": "nGon_side3_sq",
+   "statement_sha256": "434490ac2057f43da62708dc84e57cca8832c8971227bcb9fbbcb387ed749031"
+  },
+  {
+   "id": "omega_three_side_form_a1",
+   "symbol": "ω_3(a=1)",
+   "value": 0.477464829275686,
+   "formula": "3Γ/(2πa²) (nGon_omega_three), Γ=1, a=√3·R=1",
+   "source": "nGon_omega_three",
+   "statement_sha256": "3d4a9ac34e4c16137efd320f69a0c562dfc565b6ed908e86954fdf6563c2d629"
+  },
+  {
+   "id": "omega_nonzero_N2",
+   "symbol": "ω_2(R=1)",
+   "value": 0.07957747154594767,
+   "formula": "Γ(N−1)/(4πR²), N=2, Γ=1, R=1 = 1/(4π) ≠ 0 (nGon_omega_ne_zero)",
+   "source": "nGon_omega_ne_zero",
+   "statement_sha256": "b1ac8de300a2b9f2351ad330fcc22072839226a4727e360222861708aa021504"
+  }
+ ]
+}

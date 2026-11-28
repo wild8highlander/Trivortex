@@ -2,35 +2,3 @@
 # .gitignore — Comprehensive ignore rules for Trivortex
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-# ─── TRIVORTEX verification outputs ───
-verification/lean4/axioms_gate.log
-verification/outputs/
-verification/trivortex_master/runs/*
-!verification/trivortex_master/runs/.gitkeep
-docs/site/.jekyll-cache/
-
-# ─── Python caches and build artifacts ───
-__pycache__/
-*.py[cod]
-*$py.class
-*.egg-info/
-build/
-dist/
-.eggs/
-
-# ─── Tooling caches ───
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.coverage
-htmlcov/
-
-# ─── Virtual environments ───
-.venv/
-venv/
-env/
-
-# ─── Editors and OS noise ───
-.DS_Store
-Thumbs.db
-*.swp

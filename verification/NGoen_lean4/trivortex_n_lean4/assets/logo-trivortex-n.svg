@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240" role="img" aria-label="TRIVORTEX-N NGON mark">
+  <defs>
+    <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1530"/>
+      <stop offset="1" stop-color="#13234f"/>
+    </linearGradient>
+    <linearGradient id="lggold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#d4a531"/>
+      <stop offset="1" stop-color="#f2cf6b"/>
+    </linearGradient>
+  </defs>
+  <rect width="240" height="240" rx="46" fill="url(#lg)"/>
+  <g transform="translate(120,120)">
+    <circle r="86" fill="none" stroke="#9fb4dd" stroke-opacity="0.4" stroke-dasharray="3 7"/>
+    <polygon points="0.0,-86.0 67.2,-53.6 83.8,19.1 37.3,77.5 -37.3,77.5 -83.8,19.1 -67.2,-53.6" fill="none" stroke="url(#lggold)" stroke-width="3"/>
+    <g fill="none" stroke="#7fd4ff" stroke-width="2.4"><path d="M 0.0,-86.0 A 86,86 0 0 1 67.2,-53.6"/> <path d="M 67.2,-53.6 A 86,86 0 0 1 83.8,19.1"/> <path d="M 83.8,19.1 A 86,86 0 0 1 37.3,77.5"/></g>
+    <g fill="#f2cf6b"><circle cx="0.0" cy="-86.0" r="5.2"/> <circle cx="67.2" cy="-53.6" r="5.2"/> <circle cx="83.8" cy="19.1" r="5.2"/> <circle cx="37.3" cy="77.5" r="5.2"/> <circle cx="-37.3" cy="77.5" r="5.2"/> <circle cx="-83.8" cy="19.1" r="5.2"/> <circle cx="-67.2" cy="-53.6" r="5.2"/></g>
+    <g stroke="#ffffff" stroke-opacity="0.85" stroke-width="2">
+      <path d="M 0,-86 L 0,-70" stroke-linecap="round"/>
+    </g>
+  </g>
+</svg>
