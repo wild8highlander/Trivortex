@@ -72,8 +72,11 @@ def main() -> int:
         src = open(os.path.join(ROOT, root_file), encoding="utf-8").read()
         imports = re.findall(r"(?m)^\s*import\s+([A-Za-z0-9_.]+)", src)
         total_imports += len(imports)
-        self_imports = [i for i in imports if i.startswith(("Trivortex", "NGon", "NSide",
-                                                            "NCore", "NRoots", "NFlow"))]
+        self_imports = [
+            i
+            for i in imports
+            if i.startswith(("Trivortex", "NGon", "NSide", "NCore", "NRoots", "NFlow"))
+        ]
         if self_imports:
             problems.append(f"{root_file} импортирует свои модули: {self_imports}")
 

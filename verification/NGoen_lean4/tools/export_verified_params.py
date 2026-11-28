@@ -58,7 +58,8 @@ def check_file(stem: str) -> tuple[bool, list[str]]:
         if sha == "UNSEALED" or sha not in statements.values():
             problems.append(
                 f"{stem}: константа {p.get('id')} не связана с печатью "
-                "(statement_sha256 отсутствует в seal-манифесте)")
+                "(statement_sha256 отсутствует в seal-манифесте)"
+            )
     return (not problems), problems
 
 
@@ -72,9 +73,11 @@ def main() -> int:
         for stem in FILES:
             lab_path = os.path.join(ROOT, "data", f"{stem.lower()}_numeric_check.json")
             lab = json.load(open(lab_path, encoding="utf-8"))
-            print(f"{stem:8s} checks={len(lab.get('checks', [])):2d} "
-                  f"worst={lab.get('worst_residual', 0.0):.3e} "
-                  f"pass={lab.get('all_pass')}")
+            print(
+                f"{stem:8s} checks={len(lab.get('checks', [])):2d} "
+                f"worst={lab.get('worst_residual', 0.0):.3e} "
+                f"pass={lab.get('all_pass')}"
+            )
         return 0
 
     ok_all = True
@@ -86,8 +89,11 @@ def main() -> int:
             print(f"  ✗ {problem}")
         ok_all = ok_all and ok
 
-    print("BRIDGE [PASS] — мост синхронен с печатью, лаборатория зелёная"
-          if ok_all else "BRIDGE [FAIL]")
+    print(
+        "BRIDGE [PASS] — мост синхронен с печатью, лаборатория зелёная"
+        if ok_all
+        else "BRIDGE [FAIL]"
+    )
     return 0 if ok_all else 1
 
 
