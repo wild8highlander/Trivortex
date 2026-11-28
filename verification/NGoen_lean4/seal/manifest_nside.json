@@ -1,0 +1,29 @@
+{
+ "file": "NSide.lean",
+ "created_utc": "2026-11-28T13:23:37+00:00",
+ "theorem_count": 22,
+ "statements": {
+  "chord_sq": "dd15594766f2d10006e39f00d609e146b10601b0aac6045789acda870401b185",
+  "exp_I_add_inv": "6be209a2c09c9eaf64e3472dd38057a38c66de1197edc685b67cc3e40504dabf",
+  "exp_I_conj": "89c6b845a49873a448d97bf112ee7ee6af8fe49049fc9ac79fb9eb25a53bf9d0",
+  "exp_I_conj_inv": "837ee61f47b30416f9f7d94db487244168f39835661c25d12992016a0a7ceb21",
+  "exp_I_normSq": "d1871d6f5f28aba4b69a32544b8c1f7a2bcf83913bd09734e0d85ec7c47fcab0",
+  "exp_I_re": "c045203feba238a1a3a12ec71d87c2c1f10c0d6e3c9f2da2eb023bddc6ec768c",
+  "nGon_eq_cos_sin": "f4f5a2a7592b379cdff38d222bbe4d4a5f6febd4deaaa254d6d69bdff36f3a13",
+  "nGon_im": "0d490833d0d09c41e255d21470299c151076987262df6cf52e5e28ea48fefc96",
+  "nGon_omega_ne_zero": "b1ac8de300a2b9f2351ad330fcc22072839226a4727e360222861708aa021504",
+  "nGon_omega_side": "a8e15e650af85090b535e2bd73c691b1b4dc815d7c7dbccf1b15ba40e7dad8d7",
+  "nGon_period": "06ccbf7faedba5e59c93d5dd34f51b7db434f8d32d40bd90118b07c109731cc3",
+  "nGon_re": "642f9f25c5a4ed2750d902bee9bdabfee2496d831036ac8ec16abbddc517444f",
+  "normSq_sub_unit": "174096f01d9913bbaf25e1bd7f29cf7ac439905d2faaea398bc6b88b319e82e0",
+  "normSq_unity": "e5a951d77912b86e37d602cd2df3cee37f22d87d596c2bd5e8548a420392e76b",
+  "one_sub_cos_ne_zero": "988e103e7f67d2517aa8b36ca31942b6df8c613cbeb45ab4658e63956d23d9ba",
+  "sideSq": "713105eebe22bef32b3f103222f1cd2a44e1bcabf1ffdeecf793a6c462c220b4",
+  "sideSq_three": "e4808221598520d9e5ffad0a33048c60ff481bdb8cf448b76b8e95536206468f",
+  "sideSq_two": "00053b491e11b0d2299a89fa2ce7b9da50b4ede52e4438669fa5a8ffb63bec04",
+  "two_sub_cos_sq": "858f5a6052e3a668e9779f0b4937c304fe3186ad7496082eda1689eb04a26424",
+  "unity_conj_inv": "428214c14da08f5b2aa3ac063ae76ede9e88456f64e960dcba947359020c75de",
+  "unity_mul_inv_exp": "5ab54236335432ae0396aaa4694236d2fc83632300c03aae1d24863ea5cda04d",
+  "unity_ne_one": "4801000d8acf57c81c4f936e353c251d345ca42559adc109e1721ad904f1b6d0"
+ }
+}

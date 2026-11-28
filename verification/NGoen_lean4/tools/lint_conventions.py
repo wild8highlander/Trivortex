@@ -99,10 +99,16 @@ def decls_and_sections(src: str):
 def main() -> int:
     ap = argparse.ArgumentParser(description="Линтер конвенций NGon.lean")
     ap.add_argument("--file", default=os.path.join(ROOT, "NGon.lean"))
-    ap.add_argument("--baseline", default=os.path.join(ROOT, "seal", "docstring_baseline.json"))
+    ap.add_argument("--baseline", default=None)
     ap.add_argument("--update-baseline", action="store_true")
     args = ap.parse_args()
 
+    stem = os.path.splitext(os.path.basename(args.file))[0]
+    if args.baseline is None:
+        if stem.lower() != "ngon":
+            args.baseline = os.path.join(ROOT, "seal", f"docstring_baseline_{stem.lower()}.json")
+        else:
+            args.baseline = os.path.join(ROOT, "seal", "docstring_baseline.json")
     src = open(args.file, encoding="utf-8").read()
     decls, sections = decls_and_sections(src)
     theorem_names = {d[2] for d in decls if d[1] in ("theorem", "lemma")}

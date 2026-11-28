@@ -1,0 +1,45 @@
+{
+ "note": "\u0441\u0435\u0440\u0442\u0438\u0444\u0438\u0446\u0438\u0440\u043e\u0432\u0430\u043d\u043d\u044b\u0435 \u043a\u043e\u043d\u0441\u0442\u0430\u043d\u0442\u044b NSide.lean (TRIVORTEX-N, \u0444\u0430\u0439\u043b 2/5); \u043d\u043e\u0440\u043c\u0438\u0440\u043e\u0432\u043a\u0430 \u0393=1, R=1 (\u0435\u0441\u043b\u0438 \u043d\u0435 \u0443\u043a\u0430\u0437\u0430\u043d\u043e \u0438\u043d\u043e\u0435); statement_sha256 \u0441\u0432\u044f\u0437\u044b\u0432\u0430\u0435\u0442 \u0437\u0430\u043f\u0438\u0441\u044c \u0441 \u043f\u0435\u0447\u0430\u0442\u044c\u044e",
+ "params": [
+  {
+   "id": "sideSq_N2",
+   "symbol": "a\u00b2(N=2)",
+   "value": 4.0,
+   "formula": "2R\u00b2(1\u2212cos \u03c0) = 4R\u00b2 (sideSq_two), R=1",
+   "source": "sideSq_two",
+   "statement_sha256": "00053b491e11b0d2299a89fa2ce7b9da50b4ede52e4438669fa5a8ffb63bec04"
+  },
+  {
+   "id": "sideSq_N3",
+   "symbol": "a\u00b2(N=3)",
+   "value": 3.0,
+   "formula": "2R\u00b2(1\u2212cos 2\u03c0/3) = 3R\u00b2 (sideSq_three), R=1",
+   "source": "sideSq_three",
+   "statement_sha256": "e4808221598520d9e5ffad0a33048c60ff481bdb8cf448b76b8e95536206468f"
+  },
+  {
+   "id": "sideSq_N7",
+   "symbol": "a\u00b2(N=7)",
+   "value": 0.7530203962825328,
+   "formula": "2R\u00b2(1\u2212cos 2\u03c0/7) (sideSq), R=1",
+   "source": "sideSq",
+   "statement_sha256": "713105eebe22bef32b3f103222f1cd2a44e1bcabf1ffdeecf793a6c462c220b4"
+  },
+  {
+   "id": "omega_side_N5_a1",
+   "symbol": "\u03c9_5(a=1)",
+   "value": 0.31830988618379064,
+   "formula": "(N\u22121)\u0393(1\u2212cos 2\u03c0/N)/(2\u03c0a\u00b2), N=5, a\u00b2=2R\u00b2(1\u2212cos 2\u03c0/5), \u0393=1, R=1 = 1/\u03c0",
+   "source": "nGon_omega_side",
+   "statement_sha256": "a8e15e650af85090b535e2bd73c691b1b4dc815d7c7dbccf1b15ba40e7dad8d7"
+  },
+  {
+   "id": "period_N7",
+   "symbol": "T(N=7)",
+   "value": 13.159472534785811,
+   "formula": "8\u03c0\u00b2R\u00b2/((N\u22121)\u0393) (nGon_period), N=7, \u0393=1, R=1",
+   "source": "nGon_period",
+   "statement_sha256": "06ccbf7faedba5e59c93d5dd34f51b7db434f8d32d40bd90118b07c109731cc3"
+  }
+ ]
+}

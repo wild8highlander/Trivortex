@@ -28,7 +28,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 
-EXPECTED_ROOT = "NGon.lean"
+EXPECTED_ROOTS = ["NGon.lean", "NSide.lean", "NCore.lean", "NRoots.lean", "NFlow.lean"]
 EXPECTED_TOOLCHAIN = "leanprover/lean4:v4.6.0"
 EXPECTED_MATHLIB_TAG = "v4.6.0"
 
@@ -36,19 +36,24 @@ EXPECTED_MATHLIB_TAG = "v4.6.0"
 def main() -> int:
     problems: list[str] = []
 
-    # 1. ровно один корневой lean-модуль (lakefile.lean — конфиг Lake, не модуль)
-    lean_files = [
+    # 1. ровно пять корневых lean-модулей (lakefile.lean — конфиг Lake, не модуль):
+    #    пятифайловая программа TRIVORTEX-N приземлена целиком.
+    lean_files = sorted(
         f
         for f in os.listdir(ROOT)
         if f.endswith(".lean") and f != "lakefile.lean" and os.path.isfile(os.path.join(ROOT, f))
-    ]
-    if lean_files != [EXPECTED_ROOT]:
-        problems.append(f"ожидался единственный {EXPECTED_ROOT}, найдено: {lean_files}")
+    )
+    if lean_files != sorted(EXPECTED_ROOTS):
+        problems.append(f"ожидались {EXPECTED_ROOTS}, найдено: {lean_files}")
 
-    # 2. lakefile: корень + default-таргет + пин Mathlib
+    # 2. lakefile: пять корней + default-таргет + пин Mathlib
     lakefile = open(os.path.join(ROOT, "lakefile.lean"), encoding="utf-8").read()
-    if "roots := #[`NGon]" not in lakefile:
-        problems.append("lakefile.lean: roots := #[`NGon] не объявлен")
+    if "roots := #[" not in lakefile:
+        problems.append("lakefile.lean: roots := #[...] не объявлен")
+    else:
+        for stem in ("NGon", "NSide", "NCore", "NRoots", "NFlow"):
+            if f"`{stem}" not in lakefile:
+                problems.append(f"lakefile.lean: корень `{stem} не объявлен")
     if "@[default_target]" not in lakefile:
         problems.append("lakefile.lean: нет @[default_target] (lake build не соберёт артефакт)")
     m = re.search(r'mathlib4\.git"\s*@\s*"([^"]+)"', lakefile)
@@ -61,12 +66,16 @@ def main() -> int:
     if "autoImplicit, false" not in lakefile:
         problems.append("lakefile.lean: autoImplicit false не включён (гигиена подписей)")
 
-    # 3. самособлюдение импортов
-    src = open(os.path.join(ROOT, EXPECTED_ROOT), encoding="utf-8").read()
-    imports = re.findall(r"(?m)^\s*import\s+([A-Za-z0-9_.]+)", src)
-    self_imports = [i for i in imports if i.startswith(("Trivortex", "NGon"))]
-    if self_imports:
-        problems.append(f"корневой файл импортирует свои модули: {self_imports}")
+    # 3. самособлюдение импортов (все пять файлов импортируют только Mathlib)
+    total_imports = 0
+    for root_file in EXPECTED_ROOTS:
+        src = open(os.path.join(ROOT, root_file), encoding="utf-8").read()
+        imports = re.findall(r"(?m)^\s*import\s+([A-Za-z0-9_.]+)", src)
+        total_imports += len(imports)
+        self_imports = [i for i in imports if i.startswith(("Trivortex", "NGon", "NSide",
+                                                            "NCore", "NRoots", "NFlow"))]
+        if self_imports:
+            problems.append(f"{root_file} импортирует свои модули: {self_imports}")
 
     # 4. пин toolchain
     toolchain = open(os.path.join(ROOT, "lean-toolchain"), encoding="utf-8").read().strip()
@@ -74,8 +83,8 @@ def main() -> int:
         problems.append(f"lean-toolchain = {toolchain!r} ≠ {EXPECTED_TOOLCHAIN!r}")
 
     print(
-        f"IMPORTS: root {EXPECTED_ROOT}; imports: {len(imports)} (все Mathlib); "
-        f"toolchain {toolchain}; mathlib pin {'OK' if m else '—'}"
+        f"IMPORTS: roots {len(EXPECTED_ROOTS)} файлов; imports: {total_imports} "
+        f"(все Mathlib); toolchain {toolchain}; mathlib pin {'OK' if m else '—'}"
     )
     if problems:
         print("IMPORTS [FAIL]:")

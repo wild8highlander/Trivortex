@@ -1,0 +1,46 @@
+{
+ "note": "\u0447\u0438\u0441\u043b\u043e\u0432\u0430\u044f \u043b\u0430\u0431\u043e\u0440\u0430\u0442\u043e\u0440\u0438\u044f NFlow.lean: \u043a\u0430\u0436\u0434\u0430\u044f \u0437\u0430\u043f\u0435\u0447\u0430\u0442\u0430\u043d\u043d\u0430\u044f \u0442\u0435\u043e\u0440\u0435\u043c\u0430 \u043f\u0440\u043e\u0432\u0435\u0440\u0435\u043d\u0430 \u043d\u0430 \u0442\u043e\u0447\u043d\u0443\u044e \u0444\u043e\u0440\u043c\u0443\u043b\u0443 \u0432 float64; max_abs_err \u2014 \u043c\u0430\u043a\u0441\u0438\u043c\u0430\u043b\u044c\u043d\u0430\u044f |lhs\u2212rhs| \u043f\u043e \u0432\u0441\u0435\u0439 \u0441\u0435\u0442\u043a\u0435; \u0444\u0430\u0439\u043b \u0434\u0435\u0442\u0435\u0440\u043c\u0438\u043d\u0438\u0440\u043e\u0432\u0430\u043d \u2014 \u043c\u0435\u0442\u043a\u0438 \u0432\u0440\u0435\u043c\u0435\u043d\u0438 \u0437\u0430\u043f\u0440\u0435\u0449\u0435\u043d\u044b",
+ "tolerance": 1e-09,
+ "all_pass": true,
+ "worst_residual": 3.973295718384865e-14,
+ "checks": [
+  {
+   "id": "kernel_covariance",
+   "covers": [
+    "ker_smul",
+    "normSq_exp_I_real"
+   ],
+   "grid": "c\u2208500 \u0444\u0430\u0437, w\u2208\u0434\u0435\u0442\u0435\u0440\u043c\u0438\u043d\u0438\u0440\u043e\u0432\u0430\u043d\u043d\u0430\u044f \u0441\u0435\u0442\u043a\u0430",
+   "max_abs_err": 8.010741897413915e-16
+  },
+  {
+   "id": "field_covariance",
+   "covers": [
+    "field_smul"
+   ],
+   "grid": "N\u2208[2,32] \u00d7 R \u00d7 \u0393 \u00d7 t",
+   "max_abs_err": 7.53644380168212e-15
+  },
+  {
+   "id": "flow_is_solution",
+   "covers": [
+    "nGon_flow_field",
+    "nGon_field_eq"
+   ],
+   "grid": "N\u2208[2,32] \u00d7 R \u00d7 \u0393 \u00d7 t \u00d7 k",
+   "max_abs_err": 3.973295718384865e-14
+  },
+  {
+   "id": "periods_and_shift",
+   "covers": [
+    "nGon_flow_returns",
+    "nGon_flow_shift",
+    "nGon_succ",
+    "nGon_eq_R_unity",
+    "nGon_eq_R_unity_mod"
+   ],
+   "grid": "N\u2208[2,64] \u00d7 R \u00d7 \u0393 \u00d7 k",
+   "max_abs_err": 1.6946818973100072e-15
+  }
+ ]
+}

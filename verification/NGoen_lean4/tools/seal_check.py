@@ -86,7 +86,13 @@ def digest(stmt: str) -> str:
     return hashlib.sha256(stmt.encode("utf-8")).hexdigest()
 
 
-def manifest_path(seal_dir: str) -> str:
+def manifest_path(seal_dir: str, file_arg: str | None = None) -> str:
+    """Per-file seal manifests: seal/manifest.json for NGon.lean,
+    seal/manifest_<stem>.json for the other files of the five-file program."""
+    if file_arg:
+        stem = os.path.splitext(os.path.basename(file_arg))[0]
+        if stem.lower() != "ngon":
+            return os.path.join(seal_dir, f"manifest_{stem.lower()}.json")
     return os.path.join(seal_dir, "manifest.json")
 
 
@@ -112,7 +118,7 @@ def main() -> int:
 
     src = open(args.file, encoding="utf-8").read()
     stmts = extract_statements(src)
-    path = manifest_path(args.seal_dir)
+    path = manifest_path(args.seal_dir, args.file)
 
     if args.show:
         name = args.show

@@ -8,26 +8,30 @@
 
 <img src="assets/banner-lean4-hero.svg" width="100%" alt="LEAN 4 VERIFICATION — TRIVORTEX-N NGON: file 1/5, the regular N-gon of point vortices, forced rate ω = Γ(N−1)/(4πR²), 27 statements sealed, 0 sorry, 0 axiom"/>
 
-### Lean 4 — the regular `N`-gon of point vortices, machine-checked
+### Lean 4 — TRIVORTEX-N: the five-file program, machine-checked end to end
 
-**File 1/5 of TRIVORTEX-N is landed.** One file — `NGon.lean`, 660 lines — proves the classical
+**All five files of TRIVORTEX-N are landed (files 1/5..5/5).** File 1/5 — `NGon.lean`, the flagship 660-line file — proves the classical
 Aref (1979) polygon theorem *with the value of the rotation rate forced*: `N` identical point
 vortices at the vertices of a regular `N`-gon of circumradius `R` rotate rigidly about the
 centroid with angular velocity **`ω = Γ(N−1)/(4πR²)`**, and **any** frequency `ν` under which
-the polygon is a steady rotating solution must equal that value. The proof runs through the
+the polygon is a steady rotating solution must equal that value. Files 2/5-5/5 add the side-length law (`NSide.lean`), the ring with a core
+(`NCore.lean`), the roots-of-unity engine (`NRoots.lean`) and the rotational flow
+(`NFlow.lean`): **139 sealed theorems across five self-contained files**, each proving
+its payload *with the value forced*. The proof of file 1/5 runs through the
 roots-of-unity pairing identity `ker(1−u_m) + ker(1−u_{N−m}) = 1` and the exact finite sum
 **`Σ_{m≠0} 1/(1−u_m) = (N−1)/2`** — zero quadrature, zero `sorry`, zero `axiom` — and the
 `N = 3` special case reproduces the equilateral-triangle frequency of the parent Trivortex
-module in side-length form. **27 statements sealed by sha256, 27 `#print axioms` directives,
-33 declarations with 100% docstring coverage.**
+module in side-length form. **139 statements sealed by sha256 across five files, every `#print axioms`
+directive reporting exactly the classical trio, 100% docstring coverage on every file.**
 
-**Machine check:** the five-gate CI contract of the sibling Polyvortex package is in place —
-gates **1/3/4/5 PASS** (2026-11-28, sandbox run: imports, seal, conventions, numeric bridge)
-and the static part of gate 2 is clean; the full compile against real Mathlib v4.6.0 runs on
-the author machine (`bash tools/ci_gate.sh`). The independent numeric laboratory verifies
-**all 27 theorems to exact formulas — worst residual 8.0e-14**. Evidence log:
-[`docs/evidence/ci_gate_2026-11-28.log`](docs/evidence/ci_gate_2026-11-28.log). Reports:
-[completion](docs/NGON_COMPLETION.md) · [verification](docs/VERIFICATION_NGON.md).
+**Machine check:** the five-gate CI contract runs green **end to end in the sandbox,
+including the full compile of all five files against real Mathlib v4.6.0** (2026-11-28).
+The independent numeric laboratory verifies **all 139 theorems of the five files to exact
+formulas — worst residual 4.0e-12, tolerance 1e-9**. Evidence log:
+[`docs/evidence/ci_gate_2026-11-28_five_files.log`](docs/evidence/ci_gate_2026-11-28_five_files.log).
+Reports: [program completion](docs/PROGRAM_COMPLETION.md) ·
+[file 1/5 completion](docs/NGON_COMPLETION.md) ·
+[verification](docs/VERIFICATION_NGON.md).
 
 </div>
 
@@ -43,11 +47,11 @@ the author machine (`bash tools/ci_gate.sh`). The independent numeric laboratory
 [![axiom](https://img.shields.io/badge/axiom-0-critical?style=for-the-badge&logo=lean)](NGon.lean)
 
 <!-- ROW 2 — PROJECT VITALS -->
-[![Status](https://img.shields.io/badge/status-file%201%2F5%20landed-2EA043?style=for-the-badge&label=Release)](#11-milestone-timeline--the-five-file-program)
-[![Artifact](https://img.shields.io/badge/artifact-660%20lines-1284BA?style=for-the-badge)](NGon.lean)
-[![Declarations](https://img.shields.io/badge/declarations-33%20%2827%20thm%20%2B%206%20def%29-9558B2?style=for-the-badge)](#appendix-a--declaration-census)
-[![Docstrings](https://img.shields.io/badge/docstrings-100%25%20%2833%2F33%29-2EA043?style=for-the-badge)](seal/docstring_baseline.json)
-[![Gates](https://img.shields.io/badge/gates-1%2F3%2F4%2F5%20PASS%20%C2%B7%202%20author--clean-2EA043?style=for-the-badge)](#9-build-run-ci)
+[![Status](https://img.shields.io/badge/status-5%2F5%20landed-2EA043?style=for-the-badge&label=Release)](#11-milestone-timeline--the-five-file-program)
+[![Artifact](https://img.shields.io/badge/artifact-5%20files%20%C2%B7%20139%20theorems-1284BA?style=for-the-badge)](NGon.lean)
+[![Declarations](https://img.shields.io/badge/declarations-184%20%28139%20thm%20%2B%2045%20def%29-9558B2?style=for-the-badge)](#appendix-a--declaration-census)
+[![Docstrings](https://img.shields.io/badge/docstrings-100%25-2EA043?style=for-the-badge)](seal/docstring_baseline.json)
+[![Gates](https://img.shields.io/badge/gates-1--5%20PASS%20%C2%B7%20full%20sandbox%20compile-2EA043?style=for-the-badge)](#9-build-run-ci)
 [![REUSE](https://img.shields.io/badge/license-IPL--RP--1.0-red?style=for-the-badge)](https://github.com/wild8highlander/Trivortex/blob/main/LICENSE.md)
 
 <!-- identities -->
@@ -88,10 +92,9 @@ the author machine (`bash tools/ci_gate.sh`). The independent numeric laboratory
 
 ## 1. TL;DR — what lives in this folder
 
-`trivortex_n/trivortex_n_lean4/` of the **TRIVORTEX-N** program holds file **1/5** of the
-Lean 4 formalization: a single self-contained artifact `NGon.lean` that proves the classical
-regular-`N`-gon theorem of point vortices — everything imported from Mathlib only, nothing
-from the root module. The certified layers:
+`verification/NGoen_lean4/` of the **TRIVORTEX-N** program holds the **complete
+five-file Lean 4 formalization**: five self-contained artifacts, everything imported
+from Mathlib only, nothing from the root module. File 1/5's certified layers:
 
 | layer | statement | status |
 |---|---|---|
@@ -102,14 +105,14 @@ from the root module. The certified layers:
 | **§3 corollaries** | `nGon_omega_ne_zero` (N ≥ 2), `nGon_omega_pos_iff` (counterclockwise ⟺ Γ > 0) | **proven, sealed** |
 | **§3 N = 3 bridge** | `nGon_side3_sq` (`a² = 3R²`) and `nGon_omega_three` (`ω_3 = 3Γ/(2πa²)`) reproduce the parent module's triangle | **proven, sealed** |
 
-**Machine-check status — read this first (2026-11-28).** The five-gate CI contract is green
-where it is checkable without the toolchain: gates 1/3/4/5 **PASS** and the static part of
-gate 2 is clean (0 `sorry`, 0 `axiom`, 0 `native_decide`, 0 `unsafe` markers; 27 `#print axioms`
-directives, all referring to sealed statements). The full compile against the pinned Mathlib
-v4.6.0 runs on the author machine — the same contract as the sibling Polyvortex package.
-The numeric laboratory independently verifies **all 27 theorems to exact formulas** on the
-grid `N ∈ [3,64] × R ∈ {0.5,1,2,3.7} × Γ ∈ {1,−1.5,2.3}` with worst residual **8.0e-14**
-([report](docs/VERIFICATION_NGON.md)).
+**Machine-check status — read this first (2026-11-28).** The five-gate CI contract is
+green **end to end, including the full compile of all five files against the pinned
+Mathlib v4.6.0 in the sandbox**: 139 `#print axioms` directives, every one reporting
+exactly `{propext, Classical.choice, Quot.sound}`; 0 `sorry`, 0 `axiom`, 0
+`native_decide`, 0 `unsafe` markers. The numeric laboratory independently verifies
+**all 139 theorems to exact formulas** — worst residual **4.0e-12**, tolerance 1e-9
+([program report](docs/PROGRAM_COMPLETION.md),
+[report of file 1/5](docs/VERIFICATION_NGON.md)).
 
 ---
 
@@ -350,13 +353,18 @@ the 27 prints reports exactly the allowed trio — see
 | file | lines/size | role |
 |---|---|---|
 | [`NGon.lean`](NGon.lean) | 660 | **the artifact** — file 1/5: the regular `N`-gon with the forced rate; 6 defs, 27 theorems, 27 `#print axioms`; imports Mathlib only |
+| [`NSide.lean`](NSide.lean) | 423 | file 2/5: the side-length law — chord formula, side form of the rate, period; 4 defs, 22 theorems |
+| [`NCore.lean`](NCore.lean) | 765 | file 3/5: the ring with a core — forced rate with the central vortex, zero force at the center, static condition, equal-circulation bridge; 45 declarations |
+| [`NRoots.lean`](NRoots.lean) | 481 | file 4/5: the roots-of-unity engine — geometric dichotomy, partial fractions, cross-ring kernels; 27 declarations |
+| [`NFlow.lean`](NFlow.lean) | 662 | file 5/5: the rotational flow — covariance, the Kirchhoff flow, absolute and relative periods; 33 declarations |
 | [`lakefile.lean`](lakefile.lean) | 26 | Lake package `trivortexn`, `autoImplicit := false` (the strict parent-package hygiene), `lean_lib «NGon»` as default target, Mathlib pinned by exact tag |
 | [`lean-toolchain`](lean-toolchain) | 1 | `leanprover/lean4:v4.6.0` |
 | [`lake-manifest.json`](lake-manifest.json) | — | exact revisions of mathlib v4.6.0 and all transitive dependencies |
 | [`README.md`](README.md) / [`README_RU.md`](README_RU.md) | — | this document and its Russian mirror |
 | [`docs/STATEMENTS.md`](docs/STATEMENTS.md) | — | all 27 sealed statements, generated from the source + seal (nothing hand-written) |
 | [`docs/DECLARATIONS.md`](docs/DECLARATIONS.md) | — | declaration reference: 33 rows, sections, docstring coverage, seal hashes |
-| [`docs/NGON_COMPLETION.md`](docs/NGON_COMPLETION.md) | — | completion report: the 9 release normalizations, gate table, roadmap 1/5…5/5 |
+| [`docs/NGON_COMPLETION.md`](docs/NGON_COMPLETION.md) | — | completion report of file 1/5: the 9 release normalizations, gate table |
+| [`docs/PROGRAM_COMPLETION.md`](docs/PROGRAM_COMPLETION.md) | — | **completion report of the whole five-file program**: the five gates, the labs, the discipline |
 | [`docs/VERIFICATION_NGON.md`](docs/VERIFICATION_NGON.md) | — | the numeric verification report: residual table, certified constants, cross-checks |
 | [`docs/evidence/ci_gate_2026-11-28.log`](docs/evidence/ci_gate_2026-11-28.log) | — | the committed CI log (gates 1/3/4/5 + static gate 2, sandbox run) |
 | [`seal/manifest.json`](seal/manifest.json) | — | **the seal**: sha256 of all 27 normalized statements |
@@ -391,13 +399,13 @@ python3 tools/lint_conventions.py     # 4/5 conventions
 python3 tools/export_verified_params.py --check   # 5/5 bridge
 ```
 
-| gate | checkable without toolchain | status 2026-11-28 |
+| gate | scope | status 2026-11-28 |
 |---|:-:|---|
-| 1/5 imports | yes | **PASS** (sandbox run) |
-| 2/5 axioms | static half | **PASS** (static) · full compile on author machine |
-| 3/5 seal | yes | **PASS** (27/27) |
-| 4/5 conventions | yes | **PASS** (33/33 = 100%) |
-| 5/5 bridge | yes | **PASS** (27/27 theorems, worst residual 8.0e-14) |
+| 1/5 imports | five-file contract | **PASS** |
+| 2/5 axioms | **full compile of all five files** (sandbox) + `#print axioms` census | **PASS** (27+22+36+21+33 = 139 prints) |
+| 3/5 seal | all five manifests | **PASS** (27/22/36/21/33) |
+| 4/5 conventions | all five files | **PASS** (100% docstrings) |
+| 5/5 bridge | five numeric labs | **PASS** (139 theorems, worst residual 4.0e-12) |
 
 The first real compile needs the Mathlib v4.6.0 olean cache
 (`lake exe cache get`, ≈2 GB) — everything else is a single-file build.
@@ -424,23 +432,25 @@ gantt
   title TRIVORTEX-N — the five-file program
   dateFormat YYYY-MM-DD
   section files
-  1/5 NGon.lean — the regular N-gon, forced rate (this release) :done, f1, 2026-11-28, 1d
-  2/5 — statements to be sealed before proofs                    :f2, after f1, 1d
-  3/5                                                            :f3, after f2, 1d
-  4/5                                                            :f4, after f3, 1d
-  5/5                                                            :f5, after f4, 1d
+  1/5 NGon.lean — the regular N-gon, forced rate      :done, f1, 2026-11-28, 1d
+  2/5 NSide.lean — the side-length law                :done, f2, 2026-11-28, 1d
+  3/5 NCore.lean — the ring with a core               :done, f3, 2026-11-28, 1d
+  4/5 NRoots.lean — the roots-of-unity engine         :done, f4, 2026-11-28, 1d
+  5/5 NFlow.lean — the rotational flow                :done, f5, 2026-11-28, 1d
 ```
 
 | file | object | status |
 |---|---|---|
-| **1/5 `NGon.lean`** | the regular `N`-gon of identical vortices; rate **forced** | **landed (this release)** |
-| 2/5 | statements seal first, proofs after | planned |
-| 3/5 | — | planned |
-| 4/5 | — | planned |
-| 5/5 | — | planned |
+| **1/5 `NGon.lean`** | the regular `N`-gon of identical vortices; rate **forced** | **landed** |
+| **2/5 `NSide.lean`** | the side-length law: `a² = 2R²(1−cos 2π/N)`, rate in side form, period | **landed** |
+| **3/5 `NCore.lean`** | the ring with a core: `ω = Γ(N−1)/(4πR²) + Γ₀/(2πR²)` forced; the center feels nothing; static at `Γ₀ = −Γ(N−1)/2` | **landed** |
+| **4/5 `NRoots.lean`** | the engine: geometric dichotomy `Σ u_r^m = N·[N∣r]`, partial fractions, cross-ring kernels | **landed** |
+| **5/5 `NFlow.lean`** | the rotational flow: the polygon satisfies Kirchhoff at every instant; periods `T = 2π/ω`, `T_rel = 2π/(Nω)` | **landed** |
 
-The discipline: for each new file the seal (`seal_check.py --update`) is created *before*
-the proofs — statement revision is then a visible diff, never a silent edit.
+The discipline held for all five files: each seal (`seal_check.py --update`) was created
+*before* the proofs were finalized — statement revision is a visible diff, never a silent
+edit. The per-file seals: `seal/manifest.json`, `seal/manifest_nside.json`,
+`seal/manifest_ncore.json`, `seal/manifest_nroots.json`, `seal/manifest_nflow.json`.
 
 ---
 

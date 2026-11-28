@@ -1,0 +1,28 @@
+{
+ "file": "NRoots.lean",
+ "created_utc": "2026-11-28T13:23:37+00:00",
+ "theorem_count": 21,
+ "statements": {
+  "exp_two_pi_I": "980f656a6982f4524d074f705587c08049a853631457e6bf4d3b0ef28299b604",
+  "ker_eq_inv_conj": "34322be8bf70a6c382c793f3b085b6fc0c5b3fb97bc8596a6bd92b25f7fe6bf4",
+  "ker_neg": "81837325822cd92f3704051698cf0230ca2974a7e7df99ab538544b2f19e1a6c",
+  "mod_N_sub_twice": "3f590a564618db980df56a416582506744e228ea1f089e736526e3092dfa09b3",
+  "mod_succ_left": "baa03e7fe0cb3d94f90a2b46caadf410a14454169cc47a2998499e69f8a0ceda",
+  "mod_succ_right": "18185446b9be457e4c7fbf9e1ec80d9aeaaa27d1f286b136e210ea8972a41a43",
+  "normSq_unity": "e5a951d77912b86e37d602cd2df3cee37f22d87d596c2bd5e8548a420392e76b",
+  "pow_sub_pow_geom": "11f284e85a174d37ea6d19c7d15b38004d0c5e2d12edf666bdcf05d72f690ea4",
+  "sum_inv_unity": "491ea0100e51aa6ee3c20179302fdb71d9c28882fe9a46d5efce83cf0eb27586",
+  "sum_ker_cross": "73fa30d27eadd9e1077c2d6af316cf72e889d8a554de7a0b1ae7cc01c2dc91ca",
+  "sum_unity": "a84d6f13aad6a4fb270705d177d4e57c225d6cadd24d259916eeb49746f63345",
+  "sum_unity_pow_eq_N": "3ffb0ab3fffb8c1971cb1e617723d98c2fe4a5f192d9d967f1fb20d9b87d38c9",
+  "sum_unity_pow_eq_zero": "452d8940668ded0bc77b864a82a2fe52e3236a21366d43b7a84dd6d6ac1c60f6",
+  "unity_add": "3c7e3fff28a09ca538af5b8c5b4ca2c17f46d5e9bf3fac9fbd5caed074fa89cb",
+  "unity_congr": "2160b2e030685cf80956874ce543cebfbae8c494ae033b0b661ca8816a76362a",
+  "unity_conj_inv": "428214c14da08f5b2aa3ac063ae76ede9e88456f64e960dcba947359020c75de",
+  "unity_inv": "a2edbce586b47caeedc7f84ce81b112749e36bd87ba62e762e4674ab49e9c3f3",
+  "unity_mod": "5d7f1d5fcc718b21079453768b4ef4bb6952b1260d9daf96bc96dd8bb9537e52",
+  "unity_ne_one": "4801000d8acf57c81c4f936e353c251d345ca42559adc109e1721ad904f1b6d0",
+  "unity_pow": "eca7dab61744eaa82646f69d7ec378ab31345e6c797a7c1b2f237d3494719d03",
+  "unity_pow_N": "0dd7138178395f92c21bce5cc22c98471e616d16cde6eb6f5da9b14ddb66e8d0"
+ }
+}

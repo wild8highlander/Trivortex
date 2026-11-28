@@ -36,20 +36,30 @@ run_step() {  # run_step NAME cmd...
 
 step() { printf '\n──── %s ────\n' "$1"; }
 
-step "1/5 imports"
+FILES=(NGon NSide NCore NRoots NFlow)
+
+step "1/5 imports (пятифайловый контракт)"
 run_step imports python3 "$HERE/check_imports.py" || FAILED+=("imports")
 
-step "2/5 axioms gate (полная компиляция)"
-run_step axioms_gate python3 "$HERE/axioms_gate.py" --workdir "$ROOT" --log "$ROOT/axioms_gate.log" \
-  || FAILED+=("axioms_gate")
+step "2/5 axioms gate (полная компиляция всех пяти файлов)"
+for f in "${FILES[@]}"; do
+  run_step axioms_gate python3 "$HERE/axioms_gate.py" --file "$ROOT/$f.lean" \
+    --workdir "$ROOT" --log "$ROOT/axioms_gate.log" || FAILED+=("axioms_gate:$f")
+done
 
-step "3/5 seal"
-run_step seal python3 "$HERE/seal_check.py" --check || FAILED+=("seal")
+step "3/5 seal (печать утверждений всех пяти файлов)"
+for f in "${FILES[@]}"; do
+  run_step seal python3 "$HERE/seal_check.py" --check --file "$ROOT/$f.lean" \
+    || FAILED+=("seal:$f")
+done
 
-step "4/5 conventions + docstring ratchet"
-run_step lint python3 "$HERE/lint_conventions.py" || FAILED+=("lint")
+step "4/5 conventions + docstring ratchet (все пять файлов)"
+for f in "${FILES[@]}"; do
+  run_step lint python3 "$HERE/lint_conventions.py" --file "$ROOT/$f.lean" \
+    || FAILED+=("lint:$f")
+done
 
-step "5/5 bridge (verified params)"
+step "5/5 bridge (verified params + числовая лаборатория, все пять файлов)"
 run_step bridge python3 "$HERE/export_verified_params.py" --check || FAILED+=("bridge")
 
 printf '\n════ CI GATE: %s ════\n' \

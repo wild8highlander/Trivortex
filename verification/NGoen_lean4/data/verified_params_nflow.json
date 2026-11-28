@@ -1,0 +1,29 @@
+{
+ "note": "\u0441\u0435\u0440\u0442\u0438\u0444\u0438\u0446\u0438\u0440\u043e\u0432\u0430\u043d\u043d\u044b\u0435 \u043a\u043e\u043d\u0441\u0442\u0430\u043d\u0442\u044b NFlow.lean (TRIVORTEX-N, \u0444\u0430\u0439\u043b 5/5); \u043d\u043e\u0440\u043c\u0438\u0440\u043e\u0432\u043a\u0430 \u0393=1, R=1",
+ "params": [
+  {
+   "id": "period_N7",
+   "symbol": "T(N=7)",
+   "value": 13.159472534785811,
+   "formula": "T = 2\u03c0/\u03c9 (nGon_flow_returns), \u03c9\u2087 = 3/(2\u03c0)",
+   "source": "nGon_flow_returns",
+   "statement_sha256": "a0612f0b19d255bcf50d411ce6c6ede1e556bf70be317b68e457f300ec628548"
+  },
+  {
+   "id": "rel_period_N7",
+   "symbol": "T_rel(N=7)",
+   "value": 1.8799246478265446,
+   "formula": "T_rel = 2\u03c0/(N\u03c9) (nGon_flow_shift)",
+   "source": "nGon_flow_shift",
+   "statement_sha256": "980e1fe2e4ffff355b0c1b93d49bb19c5fe13aa660264c870132cfdc9120efa3"
+  },
+  {
+   "id": "period_N8_edge",
+   "symbol": "T(N=8, \u043f\u043e\u0440\u043e\u0433 \u0425\u044d\u0432\u0435\u043b\u043e\u043a\u0430)",
+   "value": 11.279547886959264,
+   "formula": "T = 2\u03c0/\u03c9\u2088, \u03c9\u2088 = 7/(4\u03c0) (nGon_flow_returns)",
+   "source": "nGon_flow_returns",
+   "statement_sha256": "a0612f0b19d255bcf50d411ce6c6ede1e556bf70be317b68e457f300ec628548"
+  }
+ ]
+}
