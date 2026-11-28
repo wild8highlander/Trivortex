@@ -14,7 +14,9 @@
 #   3. seal_check.py        — печать утверждений не тронута (замечание №2);
 #   4. lint_conventions.py  — конвенции Mathlib + ракет докстрингов (№3);
 #   5. export_verified_params.py --check — мост в числовую лабораторию
-#                             синхронен с запечатанными утверждениями (№6).
+#                             синхронен с запечатанными утверждениями (№6);
+#      numeric_lab.py        — сама лаборатория: 27 теорем по точным формулам
+#                             в float64, покрытие = печати (№6).
 #
 # Локально:   bash tools/ci_gate.sh
 # Переменные: LAKE (по умолчанию lake из PATH), ELAN_HOME — при необходимости.
@@ -49,8 +51,10 @@ run_step seal python3 "$HERE/seal_check.py" --check || FAILED+=("seal")
 step "4/5 conventions + docstring ratchet"
 run_step lint python3 "$HERE/lint_conventions.py" || FAILED+=("lint")
 
-step "5/5 bridge (verified params)"
-run_step bridge python3 "$HERE/export_verified_params.py" --check || FAILED+=("bridge")
+step "5/5 bridge (verified params + numeric lab)"
+run_step bridge python3 "$HERE/export_verified_params.py" --check --out "$ROOT/data/verified_params.json" \
+  || FAILED+=("bridge")
+run_step bridge python3 "$HERE/numeric_lab.py" --quiet || FAILED+=("bridge")
 
 printf '\n════ CI GATE: %s ════\n' \
   "$([[ ${#FAILED[@]} -eq 0 ]] && echo 'PASS — Lean-уровень чист' || echo "FAIL: ${FAILED[*]}")"

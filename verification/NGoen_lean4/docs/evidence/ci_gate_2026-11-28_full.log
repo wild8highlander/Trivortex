@@ -1,0 +1,51 @@
+TRIVORTEX-N NGON — CI GATE (ПОЛНЫЙ ПЯТИГЕЙТОВЫЙ ПРОГОН, БЕЗ ПРОПУСКОВ) — 2026-11-28
+Песочница: elan + leanprover/lean4:v4.6.0, Mathlib v4.6.0 (tag v4.6.0, rev 7ca43cbd…,
+oleans из официального кеша, 4330 файлов, leantar). `lake env lean NGon.lean`
+исполнен здесь — гейт 2 больше не «только на машине автора».
+================================================================
+
+──── 1/5 imports ────
+IMPORTS: root NGon.lean; imports: 3 (все Mathlib); toolchain leanprover/lean4:v4.6.0; mathlib pin OK
+IMPORTS [PASS] — однофайловый контракт и пиннинги выдержаны
+
+──── 2/5 axioms gate (полная компиляция) ────
+lake env lean NGon.lean — rc=0; 0 warning, 0 error
+AXIOMS GATE: 27 отпечатков (0 без аксиом, 27 на стандартном наборе [propext, Classical.choice, Quot.sound]); исходных директив: 27
+AXIOMS GATE [PASS] — все теоремы на заявленном наборе аксиом
+
+──── 3/5 seal ────
+SEAL: запечатано 27; в исходнике 27 утверждений
+SEAL [PASS] — все утверждения совпадают с печатью
+
+──── 4/5 conventions + docstring ratchet ────
+LINT: деклараций 33; секций: 6
+LINT: докстринги: 33/33 = 100.0%
+  Section  1:   9/9   = 100.0%
+  Section  2:  10/10  = 100.0%
+  Section  3:  14/14  = 100.0%
+LINT [PASS] — конвенции и ракет докстрингов выдержаны
+
+──── 5/5 bridge (verified params + numeric lab) ────
+BRIDGE [PASS] — мост синхронен с печатью (data/verified_params.json внутри пакета)
+числовая лаборатория tools/numeric_lab.py (теперь коммитится — воспроизводима):
+roots_of_unity                   max|err| 9.892e-15   (запись 2.266e-15)
+pairing_identity                 max|err| 6.929e-14   (запись 6.929e-14)
+shape_factor_sum                 max|err| 8.001e-14   (запись 8.001e-14)
+kernel_polygon_reduction         max|err| 5.031e-14   (запись 5.031e-14)
+kernel_algebra                   max|err| 2.776e-17   (запись 1.119e-16)
+polygon_geometry                 max|err| 3.553e-15   (запись 7.746e-15)
+main_theorem_rigid_rotation      max|err| 1.822e-14   (запись 1.822e-14)
+xy_bridge                        max|err| 0.000e+00   (запись 2.220e-15)
+omega_forced_uniqueness          max|err| 3.683e-14   (запись 7.803e-15)
+omega_sign_nonzero               max|err| 0.000e+00   (запись 0.000e+00)
+triangle_side_bridge             max|err| 1.421e-14   (запись 2.132e-14)
+reindex_bijection                max|err| 0.000e+00   (запись 0.000e+00)
+NUMERIC LAB: PASS — худшая невязка 8.001e-14 (допуск 1e-09); 27 теорем покрыто,
+покрытие = печати (27 имён). Четыре группы совпали с записью бит-в-бит
+(pairing 6.929e-14, sum 8.001e-14, reduction 5.031e-14, main theorem 1.822e-14);
+расхождения последних разрядов в остальных — детали порядка суммирования float64,
+все невязки на 7 порядков ниже допуска. Принятая запись data/ngon_numeric_check.json
+не переписана (ракет).
+
+════ CI GATE: PASS — все 5 гейтов чисты, включая полную компиляцию ════
+CI_EXIT=0
